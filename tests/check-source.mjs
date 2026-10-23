@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const s=readFileSync('index.html','utf8');
-assert.match(s,/function drawActorFace\(f,emotion,open,time\)/);
+assert.match(s,/function drawActorFace\(f,emotion,open,time,/);
 assert.match(s,/const energy=Math.max/);
 assert.match(s,/const performanceCues=\[/);
 assert.match(s,/FrameForgeMP4Test/);

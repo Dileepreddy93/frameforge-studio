@@ -159,45 +159,40 @@ function bevel(w,h,d,r,mat,parent,x,y,z){
 }
 function buildActor(actor,kind){
  actor.root.children.forEach(c=>c.visible=false);
- const group=new T.Group();actor.root.add(group);
- const isBlue=kind==='blue',shell=velvet(isBlue?0x6576b5:0xc95c2e,.53,.19),edge=velvet(isBlue?0x334879:0x7c301e,.6,.21);
- const faceMat=velvet(0x070d21,.22,.27);
- bevel(isBlue?1.4:1.28,1.22,.84,isBlue?.18:.045,shell,group,0,1.43,0);
- bevel(1.01,.76,.18,isBlue?.13:.025,isBlue?faceMat:velvet(0xda7747,.70,.025),group,0,1.48,.48);
- if(isBlue){
-   bevel(.78,.64,.51,.19,shell,group,0,.6,0);
-   bevel(.45,.085,.045,.03,new T.MeshBasicMaterial({color:0x9eddf7}),group,0,.66,.29);
-   for(const side of [-1,1]){
-     bevel(.28,.45,.42,.08,edge,group,side*.78,1.40,0);
-     // Animated shoulder joint will replace fixed arm pieces.
-     bevel(.36,.21,.41,.07,edge,group,side*.35,.23,.03);
-   }
- }else{
-   bevel(1.04,.15,.48,.025,edge,group,0,.72,0);
-   for(const side of [-1,1]){
-     // Animated shoulder joint will replace fixed arm pieces.
-   }
+ const group=new T.Group();actor.root.add(group);const isBlue=kind==='blue';
+ const shell=new T.MeshPhysicalMaterial({color:isBlue?0x6484b8:0xd38357,metalness:.22,roughness:.35,clearcoat:.64,clearcoatRoughness:.17});
+ const darkMat=new T.MeshStandardMaterial({color:isBlue?0x1a324f:0x4b2a2c,metalness:.42,roughness:.42});
+ const trim=new T.MeshStandardMaterial({color:isBlue?0x9ebdc5:0xdec195,metalness:.74,roughness:.32});
+ const neon=new T.MeshStandardMaterial({color:isBlue?0x87ecfc:0xffc98e,emissive:isBlue?0x428eae:0xaf652d,emissiveIntensity:1.25});
+ const glass=new T.MeshPhysicalMaterial({color:0x08111d,metalness:.22,roughness:.17,clearcoat:1,clearcoatRoughness:.07});
+ const attach=(geo,mat,x,y,z,sx=1,sy=1,sz=1)=>{
+  const m=new T.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;group.add(m);return m;
+ };
+ // A continuous lathed torso, flowing into sculpted hips.
+ const outline=[[.23,.07],[.43,.16],[.56,.31],[.58,.53],[.59,.76],[.54,.99],[.42,1.17],[.22,1.25]];
+ attach(new T.LatheGeometry(outline.map(([r,y])=>new T.Vector2(r,y)),40),shell,0,0,0);
+ attach(new T.SphereGeometry(.49,36,24),shell,0,.35,0,1.13,.80,.92);
+ attach(new T.CylinderGeometry(.21,.30,.24,32),darkMat,0,1.24,0);
+ const neckTrim=attach(new T.TorusGeometry(.27,.027,10,40),trim,0,1.26,0);neckTrim.rotation.x=Math.PI/2;
+ // A single head hull with recessed curved dark face; no exposed cube corners.
+ attach(new T.SphereGeometry(.71,48,36),shell,0,1.76,0,1.06,.89,.89);
+ attach(new T.SphereGeometry(.59,48,36),glass,0,1.77,.42,1,.73,.39);
+ attach(new T.TorusGeometry(.49,.035,10,56),trim,0,1.77,.685,1.07,.73,1);
+ for(const sign of [-1,1]){
+  attach(new T.SphereGeometry(.23,24,16),darkMat,sign*.74,1.75,0,.82,1,1);
+  const cap=attach(new T.CylinderGeometry(.18,.18,.10,24),shell,sign*.80,1.75,0);cap.rotation.z=Math.PI/2;
+  const led=attach(new T.TorusGeometry(.126,.019,8,30),neon,sign*.845,1.75,0);led.rotation.y=Math.PI/2;
+  attach(new T.SphereGeometry(.27,24,16),darkMat,sign*.30,.20,.015,.9,.74,.95);
+  attach(new T.SphereGeometry(.23,24,16),shell,sign*.30,.11,.145,1.18,.54,1.30);
+  attach(new T.SphereGeometry(.205,20,16),darkMat,sign*.64,1.03,-.02);
  }
+ const chest=attach(new T.TorusGeometry(.17,.027,8,40),neon,0,.70,.55);chest.scale.y=.83;
  const cv=document.createElement('canvas');cv.width=cv.height=512;
  const texture=new T.CanvasTexture(cv);texture.colorSpace=T.SRGBColorSpace;
- const face=new T.Mesh(new T.PlaneGeometry(.82,.68),new T.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,toneMapped:false}));
- face.position.set(0,1.49,.80);group.add(face);
- // The orange actor requires readable 3D facial features in every shot.
- // They are real geometric features rather than a translucent canvas that can blend into the shell.
- const orangeEyes=[],orangeBrows=[];
- let orangeMouth=null;
- if(!isBlue){
-   face.visible=false;
-   const deep=velvet(0x1c1215,.95,.0);
-   for(const side of [-1,1]){
-      const eye=bevel(.115,.21,.038,.016,deep,group,side*.255,1.57,.84);
-      orangeEyes.push(eye);
-      const brow=bevel(.17,.035,.038,.012,velvet(0x9c402a,.90,.0),group,side*.255,1.74,.842);
-      brow.rotation.z=side*.09;orangeBrows.push(brow);
-   }
-   orangeMouth=bevel(.26,.038,.038,.010,deep,group,0,1.27,.84);
- }
- return {ctx:cv.getContext('2d'),texture,group,head:group,blue:isBlue,orangeEyes,orangeMouth,orangeBrows};
+ const face=new T.Mesh(new T.PlaneGeometry(.92,.68),new T.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,toneMapped:false,side:T.DoubleSide}));
+ face.position.set(0,1.77,.74);group.add(face);
+ // A single dynamic display enables the same eye and mouth animation on BOTH robots.
+ return {ctx:cv.getContext('2d'),texture,group,head:group,blue:isBlue,orangeEyes:[],orangeBrows:[],orangeMouth:null};
 }
 const faces={blue:buildActor(b,'blue'),orange:buildActor(o,'orange')};
 
@@ -235,7 +230,7 @@ for(const [name,actor] of Object.entries({blue:faces.blue,orange:faces.orange}))
  }
 }
 
-function drawActorFace(f,emotion,open,time){
+function drawActorFace(f,emotion,open,time,viseme='rest'){
  const c=f.ctx;c.clearRect(0,0,512,512);c.save();
  const blue=f.blue,ink=blue?'#b9f6fa':'#2b1112',bright=blue?'#edffff':'#532025';
  const energy=Math.max(0,Math.min(1,open)),look=Math.sin(time*.61)*7+Math.sin(time*1.9)*3;
@@ -259,7 +254,7 @@ function drawActorFace(f,emotion,open,time){
   c.quadraticCurveTo(x,browY-(emotion==='surprised'?17:emotion==='worried'?9:6),x+32,browY-(emotion==='angry'?sign*13:0));c.stroke();c.restore();
  }
  c.save();c.translate(256,331);c.strokeStyle=ink;c.fillStyle=ink;c.lineCap='round';c.lineJoin='round';c.lineWidth=blue?15:13;c.shadowBlur=blue?19:6;c.shadowColor=ink;
- if(energy>.13){const h=15+energy*51,w=35+energy*8;c.beginPath();c.ellipse(0,8,w,h*.48,0,0,Math.PI*2);c.stroke();if(energy>.5){c.fillStyle=bright;c.globalAlpha=.63;c.beginPath();c.ellipse(0,26,w*.55,5,0,0,2*Math.PI);c.fill();}}
+ if(energy>.13){const shape=viseme==='round'?.58:viseme==='wide'?1.45:viseme==='closed'?.12:viseme==='teeth'?.43:1;const h=15+energy*51*shape,w=(35+energy*8)*(viseme==='wide'?1.2:viseme==='round'?.72:1);c.beginPath();c.ellipse(0,8,w,h*.48,0,0,Math.PI*2);c.stroke();if(energy>.5){c.fillStyle=bright;c.globalAlpha=.63;c.beginPath();c.ellipse(0,26,w*.55,5,0,0,2*Math.PI);c.fill();}}
  else if(emotion==='happy'){c.beginPath();c.moveTo(-48,-11);c.bezierCurveTo(-23,40,23,40,48,-11);c.stroke();}
  else if(emotion==='worried'){c.beginPath();c.moveTo(-38,10);c.quadraticCurveTo(0,-8,38,10);c.stroke();}
  else if(emotion==='surprised'){c.beginPath();c.ellipse(0,11,20,24,0,0,2*Math.PI);c.stroke();}
@@ -379,6 +374,21 @@ function actPose(type,local,duration,t){
  return {arms,lean,jump,head,energetic,accent};
 }
 
+function estimateViseme(text,local,duration){
+ const words=text.toLowerCase().match(/[a-z']+/g)||[];
+ if(!words.length||local<.10||local>duration*.91)return 'rest';
+ const weights=words.map(w=>Math.max(2,w.length*.7+1.5));
+ const total=weights.reduce((a,b)=>a+b,0);
+ const cursor=Math.max(0,Math.min(.999,(local-.1)/(duration*.90-.1)))*total;
+ let amount=0,word=words[0],within=0;
+ for(let i=0;i<words.length;i++){
+  if(cursor<amount+weights[i]){word=words[i];within=(cursor-amount)/weights[i];break;}
+  amount+=weights[i];
+ }
+ const letter=word[Math.min(word.length-1,Math.floor(within*word.length))]||'a';
+ return /[bmp]/.test(letter)?'closed':/[oouw]/.test(letter)?'round':/[iey]/.test(letter)?'wide':/[fv]/.test(letter)?'teeth':'open';
+}
+
 const oldUpdate=update;let lastFaceDraw=0;
 update=function(){
  const t=time;let elapsed=0,shot=shots.at(-1),local=0;
@@ -386,8 +396,9 @@ update=function(){
  const speechEnd=Math.min(shot.duration*.82,Math.max(.6,shot.text.length/16));
  const beat=Math.floor(local*9);
  let open=0;if(envReady&&decodedEnvelope){open=decodedEnvelope[Math.min(decodedEnvelope.length-1,Math.max(0,Math.floor(time*20)))]||0}else if(running&&analyser&&audioSamples){analyser.getByteTimeDomainData(audioSamples);let sq=0;for(const v of audioSamples){const x=(v-128)/128;sq+=x*x}open=Math.max(0,Math.min(1,(Math.sqrt(sq/audioSamples.length)-.015)*14))}
+ const viseme=estimateViseme(shot.text,local,shot.duration);
  const index=shots.indexOf(shot);const emotionMap=[{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'worried',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'worried'},{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'neutral',orange:'neutral'},{blue:'neutral',orange:'angry'},{blue:'worried',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'happy'},{blue:'worried',orange:'neutral'}];const expression=emotionMap[index]||emotionMap[0];
- if(offlineMode||Math.abs(t-lastFaceDraw)>.04){drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?open:0,t);drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?open:0,t);lastFaceDraw=t;}
+ if(offlineMode||Math.abs(t-lastFaceDraw)>.04){drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?open:0,t,viseme);drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?open:0,t,viseme);lastFaceDraw=t;}
  faces.blue.group.rotation.z=Math.sin(t*1.5)*.035+(shot.speaker==='blue'?.035:0);faces.orange.group.rotation.z=Math.sin(t*1.05)*.035+(shot.speaker==='orange'?.04:0);
  if(faces.orange.orangeMouth){
    faces.orange.orangeMouth.scale.y=shot.speaker==='orange'?1+open*1.9:1;
@@ -456,12 +467,22 @@ mystery:[
 let shots=[],duration=30,time=0,running=false,last=performance.now(),selected=0;
 function load(){const p=$('preset').value;let lines=templates[p];soundtrack.pause();if(p==='comedy'){soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.load();$('recordStatus').textContent='14 scenes with real Kokoro dialogue ready';}else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Mystery is storyboard-only: no voice master exists';}shots=lines.map(a=>({text:a[0],speaker:a[1],camera:a[2],duration:a[3]}));$('idea').value=p==='comedy'?'A developer asks two AI assistants to make an app load instantly. Their solution is spectacularly wrong.':'A mysterious mountain hides a forgotten futuristic city.';time=0;selected=0;running=false;refresh();update();}
 function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});$('dialogue').value=shots[selected].text;$('speaker').value=shots[selected].speaker;$('camera').value=shots[selected].camera;}
-function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=si===6?'0 ms':'0 users';$('screenDescription').textContent=si===6?'Page response time':'Active customer sessions';$('sceneTitle').textContent=["TWELVE SECONDS","THE OFFER","NO REGRETS?","THE DEFINITION","THE BACKUP","ONE CHANGE","ZERO LATENCY","INSTANT!","THE TRADE","WHAT ABOUT USERS?","NO MORE WAITING","YOU DID WHAT?","PERFECT RETENTION","THE PUNCHLINE"][si]||'DIRECTED SHOT';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(duration).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,1.8,-1]:s.camera==='blue'?[0,1.5,.5]:s.camera==='orange'?[1.72,1.65,.5]:[0,1.65,0];let pos=s.camera==='wide'?[0,3,9]:s.camera==='duo'?[.22,2.55,9.3]:[tgt[0]+.1,2.15,tgt[2]+5.5];if(s.camera==='dev'){pos[0]+=(si%3-1)*.35;pos[1]+=(si%2?.11:-.09);pos[2]+=(si%3===0?-.40:.22);}
- if(s.camera==='orange'){pos[0]+=(si%2?-.25:.25);pos[2]+=.28;}
- if(s.camera==='blue'){pos[0]+=(si%2?.24:-.22);pos[2]+=(si%3===0?-.30:.16);}
- const ease=Math.sin(Math.min(1,local/Math.max(.4,s.duration)) * Math.PI);
- cam.position.set(pos[0]+Math.sin(t*.38)*sway + ease*.06,pos[1]+Math.sin(t*.32)*sway*.6,pos[2]-ease*.19);
- cam.lookAt(tgt[0],tgt[1],tgt[2]);b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);renderer.render(scene,cam);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
+function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=si===6?'0 ms':'0 users';$('screenDescription').textContent=si===6?'Page response time':'Active customer sessions';$('sceneTitle').textContent=["TWELVE SECONDS","THE OFFER","NO REGRETS?","THE DEFINITION","THE BACKUP","ONE CHANGE","ZERO LATENCY","INSTANT!","THE TRADE","WHAT ABOUT USERS?","NO MORE WAITING","YOU DID WHAT?","PERFECT RETENTION","THE PUNCHLINE"][si]||'DIRECTED SHOT';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(duration).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,1.8,-1]:s.camera==='blue'?[0,1.5,.5]:s.camera==='orange'?[1.72,1.65,.5]:[0,1.65,0];const shotCamera=[
+ [4.7,-.18,.09,36],[4.25,.20,.05,35],[3.55,-.16,.11,33],
+ [3.75,.16,.07,34],[4.18,-.10,.04,34],[7.15,-.30,.15,40],
+ [6.90,.0,.03,42],[3.30,.24,.15,33],[6.90,0,.03,42],
+ [3.48,-.17,.05,34],[3.62,.15,.08,35],[3.08,.12,.13,31],
+ [4.12,-.19,.03,36],[7.22,.26,.12,40]
+ ];
+ const [distance,offset,up,fov]=shotCamera[si]||shotCamera[0];
+ const wide=s.camera==='duo'||s.camera==='wide'||s.camera==='screen';
+ const ease=Math.max(0,Math.min(1,local/s.duration));
+ const dolly=(ease*ease*(3-2*ease)-.5)*.33;
+ const pos=wide?[offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance];
+ cam.fov=fov;cam.updateProjectionMatrix();
+ cam.position.set(pos[0]+dolly*.14+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
+ cam.lookAt(tgt[0],tgt[1]+(si===11?.07:0),tgt[2]);
+ b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);renderer.render(scene,cam);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
 $('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{shots[selected].text=$('dialogue').value;shots[selected].speaker=$('speaker').value;shots[selected].camera=$('camera').value;refresh();update()};$('download').onclick=()=>{const blob=new Blob([JSON.stringify({title:'FrameForge Episode',shots},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='frameforge-episode.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};$('narrate').onclick=()=>{if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
