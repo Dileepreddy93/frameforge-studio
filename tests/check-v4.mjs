@@ -23,3 +23,6 @@ const fragment=html.match(/<script type="module">([\s\S]+?)<\/script>/)?.[1];
 assert.ok(fragment);
 new Function(fragment.replace(/^import\s+\*\s+as\s+T\s+from\s+['"][^'"]+['"];\s*/m,''));
 console.log('11 feature assertions, 14 camera cuts and entire JS syntax PASS');
+assert.match(html,/const jacket=new T.Mesh\(new T.LatheGeometry/,'sculpted human jacket');
+assert.match(html,/new T.CapsuleGeometry\(\.235,\.44/,'rounded human sleeves');
+assert.match(html,/const skull=new T.Mesh\(new T.SphereGeometry/,'smooth human head');

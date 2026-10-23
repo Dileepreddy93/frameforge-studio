@@ -287,7 +287,9 @@ const personSkin=velvet(0xad8170,.87,0),skinDark=velvet(0x865b50,.93,0),blackHai
  mouthDark=velvet(0x3a2125,.88,0);
 function poly(parent,r,material,x,y,z,subdivision=0){const o=new T.Mesh(new T.IcosahedronGeometry(r,subdivision),material);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
 const bodyGroup=new T.Group();humanRig.add(bodyGroup);
-bevel(1.08,1.16,.66,.18,hoodie,bodyGroup,0,1.16,0);
+const jacketProfile=[[.30,.59],[.47,.68],[.54,.88],[.56,1.22],[.52,1.52],[.40,1.70],[.28,1.74]];
+const jacket=new T.Mesh(new T.LatheGeometry(jacketProfile.map(([r,y])=>new T.Vector2(r,y)),40),hoodie);
+jacket.castShadow=true;jacket.receiveShadow=true;bodyGroup.add(jacket);
 bevel(.86,.29,.67,.09,hoodieLight,bodyGroup,0,1.72,-.06);
 bevel(.68,.36,.52,.13,hoodieDark,bodyGroup,0,1.79,-.12);
 bevel(.72,.24,.11,.07,hoodieDark,bodyGroup,0,.72,.35);
@@ -295,40 +297,40 @@ bevel(.63,.055,.055,.016,hoodieLight,bodyGroup,0,.85,.395);
 for(const side of [-1,1]){
  bevel(.035,.39,.035,.012,velvet(0xca9a73),bodyGroup,side*.14,1.37,.381);
  poly(bodyGroup,.045,velvet(0xe1a985),side*.14,1.18,.39,1);
- bevel(.34,.60,.46,.085,trouser,bodyGroup,side*.27,.30,0);
+ const leg=new T.Mesh(new T.CapsuleGeometry(.205,.28,6,16),trouser);leg.position.set(side*.27,.30,0);leg.castShadow=true;bodyGroup.add(leg);
  bevel(.42,.19,.59,.065,shoeMat,bodyGroup,side*.27,-.07,.10);
 }
 const humanPivots=[];
 for(const side of [-1,1]){
  const shoulder=new T.Group();shoulder.position.set(side*.65,1.58,0);bodyGroup.add(shoulder);
- bevel(.33,.77,.45,.12,hoodie,shoulder,side*.055,-.38,0);
+ const sleeve=new T.Mesh(new T.CapsuleGeometry(.235,.44,8,20),hoodie);sleeve.position.set(side*.055,-.40,0);sleeve.castShadow=true;shoulder.add(sleeve);
  bevel(.32,.13,.40,.06,hoodieLight,shoulder,side*.065,-.70,.015);
  const fist=poly(shoulder,.165,personSkin,side*.055,-.88,.025,1);fist.scale.set(.83,1,.87);
  humanPivots.push({side,shoulder});
 }
 const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);const humanEyes=[],humanIrises=[];
-const skull=poly(humanHead,.55,personSkin,0,0,0,1);skull.scale.set(.84,1.05,.82);
-const chin=poly(humanHead,.36,personSkin,0,-.30,.10,0);chin.scale.set(.90,.61,1.12);
-const beard=poly(humanHead,.30,skinDark,0,-.37,.16,0);beard.scale.set(.97,.36,1.16);
+const skull=new T.Mesh(new T.SphereGeometry(.55,48,32),personSkin);skull.position.set(0,0,0);skull.scale.set(.88,1.06,.86);skull.castShadow=true;humanHead.add(skull);
+const chin=new T.Mesh(new T.SphereGeometry(.35,32,24),personSkin);chin.position.set(0,-.32,.09);chin.scale.set(.91,.52,.96);humanHead.add(chin);
+const beard=new T.Mesh(new T.SphereGeometry(.29,32,24),skinDark);beard.position.set(0,-.395,.13);beard.scale.set(.93,.26,.97);humanHead.add(beard);
 for(const side of [-1,1]){
- const ear=poly(humanHead,.13,personSkin,side*.465,-.085,-.045,0);ear.scale.set(.70,.98,.70);
+ const ear=new T.Mesh(new T.SphereGeometry(.125,24,18),personSkin);ear.position.set(side*.47,-.08,-.04);ear.scale.set(.64,.96,.76);humanHead.add(ear);
  poly(humanHead,.061,skinDark,side*.48,-.09,.002,1);
- const eye=poly(humanHead,.068,eyeWhite,side*.183,.038,.428,1);eye.scale.set(.93,.62,.38);humanEyes.push(eye);
- const iris=poly(humanHead,.034,eyeDark,side*.183,.034,.458,1);iris.scale.set(.82,.81,.47);humanIrises.push(iris);
+ const eye=new T.Mesh(new T.SphereGeometry(.067,24,20),eyeWhite);eye.position.set(side*.184,.035,.449);eye.scale.set(.89,.61,.46);humanHead.add(eye);humanEyes.push(eye);
+ const iris=new T.Mesh(new T.SphereGeometry(.034,20,16),eyeDark);iris.position.set(side*.184,.032,.477);iris.scale.set(.85,.83,.51);humanHead.add(iris);humanIrises.push(iris);
 }
 const browsNew=[];
 for(const side of [-1,1]){const br=bevel(.24,.066,.085,.017,blackHair,humanHead,side*.19,.18,.46);br.rotation.z=side*.11;browsNew.push(br)}
-const noseNew=poly(humanHead,.10,personSkin,0,-.07,.49,0);noseNew.scale.set(.8,.95,.75);
+const noseNew=new T.Mesh(new T.SphereGeometry(.105,24,16),personSkin);noseNew.position.set(0,-.075,.49);noseNew.scale.set(.73,.83,.71);humanHead.add(noseNew);
 const moustache=bevel(.23,.046,.038,.013,skinDark,humanHead,0,-.225,.448);
 const mouthNew=bevel(.25,.055,.035,.012,mouthDark,humanHead,0,-.31,.46);
-const hairCrown=poly(humanHead,.51,blackHair,0,.41,-.08,1);hairCrown.scale.set(.88,.44,.86);
+const hairCrown=new T.Mesh(new T.SphereGeometry(.51,36,24),blackHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
 for(let j=0;j<10;j++){
  const xx=(j-4.5)*.104,yy=.37+Math.sin(j*1.8)*.050;
- const tuft=poly(humanHead,.16+(j%3)*.014,blackHair,xx,yy,.24+(j%2)*.065,0);
+ const tuft=new T.Mesh(new T.SphereGeometry(.16+(j%3)*.012,16,12),blackHair);tuft.position.set(xx,yy,.24+(j%2)*.063);humanHead.add(tuft);
  tuft.scale.set(.85,.69,.79);tuft.rotation.z=(j-4.5)*.11;
 }
 for(const side of [-1,1]){
- const sideHair=poly(humanHead,.24,blackHair,side*.37,.19,-.07,0);sideHair.scale.set(.7,1.1,.80);
+ const sideHair=new T.Mesh(new T.SphereGeometry(.24,20,16),blackHair);sideHair.position.set(side*.37,.19,-.07);humanHead.add(sideHair);sideHair.scale.set(.7,1.1,.80);
 }
 // Secondary face/shirt highlights keep the sculpt readable under low-key studio lighting.
 const clothStripe=velvet(0x6f8493,.66,.07);
@@ -439,7 +441,7 @@ update=function(){
  });
  const blink=(Math.sin(t*2.25+1.2)>.987||Math.sin(t*.86+2.4)>.996);
  humanEyes.forEach(e=>{e.scale.y=blink?.12:(humanAction==='alarm'?.70:humanAction==='defeat'?.30:.61)});
- humanIrises.forEach((iris,i)=>{iris.scale.y=blink?.14:.81;iris.position.x=(i?1:-1)*.183+(devPose.head>0?.012:-.010)});
+ humanIrises.forEach((iris,i)=>{iris.scale.y=blink?.14:.81;iris.position.x=(i?1:-1)*.184+(devPose.head>0?.012:-.010)});
  faces.orange.orangeEyes?.forEach(e=>{e.scale.y=blink?.18:orangeAction==='surprise'?1.25:1});
  faces.orange.orangeBrows?.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(orangeAction==='celebrate'?-.13:orangeAction==='announce'?.20:.10)});
 
