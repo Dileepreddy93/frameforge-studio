@@ -34,10 +34,22 @@ const crypto=require('node:crypto');
   assert.match(x.jpeg,/^data:image\/jpeg;base64,/);
   samples.push({time:t,camera:x.camera,sha:crypto.createHash('sha256').update(x.jpeg).digest('hex').slice(0,12)});
  }
+ // Each authored listener cut must actually change camera composition.
+ const cuts=[{index:2,d:0.58},{index:3,d:0.50},{index:7,d:0.67},{index:9,d:0.64},{index:11,d:0.72},{index:13,d:0.92}];
+ let cutChecks=0;
+ for(const cut of cuts){
+  const start=lines.slice(0,cut.index).reduce((acc,x)=>acc+x.duration,0);
+  const boundary=start+lines[cut.index].duration-cut.d;
+  const a=await page.evaluate(t=>{FrameForgeQA.setTime(t);return FrameForgeQA.cam.position.toArray()},boundary-.10);
+  const b=await page.evaluate(t=>{FrameForgeQA.setTime(t);return FrameForgeQA.cam.position.toArray()},boundary+.10);
+  const delta=Math.hypot(...a.map((v,i)=>v-b[i]));
+  assert.ok(delta>.60,'Reaction '+cut.index+' did not cut camera ('+delta.toFixed(2)+')');
+  cutChecks++;
+ }
  // Deterministic editorial cut in the third spoken line.
  assert.ok(Math.abs(samples[0].camera[0]-samples[1].camera[0])>1.0,'reaction shot changes character viewpoint');
  assert.notEqual(samples[2].sha,samples[3].sha,'0ms and 0-users screens render differently');
  assert.deepEqual(errors,[],'no uncaught JavaScript errors');
- console.log(JSON.stringify({status:'PASS',shots:lines.length,captionChecks:passed,examinedFrames:samples,errors},null,2));
+ console.log(JSON.stringify({status:'PASS',shots:lines.length,captionChecks:passed,reactionChecks:cutChecks,examinedFrames:samples,errors},null,2));
  await browser.close();
 })().catch(e=>{console.error('FILM QA FAILED',e.stack);process.exit(1)});
