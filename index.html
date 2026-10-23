@@ -664,12 +664,13 @@ function renderFilmFrame(t,w=360,hh=640,encode=true){
 }
 
 let offlineExportActive=false;
-async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,download=true}={}){
+async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,download=true,startTime=0}={}){
  if(offlineExportActive)throw new Error('Another export is already running');
  if($('preset').value!=='comedy')throw new Error('This story has no generated voice master. Use Zero Latency.');
  if(typeof VideoEncoder!=='function')throw new Error('This browser lacks WebCodecs video encoding.');
  const fps=30,frames=frameLimit??Math.round(duration*fps);
  if(!Number.isInteger(frames)||frames<=0||frames>18000)throw new Error('Invalid frame count');
+ if(!Number.isFinite(startTime)||startTime<0||startTime+frames/fps>duration+.05)throw new Error('Export segment outside the film duration');
  if(width%2||height%2)throw new Error('MP4 requires even output dimensions');
  offlineExportActive=true;const started=performance.now();const status=$('mp4Status');
  let sourceVideo=null,sourceAudio=null;
@@ -695,14 +696,15 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   try{decoded=await audioContextForExport.decodeAudioData(await voice.arrayBuffer())}
   finally{await audioContextForExport.close()}
   const intendedLength=Math.round(frames/fps*decoded.sampleRate);
-  if(decoded.length<intendedLength-100)throw new Error('Voice track is shorter than the chosen video duration');
+  const startSample=Math.round(startTime*decoded.sampleRate);
+  if(decoded.length<startSample+intendedLength-100)throw new Error('Voice track is shorter than the chosen video segment');
   const audioBuffer=new AudioBuffer({sampleRate:decoded.sampleRate,numberOfChannels:decoded.numberOfChannels,length:intendedLength});
-  for(let c=0;c<decoded.numberOfChannels;c++)audioBuffer.copyToChannel(decoded.getChannelData(c).subarray(0,intendedLength),c);
+  for(let c=0;c<decoded.numberOfChannels;c++)audioBuffer.copyToChannel(decoded.getChannelData(c).subarray(startSample,startSample+intendedLength),c);
   await output.start();
   await sourceAudio.add(audioBuffer);
   sourceAudio.close();sourceAudio=null;
   for(let i=0;i<frames;i++){
-   renderFilmFrame(i/fps,width,height,false);
+   renderFilmFrame(startTime+i/fps,width,height,false);
    await sourceVideo.add(i/fps,1/fps);
    if(i%15===0||i===frames-1){status.textContent='Rendering exact frames: '+(i+1)+' / '+frames+' ('+Math.floor((i+1)*100/frames)+'%)';await new Promise(r=>setTimeout(r,0))}
   }
