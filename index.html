@@ -7,7 +7,7 @@
 <body><header><div><div class="brand">◈ Frame<em>Forge</em> <span style="font-size:12px;color:#a7b3d6">STUDIO</span></div><div class="hint">LIVE DIRECTOR PREVIEW · Original 3D characters</div></div><div class="tag">DIRECTOR BUILD · Preview, not cinema-quality</div></header>
 <div class="wrap"><aside><h3>Quick Create</h3><label>Story idea</label><textarea id="idea">A developer asks two robot assistants to fix one tiny bug. They argue over a missing semicolon.</textarea><label>Language</label><select id="language"><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option></select><label>Episode template</label><select id="preset"><option value="comedy">ZERO LATENCY — Voiced episode (41.8s)</option><option value="mystery">Mystery storyboarding (no voice)</option></select><button id="build" class="primary full">✦ Build episode timeline</button><div class="note">This director preview includes English Kokoro dialogue, stereo music and 43 designed Foley/UI accents. It is not a reference-quality film, and video export is not included.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Manual Narrate uses system TTS. Hindi/Telugu voice tracks are not connected.</p></aside>
 <main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div><details id="renderedFilm" style="max-width:550px;margin:16px auto;background:#1a2540;border:1px solid #53699d;border-radius:14px;padding:12px"><summary style="cursor:pointer;font-weight:750;color:#fff;font-size:14px">▶ Watch revised film · Directed acting + Foley (41.8s)</summary><p class="fine" style="margin:9px 0 12px">New directed-acting cut: native 480×854, 30 FPS, 1,254 frames, three English voices, 43 Foley cues and synchronized stereo audio. Facial animation is still below the reference-quality target.</p><video controls playsinline preload="metadata" style="display:block;width:min(100%,320px);margin:8px auto;border-radius:12px" src="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4">Your browser cannot play MP4 video.</video><p style="font-size:12px;text-align:center;margin:12px auto 2px"><a style="color:#c5b4ff" href="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4" target="_blank" rel="noopener noreferrer">Open MP4 directly in a new tab</a></p></details>
-<div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">The dialogue and 43 original sound cues share the 41.8-second scene clock. Mouth movement follows the voice amplitude; true phoneme visemes and studio-grade character acting remain in development.</p></main>
+<div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">The dialogue and 43 original sound cues share the 41.8-second scene clock. Mouth movement follows the voice amplitude; actual aligned phoneme visemes and studio-grade character acting remain in development.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply shot changes</button><p class="fine">Click a shot to edit the dialogue, speaker and camera, then scrub or press Play to preview.</p></aside></div>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
@@ -230,10 +230,10 @@ for(const [name,actor] of Object.entries({blue:faces.blue,orange:faces.orange}))
  }
 }
 
-function drawActorFace(f,emotion,open,time,viseme='rest'){
+function drawActorFace(f,emotion,open,time,viseme='rest',gaze=0){
  const c=f.ctx;c.clearRect(0,0,512,512);c.save();
  const blue=f.blue,ink=blue?'#b9f6fa':'#ffd5a9',bright=blue?'#edffff':'#fff0cb';
- const energy=Math.max(0,Math.min(1,open)),look=Math.sin(time*.61)*7+Math.sin(time*1.9)*3;
+ const energy=Math.max(0,Math.min(1,open)),look=Math.sin(time*.61)*2.2+Math.sin(time*1.9)*1.5+gaze*12;
  const blink=((time+.26)%3.68<.13||((time+1.93)%5.11)<.085);
  c.fillStyle=blue?'rgba(29,96,115,.055)':'rgba(101,47,28,.04)';
  c.beginPath();c.ellipse(256,240,212,177,0,0,Math.PI*2);c.fill();
@@ -402,7 +402,19 @@ update=function(){
  let open=0;if(envReady&&decodedEnvelope){open=decodedEnvelope[Math.min(decodedEnvelope.length-1,Math.max(0,Math.floor(time*20)))]||0}else if(running&&analyser&&audioSamples){analyser.getByteTimeDomainData(audioSamples);let sq=0;for(const v of audioSamples){const x=(v-128)/128;sq+=x*x}open=Math.max(0,Math.min(1,(Math.sqrt(sq/audioSamples.length)-.015)*14))}
  const viseme=estimateViseme(shot.text,local,shot.duration);
  const index=shots.indexOf(shot);const emotionMap=[{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'worried',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'worried'},{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'neutral',orange:'neutral'},{blue:'neutral',orange:'angry'},{blue:'worried',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'happy'},{blue:'worried',orange:'neutral'}];const expression=emotionMap[index]||emotionMap[0];
- if(offlineMode||Math.abs(t-lastFaceDraw)>.04){drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?open:0,t,viseme);drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?open:0,t,viseme);lastFaceDraw=t;}
+ const reaction=cinematicReaction(index,local,shot.duration);
+ if(reaction){
+  // Listeners visibly notice something before the next speaker begins.
+  if(reaction.role==='blue')expression.blue='surprised';
+  if(reaction.role==='orange')expression.orange='worried';
+ }
+ const blueGaze=shot.speaker==='dev'?-0.55:shot.speaker==='orange'?0.45:0;
+ const orangeGaze=shot.speaker==='dev'?-0.75:shot.speaker==='blue'?-0.48:0;
+ if(offlineMode||Math.abs(t-lastFaceDraw)>.04){
+  drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?open:0,t,viseme,blueGaze);
+  drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?open:0,t,viseme,orangeGaze);
+  lastFaceDraw=t;
+ }
  faces.blue.group.rotation.z=Math.sin(t*1.5)*.035+(shot.speaker==='blue'?.035:0);faces.orange.group.rotation.z=Math.sin(t*1.05)*.035+(shot.speaker==='orange'?.04:0);
  if(faces.orange.orangeMouth){
    faces.orange.orangeMouth.scale.y=shot.speaker==='orange'?1+open*1.9:1;
@@ -432,7 +444,7 @@ update=function(){
      arm.pivot.rotation.x=-.10-Math.max(0,pose.arms)*.50;
    }
  }
- humanHead.rotation.y=devPose.head+.018*Math.sin(t*.72);
+ humanHead.rotation.y=devPose.head+((shot.speaker==='orange')?.13:(shot.speaker==='blue')?-.12:0)+.018*Math.sin(t*.72);
  humanHead.rotation.x=-devPose.lean*.60+.018*Math.sin(t*1.1);
  bodyGroup.rotation.z=devPose.lean*.62;
  bodyGroup.position.y=devPose.jump*.64;
@@ -471,7 +483,28 @@ mystery:[
 let shots=[],duration=30,time=0,running=false,last=performance.now(),selected=0;
 function load(){const p=$('preset').value;let lines=templates[p];soundtrack.pause();if(p==='comedy'){soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.load();$('recordStatus').textContent='14 scenes with real Kokoro dialogue ready';}else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Mystery is storyboard-only: no voice master exists';}shots=lines.map(a=>({text:a[0],speaker:a[1],camera:a[2],duration:a[3]}));$('idea').value=p==='comedy'?'A developer asks two AI assistants to make an app load instantly. Their solution is spectacularly wrong.':'A mysterious mountain hides a forgotten futuristic city.';time=0;selected=0;running=false;refresh();update();}
 function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});$('dialogue').value=shots[selected].text;$('speaker').value=shots[selected].speaker;$('camera').value=shots[selected].camera;}
-function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=si===6?'0 ms':'0 users';$('screenDescription').textContent=si===6?'Page response time':'Active customer sessions';$('sceneTitle').textContent=["TWELVE SECONDS","THE OFFER","NO REGRETS?","THE DEFINITION","THE BACKUP","ONE CHANGE","ZERO LATENCY","INSTANT!","THE TRADE","WHAT ABOUT USERS?","NO MORE WAITING","YOU DID WHAT?","PERFECT RETENTION","THE PUNCHLINE"][si]||'DIRECTED SHOT';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(duration).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.06,-1]:s.camera==='blue'?[0,1.5,.5]:s.camera==='orange'?[1.72,1.65,.5]:[0,1.65,0];const shotCamera=[
+const reactionCutMap={
+ 2:{role:'blue',seconds:.58},
+ 3:{role:'dev',seconds:.50},
+ 7:{role:'orange',seconds:.67},
+ 9:{role:'blue',seconds:.64},
+ 11:{role:'orange',seconds:.72},
+ 13:{role:'blue',seconds:.92}
+};
+const performerCoordinates={
+ blue:[0,2.14,.54],
+ orange:[1.72,2.14,.54],
+ dev:[-1.70,2.55,-1.0]
+};
+function cinematicReaction(shotIndex,local,duration){
+ const cut=reactionCutMap[shotIndex];
+ if(!cut)return null;
+ if(local<duration-cut.seconds)return null;
+ const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:3.05;
+ return {role:cut.role,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14),subject[1]+.08,subject[2]+scale]};
+}
+
+function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=si===6?'0 ms':'0 users';$('screenDescription').textContent=si===6?'Page response time':'Active customer sessions';$('sceneTitle').textContent=["TWELVE SECONDS","THE OFFER","NO REGRETS?","THE DEFINITION","THE BACKUP","ONE CHANGE","ZERO LATENCY","INSTANT!","THE TRADE","WHAT ABOUT USERS?","NO MORE WAITING","YOU DID WHAT?","PERFECT RETENTION","THE PUNCHLINE"][si]||'DIRECTED SHOT';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(duration).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,2.13,.57]:s.camera==='orange'?[1.72,2.13,.57]:[0,2.00,0];const shotCamera=[
  [4.7,-.18,.09,36],[4.25,.20,.05,35],[3.95,-.16,.08,36],
  [3.75,.16,.07,34],[4.18,-.10,.04,34],[7.15,-.30,.15,40],
  [6.90,.0,.03,42],[3.84,.19,.06,36],[6.90,0,.03,42],
@@ -486,6 +519,14 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
  cam.fov=fov;cam.updateProjectionMatrix();
  cam.position.set(pos[0]+dolly*.14+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
  cam.lookAt(tgt[0],tgt[1]+(si===11?.07:0),tgt[2]);
+ // Listener reaction inserts are intentional editorial cuts, not camera jitter.
+ const listenerCut=cinematicReaction(si,local,s.duration);
+ if(listenerCut){
+  cam.position.set(...listenerCut.camera);
+  cam.lookAt(...listenerCut.subject);
+  cam.fov=listenerCut.role==='dev'?34:31;
+  cam.updateProjectionMatrix();
+ }
  b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);renderer.render(scene,cam);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
@@ -564,12 +605,44 @@ function renderFilmFrame(t,w=360,hh=640,encode=true){
  let accumulated=0,activeIndex=shots.length-1;
  for(let i=0;i<shots.length;i++){if(time<accumulated+shots[i].duration){activeIndex=i;break}accumulated+=shots[i].duration}
  if(shots[activeIndex].camera==='screen'){
-  const grd=outCtx.createLinearGradient(0,0,360,H);grd.addColorStop(0,'#172641');grd.addColorStop(1,'#050816');outCtx.fillStyle=grd;outCtx.fillRect(0,0,360,H);
-  outCtx.fillStyle='#324a70';roundRect(20,117,320,H*.58,16);outCtx.fill();
-  outCtx.fillStyle='#0b1124';roundRect(24,121,312,H*.58-8,13);outCtx.fill();
-  outCtx.fillStyle='#96abd1';outCtx.font='bold 12px Arial';outCtx.fillText('FRAMEFORGE / PERFORMANCE',38,157);
-  outCtx.textAlign='center';outCtx.fillStyle=activeIndex===6?'#7dffbf':'#ffb18a';outCtx.font='bold 67px Arial';outCtx.fillText(activeIndex===6?'0 ms':'0',180,H*.52);
-  outCtx.fillStyle='#f2f5fa';outCtx.font='16px Arial';outCtx.fillText(activeIndex===6?'PAGE LOAD TIME':'ACTIVE USERS',180,H*.59);outCtx.textAlign='left';
+  const revealUsers=activeIndex===8,shift=Math.max(0,Math.min(1,(time-accumulated)/Math.max(.1,shots[activeIndex].duration)));
+  const grd=outCtx.createLinearGradient(0,0,360,H);
+  grd.addColorStop(0,'#172340');grd.addColorStop(.7,'#0b1128');grd.addColorStop(1,'#060a18');
+  outCtx.fillStyle=grd;outCtx.fillRect(0,0,360,H);
+  const glass=outCtx.createLinearGradient(0,118,0,H*.79);
+  glass.addColorStop(0,'#192a42');glass.addColorStop(1,'#0b1428');
+  outCtx.fillStyle=glass;roundRect(16,112,328,H*.72,15);outCtx.fill();
+  outCtx.lineWidth=1.5;outCtx.strokeStyle='#48668c';outCtx.stroke();
+  outCtx.fillStyle='#0b1425';roundRect(26,124,308,H*.69,11);outCtx.fill();
+  outCtx.textAlign='left';
+  outCtx.fillStyle='#8d9fb4';outCtx.font='bold 11px Arial';
+  outCtx.fillText('FRAMEFORGE  /  LIVE TELEMETRY',39,154);
+  for(let j=0;j<3;j++){outCtx.fillStyle=['#e97e80','#edbc6c','#71d5ab'][j];outCtx.beginPath();outCtx.arc(281+j*16,148,4,0,Math.PI*2);outCtx.fill();}
+  outCtx.fillStyle='#8e9db3';outCtx.font='11px monospace';
+  outCtx.fillText('prod / deployment 7a4f',40,187);
+  outCtx.fillStyle=revealUsers?'#f2a3ad':'#82f0c8';outCtx.font='bold 17px Arial';
+  outCtx.fillText(revealUsers?'CUSTOMER SESSIONS':'PAGE LOAD TIME',40,235);
+  outCtx.textAlign='center';outCtx.font='900 83px Arial';
+  outCtx.fillText(revealUsers?'0':'0 ms',180,341);
+  outCtx.font='13px Arial';outCtx.fillStyle='#e4e9f5';
+  outCtx.fillText(revealUsers?'No one can use the app.':'Instant page delivery achieved.',180,376);
+  outCtx.textAlign='left';
+  outCtx.fillStyle='#172438';roundRect(40,404,280,53,7);outCtx.fill();
+  outCtx.fillStyle='#a9bdca';outCtx.font='13px monospace';
+  outCtx.fillText(revealUsers?'GET /customers  -> []':'GET /api       -> disabled',52,425);
+  outCtx.fillStyle=revealUsers?'#f4a1a8':'#a3f1cf';outCtx.font='bold 12px monospace';
+  outCtx.fillText(revealUsers?'0 ACTIVE USERS':'REQUESTS ELIMINATED',52,445);
+  const graphY=Math.min(H-60,505),barMax=240;
+  outCtx.strokeStyle='#344b67';outCtx.lineWidth=1;outCtx.beginPath();
+  outCtx.moveTo(45,graphY+80);outCtx.lineTo(315,graphY+80);outCtx.stroke();
+  outCtx.strokeStyle=revealUsers?'#f1a0aa':'#80e5bf';outCtx.lineWidth=3;outCtx.beginPath();
+  for(let i=0;i<10;i++){
+   let px=46+i*(barMax/9),v=revealUsers?72:75-23*Math.exp(-i*.6);
+   if(i===0)outCtx.moveTo(px,graphY+v);else outCtx.lineTo(px,graphY+v);
+  }
+  outCtx.stroke();outCtx.font='11px Arial';outCtx.fillStyle='#8b9eb5';
+  outCtx.fillText(revealUsers?'NO CUSTOMERS DETECTED':'LOAD TIME: 0.000 SECONDS',45,graphY+106);
+  if(shift>.68){outCtx.fillStyle=revealUsers?'#ef7e87':'#64d4a3';outCtx.fillRect(40,H*.77,280,2);}
  }
  // Title treatment is part of the final frame rather than a separate HTML overlay.
  outCtx.fillStyle='rgba(7,10,22,.91)';roundRect(12,14,336,65,11);outCtx.fill();
