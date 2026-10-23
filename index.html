@@ -232,7 +232,7 @@ for(const [name,actor] of Object.entries({blue:faces.blue,orange:faces.orange}))
 
 function drawActorFace(f,emotion,open,time,viseme='rest'){
  const c=f.ctx;c.clearRect(0,0,512,512);c.save();
- const blue=f.blue,ink=blue?'#b9f6fa':'#2b1112',bright=blue?'#edffff':'#532025';
+ const blue=f.blue,ink=blue?'#b9f6fa':'#ffd5a9',bright=blue?'#edffff':'#fff0cb';
  const energy=Math.max(0,Math.min(1,open)),look=Math.sin(time*.61)*7+Math.sin(time*1.9)*3;
  const blink=((time+.26)%3.68<.13||((time+1.93)%5.11)<.085);
  c.fillStyle=blue?'rgba(29,96,115,.055)':'rgba(101,47,28,.04)';
@@ -411,7 +411,7 @@ update=function(){
  }
  brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
  mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
- mouthNew.scale.y=shot.speaker==='dev'?1+open*1.1:1;mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
+ mouthNew.scale.y=.23*(shot.speaker==='dev'?1+open*2.3:1);mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
  browsNew.forEach((br,i)=>{const side=i?1:-1;br.rotation.z=shot.speaker==='dev'?side*(-.06+open*.09):side*.11;});
  humanHead.rotation.x=(shot.speaker==='dev' ?-.10: .035)+Math.sin(t*.78)*.025;
  humanHead.rotation.z=shot.speaker==='dev'?.035*Math.sin(t*1.2):.0;
