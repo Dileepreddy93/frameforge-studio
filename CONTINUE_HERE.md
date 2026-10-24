@@ -39,3 +39,6 @@ Review GitHub CI for actual pass/fail, then **update the execution ledger**. Nex
 
 ## LATEST MERGED REFERENCE AUDIT
 PR #7 merged into develop as 0f66345e654b6834464df26486cbb98a4f4ffca0 with all three CI jobs green (run 40091928524). Actual Git Blame 52.181s target bytes were SHA256-verified: 560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e. Start with spec/git-blame-reference.json, docs/GIT_BLAME_SHOT_MATRIX.csv and docs/GIT_BLAME_REFERENCE_AUDIT.md. Do not restart P0 because older handoffs say reference inaccessible. P0 final quality/runtimes acceptance remains OPEN and P1 artistic close-up gate is still NOT APPROVED.
+
+## P1 latest experiment and integration caution
+feature/p1-character-identity-art-revision revises the real DEV Three.js rig's hair, face and clothing, with retained 24-frame Chromium art-evidence artifact. Read docs/releases/P1_CHARACTER_IDENTITY_REVIEW_2026-10-24.md and spec/character-design-lock-v1.json. This is NOT an approved model or production film. Preserve git-blame source reference hash and V5.3 speech handling. Do not merge before screenshot inspection and passing CI. Research candidates in docs/RESEARCH_CANDIDATES_2026-10-24.md.

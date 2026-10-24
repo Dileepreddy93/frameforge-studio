@@ -286,7 +286,7 @@ bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
 // Preserve original developer root for camera coordinates but replace its flat proxy geometry.
 dev.children.forEach(child=>child.visible=false);
 const humanRig=new T.Group();dev.add(humanRig);
-const personSkin=velvet(0x9f7869,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
+const personSkin=velvet(0xb48470,.82,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
  hoodie=velvet(0x263a51,.85,.02),hoodieLight=velvet(0x40556a,.78,.03),hoodieDark=velvet(0x182638,.94,0),
  trouser=velvet(0x20283c,.9,0),shoeMat=velvet(0x141b23,.86,0),
  eyeWhite=velvet(0xddd5cf,.55,0),eyeDark=velvet(0x15151c,.28,0),
@@ -336,11 +336,11 @@ for(const side of [-1,1]){
 }
 const browsNew=[];
 for(const side of [-1,1]){const br=bevel(.22,.051,.046,.015,artHair,humanHead,side*.19,.235,.485);br.rotation.z=side*.11;browsNew.push(br)}
-const noseNew=new T.Mesh(new T.IcosahedronGeometry(.085,0),artSkin);
-noseNew.position.set(0,-.078,.501);noseNew.scale.set(.66,.96,.44);humanHead.add(noseNew);
-const moustache=bevel(.23,.046,.038,.013,skinDark,humanHead,0,-.225,.448);
+const noseNew=new T.Mesh(new T.IcosahedronGeometry(.073,1),artSkin);
+noseNew.position.set(0,-.078,.506);noseNew.scale.set(.70,1.00,.48);humanHead.add(noseNew);
+const moustache=bevel(.18,.030,.024,.009,skinDark,humanHead,0,-.237,.452);
 // A flat morphable mouth stays attached to the skin under every camera angle.
-const mouthNew=new T.Mesh(new T.CircleGeometry(.115,28),mouthDark);
+const mouthNew=new T.Mesh(new T.CircleGeometry(.106,32),mouthDark);
 mouthNew.position.set(0,-.305,.514);
 mouthNew.scale.set(1.0,.12,1);humanHead.add(mouthNew);
 // Actual 3D mouth curves, not a screenshot or a flat overlay.
@@ -355,7 +355,7 @@ const humanSmile=createExpressionMouth(true),humanFrown=createExpressionMouth(fa
 
 // A composited facial rig: eyelid meshes, cheeks and lip corners share one pose driver.
 const humanUpperLids=[],humanLowerLids=[],humanCheeks=[],humanLipCorners=[];
-const cheekMat=new T.MeshStandardMaterial({color:0xa97066,roughness:.92,metalness:0,transparent:true,opacity:.28,depthWrite:false,side:T.DoubleSide});
+const cheekMat=new T.MeshStandardMaterial({color:0xb77c69,roughness:.92,metalness:0,transparent:true,opacity:.24,depthWrite:false,side:T.DoubleSide});
 for(const side of [-1,1]){
  const lid=new T.Mesh(new T.PlaneGeometry(.174,.074),artSkin);
  lid.position.set(side*.184,.101,.519);humanHead.add(lid);humanUpperLids.push(lid);
@@ -410,29 +410,56 @@ function applyHumanFacePose(pose,speech=null){
  humanHead.rotation.z+=pose.headRoll;
 }
 
-const hairCrown=new T.Mesh(new T.IcosahedronGeometry(.51,1),artHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
-for(let j=0;j<10;j++){
- const xx=(j-4.5)*.104,yy=.465+Math.sin(j*1.8)*.030;
- const tuft=new T.Mesh(new T.IcosahedronGeometry(.16+(j%3)*.012,0),artHair);tuft.position.set(xx,yy,.24+(j%2)*.063);humanHead.add(tuft);
- tuft.scale.set(.80,.61,.71);tuft.rotation.z=(j-4.5)*.11;
+// P1 ORIGINAL ART STUDY: a unified swept hairstyle (not a row of independent spheres).
+// Every lock is a closed real 3D tapered mesh with a consistent tangent frame.
+// The same geometry renders from front, side, rear and in the production film.
+const scalp=new T.Mesh(new T.SphereGeometry(.515,28,18),artHair);
+scalp.position.set(0,.395,-.066);scalp.scale.set(.96,.365,.92);
+scalp.castShadow=true;humanHead.add(scalp);
+const hairHighlight=velvet(0x332b39,.91,0);hairHighlight.flatShading=true;hairHighlight.needsUpdate=true;
+function sweptLock(points,thickness,material=artHair){
+ const curve=new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p)));
+ const verts=[],indices=[],rings=13,facets=7;
+ const zAxis=new T.Vector3(0,0,1);
+ for(let i=0;i<rings;i++){
+  const t=i/(rings-1),center=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
+  const lateral=new T.Vector3().crossVectors(tangent,zAxis);
+  if(lateral.lengthSq()<.001)lateral.set(1,0,0);else lateral.normalize();
+  const depth=new T.Vector3().crossVectors(tangent,lateral).normalize();
+  const radius=thickness*(.88+.12*Math.sin(t*Math.PI))*(1-.86*t);
+  for(let j=0;j<facets;j++){
+   const theta=j*Math.PI*2/facets;
+   const p=center.clone().addScaledVector(lateral,Math.cos(theta)*radius)
+                         .addScaledVector(depth,Math.sin(theta)*radius*.70);
+   verts.push(p.x,p.y,p.z);
+   if(i<rings-1){const a=i*facets+j,b=i*facets+(j+1)%facets,c=(i+1)*facets+j,d=(i+1)*facets+(j+1)%facets;
+    indices.push(a,c,b,b,c,d)}
+  }
+ }
+ const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(verts,3));
+ geo.setIndex(indices);geo.computeVertexNormals();
+ const lock=new T.Mesh(geo,material);lock.castShadow=true;humanHead.add(lock);return lock;
+}
+// Broad rear-to-front strands sweep toward the character's right brow with decreasing thickness.
+for(let i=0;i<10;i++){
+ const u=(i-4.5)/4.5,x=u*.38,shift=.065+.053*Math.cos(i*.67);
+ sweptLock([[x*.86,.615,-.155],[x,.595,.14],[x+shift,.46,.365],[x+shift+.035,.305+(i%3)*.018,.475]],
+           .084+(i%3)*.008,i%4===0?hairHighlight:artHair);
 }
 for(const side of [-1,1]){
- const sideHair=new T.Mesh(new T.IcosahedronGeometry(.24,0),artHair);sideHair.position.set(side*.37,.19,-.07);humanHead.add(sideHair);sideHair.scale.set(.7,1.1,.80);
+ // Integrated side volumes and tapered sideburns; end above ear for stable facial identity.
+ sweptLock([[side*.39,.53,-.18],[side*.47,.32,-.035],[side*.48,.16,.18],[side*.435,-.058,.315]],.145,artHair);
+ sweptLock([[side*.30,.57,-.24],[side*.46,.42,-.28],[side*.49,.22,-.26]],.135,artHair);
 }
-// Angular swept fringe and temple locks from the same authored 3D hairstyle at any view.
-for(let i=0;i<7;i++){
- const x=(i-3)*.118;
- const lock=new T.Mesh(new T.IcosahedronGeometry(.195+(i%2)*.019,0),artHair);
- lock.position.set(x,.390+(.025*Math.sin(i*2.1)),.370);
- lock.scale.set(.76,.78,.74);lock.rotation.z=(i-3)*.115;
- lock.rotation.x=-.22;lock.castShadow=true;humanHead.add(lock);
+// Distinct clothing construction: hood edge, shoulder seam and front kangaroo-pocket.
+const hoodEdge=bevel(.75,.22,.18,.07,hoodieLight,bodyGroup,0,1.705,-.26);
+const seamInk=velvet(0x566b7d,.92,0);
+for(const sign of [-1,1]){
+ const seam=bevel(.022,.44,.018,.007,seamInk,bodyGroup,sign*.36,1.17,.385);
+ seam.rotation.z=sign*.13;
 }
-for(const side of [-1,1]){
- const sideLock=new T.Mesh(new T.IcosahedronGeometry(.235,0),artHair);
- sideLock.position.set(side*.438,.145,.09);
- sideLock.scale.set(.57,1.1,.79);sideLock.rotation.z=side*.24;
- humanHead.add(sideLock);
-}
+bevel(.53,.24,.052,.04,hoodieDark,bodyGroup,0,.96,.396);
+const pocketLine=bevel(.40,.026,.022,.009,seamInk,bodyGroup,0,1.05,.427);
 // Secondary face/shirt highlights keep the sculpt readable under low-key studio lighting.
 const clothStripe=velvet(0x6f8493,.66,.07);
 for(const side of [-1,1])bevel(.045,.24,.031,.012,clothStripe,bodyGroup,side*.11,1.02,.353);

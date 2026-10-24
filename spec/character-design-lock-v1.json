@@ -1,0 +1,64 @@
+{
+  "schema": "frameforge.character-design-lock/1",
+  "version": 1,
+  "authoring": "original procedural mesh",
+  "artApproval": "NOT_APPROVED",
+  "target": "coherent stylized low-poly miniatures, not photorealistic human anatomy",
+  "characters": {
+    "dev": {
+      "name": "DEV",
+      "identity": "Warm bronze skin, dark side-swept sculpted hair, navy hooded jacket, compact low-poly boots, expressive eyebrows",
+      "palette": {
+        "skin": "#b48470",
+        "hair": "#1e171e",
+        "hoodie": "#263a51",
+        "hoodieTrim": "#40556a",
+        "trousers": "#20283c"
+      },
+      "testAngles": [
+        "front",
+        "three-quarter",
+        "side",
+        "back"
+      ],
+      "testEmotions": [
+        "neutral",
+        "happy",
+        "worried",
+        "surprised"
+      ],
+      "approval": false
+    },
+    "blue": {
+      "name": "BLUE",
+      "identity": "Cool steel-blue capsule robot, white-cyan LED ring, navy recessed faceplate",
+      "palette": {
+        "shell": "#6484b8",
+        "screen": "#08111d",
+        "emission": "#87ecfc"
+      },
+      "approval": false
+    },
+    "orange": {
+      "name": "ORANGE",
+      "identity": "Amber-copper capsule robot, warm orange LED ring, dark recessed faceplate",
+      "palette": {
+        "shell": "#d38357",
+        "screen": "#08111d",
+        "emission": "#ffc98e"
+      },
+      "approval": false
+    }
+  },
+  "reference": {
+    "sha256": "560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e",
+    "borrowedAssets": false
+  },
+  "pending": [
+    "P1 eye and cheeks face anatomy redesign",
+    "multi-view manual acceptance",
+    "body hands and proportions",
+    "stable 3D materials/art lighting",
+    "new character authoring and GLB/VRM import"
+  ]
+}

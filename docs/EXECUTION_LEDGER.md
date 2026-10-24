@@ -76,3 +76,10 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - The actual source binary and extracted images are not in Git; `spec/git-blame-reference.json` stores 24 native frame hashes and `docs/GIT_BLAME_SHOT_MATRIX.csv` records 27 approximate FFmpeg scene-detection intervals. `docs/GIT_BLAME_REFERENCE_AUDIT.md` records inspected visual traits and honest evidence limits.
 - P0 status: **substantial verified evidence, NOT fully exited**; outstanding manual timing/audio-caption matrix, direct candidate-vs-reference matched render comparison, clean-clone runtime/dependency pinning, and artistic acceptance. P1 art direction remains unapproved; do not claim complete production-quality film.
 - Obsolete conflicted PR #6 was closed and replaced by clean PR #7; older Phase 0 PR #5 was merged beforehand.
+
+## P1 original character-art experiment — 2026-10-24
+- New branch feature/p1-character-identity-art-revision forked from develop d6651066c669b206a32c44b7b96c0d755d3b2300. Main & stable releases unchanged.
+- Actual baseline samples inspected via GitHub: dev neutral/happy and blue worried/orange surprised. Finding: human hair disconnected sphere blobs and cartoon geometry, especially visible at mobile thumbnail size; remaining actor sheets NOT artist-approved.
+- Modified index.html to loft consistent closed swept sculpted hair, add coherent hoodie details and rebalance human nose/lips/skin tone. Changes are production-real 3D rig geometry, not pasted raster overlays.
+- tests/character-art-browser.cjs and .github/workflows/project-contract.yml export 24 actual Chrome-rendered PNGs to CI artifact for visual acceptance. Contract test and art bible added; no pass claimed until new commit CI reports.
+- docs/releases/P1_CHARACTER_IDENTITY_REVIEW_2026-10-24.md defines exact manual QA and phase gate; approval remains NOT_APPROVED until actual resulting images inspected.
