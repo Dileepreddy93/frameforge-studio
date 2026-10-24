@@ -1,3 +1,8 @@
+# FrameForge continuation — START HERE
+For the complete project handoff to a NEW conversation, read [CONTINUE_HERE.md](CONTINUE_HERE.md), then [docs/HANDOFF_2026-10-24.md](docs/HANDOFF_2026-10-24.md), [docs/MASTER_IMPLEMENTATION_CHECKLIST.md](docs/MASTER_IMPLEMENTATION_CHECKLIST.md), and [docs/DEVELOPMENT_RUNBOOK.md](docs/DEVELOPMENT_RUNBOOK.md). The exact earlier user engineering prompt, reverse-engineering report and 5-page PDF extracted text are archived under docs/history/. All relevant first-party film/render checkpoints are in media/ and assets/ with SHA-256 manifests. **Only the experimental V5 branch is being documented; no live production deployment is implied.**
+
+---
+
 # FrameForge Studio
 
 Private backup of the verified FrameForge Studio V3 snapshot, stored before new experiments.

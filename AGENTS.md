@@ -5,3 +5,7 @@ When the next user says "continue", **do not restart**. First read CONTINUE_HERE
 # FrameForge engineering rules
 
 Preserve the V3 stable snapshot and production URL. All visual experiments occur on a branch, never on the stable tag. Validate camera, lighting, performance, expression, audio and full video against the provided reference. Do not claim parity from a passing build alone. Keep current voice, Foley, editor and export paths unless a tested replacement is better. Verify copyright/license status of imported assets. Never commit tokens. Preserve rollback instructions and screenshots for major changes.
+
+
+## Mandatory new-conversation handoff
+Before ANY FrameForge feature edits: read CONTINUE_HERE.md, docs/HANDOFF_2026-10-24.md, docs/MASTER_IMPLEMENTATION_CHECKLIST.md, docs/DEVELOPMENT_RUNBOOK.md, docs/DECISIONS_AND_FAILURES.md, spec/quality-gates.json and the source status register. Examine all new commits and WIP branch changes BEFORE applying patches; another worktree was active during the handoff. The first run must verify Git/branch state, media checksums and code/browser tests. Do not confuse an UNAPPROVED rendered character sheet or successful video codec check with reference-level artistic approval. Do not touch main, deployed V3, or stable tags unless explicitly authorized.
