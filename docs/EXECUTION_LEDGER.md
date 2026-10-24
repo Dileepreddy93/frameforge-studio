@@ -113,3 +113,7 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 
 ## P2 first muted acting test — 2026-10-24
 - Branch `feature/p2-muted-acting-study` from `b486c749b2d7baf7fa86a9c72d5217005890ada4`; adds actual GLB face/bone 5sec original timecoded emotion/eye/neck performance UI and deterministic tests. Refer to docs/releases/P2_FIVE_SECOND_ACTING_STUDY.md. This is one narrative-driven acting scene with a silent blink and recovery, NOT a finished character or P2 gate approval. CI/MP4 evidence pending at initial commit.
+
+## P2 CI iteration — 2026-10-24
+- Experimental branch `feature/p2-muted-acting-study` source/browser initial run 40101322110: 150 real source frames generated, 14 PNGs in artifact 12563346810 (visual inspection completed). **Video job FAIL**, actual error `spawnSync ffmpeg ENOENT` on clean Ubuntu runner. Source tests PASS. Real visual issue: surprise jaw far too open exposes full teeth; shoulders mostly static. This is recorded as failed art, no false approval.
+- Corrective changes explicitly install ffmpeg and libx264 and reduce jaw from .86/.73 to .45/.36. Video export and cinematic-art signoff PENDING rerun.

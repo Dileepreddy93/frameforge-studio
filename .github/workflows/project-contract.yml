@@ -149,11 +149,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install Chromium rendering and verify system encoder
+      - name: Install real H264 FFmpeg encoder and Chromium renderer
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          command -v ffmpeg
+          command -v ffprobe
+          ffmpeg -hide_banner -version | head -n 1
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
-          ffmpeg -version | head -n 1
+          ffmpeg -hide_banner -encoders | grep libx264
       - name: Render all 150 authored real 3D acting frames and encode 5 second muted film
         run: |
           python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-acting-http.log 2>&1 &

@@ -11,7 +11,7 @@ for(let frame=0;frame<=150;frame++){
 }
 assert.equal(sampleActingStudy(-5).time,0);assert.equal(sampleActingStudy(7).time,5);
 assert.throws(()=>sampleActingStudy(NaN),/finite/);
-assert.ok(sampleActingStudy(1.54).morphs.jawOpen>.8);
+assert.ok(sampleActingStudy(1.54).morphs.jawOpen>.4);
 assert.ok(sampleActingStudy(2.08).morphs.eyeBlinkLeft>=.99);
 assert.ok(sampleActingStudy(2.08).morphs.jawOpen===undefined,'No talking mouth during blink/silence');
 assert.ok(sampleActingStudy(4.15).morphs.mouthSmile>.8);
