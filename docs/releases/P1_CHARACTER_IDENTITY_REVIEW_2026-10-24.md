@@ -17,3 +17,6 @@ We inspected actual preserved `assets/v5-art-evidence/dev-04-neutral.png`, `dev-
 4. Run full movie export and visually sample closeups; technical pass not artistic approval.
 5. Compare to actual Git Blame reference SHA256-verified frame matrix `spec/git-blame-reference.json`; no subjective parity score without human visual review.
 6. IF static lineup truly compelling, move into P2 acting; otherwise iterate geometry/model design. None of this implies full arbitrary character customizer.
+
+## Actual post-implementation evidence
+CI run 40093527917 of corrected commit 83f512 succeeded and preserved 24 actual WebGL PNGs in artifact 12560052408. Those frames were individually inspected. **Art gate is rejected**: overly comb-like hair, flat mouth/face, capsule clothing, weak robot expressions. See docs/releases/P1_RENDERED_ART_QA_2026-10-24.md. No merge to develop/production permitted on this evidence.

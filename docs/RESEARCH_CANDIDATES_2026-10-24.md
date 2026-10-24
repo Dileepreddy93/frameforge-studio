@@ -10,6 +10,7 @@ Every tool is **candidate**, not a presumed integration. Add only when a measura
 | Editly (https://github.com/mifi/editly) | Open-source JSON-driven FFmpeg-based video overlays/transitions | Public repo, inspect exact transitive licenses/deployment constraints | P5 benchmark for timed captions/transition performance, compared with plain FFmpeg |
 | HyperFrames (https://github.com/heygen-com/hyperframes) | Node 22+ render pipeline alternative | Open-source framework, actual renderer throughput unbenchmarked | P6 A/B against tested Chromium/FFmpeg, don't rewrite blindly |
 | Blender + glTF tools | High quality organic geometry/rigging and baked animation | Blender open-source; check each external asset license | P1 highest-impact asset creation pipeline as opposed to procedural toy meshes |
+| MakeHuman core character assets (https://www.makehumancommunity.org/about/license.html) | Sculpted high-detail reusable human meshes, potential morphology and rigging baseline | Core graphics assets CC0; separate MakeHuman/MPFB **application code** is AGPL/GPL, respectively; verify non-core downloaded accessories individually | P1/P2 priority prototype: licensed CC0 exports to GLB with Blender, facial rig and closeup test |
 
 ## Prioritized bounded experiments
 P1-R1: Export/import one LICENSE-CLEAR original VRM/GLB actor, inspect face closeup + 4 angle frames, benchmark draw calls, bundle size, mobile playback, expressions, and rig parenting vs existing DEV. Exit if art gets worse or requires locked/paid assets.
@@ -19,3 +20,6 @@ P6-R1: HyperFrames measured same 10s scene with equivalent shaders and 1080x1920
 
 ## Provenance
 JsonCut product docs: https://jsoncut.com/docs/ and pricing https://jsoncut.com/pricing/ as of 2026-10-24. Its hosted HTML-first V2 JSON contract and API key require server-side handling. No API key provided or used. Open-source alternatives must keep third-party LICENSE attribution and check data rights. None claim to automatically produce AAA/photorealistic characters or improve rig quality without authored modeling.
+
+## Post-visual-review prioritization
+Directly inspected 24 native frames generated from FrameForge's P1 candidate: it did NOT pass visual acceptance despite passing all CI technical jobs. See docs/releases/P1_RENDERED_ART_QA_2026-10-24.md. **Promote MakeHuman CC0 assets + Blender sculpt + @pixiv/three-vrm import as priority 1 spike**; keeping the current procedural film for regression is acceptable, but continuing minor shape refinements alone is NOT a high-confidence path to reference-quality characters. This changes the relative priority of early art subtasks. Issue #9 is the actionable engineering experiment; issue #10 is the optional JSONCut cost benchmark.

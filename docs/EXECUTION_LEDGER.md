@@ -83,3 +83,9 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - Modified index.html to loft consistent closed swept sculpted hair, add coherent hoodie details and rebalance human nose/lips/skin tone. Changes are production-real 3D rig geometry, not pasted raster overlays.
 - tests/character-art-browser.cjs and .github/workflows/project-contract.yml export 24 actual Chrome-rendered PNGs to CI artifact for visual acceptance. Contract test and art bible added; no pass claimed until new commit CI reports.
 - docs/releases/P1_CHARACTER_IDENTITY_REVIEW_2026-10-24.md defines exact manual QA and phase gate; approval remains NOT_APPROVED until actual resulting images inspected.
+
+## P1 visual QA verdict — 2026-10-24
+- GitHub CI for corrected P1 geometry `83f512773fe927fd395217fc5a7e356fd57bf1d9`: https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40093527917 — all technical jobs SUCCESS, 24 PNGs in artifact ID `12560052408` (original native 360×460 captured Three.js frames).
+- Visual inspection at usable size confirms new DEV hair is **overly regular/comb-like**, mouth/eyebrow area remains crude, clothing and anatomy not film-quality. BLUE/ORANGE emotions change too little despite valid rendered PNG output. Approx mean absolute RGB emotion changes DEV 7.93/17.09/11.97 vs BLUE 2.00/3.40/2.62 and ORANGE 1.55/2.64/2.22 (happy/worried/surprised; not a quality score).
+- **P1 ART GATE REJECTED.** Source checks / browser rendering / FFmpeg export PASS do not override this decision. Keep PR #8 draft, unmerged; no public deploy.
+- Pivot main P1 investigation to licensed sculpted/rigged GLB/VRM asset pipeline using Issue #9, with MakeHuman CC0 assets/Blender and @pixiv/three-vrm/M3 CharacterStudio reference approaches. JSONCut optional P5/P7 research Issue #10, paid-export limitation confirmed.
