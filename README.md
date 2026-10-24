@@ -1,3 +1,7 @@
+> **Current project state (October 24, 2026):** This README's original material documents the preserved V3 backup. For the active V5+ studio, implementation phases, exact evidence and new-chat continuation, start at [CONTINUE_HERE.md](CONTINUE_HERE.md), [nine-phase contract](docs/IMPLEMENTATION_PLAN_P0_P8.md) and [execution ledger](docs/EXECUTION_LEDGER.md). V3 production is intentionally preserved. Development now includes merged V5.3 speech work on `develop`; quality is still not reference-approved.
+
+---
+
 # FrameForge Studio
 
 Private backup of the verified FrameForge Studio V3 snapshot, stored before new experiments.
