@@ -72,3 +72,6 @@ Experimental PR #16 `feature/p2-muted-acting-study` rendered genuine silent 5sec
 
 ## P2 TAKE 2 — PHYSICAL ACTING REWORK
 PR #16 branch `feature/p2-muted-acting-study` contains first verified 5sec silent video SHA256 d628a3dd85e62bdfb0d5e83594a43122b6c1bbb38d5af5db7fea225650eba806, 330x590, 30fps, 150 frames. This was manually reviewed and art rejected: torso/shoulders/arms too rigid, toothy gasp. NOW take 2 modifies real GLB 13 bones (Spine/Spine1/Spine2/shoulders/arms/forearms/head/neck/eyes), jaw smaller, mouthPucker and purposeful anticipation/recoil/relief. Source/CI physical bone assertion and new encoded film review required before considering merge. Issue #17 tracks; original P1 art Issue #13 unapproved. V3/main unchanged.
+
+## P2 take2 validated film + take3 controlled lean
+Original generated 5sec 150frame H264 tech PASS but art rejected. Take2 produced video with stronger true body motion (GH run 40104156637, SHA256 3b2c3fe4e5c94f537b6c055e55de1be0521b42320b112008dcf69487c46028ad, artifact 12563453721): reviewer found exaggerated torso pitch, still no scene props or stylized art. Take3 reduces spine motion gain while preserving shoulder/arm and measured visual change. Re-render/inspect actual MP4 before merging PR#16. Read docs/releases/P2_FIVE_SECOND_ACTING_STUDY.md. P1/P2 artistic gates OPEN; main/V3 unchanged.

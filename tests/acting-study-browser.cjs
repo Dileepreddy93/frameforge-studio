@@ -54,7 +54,7 @@ const output=process.env.FRAMEFORGE_ACTING_OUT||'artifacts/p2-acting-study';
     assert.ok(bonePose[1.54]?.[name],name+' must exist in true imported rig');
   }
   const maximumDelta=(a,b)=>Math.max(...a.map((v,i)=>Math.abs(v-b[i])));
-  assert.ok(maximumDelta(bonePose[1.54].Spine2,bonePose[0].Spine2)>.08,'Surprise body recoil must move upper spine');
+  assert.ok(maximumDelta(bonePose[1.54].Spine2,bonePose[0].Spine2)>.05,'Surprise body recoil must move upper spine with controlled amplitude');
   assert.ok(maximumDelta(bonePose[1.54].RightArm,bonePose[0].RightArm)>.1,'Surprise needs upper arm gesture');
   assert.ok(maximumDelta(bonePose[1.54].RightShoulder,bonePose[0].RightShoulder)>.10,'Surprise shoulders must recoil');
   assert.equal(a.hash,a2.hash,'Random seek must produce byte-stable same-frame render');
