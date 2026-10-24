@@ -25,3 +25,24 @@ jobs:
           node tests/check-source.mjs
           node tests/check-v4.mjs
           node tests/check-cinematic-v4.mjs
+  real-character-render-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real Chromium rendering dependencies
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Render 3D character views, emotions, and environment in Chromium
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/character-art-browser.cjs dev
+          node tests/character-art-browser.cjs blue
+          node tests/character-art-browser.cjs orange
