@@ -110,3 +110,32 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - PR #15 merged to develop as `2c91e6ff5755dd12107f915063aa4f6869520ff1` after four jobs SUCCESS at GitHub run `40099817197`; tested head `5a44587f4a3ebbbf78234452bc6f21d2c161dee5`.
 - Actual artifact 12561864724 independently inspected; viewport 390x844 mobile emulation (canvas 332x565), no horizontal overflow, 0 JS page errors, 69 bones, 63 clips; real facial morph mouthFrown control persists across seek. GH runner time-to-ready 753ms does NOT measure actual Android device.
 - Mobile-sized technical browser subgate passed; **P1 cinematic ART NOT APPROVED**. Remote Vercel one-click preview remains blocked by private GitHub app permissions and empty large-file inline deployment. Issue #14 remains OPEN. Continue artistic improvement Issue #13; no main production modifications.
+
+## P2 first muted acting test — 2026-10-24
+- Branch `feature/p2-muted-acting-study` from `b486c749b2d7baf7fa86a9c72d5217005890ada4`; adds actual GLB face/bone 5sec original timecoded emotion/eye/neck performance UI and deterministic tests. Refer to docs/releases/P2_FIVE_SECOND_ACTING_STUDY.md. This is one narrative-driven acting scene with a silent blink and recovery, NOT a finished character or P2 gate approval. CI/MP4 evidence pending at initial commit.
+
+## P2 CI iteration — 2026-10-24
+- Experimental branch `feature/p2-muted-acting-study` source/browser initial run 40101322110: 150 real source frames generated, 14 PNGs in artifact 12563346810 (visual inspection completed). **Video job FAIL**, actual error `spawnSync ffmpeg ENOENT` on clean Ubuntu runner. Source tests PASS. Real visual issue: surprise jaw far too open exposes full teeth; shoulders mostly static. This is recorded as failed art, no false approval.
+- Corrective changes explicitly install ffmpeg and libx264 and reduce jaw from .86/.73 to .45/.36. Video export and cinematic-art signoff PENDING rerun.
+
+## P2 CI resource optimization
+- Separate experimental `muted-acting-film` job duplicated Chromium+FFmpeg setup and its apt update was slow. Removed the redundant fifth runner and appended the 150-frame original acting film validator to the already proven `portable-video-export` runner. Reuses encoder and browser while still creating an independent H264 MP4+PNG artifact. No code/character/film regression removed.
+
+## P2 portrait H264 encoder correction — 2026-10-24
+- Shared export run 40102200391 reused working Chromium/FFmpeg and generated revised 150 WebGL source frames. Actual H264 encode failed due to odd canvas width `617x590` on yuv420p. FFmpeg correctly rejected width not divisible by 2, uploaded original 14 image samples artifact 12563361485, no real valid MP4.
+- Added dynamic center-crop to 9:16 even dimensions (~332x590 from source at current lab viewport), asserted parity/raster, 5s, 150 full-decode real frames; no upscaling. Film CI and artistic acceptance remain PENDING.
+
+## P2 actual five-second silent MP4 produced / art gate REJECTED — 2026-10-24
+- PR #16 test SHA `e6895d30631179c27f3325fcdd11f7c9d72038a8`, run 40102526756 four jobs SUCCESS. 150 true Chromium 3D frames, 5.000s / 30fps H264/YUV420P `330x590` (center-cropped real source pixels, NOT 1080p), no audio stream; full decode PASS. Exactly 193,200 bytes, SHA256 `d628a3dd85e62bdfb0d5e83594a43122b6c1bbb38d5af5db7fea225650eba806`. GitHub Actions preserved artifact 12562899629.
+- Inspected all sampled frames from the full MP4 (every 1/3 sec) plus 14 original PNGs: real face/gaze/head cues visible and reduced jaw improved over initial, but **body/arms/shoulders still static, gasp artificial, no physical action, reference art parity NOT MET**. P2 artistic gate NOT APPROVED; **leave PR #16 DRAFT/UNMERGED**. Detailed verified film QA at docs/releases/P2_ACTUAL_FILM_QA_2026-10-24.md; Issue #17 next motion correction. P1 original avatar art Issue #13 remains open.
+
+## P2 take 2 authored physical reaction — 2026-10-24
+- Full verified first 5sec silent MP4 was actually played/visually reviewed; 330x590 vertical, exact 150 real CGI frames, 30fps, SHA256 d628a3dd85e62bdfb0d5e83594a43122b6c1bbb38d5af5db7fea225650eba806. Engine technical gate PASS; physical acting cinematic gate FAILED (static shoulders/torso/arms; unnatural toothy gasp).
+- Confirmed the actual Ara 10.6MB GLB includes Spine, Spine1, Spine2, left/right shoulders, arms, forearms, neck, head and eyes. Authored real 13-bone original action track to add anticipation/body recoil/arm response/recovery. Jaw .45→.21, mouthPucker added. New source test covers all affected bones and nonzero offsets; Chromium test records actual bone rotations and re-exports 150 native frames. Original 63 imported animation clips/film remain unchanged; no new production promotion without reviewing new film.
+
+## P2 take2 real film direct QA and take3 revision — 2026-10-24
+- Full take2 5s silent H264 SHA256 3b2c3fe4e5c94f537b6c055e55de1be0521b42320b112008dcf69487c46028ad generated in CI run 40104156637, all four jobs green, artifact 12563453721. Real decoded video 330x590, 30fps, 150frames. Shoulder/body ROI MAE baseline v1 2.50 vs take2 33.51 over frame0→46; real physical 3D motion strongly increased, but overrotated upper body, no meaningful scene context. P2 ART STILL REJECTED. Take3 moderates Spine/Spine1/Spine2 pitch, rerun mandatory. PR #16 stays draft; no production merge.
+
+## P2 take3 FINAL technical and art QA — 2026-10-24
+- PR #16 experiment source 54e963b rendered new take3 silent 5sec H264 330x590/30fps/150frames via all-four-success workflow 40104894497. Local full decode PASS, SHA256 `8682bc719f289c12ba527edac84e317ad1618384e31eb028e9c8abe494616b88`, 297,480 bytes, artifact 12564327492. Actual 15 frame samples inspected. Body ROI frame0→46 original 2.50, take2 33.51, take3 31.58 MAE/255; body now moves physically but cinematic set, hands, eye acting and character identity still deficient.
+- **Technically VERIFIED, artistically NOT APPROVED**. Preserve draft PR #16, no develop/main/production change. See docs/releases/P2_THREE_TAKE_FULL_FILM_QA_2026-10-24.md for auditable three film SHAs, test IDs and next quality gates. Prioritize P1 original stylized art and P2 staging rather than endless tweaks to blank actor closeup.

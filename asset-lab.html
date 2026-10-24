@@ -57,6 +57,15 @@ footer{color:#94a8bc;font-size:12px;padding:0 22px 25px;max-width:1500px;margin:
 <label for="frameTime">Animation timeline — deterministic scrub</label>
 <input type="range" id="frameTime" min="0" max="1" step="0.033333" value="0" disabled>
 <div class="cols"><button id="play" disabled>▶ Play movement</button><button id="capture" disabled>Export actual PNG</button></div>
+<div class="group" id="actingStudio">
+ <div class="kicker">Directed acting · original silent 5-second micro-scene</div>
+ <p class="sub">Anticipation → doubt → surprise → silent blink → resolution. This is animated by actual face morphs and Head/Neck/Eye bones in the imported rig. Silent by design: emotion must be readable with no captions or voice.</p>
+ <button id="studyStart" disabled>▶ Play original silent acting study</button>
+ <label for="studyTime">Scrub 0–5 seconds · deterministic frame pose</label>
+ <input type="range" id="studyTime" min="0" max="5" step="0.033333333333" value="0" disabled style="accent-color:#bceca6;padding:0">
+ <div class="cols"><button id="studyPause" disabled>Ⅱ Pause</button><button id="studyExit" disabled>Exit acting mode</button></div>
+ <div id="studyPhase" class="sub">Load a model with Head, Neck and Eye bones for this proof.</div>
+ </div>
 <div class="group"><div class="kicker">Real imported asset inventory</div><pre id="stats">No GLB loaded.</pre></div>
 <p class="warn" id="morphStatus">If the GLB lacks facial morphs, the interface will say so rather than invent expressions.</p>
 </section>
@@ -70,6 +79,7 @@ footer{color:#94a8bc;font-size:12px;padding:0 22px 25px;max-width:1500px;margin:
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {inspectGLB,inspectScene,applyMorphPreset,applyMorphControls,EXPRESSION_NAMES} from './src/rigged-asset-core.mjs';
+import {ACTING_STUDY_DURATION,sampleActingStudy,inventoryActingBones,applyActingBones,restoreActingBones} from './src/acting-study-core.mjs';
 const $=id=>document.getElementById(id);
 const viewport=$('viewport');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#111c2e');
@@ -91,6 +101,7 @@ const loader=new GLTFLoader();
 const ANGLES={front:0,threequarter:Math.PI/4,side:Math.PI/2,back:Math.PI};
 let model=null,animations=[],mixer=null,summary=null,preset='neutral',sourceName='',seconds=0,playing=false,last=0,frameIndex=0;
 let morphOverrides={};
+let studyActive=false,studyPlaying=false,studySeconds=0,studyBones=null;
 const setStatus=(message,error=false)=>{$('status').textContent=message;$('status').style.color=error?'#ffc3b3':'#b6eadd'};
 const sizeCanvas=()=>{const w=Math.max(280,Math.floor(viewport.clientWidth)),h=Math.max(330,Math.floor(viewport.clientHeight));
 renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
@@ -102,11 +113,12 @@ function compose(){
  camera.updateProjectionMatrix();}
  renderer.render(scene,camera);
 }
-const disableControls=()=>{for(const id of ['expression','clip','frameTime','play','capture'])$(id).disabled=true};
+const disableControls=()=>{for(const id of ['expression','clip','frameTime','play','capture','studyStart','studyPause','studyExit','studyTime'])$(id).disabled=true};
 function disposeTree(root){root?.traverse(obj=>{if(obj.geometry)obj.geometry.dispose();if(obj.material)for(const mat of Array.isArray(obj.material)?obj.material:[obj.material]){
  for(const val of Object.values(mat))if(val?.isTexture)val.dispose();mat.dispose();
 }});}
 function updateFrame(t){
+ if(studyActive)stopStudy();
  if(!mixer)return;
  seconds=Math.min(Math.max(0,Number(t)||0),Number($('frameTime').max)||0);
  mixer.setTime(seconds); // scene state derived from selected absolute time, no drift
@@ -115,6 +127,7 @@ function updateFrame(t){
  compose();
 }
 function activateClip(index=0){
+ if(studyActive)stopStudy();
  if(!mixer || !animations.length)return;
  mixer.stopAllAction();seconds=0;
  const clip=animations[index]||animations[0], action=mixer.clipAction(clip);action.reset().play();
@@ -122,6 +135,7 @@ function activateClip(index=0){
  $('frameTime').value='0';updateFrame(0);
 }
 async function loadBytes(arrayBuffer,name){
+ if(studyActive)stopStudy();
  disableControls();playing=false;setStatus('Verifying contained GLB and constructing real GPU geometry…');
  try {
   const header=inspectGLB(arrayBuffer);
@@ -142,6 +156,10 @@ async function loadBytes(arrayBuffer,name){
   sourceName=name;seconds=0;preset='neutral';morphOverrides={};$('expression').value='neutral';
   renderMorphSliders(header.morphNames);
   for(const id of ['play','capture'])$(id).disabled=false;
+  studyBones=inventoryActingBones(raw);
+  const canAct=studyBones.has('Head') && studyBones.has('Neck') && (studyBones.has('LeftEye') || studyBones.has('RightEye')) && header.morphNames.length>=5;
+  $('studyStart').disabled=!canAct;$('studyTime').disabled=!canAct;
+  $('studyPhase').textContent=canAct?'Ready · actual Head/Neck/Eye bones and morph targets found.':'This sample lacks required facial morphs or Head/Neck/Eye bones; no fake acting will be shown.';
   $('clip').replaceChildren();
   if(animations.length){
    for(let i=0;i<animations.length;i++)$('clip').add(new Option(animations[i].name||('Clip '+(i+1)),String(i)));
@@ -156,6 +174,38 @@ async function loadBytes(arrayBuffer,name){
  }catch(err){setStatus('REJECTED: '+(err?.message||String(err)),true);throw err}
 }
 function resizeAndCompose(){sizeCanvas();compose()}
+function stopStudy(){
+ studyPlaying=false;studyActive=false;
+ $('studyStart').textContent='▶ Play original silent acting study';
+ $('studyPause').disabled=true;$('studyExit').disabled=true;
+ if(studyBones)restoreActingBones(studyBones);
+ if(model){applyMorphPreset(model,preset);applyMorphControls(model,morphOverrides);}
+ compose();
+}
+function setStudyTime(value){
+ if(!model||!studyBones?.has('Head')||$('studyStart').disabled)throw Error('Acting study requires facially rigged humanoid model');
+ if(!studyActive){
+  studyActive=true;studyPlaying=false;playing=false;
+  $('play').textContent='▶ Play movement';
+  mixer?.stopAllAction();
+  $('studyExit').disabled=false;$('studyPause').disabled=false;
+  $('framing').value='portrait';$('view').value='front';
+ }
+ studySeconds=Math.max(0,Math.min(ACTING_STUDY_DURATION,Number(value)||0));
+ const pose=sampleActingStudy(studySeconds);
+ applyMorphPreset(model,'neutral');applyMorphControls(model,pose.morphs);
+ applyActingBones(studyBones,pose);
+ $('studyTime').value=String(studySeconds);
+ $('studyPhase').textContent=pose.phase+' · '+studySeconds.toFixed(2)+'s · driven by true morphs + named bones';
+ compose();
+ return pose;
+}
+function playStudy(){
+ setStudyTime(studySeconds>=ACTING_STUDY_DURATION?0:studySeconds);
+ studyPlaying=true;$('studyStart').textContent='▶ Replay acting study';
+ last=performance.now();
+}
+
 function renderMorphSliders(names){
  const holder=$('morphControls');holder.replaceChildren();
  $('faceCount').textContent='('+names.length+' available)';
@@ -194,7 +244,7 @@ $('upload').addEventListener('change',async e=>{
  try{await loadBytes(await file.arrayBuffer(),file.name)}catch(e){console.error('Import rejected:',e.message)}
 });
 $('view').addEventListener('change',compose);$('framing').addEventListener('change',compose);
-$('expression').addEventListener('change',()=>{preset=$('expression').value;
+$('expression').addEventListener('change',()=>{if(studyActive)stopStudy();preset=$('expression').value;
  const p=applyMorphPreset(model,preset);
  $('morphStatus').textContent=p.matched||preset==='neutral'?'Target channels applied: '+p.matched+'.':'No corresponding blendshapes for this pose; no expression fabricated.';
  compose()});
@@ -202,6 +252,10 @@ $('resetMorphs').addEventListener('click',()=>{
  morphOverrides={};renderMorphSliders(summary?.header?.morphNames||[]);
  if(model){applyMorphPreset(model,preset);compose();}
 });
+$('studyStart').addEventListener('click',playStudy);
+$('studyPause').addEventListener('click',()=>{studyPlaying=false;$('studyPhase').textContent+=' · paused'});
+$('studyExit').addEventListener('click',stopStudy);
+$('studyTime').addEventListener('input',()=>{studyPlaying=false;setStudyTime($('studyTime').value)});
 $('clip').addEventListener('change',()=>activateClip(Number($('clip').value)));
 $('frameTime').addEventListener('input',()=>{playing=false;$('play').textContent='▶ Play movement';updateFrame(Number($('frameTime').value))});
 $('play').addEventListener('click',()=>{playing=!playing;$('play').textContent=playing?'Ⅱ Pause':'▶ Play movement';last=performance.now()});
@@ -212,6 +266,11 @@ $('capture').addEventListener('click',()=>{
  a.click();
 });
 const loop=now=>{
+ if(studyPlaying&&model){
+  const next=studySeconds+(now-last)/1000;
+  setStudyTime(Math.min(ACTING_STUDY_DURATION,next));
+  if(next>=ACTING_STUDY_DURATION)studyPlaying=false;
+ }
  if(playing&&model&&animations.length){const clip=animations[Number($('clip').value)]||animations[0];
  const dur=Math.max(.05,clip.duration);seconds=((seconds+(now-last)/1000)%dur);updateFrame(seconds)}
  last=now;requestAnimationFrame(loop)};
@@ -225,6 +284,9 @@ window.FrameForgeRigLabQA=Object.freeze({
  setView:v=>{if(!Object.hasOwn(ANGLES,v))throw Error('Unknown view');$('view').value=v;compose()},
  setExpression:em=>{$('expression').value=em;$('expression').dispatchEvent(new Event('change'))},
  setTime:updateFrame,
+ setStudyTime,
+ getStudyState:()=>({active:studyActive,time:studySeconds,playing:studyPlaying,phase:studyActive?sampleActingStudy(studySeconds).phase:null,bones:[...studyBones?.keys()||[]]}),
+ stopStudy,
  setManualMorph,
  getManualMorphs:()=>({...morphOverrides}),
  capture,

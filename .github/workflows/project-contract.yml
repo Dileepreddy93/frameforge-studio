@@ -21,6 +21,7 @@ jobs:
           node tests/phase0-nine-phase-contract.mjs
           node tests/git-blame-reference-contract.mjs
           node tests/rigged-asset-core.test.mjs
+          node tests/acting-study-core.test.mjs
           node tests/project-core.test.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
@@ -97,6 +98,19 @@ jobs:
           name: frameforge-v5-3-audio-guided-motion-3sec
           path: artifacts/v5-3-audio-guided-3s.mp4
           if-no-files-found: error
+      - name: Reuse verified Chromium plus FFmpeg for 150 real acting frames and 5s muted MP4
+        run: |
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          export FRAMEFORGE_ACTING_OUT=artifacts/p2-acting-study
+          node tests/acting-study-browser.cjs
+      - name: Retain actual acting MP4, 14 CGI keyframes and SHA verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p2-actual-silent-5sec-30fps-film
+          path: artifacts/p2-acting-study/
+          if-no-files-found: error
+          retention-days: 30
 
   rigged-character-import:
     runs-on: ubuntu-24.04
