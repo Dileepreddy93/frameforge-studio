@@ -102,3 +102,6 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - Direct before/after actual 808×648 capture study: happy MAE vs neutral 0.0333→0.175, worried 0.0321→0.191, surprised 0.2327→1.070. Visibility improved 4–6× from closer face camera, not emotional performance certified.
 - Vercel generated separate QA deployment READY but 10.6MB GLB inadvertently deployed empty (SHA1 da39a3ee...); blocked by Vercel App private repo permission `repo_not_found` and SSO. **DO NOT SHARE as valid mobile preview.** Issue #14 records exact permission step. No V3/main deployment changed.
 - See docs/PROJECT_STATUS_2026-10-24.md for objective P0–P8 and next steps. Issue #13 tracks artistic P1 sign-off, Issue #9 original rig pipeline, Issue #10 JSONCut optional captions benchmark. GitHub CI does NOT imply 9-phase completion.
+
+## P1 mobile-browser regression — 2026-10-24
+- Branch `feature/p1-mobile-character-lab-qa` isolated from latest develop `b3317bf976f74ffbcc2a236494fb5b446d0b2952`. Test `tests/ara-mobile-browser.cjs` exercises actual source GLB, 390x844 Chromium touch viewport, full model asset download, morph slider, preserved seek, rendered screenshot and DOM overflow. CI captures a new artifact `frameforge-p1-human-mobile-chromium`. No pass claimed until exact new run completes; see docs/releases/P1_MOBILE_CHROMIUM_QA.md.

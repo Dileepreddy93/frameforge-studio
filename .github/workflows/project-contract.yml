@@ -117,6 +117,14 @@ jobs:
           export FRAMEFORGE_RIG_OUT=artifacts/p1-rigged-asset-lab
           node tests/rigged-asset-browser.cjs
           node tests/ara-built-in-browser.cjs
+          node tests/ara-mobile-browser.cjs
+      - name: Preserve actual mobile-sized WebGL character screenshot and test measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-human-mobile-chromium
+          path: artifacts/p1-mobile-character/
+          if-no-files-found: warn
       - name: Preserve generated human expression and body render evidence
         if: always()
         uses: actions/upload-artifact@v4
