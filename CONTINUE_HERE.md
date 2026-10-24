@@ -33,3 +33,5 @@ Assets are created by FrameForge, NOT original Agent Poly or Claude & Pixel medi
 First inspect GitHub HEAD, branch/status and protected tags. Review every handoff document. Verify media hashes. Reacquire user-only PDFs and the exact original reference video if accessible; do not silently substitute other clips. Continue original high-quality expressive 3D character rig work and full cinematic visual/audio QA only AFTER reviewing actual evidence. Keep main/V3 production and existing tags intact. Do not claim a successful film from passing JavaScript tests.
 
 OWNER'S CURRENT REQUEST: only push the comprehensive handoff. No new coding, branch merge or deployment in this step.
+
+- 3D render evidence checksums: docs/RENDER_FRAME_SHA256SUMS.txt.
