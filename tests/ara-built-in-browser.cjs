@@ -49,6 +49,7 @@ frames.push(await capture('expression-custom-smile'));
 await page.evaluate(()=>window.FrameForgeRigLabQA.setTime(.36));
 assert.equal(await page.evaluate(()=>window.FrameForgeRigLabQA.getManualMorphs().mouthSmile),1,'manual facial expression persists after scrub');
 frames.push(await capture('expression-custom-after-scrub'));
+await page.locator('#faceLab summary').click();
 await page.locator('#resetMorphs').click();
 assert.deepEqual(await page.evaluate(()=>window.FrameForgeRigLabQA.getManualMorphs()),{},'facial controls reset');
 await page.locator('#framing').selectOption('full');
