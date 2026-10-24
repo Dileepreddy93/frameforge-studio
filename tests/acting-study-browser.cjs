@@ -53,11 +53,14 @@ const output=process.env.FRAMEFORGE_ACTING_OUT||'artifacts/p2-acting-study';
   const film=path.join(output,'p2-original-muted-five-sec-30fps.mp4');
   const run=(cmd,args)=>execFileSync(cmd,args,{encoding:'utf8',timeout:200000,maxBuffer:3e6});
   run('ffmpeg',['-hide_banner','-loglevel','error','-y','-framerate','30','-i',path.join(folder,'frame-%03d.png'),
-    '-an','-c:v','libx264','-pix_fmt','yuv420p','-preset','veryfast','-crf','20','-movflags','+faststart',film]);
+    '-an','-vf','crop=trunc(ih*9/16/2)*2:trunc(ih/2)*2:(iw-ow)/2:(ih-oh)/2','-c:v','libx264','-pix_fmt','yuv420p','-preset','veryfast','-crf','20','-movflags','+faststart',film]);
   const probe=JSON.parse(run('ffprobe',['-v','error','-count_frames','-show_entries',
     'format=duration:stream=codec_name,codec_type,width,height,r_frame_rate,nb_read_frames','-of','json',film]));
   const v=probe.streams.find(s=>s.codec_type==='video');
   assert.equal(v.codec_name,'h264');assert.equal(v.nb_read_frames,'150');assert.equal(v.r_frame_rate,'30/1');
+  assert.ok(v.width%2===0&&v.height%2===0,'YUV420 encoder needs even dimensions');
+  assert.ok(v.width>300&&v.height>500,'No microscopic video export');
+  assert.ok(Math.abs(v.width/v.height-9/16)<.008,'Actual output must be vertical 9:16');
   assert.ok(Math.abs(+probe.format.duration-5)<.02);
   assert.equal(probe.streams.some(s=>s.codec_type==='audio'),false,'Short acting study MUST be muted');
   run('ffmpeg',['-v','error','-xerror','-i',film,'-f','null','-']);

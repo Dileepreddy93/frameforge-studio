@@ -120,3 +120,7 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 
 ## P2 CI resource optimization
 - Separate experimental `muted-acting-film` job duplicated Chromium+FFmpeg setup and its apt update was slow. Removed the redundant fifth runner and appended the 150-frame original acting film validator to the already proven `portable-video-export` runner. Reuses encoder and browser while still creating an independent H264 MP4+PNG artifact. No code/character/film regression removed.
+
+## P2 portrait H264 encoder correction — 2026-10-24
+- Shared export run 40102200391 reused working Chromium/FFmpeg and generated revised 150 WebGL source frames. Actual H264 encode failed due to odd canvas width `617x590` on yuv420p. FFmpeg correctly rejected width not divisible by 2, uploaded original 14 image samples artifact 12563361485, no real valid MP4.
+- Added dynamic center-crop to 9:16 even dimensions (~332x590 from source at current lab viewport), asserted parity/raster, 5s, 150 full-decode real frames; no upscaling. Film CI and artistic acceptance remain PENDING.
