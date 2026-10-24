@@ -54,6 +54,14 @@ function serve(){
  const refused=await page.evaluate(()=>FrameForgeMP4Test({frameLimit:2,width:360,height:640,download:false}).then(()=>'exported',e=>e.message));
  assert.match(refused,/out of date/);
 
+ // A new hoodie colour changes the frame and saves with the episode.
+ const recolour=await page.evaluate(()=>{
+  const before=FrameForgeQA.renderFilmFrame(1.2,360,640);
+  const input=document.getElementById('look-dev-hoodie');input.value='#c0392b';input.dispatchEvent(new Event('input'));
+  return {changed:before!==FrameForgeQA.renderFilmFrame(1.2,360,640),inputs:document.querySelectorAll('#looks input[type=color]').length};
+ });
+ assert.deepEqual(recolour,{changed:true,inputs:4});
+
  // Download keeps the new order, the copy and all inspector edits, and marks the audio for rebuild.
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#download').click()]);
  const saved=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
@@ -64,6 +72,7 @@ function serve(){
  assert.equal(copy.voice,undefined,'a duplicated shot needs its own voice line');
  assert.equal(saved.audio.state,'storyboard_only');assert.equal(saved.audio.masterUrl,null);
  assert.ok(saved.audio.music,'music cues survive the round trip');
+ assert.deepEqual(saved.characters.find(c=>c.id==='dev').look,{hoodie:'#c0392b'});
  assert.equal(errors.length,0,'page errors: '+errors.join('; '));
  await browser.close();server.close();
  console.log('STUDIO_EDITOR_BROWSER_PASS: film monitor, live inspector edits, duplicate/reorder/delete, stale-audio guard, JSON round trip');

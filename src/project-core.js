@@ -16,6 +16,8 @@
  const SFX=new Set(['typing','chime','buzz','zap','scratch','whoosh','pop']);
  const MUSIC=new Set(['groove','tension','stop','sting']);
  const MOVES=new Set(['push','pull','drift','static']);
+ // Recolourable parts per rig; values are #rrggbb.
+ const LOOK_SLOTS={dev:['hoodie','hair'],blue:['shell'],orange:['shell']};
  const INSERT_TEXT=['window','context','headline','value','caption','request','status','footer','label'];
  // Camera framing used when a shot does not author its own: [distance, offset, up, fov].
  const DEFAULT_FRAMING={dev:[4.2,0,.06,35],blue:[3.9,0,.06,35],orange:[3.9,0,.06,35],duo:[7,0,.08,41],wide:[7,0,.08,41],screen:[7,0,.08,41]};
@@ -41,6 +43,7 @@
    characterIds.add(c.id);
    if(!goodText(c.name,80)||!goodText(c.visualIdentity,1500))fail(at,'Missing fixed character visual identity');
    if(!isRecord(c.voice)||!goodText(c.voice.voiceLock,600)||!goodText(c.voice.profile,120))fail(at+'.voice','Missing reusable voice identity');
+   if(c.look!==undefined&&!(isRecord(c.look)&&Object.entries(c.look).every(([slot,v])=>(LOOK_SLOTS[c.id]||[]).includes(slot)&&/^#[0-9a-f]{6}$/i.test(String(v)))))fail(at+'.look','Expected #rrggbb colours for '+((LOOK_SLOTS[c.id]||[]).join('/')||'no recolourable parts'));
    const k=c.voice?.kokoro;
    if(k!==undefined&&!(isRecord(k)&&/^[a-z]{2}_[a-z]+$/.test(String(k.voice))&&(k.speed===undefined||inRange(k.speed,.5,2))))fail(at+'.voice.kokoro','Expected {voice:"am_michael",speed:0.5-2}');
    if(!allowedStatuses.has(c.sheetStatus))fail(at+'.sheetStatus','Must declare unapproved/draft/approved art');
@@ -126,5 +129,5 @@
  }
  function summary(p){const v=validateProject(p);return{id:p?.id||null,valid:v.valid,shotCount:v.shotCount,duration:v.duration,errors:v.errors};}
  return Object.freeze({schema:format,validateProject,assertProject,toTimelineShots,assertRendererCompatible,summary,defaultFraming,
-  actions:[...ACTIONS],emotions:[...EMOTIONS],moves:[...MOVES]});
+  actions:[...ACTIONS],emotions:[...EMOTIONS],moves:[...MOVES],lookSlots:LOOK_SLOTS});
 });

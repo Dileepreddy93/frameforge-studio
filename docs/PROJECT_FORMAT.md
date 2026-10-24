@@ -18,7 +18,7 @@ Examples:
 | `output` | yes | `{width:1080,height:1920,fps:30}` |
 | `style.styleLock` | yes | A shot's `styleLock`, if present, must match it exactly |
 | `environment` | yes | `id`, `description`, `safeZone {top,bottom}` in 1080x1920 pixels |
-| `characters[]` | yes | `id`, `name`, `visualIdentity`, `voice {profile,voiceLock,kokoro?:{voice,speed}}`, `sheetStatus`, 4+ `expressions`. The current renderer animates `dev`, `blue` and `orange` only. |
+| `characters[]` | yes | `id`, `name`, `visualIdentity`, `voice {profile,voiceLock,kokoro?:{voice,speed}}`, `sheetStatus`, 4+ `expressions`, optional `look` colours (`#rrggbb`): `dev` → `hoodie`, `hair`; `blue`/`orange` → `shell`. The current renderer animates `dev`, `blue` and `orange` only. |
 | `shots[]` | yes | 1–120 shots, 180 s total maximum |
 | `audio` | yes | `{state:"mastered",masterUrl,voiceUrl}` or `{state:"storyboard_only",masterUrl:null}`; optional `music {bpm, cues:[{shot, style, at?}]}` with style `groove`/`tension`/`stop`/`sting` and `at` `start`/`afterLine` |
 
