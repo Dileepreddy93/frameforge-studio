@@ -1,0 +1,35 @@
+name: P1 promote audited human GLB fixture (no generator execution)
+on:
+  push:
+    branches: ["feature/p1-real-human-preview"]
+permissions:
+  contents: write
+jobs:
+  copy-audited-human:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reuse verified generator output from audited workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if test -s assets/rigged-samples/AraAthleticMan.glb; then
+            echo "Verified human already present on branch. No rewrite."
+            sha256sum assets/rigged-samples/AraAthleticMan.glb
+            test "$(sha256sum assets/rigged-samples/AraAthleticMan.glb | cut -f1 -d' ')" = "3faf7629bd6f62f70e916d665b4051de35b0b27832e8da3b19b8a4dd93c4be22"
+            exit 0
+          fi
+          gh run download 40096258152 --repo Dileepreddy93/frameforge-studio --name frameforge-p1-ara-generated-rig-morph-first-proof --dir "$RUNNER_TEMP/ara-proof"
+          test -s "$RUNNER_TEMP/ara-proof/Athletic_man.glb"
+          actual="$(sha256sum "$RUNNER_TEMP/ara-proof/Athletic_man.glb" | cut -f1 -d' ')"
+          test "$actual" = "3faf7629bd6f62f70e916d665b4051de35b0b27832e8da3b19b8a4dd93c4be22"
+          test "$(wc -c < "$RUNNER_TEMP/ara-proof/Athletic_man.glb")" -eq 10587092
+          mkdir -p assets/rigged-samples
+          cp "$RUNNER_TEMP/ara-proof/Athletic_man.glb" assets/rigged-samples/AraAthleticMan.glb
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add assets/rigged-samples/AraAthleticMan.glb
+          git commit -m "P1 preserve SHA-audited Ara human on isolated feature branch"
+          git push origin HEAD:feature/p1-real-human-preview
