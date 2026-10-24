@@ -35,6 +35,28 @@ const output=process.env.FRAMEFORGE_ACTING_OUT||'artifacts/p2-acting-study';
    return {bytes:b,hash:crypto.createHash('sha256').update(b).digest('hex'),phase:data.state.phase};
   };
   const a=await captureAt(1.54);const b=await captureAt(4.15);const a2=await captureAt(1.54);
+  const bonePose=await page.evaluate(()=>{
+    const poses={};
+    const root=window.FrameForgeRigLabQA.sceneRoot();
+    for(const t of [0,.78,1.54,2.35,3.7]){
+      window.FrameForgeRigLabQA.setStudyTime(t);
+      const bones={};
+      root.traverse(obj=>{
+        if(obj.isBone && ['Spine2','LeftShoulder','RightShoulder','LeftArm','RightArm'].includes(obj.name)){
+          bones[obj.name]=[obj.rotation.x,obj.rotation.y,obj.rotation.z];
+        }
+      });
+      poses[t]=bones;
+    }
+    return poses;
+  });
+  for(const name of ['Spine2','LeftShoulder','RightShoulder','LeftArm','RightArm']){
+    assert.ok(bonePose[1.54]?.[name],name+' must exist in true imported rig');
+  }
+  const maximumDelta=(a,b)=>Math.max(...a.map((v,i)=>Math.abs(v-b[i])));
+  assert.ok(maximumDelta(bonePose[1.54].Spine2,bonePose[0].Spine2)>.08,'Surprise body recoil must move upper spine');
+  assert.ok(maximumDelta(bonePose[1.54].RightArm,bonePose[0].RightArm)>.1,'Surprise needs upper arm gesture');
+  assert.ok(maximumDelta(bonePose[1.54].RightShoulder,bonePose[0].RightShoulder)>.10,'Surprise shoulders must recoil');
   assert.equal(a.hash,a2.hash,'Random seek must produce byte-stable same-frame render');
   assert.notEqual(a.hash,b.hash,'Surprise and relief frames must differ in pixels');
   const evidence=[],allHashes=[];
@@ -70,7 +92,7 @@ const output=process.env.FRAMEFORGE_ACTING_OUT||'artifacts/p2-acting-study';
    schema:'frameforge.muted-acting-five-second/1',targetModelSHA256:'3faf7629bd6f62f70e916d665b4051de35b0b27832e8da3b19b8a4dd93c4be22',
    nativeSourceFrames:150,codec:'h264',fps:30,duration:5,muted:true,modelBones:69,morphTypes:20,
    video:{file:path.basename(film),bytes:stats.size,sha256:crypto.createHash('sha256').update(fs.readFileSync(film)).digest('hex')},
-   poses:evidence,codeTests:'pending CI summary',artApproval:'NOT_APPROVED',errors
+   poses:evidence,physicalRig:{surprise:bonePose[1.54],neutral:bonePose[0],validatedBones:13},artApproval:'NOT_APPROVED',errors
   };
   fs.writeFileSync(path.join(output,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
   assert.deepEqual(errors,[]);
