@@ -135,3 +135,7 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 
 ## P2 take2 real film direct QA and take3 revision — 2026-10-24
 - Full take2 5s silent H264 SHA256 3b2c3fe4e5c94f537b6c055e55de1be0521b42320b112008dcf69487c46028ad generated in CI run 40104156637, all four jobs green, artifact 12563453721. Real decoded video 330x590, 30fps, 150frames. Shoulder/body ROI MAE baseline v1 2.50 vs take2 33.51 over frame0→46; real physical 3D motion strongly increased, but overrotated upper body, no meaningful scene context. P2 ART STILL REJECTED. Take3 moderates Spine/Spine1/Spine2 pitch, rerun mandatory. PR #16 stays draft; no production merge.
+
+## P2 take3 FINAL technical and art QA — 2026-10-24
+- PR #16 experiment source 54e963b rendered new take3 silent 5sec H264 330x590/30fps/150frames via all-four-success workflow 40104894497. Local full decode PASS, SHA256 `8682bc719f289c12ba527edac84e317ad1618384e31eb028e9c8abe494616b88`, 297,480 bytes, artifact 12564327492. Actual 15 frame samples inspected. Body ROI frame0→46 original 2.50, take2 33.51, take3 31.58 MAE/255; body now moves physically but cinematic set, hands, eye acting and character identity still deficient.
+- **Technically VERIFIED, artistically NOT APPROVED**. Preserve draft PR #16, no develop/main/production change. See docs/releases/P2_THREE_TAKE_FULL_FILM_QA_2026-10-24.md for auditable three film SHAs, test IDs and next quality gates. Prioritize P1 original stylized art and P2 staging rather than endless tweaks to blank actor closeup.
