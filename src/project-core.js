@@ -13,6 +13,8 @@
  const allowedStatuses=new Set(['not_created','draft','approved']);
  const EMOTIONS=new Set(['neutral','happy','worried','surprised','angry']);
  const ACTIONS=new Set(['listen','typing','react','question','plead','alarm','surprise','defeat','announce','explain','celebrate','shrug','anticipate']);
+ const SFX=new Set(['typing','chime','buzz','zap','scratch','whoosh','pop']);
+ const MUSIC=new Set(['groove','tension','stop','sting']);
  const INSERT_TEXT=['window','context','headline','value','caption','request','status','footer','label'];
  // Camera framing used when a shot does not author its own: [distance, offset, up, fov].
  const DEFAULT_FRAMING={dev:[4.2,0,.06,35],blue:[3.9,0,.06,35],orange:[3.9,0,.06,35],duo:[7,0,.08,41],wide:[7,0,.08,41],screen:[7,0,.08,41]};
@@ -38,6 +40,8 @@
    characterIds.add(c.id);
    if(!goodText(c.name,80)||!goodText(c.visualIdentity,1500))fail(at,'Missing fixed character visual identity');
    if(!isRecord(c.voice)||!goodText(c.voice.voiceLock,600)||!goodText(c.voice.profile,120))fail(at+'.voice','Missing reusable voice identity');
+   const k=c.voice?.kokoro;
+   if(k!==undefined&&!(isRecord(k)&&/^[a-z]{2}_[a-z]+$/.test(String(k.voice))&&(k.speed===undefined||inRange(k.speed,.5,2))))fail(at+'.voice.kokoro','Expected {voice:"am_michael",speed:0.5-2}');
    if(!allowedStatuses.has(c.sheetStatus))fail(at+'.sheetStatus','Must declare unapproved/draft/approved art');
    if(!Array.isArray(c.expressions)||c.expressions.length<4||new Set(c.expressions).size!==c.expressions.length)fail(at+'.expressions','Four distinct expressions required');
   });
@@ -65,6 +69,11 @@
    if(f!==undefined&&!(isRecord(f)&&inRange(f.distance,1,15)&&inRange(f.offset,-2,2)&&inRange(f.up,-1,1)&&inRange(f.fov,15,75)&&(f.lookUp===undefined||inRange(f.lookUp,-1,1))))fail(at+'.framing','Expected distance 1-15, offset -2..2, up -1..1, fov 15-75');
    const r=s.reactionCut;
    if(r!==undefined&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');
+   const tm=s.timing;
+   if(tm!==undefined&&!(isRecord(tm)&&(tm.lead===undefined||inRange(tm.lead,0,2))&&(tm.pauseAfter===undefined||inRange(tm.pauseAfter,0,4))))fail(at+'.timing','Expected lead 0-2 s and pauseAfter 0-4 s');
+   const vo=s.voice;
+   if(vo!==undefined&&!(isRecord(vo)&&goodText(vo.file,200)&&inRange(vo.seconds,.1,15)&&Number.isFinite(s.duration)&&vo.seconds<=s.duration+.001))fail(at+'.voice','Generated voice needs a file and seconds that fit the shot');
+   if(s.sfx!==undefined&&!(Array.isArray(s.sfx)&&s.sfx.length<=8&&s.sfx.every(x=>isRecord(x)&&SFX.has(x.cue)&&inRange(x.at,0,15)&&(x.gain===undefined||inRange(x.gain,-40,6)))))fail(at+'.sfx','Expected up to 8 {cue,at,gain?} with cue in '+[...SFX].join('/'));
    const ins=s.insert;
    if(ins!==undefined&&!(isRecord(ins)&&INSERT_TEXT.every(k=>goodText(ins[k],80))&&['good','bad'].includes(ins.tone)&&['drop','flat'].includes(ins.graph)))fail(at+'.insert','Screen insert needs '+INSERT_TEXT.join('/')+', tone good|bad and graph drop|flat');
    if(s.acting!==undefined&&(!isRecord(s.acting)||!['neutral','happy','worried','surprised','angry'].includes(s.acting.devEmotion)))fail(at+'.acting.devEmotion','Unsupported DEV emotional beat');
@@ -75,6 +84,9 @@
   if(p.banner!==undefined&&!goodText(p.banner,80))fail('banner','Banner must be short text');
   if(!isRecord(p.audio)||!['mastered','storyboard_only'].includes(p.audio.state))fail('audio.state','Mastered/storyboard_only state required');
   if(p.audio?.state==='mastered'&&!goodText(p.audio.masterUrl))fail('audio.masterUrl','Mastered episodes need a real media URL');
+  const mu=p.audio?.music,shotIds=new Set((p.shots||[]).map(s=>s?.id));
+  if(mu!==undefined&&!(isRecord(mu)&&(mu.bpm===undefined||inRange(mu.bpm,60,180))&&Array.isArray(mu.cues)&&mu.cues.every(c=>isRecord(c)&&shotIds.has(c.shot)&&MUSIC.has(c.style)&&(c.at===undefined||c.at==='start'||c.at==='afterLine'))))fail('audio.music','Expected {bpm?,cues:[{shot,style,at?}]} with style in '+[...MUSIC].join('/'));
+  if(p.audio?.voiceUrl!==undefined&&!goodText(p.audio.voiceUrl))fail('audio.voiceUrl','Voice stem URL must be text');
   if(p.audio?.state==='storyboard_only'&&p.audio.masterUrl)fail('audio.masterUrl','Storyboard-only episodes must not claim a master');
   return{valid:errors.length===0,errors,duration:+total.toFixed(3),shotCount:Array.isArray(p.shots)?p.shots.length:0};
  }

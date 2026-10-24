@@ -568,8 +568,8 @@ function load(){const p=$('preset').value;const project=projectCatalog[p];if(!pr
  window.FrameForgeProjectCore.assertRendererCompatible(project);
  soundtrack.pause();
  if(project.audio.state==='mastered'){soundtrack.src=project.audio.masterUrl;soundtrack.load();$('recordStatus').textContent=project.shots.length+' scenes with mastered audio ready';}
- else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard only: no voice master attached';}shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();}
-function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});$('dialogue').value=shots[selected].text;$('speaker').value=shots[selected].speaker;$('camera').value=shots[selected].camera;}
+ else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard only: no voice master attached';}loadEnvelope(project.audio.voiceUrl);shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();}
+function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration.toFixed(1)+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});$('dialogue').value=shots[selected].text;$('speaker').value=shots[selected].speaker;$('camera').value=shots[selected].camera;}
 const performerCoordinates={
  blue:[0,2.14,.54],
  orange:[1.72,2.14,.54],
@@ -582,7 +582,7 @@ function cinematicReaction(shot,local){
  return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14),subject[1]+.08,subject[2]+scale]};
 }
 
-function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(duration).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,2.13,.57]:s.camera==='orange'?[1.72,2.13,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp}=s.framing;
+function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,2.13,.57]:s.camera==='orange'?[1.72,2.13,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp}=s.framing;
  const wide=s.camera==='duo'||s.camera==='wide'||s.camera==='screen';
  const ease=Math.max(0,Math.min(1,local/s.duration));
  const dolly=(ease*ease*(3-2*ease)-.5)*.33;
@@ -599,7 +599,7 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
   cam.updateProjectionMatrix();
  }
  b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
-const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
+const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
 $('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{shots[selected].text=$('dialogue').value;shots[selected].speaker=$('speaker').value;shots[selected].camera=$('camera').value;refresh();update()};function snapshotProject(){
  const base=window.FrameForgeCurrentProject;
@@ -642,7 +642,7 @@ $('projectImport').onchange=async event=>{
 let recorder=null,recordedChunks=[],recordingStream=null;
 function stopRecording(){if(!recorder||recorder.state==='inactive')return;recorder.stop();$('recordStatus').textContent='Finalizing the WebM recording…';}
 $('record').onclick=async()=>{
- if(recorder&&recorder.state==='recording'){stopRecording();return}if($('preset').value!=='comedy'){$('recordStatus').textContent='Recording requires a generated voice master; choose Zero Latency.';return}
+ if(recorder&&recorder.state==='recording'){stopRecording();return}if(window.FrameForgeCurrentProject?.audio.state!=='mastered'){$('recordStatus').textContent='Recording requires an episode with mastered audio.';return}
  if(!window.MediaRecorder||!renderer.domElement.captureStream){$('recordStatus').textContent='Video capture not available in this browser';return}
  try{
   audioInit();await audioContext.resume();running=false;soundtrack.pause();time=0;soundtrack.currentTime=0;update();
@@ -677,8 +677,12 @@ let offlineMode=false,decodedEnvelope=null,envReady=false;
 const outCanvas=document.createElement('canvas');
 const outCtx=outCanvas.getContext('2d',{alpha:false});
 function roundRect(x,y,w,h,r){outCtx.beginPath();outCtx.roundRect(x,y,w,h,r)}
-const envPromise=(async()=>{
- const response=await fetch('./dialogue42.ogg');if(!response.ok)throw Error('Voice audio HTTP '+response.status);
+let envPromise=Promise.resolve(),envToken=0;
+function loadEnvelope(url){
+ const token=++envToken;envReady=false;decodedEnvelope=null;
+ envPromise=(async()=>{
+ if(!url){envReady=true;return;}
+ const response=await fetch(url);if(!response.ok)throw Error('Voice audio HTTP '+response.status);
  const buffer=await response.arrayBuffer();
  const ctx=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(1,1,24000);
  const audioBuffer=await ctx.decodeAudioData(buffer);
@@ -691,9 +695,12 @@ const envPromise=(async()=>{
  }
  const sorted=raw.filter(x=>x>.002).sort((a,b)=>a-b);
  const p90=sorted[Math.floor(sorted.length*.9)]||.06;
+ if(token!==envToken)return;
  decodedEnvelope=raw.map((x,i)=>Math.max(0,Math.min(1,(.22*(raw[i-1]||x)+.56*x+.22*(raw[i+1]||x))/(p90*.93))));
  envReady=true;
-})().catch(e=>{console.error('Voice timing analysis error',e);});
+ })().catch(e=>{console.error('Voice timing analysis error',e);});
+ return envPromise;
+}
 function wrapWords(c,text,maxWidth){
  const lines=[];let current='';
  for(const word of text.trim().split(/\s+/)){
@@ -775,7 +782,8 @@ function renderFilmFrame(t,w=360,hh=640,encode=true){
 let offlineExportActive=false;
 async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,download=true,startTime=0}={}){
  if(offlineExportActive)throw new Error('Another export is already running');
- if($('preset').value!=='comedy')throw new Error('This story has no generated voice master. Use Zero Latency.');
+ const project=window.FrameForgeCurrentProject;
+ if(project?.audio.state!=='mastered')throw new Error('This episode has no mastered audio yet.');
  if(typeof VideoEncoder!=='function')throw new Error('This browser lacks WebCodecs video encoding.');
  const fps=30,frames=frameLimit??Math.round(duration*fps);
  if(!Number.isInteger(frames)||frames<=0||frames>18000)throw new Error('Invalid frame count');
@@ -798,8 +806,8 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   sourceVideo=new CanvasSource(outCanvas,{codec:'avc',quality:new Quality({bitrate:width>=1080?6800000:width>=720?4200000:width>=480?2400000:1300000}),keyFrameInterval:2,hardwareAcceleration:'no-preference'});
   sourceAudio=new AudioBufferSource({codec:'aac',quality:new Quality({bitrate:160000})});
   output.addVideoTrack(sourceVideo);output.addAudioTrack(sourceAudio);
-  // Decode the actual voice master. The recorded MP4 must use the same clock for audio and video.
-  const voice=await fetch('https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg');if(!voice.ok)throw new Error('Voice file failed to load: '+voice.status);
+  // Decode the episode's mastered mix. The recorded MP4 must use the same clock for audio and video.
+  const voice=await fetch(project.audio.masterUrl);if(!voice.ok)throw new Error('Audio master failed to load: '+voice.status);
   const audioContextForExport=new(window.AudioContext||window.webkitAudioContext)();
   let decoded;
   try{decoded=await audioContextForExport.decodeAudioData(await voice.arrayBuffer())}
@@ -824,7 +832,7 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   if(!raw||raw.byteLength<1000)throw new Error('MP4 unexpectedly empty');
   const blob=new Blob([raw],{type:'video/mp4'});
   status.textContent='MP4 complete · '+(blob.size/1024/1024).toFixed(2)+' MB · '+(frames/fps).toFixed(2)+' seconds · '+(width+'×'+height);
-  if(download){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='frameforge-zero-latency-'+width+'x'+height+'.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+  if(download){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='frameforge-'+project.id+'-'+width+'x'+height+'.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
   return {blob,bytes:blob.size,duration:frames/fps,frames,width,height,elapsed:Math.round((performance.now()-started)/1000)};
  }catch(e){status.textContent='Export failed: '+e.message;throw e}
  finally{

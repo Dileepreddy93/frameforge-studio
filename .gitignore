@@ -9,3 +9,5 @@ __pycache__/
 .vercel
 .env*.local
 .venv/
+audio/*/lines/
+audio/*/.work/

@@ -5,7 +5,8 @@ const {validateProject,assertProject,toTimelineShots,summary,schema}=require('..
 const get=n=>JSON.parse(fs.readFileSync('projects/'+n+'.frameforge.json','utf8'));
 const clone=x=>structuredClone(x);
 const comedy=get('zero-latency'),mystery=get('mountain-mystery');
-for(const [p,n,total] of [[comedy,14,41.8],[mystery,6,30]]){
+const comedyTotal=comedy.shots.reduce((a,s)=>a+s.duration,0);
+for(const [p,n,total] of [[comedy,14,comedyTotal],[mystery,6,30]]){
  const v=validateProject(p);assert.equal(v.valid,true,JSON.stringify(v.errors));assert.equal(v.shotCount,n);
  assert.ok(Math.abs(v.duration-total)<.001);
  assert.equal(summary(p).valid,true);assert.equal(schema,p.schema);
@@ -14,6 +15,9 @@ for(const [p,n,total] of [[comedy,14,41.8],[mystery,6,30]]){
  assert.ok(shots.every(s=>s.text&&s.camera&&s.duration));
 }
 assert.equal(comedy.audio.state,'mastered');
+// Voice is the clock: each voiced shot lasts lead + its spoken line + the authored pause, frame-rounded.
+for(const s of comedy.shots)assert.equal(s.duration,Math.round((s.timing.lead+s.voice.seconds+s.timing.pauseAfter)*30)/30,s.id+' duration follows its voice line');
+assert.ok(comedy.audio.masterUrl.startsWith('audio/')&&fs.existsSync(comedy.audio.masterUrl)&&fs.existsSync(comedy.audio.voiceUrl),'mastered audio ships with the repo');
 assert.equal(mystery.audio.state,'storyboard_only');
 assert.equal(mystery.audio.masterUrl,null);
 const original=cp.execFileSync('git',['show','v3.0-stable:index.html'],{encoding:'utf8'});
@@ -23,7 +27,7 @@ const sourceComedy=[...section.split('comedy:[')[1].split('mystery:[')[0].matchA
 const sourceMystery=[...section.split('mystery:[')[1].matchAll(pattern)];
 for(const [legacy,project]of [[sourceComedy,comedy],[sourceMystery,mystery]]){
  assert.equal(legacy.length,project.shots.length,'shot count unchanged from V3 source');
- legacy.forEach((m,i)=>{const shot=project.shots[i];assert.equal(shot.dialogue,m[1]);assert.equal(shot.speaker,m[2]);assert.equal(shot.camera,m[3]);assert.equal(shot.duration,Number(m[4]));});
+ legacy.forEach((m,i)=>{const shot=project.shots[i];assert.equal(shot.dialogue,m[1]);assert.equal(shot.speaker,m[2]);assert.equal(shot.camera,m[3]);if(!shot.voice)assert.equal(shot.duration,Number(m[4]));});
 }
 const invalid=(name,mutator)=>{
  const doc=clone(comedy);mutator(doc);const v=validateProject(doc);

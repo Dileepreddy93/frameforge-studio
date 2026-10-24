@@ -27,7 +27,11 @@
       "visualIdentity": "Original stylized low-poly adult developer, visible facial expressions, coherent hoodie and hair silhouette",
       "voice": {
         "profile": "developer",
-        "voiceLock": "Consistent expressive adult voice, clear words, measured comic timing; maintain this exact profile between shots"
+        "voiceLock": "Consistent expressive adult voice, clear words, measured comic timing; maintain this exact profile between shots",
+        "kokoro": {
+          "voice": "am_michael",
+          "speed": 1
+        }
       },
       "sheetStatus": "not_created",
       "expressions": [
@@ -43,7 +47,11 @@
       "visualIdentity": "Original blue-grey expressive robot with a cohesive rounded metal body and contrasting digital face",
       "voice": {
         "profile": "blue-assistant",
-        "voiceLock": "Distinct playful high-mid synthetic English voice with precise pacing and consistent timbre"
+        "voiceLock": "Distinct playful high-mid synthetic English voice with precise pacing and consistent timbre",
+        "kokoro": {
+          "voice": "af_heart",
+          "speed": 1
+        }
       },
       "sheetStatus": "not_created",
       "expressions": [
@@ -59,7 +67,11 @@
       "visualIdentity": "Original warm orange robot with a cohesive rounded metal body and expressive contrasting digital face",
       "voice": {
         "profile": "orange-assistant",
-        "voiceLock": "Distinct warm synthetic English voice, emotionally controlled, deadpan comedic delivery"
+        "voiceLock": "Distinct warm synthetic English voice, emotionally controlled, deadpan comedic delivery",
+        "kokoro": {
+          "voice": "bm_george",
+          "speed": 1
+        }
       },
       "sheetStatus": "not_created",
       "expressions": [
@@ -77,7 +89,7 @@
       "dialogue": "Our app takes twelve seconds to load.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 3.2,
+      "duration": 2.6666666666666665,
       "intent": "setup",
       "cast": {
         "dev": {
@@ -99,7 +111,22 @@
         "up": 0.09,
         "fov": 36
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "typing",
+          "at": 0,
+          "gain": -4
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-01.wav",
+        "seconds": 2.167
+      }
     },
     {
       "id": "shot-02",
@@ -107,7 +134,7 @@
       "dialogue": "I can make it instant.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.6,
+      "duration": 1.9333333333333333,
       "intent": "setup",
       "cast": {
         "dev": {
@@ -129,7 +156,15 @@
         "up": 0.05,
         "fov": 35
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-02.wav",
+        "seconds": 1.448
+      }
     },
     {
       "id": "shot-03",
@@ -137,7 +172,7 @@
       "dialogue": "Without breaking anything?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.6,
+      "duration": 2.066666666666667,
       "intent": "setup",
       "cast": {
         "dev": {
@@ -164,7 +199,15 @@
         "seconds": 0.58,
         "emotion": "surprised"
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-03.wav",
+        "seconds": 1.558
+      }
     },
     {
       "id": "shot-04",
@@ -172,7 +215,7 @@
       "dialogue": "Define anything.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.3,
+      "duration": 1.6,
       "intent": "contrast",
       "cast": {
         "dev": {
@@ -198,7 +241,22 @@
         "role": "dev",
         "seconds": 0.5
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "pop",
+          "at": 0.15,
+          "gain": -8
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-04.wav",
+        "seconds": 1.106
+      }
     },
     {
       "id": "shot-05",
@@ -206,7 +264,7 @@
       "dialogue": "Backup created. Emotionally.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 3,
+      "duration": 2.8333333333333335,
       "intent": "contrast",
       "cast": {
         "dev": {
@@ -228,7 +286,15 @@
         "up": 0.04,
         "fov": 34
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-05.wav",
+        "seconds": 2.344
+      }
     },
     {
       "id": "shot-06",
@@ -236,7 +302,7 @@
       "dialogue": "Okay. One tiny change.",
       "speaker": "dev",
       "camera": "duo",
-      "duration": 3,
+      "duration": 2.4,
       "intent": "escalation",
       "cast": {
         "dev": {
@@ -258,7 +324,22 @@
         "up": 0.15,
         "fov": 40
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "typing",
+          "at": 1.2,
+          "gain": -6
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-06.wav",
+        "seconds": 1.888
+      }
     },
     {
       "id": "shot-07",
@@ -266,7 +347,7 @@
       "dialogue": "Done. Zero milliseconds.",
       "speaker": "blue",
       "camera": "screen",
-      "duration": 2.6,
+      "duration": 2.1666666666666665,
       "intent": "escalation",
       "cast": {
         "dev": {
@@ -301,7 +382,26 @@
         "tone": "good",
         "graph": "drop"
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "whoosh",
+          "at": 0,
+          "gain": -6
+        },
+        {
+          "cue": "chime",
+          "at": 0.25
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-07.wav",
+        "seconds": 1.679
+      }
     },
     {
       "id": "shot-08",
@@ -309,7 +409,7 @@
       "dialogue": "Wow! The screen opens immediately.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 3.8,
+      "duration": 2.7333333333333334,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -336,7 +436,15 @@
         "seconds": 0.67,
         "emotion": "worried"
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-08.wav",
+        "seconds": 2.234
+      }
     },
     {
       "id": "shot-09",
@@ -344,7 +452,7 @@
       "dialogue": "It no longer requests data.",
       "speaker": "orange",
       "camera": "screen",
-      "duration": 3.2,
+      "duration": 2.8,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -379,7 +487,27 @@
         "tone": "bad",
         "graph": "flat"
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "whoosh",
+          "at": 0,
+          "gain": -6
+        },
+        {
+          "cue": "buzz",
+          "at": 0.3,
+          "gain": -3
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-09.wav",
+        "seconds": 2.306
+      }
     },
     {
       "id": "shot-10",
@@ -387,7 +515,7 @@
       "dialogue": "What about the customers?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.8,
+      "duration": 1.9666666666666666,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -414,7 +542,15 @@
         "seconds": 0.64,
         "emotion": "surprised"
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-10.wav",
+        "seconds": 1.456
+      }
     },
     {
       "id": "shot-11",
@@ -422,7 +558,7 @@
       "dialogue": "Also removed. No more waiting.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.8,
+      "duration": 2.533333333333333,
       "intent": "reveal",
       "cast": {
         "dev": {
@@ -444,7 +580,22 @@
         "up": 0.08,
         "fov": 35
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "zap",
+          "at": 0.95,
+          "gain": -2
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-11.wav",
+        "seconds": 2.032
+      }
     },
     {
       "id": "shot-12",
@@ -452,7 +603,7 @@
       "dialogue": "You deleted the users?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.8,
+      "duration": 2.066666666666667,
       "intent": "reveal",
       "cast": {
         "dev": {
@@ -480,7 +631,22 @@
         "seconds": 0.72,
         "emotion": "worried"
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "scratch",
+          "at": 0,
+          "gain": -4
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-12.wav",
+        "seconds": 1.552
+      }
     },
     {
       "id": "shot-13",
@@ -488,7 +654,7 @@
       "dialogue": "Technically, retention is perfect.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 3.3,
+      "duration": 3.1,
       "intent": "punchline",
       "cast": {
         "dev": {
@@ -510,7 +676,15 @@
         "up": 0.03,
         "fov": 36
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-13.wav",
+        "seconds": 2.597
+      }
     },
     {
       "id": "shot-14",
@@ -518,7 +692,7 @@
       "dialogue": "Because nobody can leave.",
       "speaker": "dev",
       "camera": "duo",
-      "duration": 3.8,
+      "duration": 4.666666666666667,
       "intent": "punchline",
       "cast": {
         "dev": {
@@ -545,12 +719,47 @@
         "seconds": 0.92,
         "emotion": "surprised"
       },
-      "firstFrameStatus": "not_created"
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 2.8
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-14.wav",
+        "seconds": 1.702
+      }
     }
   ],
   "audio": {
     "state": "mastered",
-    "masterUrl": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg",
-    "audioAlignment": "approximate_existing_v4_engine_not_phoneme_aligned"
+    "masterUrl": "audio/zero-latency/mix.mp3",
+    "audioAlignment": "per_line_voice_clock",
+    "music": {
+      "bpm": 104,
+      "cues": [
+        {
+          "shot": "shot-01",
+          "style": "groove"
+        },
+        {
+          "shot": "shot-09",
+          "style": "stop"
+        },
+        {
+          "shot": "shot-10",
+          "style": "tension"
+        },
+        {
+          "shot": "shot-14",
+          "style": "stop"
+        },
+        {
+          "shot": "shot-14",
+          "style": "sting",
+          "at": "afterLine"
+        }
+      ]
+    },
+    "voiceUrl": "audio/zero-latency/voice.mp3"
   }
 }

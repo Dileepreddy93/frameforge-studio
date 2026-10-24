@@ -66,6 +66,7 @@ def episode(args, kokoro):
         path = os.path.join(args.out, shot["id"] + ".wav")
         seconds = synth(kokoro, shot["dialogue"], v["voice"], v.get("speed", 1.0), path)
         manifest["lines"].append({"shot": shot["id"], "speaker": shot["speaker"], "voice": v["voice"],
+                                  "speed": v.get("speed", 1.0), "text": shot["dialogue"],
                                   "file": os.path.basename(path), "seconds": round(seconds, 3)})
         print(f"{shot['id']}  {v['voice']:<11} {seconds:5.2f}s  {shot['dialogue']}")
     with open(os.path.join(args.out, "lines.json"), "w") as f:

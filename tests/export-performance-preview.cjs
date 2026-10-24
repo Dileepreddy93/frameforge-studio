@@ -11,8 +11,11 @@ const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
 const assert = require('node:assert/strict');
 
-const FPS=30,FRAMES=90,WIDTH=360,HEIGHT=640,START=31.9;
-const AUDIO='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';
+const FPS=30,FRAMES=90,WIDTH=360,HEIGHT=640;
+// Export DEV's shot-12 line with the episode's own mastered mix, positioned from the episode data.
+const PROJECT=JSON.parse(fs.readFileSync(path.join(__dirname,'..','projects','zero-latency.frameforge.json'),'utf8'));
+const START=PROJECT.shots.slice(0,PROJECT.shots.findIndex(s=>s.id==='shot-12')).reduce((a,s)=>a+s.duration,0);
+const AUDIO=path.join(__dirname,'..',PROJECT.audio.masterUrl);
 const output=path.resolve(process.env.FRAMEFORGE_PREVIEW_OUTPUT||'artifacts/v5-2-facial-motion-3s.mp4');
 const requireBinary=name=>{
   try{execFileSync(name,['-version'],{stdio:'ignore'});}
@@ -59,10 +62,7 @@ async function main(){
     assert.deepEqual(errors,[],'The browser scene must render without JS errors');
     await browser.close();browser=null;
 
-    // Fetch the previously-authored stereo voice + Foley master. Never fabricate sound.
-    const audio=path.join(dir,'voice-master.ogg');
-    execFileSync('curl',['--fail','--location','--retry','2','--silent','--show-error',
-      '--max-time','45','--output',audio,AUDIO],{stdio:'pipe',timeout:60000});
+    const audio=AUDIO;
     if(fs.statSync(audio).size<10000)throw new Error('Master soundtrack appears incomplete');
     fs.mkdirSync(path.dirname(output),{recursive:true});
 

@@ -21,30 +21,37 @@ const {chromium}=require('playwright');
  assert.ok(result.cues.every(p=>p.mouthOpen>=0&&p.mouthOpen<=1));
  assert.match(result.frame,/^data:image\/jpeg;base64,/);
 
- const mouth=await page.evaluate(()=>{
-  const voicedTime=32.45,quietTime=33.80;
+ // DEV's line in shot-12 ("You deleted the users?"), located from the episode data, not fixed seconds.
+ const line=await page.evaluate(()=>{
+  let start=0;for(const s of FrameForgeQA.shots()){if(s.id==='shot-12')break;start+=s.duration}
+  const shot=FrameForgeQA.shots().find(s=>s.id==='shot-12'),project=FrameForgeQA.project('comedy').shots.find(s=>s.id==='shot-12');
+  const from=start+project.timing.lead,to=from+project.voice.seconds,env=FrameForgeQA.envelope();
+  let peak=from;for(let t=from;t<to;t+=.05)if(env[Math.floor(t*20)]>env[Math.floor(peak*20)])peak=t;
+  return {start,duration:shot.duration,peak,quiet:to+.3};
+ });
+ const mouth=await page.evaluate(({peak:voicedTime,quiet:quietTime})=>{
   FrameForgeQA.setTime(voicedTime);
   const voiced={cue:FrameForgeSpeechQA.at(voicedTime),rig:FrameForgePerformanceQA.peek()};
   FrameForgeQA.setTime(quietTime);
   const quiet={cue:FrameForgeSpeechQA.at(quietTime),rig:FrameForgePerformanceQA.peek()};
   FrameForgeQA.setTime(voicedTime);
   return {voiced,quiet,rewind:FrameForgePerformanceQA.peek()};
- });
+ },line);
  assert.equal(mouth.voiced.cue.voiced,true,'DEV has a voiced line');
  assert.equal(mouth.quiet.cue.voiced,false,'DEV falls silent');
  assert.ok(mouth.voiced.rig.mouthScale>mouth.quiet.rig.mouthScale+.25,'Mouth closes between syllables');
  assert.deepEqual(mouth.voiced.rig,mouth.rewind,'Same timestamp restores identical facial mesh');
- const mouthWidths=await page.evaluate(()=>{
+ const mouthWidths=await page.evaluate(({start,duration})=>{
    const frames=[];
-   for(let i=0;i<84;i++){
-     const t=31.9+i/30,cue=FrameForgeSpeechQA.at(t);
+   for(let i=0;i<Math.round(duration*30);i++){
+     const t=start+i/30,cue=FrameForgeSpeechQA.at(t);
      FrameForgeQA.setTime(t);
      if(cue.voiced&&['round','wide'].includes(cue.viseme)){
        frames.push({viseme:cue.viseme,width:FrameForgePerformanceQA.peek().mouthWidth});
      }
    }
    return frames;
- });
+ },line);
  const round=mouthWidths.find(f=>f.viseme==='round');
  const wide=mouthWidths.find(f=>f.viseme==='wide');
  assert.ok(round&&wide,'the reference dialogue must contain both round and wide poses');
