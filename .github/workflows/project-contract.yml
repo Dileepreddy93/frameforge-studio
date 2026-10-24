@@ -48,3 +48,14 @@ jobs:
           node tests/character-art-browser.cjs blue
           node tests/character-art-browser.cjs orange
           node tests/performance-browser.cjs
+      - name: Render short V5.2 voiced performance MP4
+        run: |
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/export-performance-preview.cjs
+          ffprobe -v error -count_frames -show_entries stream=codec_type,nb_read_frames -of json artifacts/v5-2-facial-motion-3s.mp4
+      - name: Save motion preview for visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-v5-2-facial-motion-3sec
+          path: artifacts/v5-2-facial-motion-3s.mp4
+          if-no-files-found: error
