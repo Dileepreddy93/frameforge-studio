@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict');
+const core=require('../src/speech-performance-core.js');
+assert.ok(core.types.includes('round'));
+assert.equal(core.textUnits('Baby visits Vijay')[0].type,'closed');
+assert.ok(core.textUnits('You deleted the users').length>10);
+const sr=20,duration=3;
+const energy=Array.from({length:60},(_,i)=>i<9||i>49||i>=23&&i<=29?.014:(i%4===0?.95:.55));
+const sampleAt=(local)=>core.evaluate({text:'Bob wow! You deleted the users',local,duration,samples:energy,rate:sr,shotStart:0});
+const quiet=sampleAt(.20),speech1=sampleAt(.80),pause=sampleAt(1.30),speech2=sampleAt(2.1);
+assert.equal(quiet.viseme,'rest');
+assert.equal(quiet.mouthOpen,0);
+assert.equal(pause.mouthOpen,0);
+assert.equal(pause.viseme,'rest');
+assert.equal(speech1.voiced,true);
+assert.equal(speech2.voiced,true);
+assert.ok(speech2.progress>speech1.progress);
+assert.deepEqual(sampleAt(.9),sampleAt(.9),'seeking deterministic');
+assert.ok(core.textUnits('mmm').every(u=>u.type==='closed'));
+assert.equal(core.evaluate({text:'',duration:3}).viseme,'rest');
+assert.equal(core.evaluate({text:'hello',duration:2,local:4}).mouthOpen,0);
+assert.throws(()=>core.evaluate({local:Infinity}));
+assert.throws(()=>core.evaluate({duration:0}));
+for(let f=0;f<90;f++){const pose=sampleAt(f/30);assert.ok(pose.mouthOpen>=0&&pose.mouthOpen<=1);assert.ok(pose.progress>=0&&pose.progress<=1);assert.ok(core.types.includes(pose.viseme))}
+const noAudio=core.evaluate({text:'hello world',duration:3,local:1,audioEnergy:.8});
+assert.equal(noAudio.confidence,'time-estimate');
+assert.ok(noAudio.voiced);
+console.log('V5_3_SPEECH_PERFORMANCE_PASS: acoustic pauses, syllable distribution, jaw closure, deterministic seek, 90 frames');
