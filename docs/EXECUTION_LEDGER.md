@@ -35,3 +35,11 @@ YYYY-MM-DD | P#.step | branch + commit SHA | changed files | tests with PASS/FAI
 - First PR #5 run 40089620405: source/contract tests PASSED. Browser proof FAILED with Chromium media error code 4 (unsupported source). This was default Playwright **Chromium headless shell**, not Google Chrome with AAC/H264 codec support.
 - Corrective code: tests/phase0-video-playback.cjs switches to actual installed Chrome `channel:'chrome'`; CI prints chrome version and reruns. Do not retroactively mark browser test PASS until new run verified.
 - Portable FFmpeg V4 film verification from initial run remained in progress at correction time. Track latest CI run/commit, not the old run.
+
+## Latest verified CI: 2026-10-24, commit 942d852
+- https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40089784168 — **ALL THREE jobs succeeded**.
+- Source + nine-phase contract tests PASS; real Google Chrome V4 playback test PASS; actual 3D Chromium character/browser renders PASS; software FFmpeg frame exporter PASS.
+- Frame archive PASS: 41.842358 sec, 1254 frames, 480x854 30/1, H264 video, stereo AAC; 11682636 bytes, SHA256 7aa90314e91208ad14254b70f2e5b8738c3333544789a46ea167b9e41daf4590.
+- Reproducible V5 short clip PASS: 90 frames, 3 seconds, 360x640 H264/AAC, SHA256 f481f8ab36512553ee5291a4691b8399ffffdcfa9aae5d10df9f998926d9c827. This remains an art-unapproved preview.
+- P0.5 addition: tools/capture_reference.py outputs native-frame PNGs + frame SHA256 + source metadata for review; local smoke test against a 3-sec synthetic test clip produced 3 independent decoded PNG frames successfully. GitHub test against archived V4 five-frame sample PENDING on this commit.
+- Distinct Library artifacts: git-blame.mp4 metadata 3,365,415 bytes and 65469.mp4 9,395,815 bytes: **they cannot be byte-identical**. Git Blame still inaccessible for byte verification.

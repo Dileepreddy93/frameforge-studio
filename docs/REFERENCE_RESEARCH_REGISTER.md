@@ -18,3 +18,6 @@ Six websites, two documents, one exact film benchmark plus future-source policy.
 Grades: A hash-verified original bytes and inspected audio/frames; B directly observed public UI/code; C archived analysis; D marketing/vendor claims; U unavailable. Historical video report says Git Blame ~52.181s, 720x1280, 30fps, but NOT remeasured from this Library copy. A third-party video must not be committed without redistribution rights. Record exact source URL, retrieval date, rights, SHA256 and ffprobe metrics when raw media is accessible.
 
 P0.4 status BLOCKED despite file metadata. Library read returned no text and Library raw materialization explicitly refused; no claim of video frame inspection is appropriate at this step.
+
+## Additional artifact identity check, 2026-10-24
+The original-named git-blame.mp4 record in user Library is 3,365,415 bytes; the differently named 65469.mp4 Library item is 9,395,815 bytes. They are *not byte-identical*. No frame or source hash verification can be performed on the original-named file until an authorized raw copy is accessible to the runtime. Local P0 evidence extractor: tools/capture_reference.py. The official HyperFrames project (https://github.com/heygen-com/hyperframes) is an Apache-2.0 rendering candidate; no A/B benchmark has been run, so no exporter replacement is justified.

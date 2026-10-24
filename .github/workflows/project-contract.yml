@@ -73,6 +73,16 @@ jobs:
           ffprobe -version | head -1
       - name: Verify actual V4 archived full-film bytes and decode
         run: node tools/verify-phase0.mjs
+      - name: Extract five real V4 frames with timestamped hashes
+        run: |
+          python3 tools/capture_reference.py media/v4-review/frameforge-v4-complete-director-41s.mp4 --allow-own --out artifacts/p0-v4-frame-evidence --times 0.8,7.95,17.7,30.5,40.8
+          node tests/phase0-frame-evidence.test.mjs artifacts/p0-v4-frame-evidence/manifest.json
+      - name: Preserve actual V4 image QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-phase0-v4-five-frames
+          path: artifacts/p0-v4-frame-evidence/
+          if-no-files-found: error
       - name: Render deterministic V5.2 voiced performance MP4
         run: |
           python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
