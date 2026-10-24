@@ -19,10 +19,12 @@ const fsdata=JSON.parse(fs.readFileSync('projects/zero-latency.frameforge.json',
  const image=await page.evaluate(()=>FrameForgeQA.renderFilmFrame(7.4,360,640));
  assert.match(image,/^data:image\/jpeg;base64,/);assert.ok(image.length>4000);
  await page.locator('#preset').selectOption('mystery');
+ await page.locator('#build').click();
  await page.waitForFunction(()=>FrameForgeCurrentProject?.id==='mountain-mystery'&&FrameForgeQA.shots().length===6,null,{timeout:12000});
  const mystery=await page.evaluate(()=>({id:FrameForgeCurrentProject.id,lines:FrameForgeQA.shots().length,audio:FrameForgeCurrentProject.audio.state}));
  assert.deepEqual(mystery,{id:'mountain-mystery',lines:6,audio:'storyboard_only'});
  await page.locator('#preset').selectOption('comedy');
+ await page.locator('#build').click();
  await page.waitForFunction(()=>FrameForgeCurrentProject?.id==='zero-latency'&&FrameForgeQA.shots().length===14,null,{timeout:12000});
  assert.deepEqual(errors,[],'Page-level runtime errors');
  const broken=failed.filter(s=>/project-core|frameforge\.json/.test(s));
