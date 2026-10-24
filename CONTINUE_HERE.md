@@ -50,3 +50,6 @@ Experimental branch `feature/p1-real-glb-character-lab` contains `asset-lab.html
 
 ## Current generated 3D human (P1)
 `feature/p1-real-human-preview` contains research fixture `assets/rigged-samples/AraAthleticMan.glb` SHA256 3faf7629bd6f62f70e916d665b4051de35b0b27832e8da3b19b8a4dd93c4be22, body 69-bone rig, 63 animations, 20 morph target types. `asset-lab.html` has one-click loading and 4-angle/emotion studies. Quality remains NOT APPROVED; reference stylistic/acting parity, customizer and movie cast integration pending. See docs/releases/P1_ARA_HUMAN_BUNDLED_REVIEW.md; avoid calling all motions CC0 (CMU terms).
+
+## P1 facial camera and morph QA checkpoint
+See `docs/releases/P1_FACE_CLOSEUP_MORPH_QA.md`. Real screenshot inspection on generated Ara human proved that old “portrait” displayed half-body and happy/worried changes averaged <0.04/255 across image. New P1 feature branch tightens to genuine eye-level face closeup and exposes real GLB morph sliders without modifying film actor rig. Technical PR #12 still requires new browser screenshots and explicit artistic assessment; do not promote P1 on code green alone.

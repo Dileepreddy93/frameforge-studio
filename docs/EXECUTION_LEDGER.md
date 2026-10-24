@@ -91,3 +91,7 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - Generated 10,587,092 byte Ara/MakeHuman-based GLB in pinned 40096258152; SHA256 3faf7629bd6f62f70e916d665b4051de35b0b27832e8da3b19b8a4dd93c4be22, 69 bones, 63 clips, 20 facial morph types, 9 real Chromium frames. Source + actual visual inspected: improved anatomy but weak happy/worried, style mismatch, ART NOT APPROVED.
 - GitHub Actions model-preservation initially failed with HTTP 403 missing `actions:read`; fixed and imported byte-exact audited GLB into `feature/p1-real-human-preview`. Branch includes one-click human loader and expression QA; do not claim CI of this integration until current run completes.
 - docs/releases/P1_ARA_HUMAN_BUNDLED_REVIEW.md and credits record rights and unresolved gates. Existing Zero Latency and reference evidence unchanged.
+
+## P1 facial QA correction — 2026-10-24
+- Existing Ara GLB generated model and all four GitHub CI jobs confirmed on commit 844f1bf (workflow run 40097330010). Real native 808×648 pixels showed “portrait” actually half-body; happy/worried visually tiny and mean abs pixel difference vs neutral only 0.0333/0.0321 out of 255. Clearly not artistic proof.
+- Corrected actual face camera framing and added direct named morph slider customization + persistent manual overrides; Chromium test extended to capture two custom-expression frames and test seek/reset. See docs/releases/P1_FACE_CLOSEUP_MORPH_QA.md. Need inspect new CI output before passing any artistic gate.

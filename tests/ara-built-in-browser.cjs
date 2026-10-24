@@ -38,6 +38,19 @@ for(const expression of ['neutral','happy','worried','surprised']){
  await page.evaluate(e=>window.FrameForgeRigLabQA.setExpression(e),expression);
  frames.push(await capture('expression-'+expression));
 }
+const cameraPose=await page.evaluate(()=>{
+ const canvas=document.querySelector('#viewport canvas');
+ return {width:canvas.width,height:canvas.height};
+});
+assert.ok(cameraPose.width>300);
+await page.evaluate(()=>window.FrameForgeRigLabQA.setManualMorph('mouthSmile',1));
+assert.equal(await page.evaluate(()=>window.FrameForgeRigLabQA.getManualMorphs().mouthSmile),1);
+frames.push(await capture('expression-custom-smile'));
+await page.evaluate(()=>window.FrameForgeRigLabQA.setTime(.36));
+assert.equal(await page.evaluate(()=>window.FrameForgeRigLabQA.getManualMorphs().mouthSmile),1,'manual facial expression persists after scrub');
+frames.push(await capture('expression-custom-after-scrub'));
+await page.locator('#resetMorphs').click();
+assert.deepEqual(await page.evaluate(()=>window.FrameForgeRigLabQA.getManualMorphs()),{},'facial controls reset');
 await page.locator('#framing').selectOption('full');
 await page.evaluate(()=>window.FrameForgeRigLabQA.setTime(1));
 frames.push(await capture('action-at-1s'));

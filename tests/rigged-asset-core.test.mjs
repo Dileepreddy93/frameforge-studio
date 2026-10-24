@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {inspectGLB,applyMorphPreset,inspectScene,EXPRESSION_NAMES} from '../src/rigged-asset-core.mjs';
+import {inspectGLB,applyMorphPreset,applyMorphControls,inspectScene,EXPRESSION_NAMES} from '../src/rigged-asset-core.mjs';
 const encode=text=>new TextEncoder().encode(text);
 function makeGLB(doc){
  const j=encode(JSON.stringify(doc));const len=Math.ceil(j.length/4)*4;
@@ -25,3 +25,12 @@ assert.throws(()=>applyMorphPreset(root,'madeup'),/Unknown/);
 const fake={traverse:f=>{f({isBone:true});f({isSkinnedMesh:true,isMesh:true,geometry:{attributes:{position:{count:60}},index:{count:120}},morphTargetDictionary:channels})}};
 const scene=inspectScene(fake,[{name:'Idle'}]);assert.equal(scene.skinnedMeshes,1);assert.equal(scene.bones,1);assert.equal(scene.triangles,40);
 console.log('RIGGED_ASSET_CORE_PASS',JSON.stringify({formats:['GLB2'],meshes:d.meshes,expressions:EXPRESSION_NAMES.length}));
+
+const manual=applyMorphControls(root,{mouthSmile:.98,jawOpen:.40});
+assert.equal(manual.matched,2);
+assert.equal(mesh.morphTargetInfluences[0],.98);
+assert.equal(mesh.morphTargetInfluences[1],.40);
+assert.throws(()=>applyMorphControls(root,{mouthSmile:1.5}),/between zero and one/);
+applyMorphPreset(root,'neutral');applyMorphControls(root,{mouthSmile:.67});
+assert.equal(mesh.morphTargetInfluences[0],.67,'manual shape survives deterministic seek');
+console.log('P1_REAL_MORPH_OVERRIDE_PASS');
