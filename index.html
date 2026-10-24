@@ -433,7 +433,7 @@ function sweptLock(points,thickness,material=artHair){
                          .addScaledVector(depth,Math.sin(theta)*radius*.70);
    verts.push(p.x,p.y,p.z);
    if(i<rings-1){const a=i*facets+j,b=i*facets+(j+1)%facets,c=(i+1)*facets+j,d=(i+1)*facets+(j+1)%facets;
-    indices.push(a,c,b,b,c,d)}
+    indices.push(a,b,c,b,d,c)}
   }
  }
  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(verts,3));
