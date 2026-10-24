@@ -13,14 +13,14 @@ Existing PRIVATE GitHub repo: https://github.com/Dileepreddy93/frameforge-studio
 main: V3 `f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b`, preserved production.
 develop baseline at this effort: `79bac8a80b67b37f4462215fb1df818b8b7bc202` (merged V4 and V5.2).
 chore/p0-evidence-nine-phase-plan: acceptance plan, QA/evidence tests, no new film art.
-feature/v5-3-audio-guided-performance: separate experimental PR #4, not merged into this effort.
+V5.3 speech system: PR #4 merged into develop at 1d4bb48e07613fac1aeb8917df9c06011b8b1427; the P0 branch began at older develop 79bac8a, while PR #5 integration tests merge it against the newer develop. Do not discard V5.3 voice/gaze/Unicode changes when merging.
 Tags v3.0-stable and v4.0-rc1 preserved; no force pushes. V3 live URL https://frameforge-3d-director-preview.vercel.app/ is not newest V5 source.
 
 ## Reference video
 EXACT user file named git-blame.mp4 exists in ChatGPT Library at /video Analysis/git-blame.mp4 (metadata 3,365,415 bytes). Raw-byte materialization returned no artifact in this execution, so no new SHA256, frame measurement or video binary has been ingested into GitHub. Older 65469.mp4 is a DIFFERENT UNPROVEN comparison candidate. Do not label any reference verified without hashing actual source bytes. Don't redistribute original reference without rights.
 
 ## Current product gaps
-V4 full 41.842s 480x854 H264/AAC movie previously technically verified; NOT artistically reference approved. V5.2 source on develop has actual Three.js rigs, project JSON, some emotion controls and 3s/6s previews. P1 models UNAPPROVED. Arbitrary custom rigs rejected; source currently includes only DEV, BLUE, ORANGE. Hindi/Telugu production voices, phoneme-level sync, fully authorable 3D creator, 1080x1920 full film and final quality parity are NOT verified.
+V4 full 41.842s 480x854 H264/AAC movie previously technically verified; NOT artistically reference approved. V5.2 source on develop has actual Three.js rigs, project JSON, some emotion controls and 3s/6s previews. P1 models UNAPPROVED. Arbitrary custom rigs rejected; source currently includes only DEV, BLUE, ORANGE. Hindi/Telugu voice synthesis (distinct from recently merged Unicode text handling), phoneme-level sync, fully authorable 3D creator, 1080x1920 full film and final quality parity are NOT verified.
 
 ## Phase0 verification and next tasks
 node tests/phase0-nine-phase-contract.mjs

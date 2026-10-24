@@ -4,7 +4,7 @@ Update on EVERY changed source, rendered asset or release. The next chat should 
 ## Baseline / branch isolation — 2026-10-24
 Repository: Dileepreddy93/frameforge-studio (private).
 Working branch: chore/p0-evidence-nine-phase-plan; ancestor develop @ 79bac8a80b67b37f4462215fb1df818b8b7bc202.
-main: f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b (archived V3). v3.0-stable/v4.0-rc1 refs exist. develop merges V4 and V5.2. Open PR #4 for V5.3 AUDIO-GUIDED speech is separate and NOT automatically included.
+main: f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b (archived V3). v3.0-stable/v4.0-rc1 refs exist. develop merges V4 and V5.2. PR #4 for V5.3 audio-guided speech, including newer Unicode Telugu/Hindi text parsing, MERGED into develop as 1d4bb48e07613fac1aeb8917df9c06011b8b1427 after this P0 branch was cut. PR #5 tests the combined merge, not necessarily the old source branch by itself.
 
 ## Phase 0 status record
 | ID | Changed/evidence paths | Status now | Exit blockers |
@@ -43,3 +43,8 @@ YYYY-MM-DD | P#.step | branch + commit SHA | changed files | tests with PASS/FAI
 - Reproducible V5 short clip PASS: 90 frames, 3 seconds, 360x640 H264/AAC, SHA256 f481f8ab36512553ee5291a4691b8399ffffdcfa9aae5d10df9f998926d9c827. This remains an art-unapproved preview.
 - P0.5 addition: tools/capture_reference.py outputs native-frame PNGs + frame SHA256 + source metadata for review; local smoke test against a 3-sec synthetic test clip produced 3 independent decoded PNG frames successfully. GitHub test against archived V4 five-frame sample PENDING on this commit.
 - Distinct Library artifacts: git-blame.mp4 metadata 3,365,415 bytes and 65469.mp4 9,395,815 bytes: **they cannot be byte-identical**. Git Blame still inaccessible for byte verification.
+
+## Parallel branch update / merged code warning
+- develop moved from 79bac8a to 1d4bb48 (V5.3 merged) during P0 work. PR #5 is based on older develop and is **mergeable**; GitHub PR CI tests the merged result. Do not replace latest develop with the old P0 branch tree. Use GitHub's normal non-force PR merge to preserve both histories.
+- V5.3 handles Unicode Telugu/Hindi text mapping experimentally; it does NOT supply actual high-quality Telugu/Hindi production voice models or validated phoneme alignment. Preserve that distinction for future chats.
+- Latest P0 technical evidence extractor commit 461e623: new 5-frame V4 extraction, source SHA, PNG hashes and CI artifact. Workflow run https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40090426377 recorded as source tests+FFmpeg successful, browser character-render still running at this ledger update.
