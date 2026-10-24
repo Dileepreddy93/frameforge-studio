@@ -75,6 +75,26 @@ export function applyMorphPreset(root,preset='neutral') {
   });
   return Object.freeze({preset,available,matched,supported:available>0 && (preset==='neutral'||matched>0)});
 }
+// Manual normalized shape weights override named preset channels after any seek.
+export function applyMorphControls(root,controls={}) {
+ if(!root||typeof root.traverse!=='function')throw new Error('A Three.js model root is required');
+ if(!controls||typeof controls!=='object'||Array.isArray(controls))throw new TypeError('Controls must be a shape-name map');
+ const requested=new Map();
+ for(const [name,value] of Object.entries(controls)){
+  if(!Number.isFinite(value)||value<0||value>1)throw new RangeError('Facial weight must be between zero and one');
+  requested.set(normalize(name),value);
+ }
+ let matched=0;
+ root.traverse(mesh=>{
+  if(!mesh.morphTargetDictionary||!mesh.morphTargetInfluences)return;
+  for(const [name,index] of Object.entries(mesh.morphTargetDictionary)){
+   const value=requested.get(normalize(name));
+   if(value===undefined||!Number.isInteger(index)||index<0||index>=mesh.morphTargetInfluences.length)continue;
+   mesh.morphTargetInfluences[index]=value;matched++;
+  }
+ });
+ return Object.freeze({requested:requested.size,matched});
+}
 export function inspectScene(root,animations=[]) {
   if(!root || typeof root.traverse!=='function') throw new Error('A Three.js model root is required');
   let meshes=0,skinnedMeshes=0,bones=0,vertices=0,morphChannels=0,triangles=0;

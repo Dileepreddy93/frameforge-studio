@@ -116,6 +116,14 @@ jobs:
           export FRAMEFORGE_URL=http://127.0.0.1:8959/
           export FRAMEFORGE_RIG_OUT=artifacts/p1-rigged-asset-lab
           node tests/rigged-asset-browser.cjs
+          node tests/ara-built-in-browser.cjs
+      - name: Preserve generated human expression and body render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-real-human-face-frames
+          path: artifacts/p1-real-human-preview/
+          if-no-files-found: warn
       - name: Preserve actual GLB camera and skinning render evidence
         if: always()
         uses: actions/upload-artifact@v4

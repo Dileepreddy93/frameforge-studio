@@ -35,7 +35,9 @@ footer{color:#94a8bc;font-size:12px;padding:0 22px 25px;max-width:1500px;margin:
 </header>
 <div class="layout">
 <section class="panel">
-<button id="sample" class="primary">Load rigged sample character</button>
+<button id="human" class="primary">Load generated realistic human (10.6 MB)</button>
+<div class="warn">Actual MakeHuman-based model created with free Ara 3D Gen: 20 facial morph names and 63 animations. It is a <strong>research actor, not art-approved</strong>. <a href="./assets/rigged-samples/AraAthleticMan.CREDITS.md">Asset credits and limits</a>.</div>
+<button id="sample" style="margin-top:12px">Compare basic rigged test model · Cesium Man</button>
 <div class="warn">Cesium Man: third-party CC BY 4.0 technical demonstration with a Cesium mark. Not an original film actor. <a href="./assets/rigged-samples/CesiumMan.CREDITS.md" target="_blank" rel="noopener">Attribution</a>.</div>
 <label for="upload">Import your own self-contained .glb (local only, max 25 MiB)</label>
 <input id="upload" type="file" accept=".glb,model/gltf-binary">
@@ -48,6 +50,10 @@ footer{color:#94a8bc;font-size:12px;padding:0 22px 25px;max-width:1500px;margin:
 <div><label for="expression">Expression (only with real morph targets)</label><select id="expression" disabled><option value="neutral">Neutral</option><option value="happy">Happy</option><option value="worried">Worried</option><option value="surprised">Surprised</option><option value="angry">Angry</option></select></div>
 <div><label for="clip">Rigged action clip</label><select id="clip" disabled><option value="">No animations loaded</option></select></div>
 </div>
+<details id="faceLab" class="group"><summary style="font-weight:750;cursor:pointer">Customize actual facial blendshapes <span id="faceCount" style="color:#96d9e9">(0 available)</span></summary>
+<p class="sub">Drag individual expression channels to change the imported mesh itself. The controls are real morph weights, not a cosmetic face overlay. Manual adjustments persist when scrubbing.</p>
+<div id="morphControls" style="max-height:235px;overflow-y:auto;display:grid;gap:8px;padding:10px 0"></div>
+<button id="resetMorphs">Reset facial adjustments</button></details>
 <label for="frameTime">Animation timeline — deterministic scrub</label>
 <input type="range" id="frameTime" min="0" max="1" step="0.033333" value="0" disabled>
 <div class="cols"><button id="play" disabled>▶ Play movement</button><button id="capture" disabled>Export actual PNG</button></div>
@@ -63,7 +69,7 @@ footer{color:#94a8bc;font-size:12px;padding:0 22px 25px;max-width:1500px;margin:
 <script type="module">
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {inspectGLB,inspectScene,applyMorphPreset,EXPRESSION_NAMES} from './src/rigged-asset-core.mjs';
+import {inspectGLB,inspectScene,applyMorphPreset,applyMorphControls,EXPRESSION_NAMES} from './src/rigged-asset-core.mjs';
 const $=id=>document.getElementById(id);
 const viewport=$('viewport');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#111c2e');
@@ -84,12 +90,15 @@ const stage=new THREE.Group();scene.add(stage);
 const loader=new GLTFLoader();
 const ANGLES={front:0,threequarter:Math.PI/4,side:Math.PI/2,back:Math.PI};
 let model=null,animations=[],mixer=null,summary=null,preset='neutral',sourceName='',seconds=0,playing=false,last=0,frameIndex=0;
+let morphOverrides={};
 const setStatus=(message,error=false)=>{$('status').textContent=message;$('status').style.color=error?'#ffc3b3':'#b6eadd'};
 const sizeCanvas=()=>{const w=Math.max(280,Math.floor(viewport.clientWidth)),h=Math.max(330,Math.floor(viewport.clientHeight));
 renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
 function compose(){
  if(model){stage.rotation.y=ANGLES[$('view').value]??0;const portrait=$('framing').value==='portrait';
- camera.fov=portrait?32:34;camera.position.set(0,portrait?2.20:1.48,portrait?3.0:5.5);camera.lookAt(0,portrait?2.21:1.40,0);
+ // Correct eye-level portrait: previous 3m "portrait" was a torso shot with a tiny face.
+ // The imported actor is normalized to 2.7m, so its eye region lies around y=2.43.
+ camera.fov=portrait?36:34;camera.position.set(0,portrait?2.43:1.48,portrait?1.15:5.5);camera.lookAt(0,portrait?2.43:1.40,0);
  camera.updateProjectionMatrix();}
  renderer.render(scene,camera);
 }
@@ -101,7 +110,7 @@ function updateFrame(t){
  if(!mixer)return;
  seconds=Math.min(Math.max(0,Number(t)||0),Number($('frameTime').max)||0);
  mixer.setTime(seconds); // scene state derived from selected absolute time, no drift
- if(model)applyMorphPreset(model,preset);
+ if(model){applyMorphPreset(model,preset);applyMorphControls(model,morphOverrides);}
  $('frameTime').value=String(seconds);
  compose();
 }
@@ -130,7 +139,8 @@ async function loadBytes(arrayBuffer,name){
   raw.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
   stage.add(raw);model=raw;animations=gltf.animations||[];mixer=new THREE.AnimationMixer(raw);
   summary={source:name,header,scene:inspectScene(raw,animations)};
-  sourceName=name;seconds=0;preset='neutral';$('expression').value='neutral';
+  sourceName=name;seconds=0;preset='neutral';morphOverrides={};$('expression').value='neutral';
+  renderMorphSliders(header.morphNames);
   for(const id of ['play','capture'])$(id).disabled=false;
   $('clip').replaceChildren();
   if(animations.length){
@@ -146,16 +156,38 @@ async function loadBytes(arrayBuffer,name){
  }catch(err){setStatus('REJECTED: '+(err?.message||String(err)),true);throw err}
 }
 function resizeAndCompose(){sizeCanvas();compose()}
-async function loadSample(){
- $('sample').disabled=true;
- try{
-  const r=await fetch('./assets/rigged-samples/CesiumMan.glb',{cache:'no-store'});
-  if(!r.ok)throw new Error('Sample GLB HTTP '+r.status);
-  await loadBytes(await r.arrayBuffer(),'CesiumMan · CC BY technical sample');
- }catch(e){setStatus('Sample failed: '+e.message,true)}
- finally{$('sample').disabled=false}
+function renderMorphSliders(names){
+ const holder=$('morphControls');holder.replaceChildren();
+ $('faceCount').textContent='('+names.length+' available)';
+ for(const name of names){
+  const id='morph-'+name.replace(/[^a-z0-9_-]/gi,'_');
+  const wrap=document.createElement('div');wrap.style.cssText='display:grid;grid-template-columns:minmax(105px,1fr) 2fr 40px;gap:8px;align-items:center';
+  const label=document.createElement('label');label.htmlFor=id;label.textContent=name;label.style.margin='0';
+  const input=document.createElement('input');input.id=id;input.type='range';input.min='0';input.max='1';input.step='.01';input.value='0';input.dataset.morph=name;input.style.padding='0';input.style.accentColor='#79dcca';
+  const val=document.createElement('output');val.textContent='0.00';val.htmlFor=id;val.style.fontVariantNumeric='tabular-nums';
+  input.addEventListener('input',()=>{
+    morphOverrides[name]=Number(input.value);val.textContent=Number(input.value).toFixed(2);
+    if(model){applyMorphPreset(model,preset);applyMorphControls(model,morphOverrides);compose();}
+  });
+  wrap.append(label,input,val);holder.append(wrap);
+ }
 }
-$('sample').addEventListener('click',loadSample);
+function setManualMorph(name,value){
+ if(!summary?.header?.morphNames.includes(name))throw new Error('Morph target not available: '+name);
+ if(!Number.isFinite(value)||value<0||value>1)throw new Error('Morph weight outside 0..1');
+ const item=Array.from($('morphControls').querySelectorAll('input')).find(n=>n.dataset.morph===name);
+ if(!item)throw new Error('Morph slider not found');
+ item.value=String(value);item.dispatchEvent(new Event('input'));
+}
+async function loadBundled(url,name,button){
+ button.disabled=true;
+ try{const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error('GLB HTTP '+response.status);
+ await loadBytes(await response.arrayBuffer(),name);}
+ catch(e){setStatus('Asset failed: '+e.message,true)}finally{button.disabled=false}
+}
+async function loadSample(){return loadBundled('./assets/rigged-samples/CesiumMan.glb','CesiumMan · CC BY technical sample',$('sample'))}
+async function loadHuman(){return loadBundled('./assets/rigged-samples/AraAthleticMan.glb','Ara human research rig · MakeHuman CC0 based',$('human'))}
+$('sample').addEventListener('click',loadSample);$('human').addEventListener('click',loadHuman);
 $('upload').addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
  if(!file.name.toLowerCase().endsWith('.glb')){setStatus('Only self-contained .glb accepted; VRM plugin is not integrated yet.',true);return}
@@ -166,6 +198,10 @@ $('expression').addEventListener('change',()=>{preset=$('expression').value;
  const p=applyMorphPreset(model,preset);
  $('morphStatus').textContent=p.matched||preset==='neutral'?'Target channels applied: '+p.matched+'.':'No corresponding blendshapes for this pose; no expression fabricated.';
  compose()});
+$('resetMorphs').addEventListener('click',()=>{
+ morphOverrides={};renderMorphSliders(summary?.header?.morphNames||[]);
+ if(model){applyMorphPreset(model,preset);compose();}
+});
 $('clip').addEventListener('change',()=>activateClip(Number($('clip').value)));
 $('frameTime').addEventListener('input',()=>{playing=false;$('play').textContent='▶ Play movement';updateFrame(Number($('frameTime').value))});
 $('play').addEventListener('click',()=>{playing=!playing;$('play').textContent=playing?'Ⅱ Pause':'▶ Play movement';last=performance.now()});
@@ -184,10 +220,13 @@ resizeAndCompose();requestAnimationFrame(loop);
 window.FrameForgeRigLabQA=Object.freeze({
  version:'p1-rigged-glb-poc1',
  loadSample,
+ loadHuman,
  getSummary:()=>summary,
  setView:v=>{if(!Object.hasOwn(ANGLES,v))throw Error('Unknown view');$('view').value=v;compose()},
  setExpression:em=>{$('expression').value=em;$('expression').dispatchEvent(new Event('change'))},
  setTime:updateFrame,
+ setManualMorph,
+ getManualMorphs:()=>({...morphOverrides}),
  capture,
  getStatus:()=>$('status').textContent,
  getPlaying:()=>playing,
