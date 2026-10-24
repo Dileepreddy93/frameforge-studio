@@ -32,3 +32,6 @@ Clean-room reproduction gates remain OPEN until lockfile/transitive dependency v
 python3 tools/capture_reference.py media/v4-review/frameforge-v4-complete-director-41s.mp4 --allow-own --out artifacts/local-v4 --times 0.8,7.95,17.7,30.5,40.8
 python3 tools/capture_reference.py /path/to/git-blame.mp4 --out artifacts/exact-target --times 0.8,3,7.95,15,22,31,41,50
 Creates a new directory; refuses to overwrite existing directories, takes unscaled native PNGs, hashes source and stills and writes manifest.json. Filename validation is NOT publisher identity authentication. Do not commit copyrighted full reference MP4.
+
+## Exact reference byte acceptance (2026-10-24)
+Actual user-designated file: SHA256 `560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e` / 3,365,415 bytes, measured 52.181 seconds and 1,564 frames. `node tools/verify-phase0.mjs --reference /absolute/path/to/git-blame.mp4` now checks EXPECTED hash and stream properties; merely naming a different file `git-blame.mp4` will fail. `spec/git-blame-reference.json` pins 24 reproducible native-frame output hashes. This binary is not shipped with the Git repository. New chats must regain authorized access to those bytes for re-decoding.

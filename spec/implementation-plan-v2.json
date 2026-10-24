@@ -2,7 +2,7 @@
   "schema": "frameforge.phases/2",
   "version": 2,
   "acceptedOn": "2026-10-24",
-  "referenceStatus": "unverified_bytes",
+  "referenceStatus": "user_supplied_bytes_sha256_verified_publisher_provenance_unknown",
   "promotionPolicy": "Do not promote to main or production until cinematic art AND entire film engineering quality, along with exact reference comparison, are independently passed.",
   "phases": [
     {

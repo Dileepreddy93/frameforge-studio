@@ -19,6 +19,7 @@ jobs:
         run: |
           node tests/phase0-contract.test.mjs
           node tests/phase0-nine-phase-contract.mjs
+          node tests/git-blame-reference-contract.mjs
           node tests/project-core.test.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
