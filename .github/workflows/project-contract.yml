@@ -20,6 +20,7 @@ jobs:
           node tests/phase0-contract.test.mjs
           node tests/phase0-nine-phase-contract.mjs
           node tests/git-blame-reference-contract.mjs
+          node tests/rigged-asset-core.test.mjs
           node tests/project-core.test.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
@@ -96,3 +97,29 @@ jobs:
           name: frameforge-v5-3-audio-guided-motion-3sec
           path: artifacts/v5-3-audio-guided-3s.mp4
           if-no-files-found: error
+
+  rigged-character-import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real headless Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Import real Khronos GLB and render 7 rigged character frames
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-glb-http.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          export FRAMEFORGE_RIG_OUT=artifacts/p1-rigged-asset-lab
+          node tests/rigged-asset-browser.cjs
+      - name: Preserve actual GLB camera and skinning render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-real-glb-7-frames
+          path: artifacts/p1-rigged-asset-lab/
+          if-no-files-found: warn
