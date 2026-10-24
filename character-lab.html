@@ -25,6 +25,7 @@ figcaption{padding:7px 4px;text-align:center;color:#d4e2eb;font-size:12px}footer
 <span id="status" class="status" role="status">Loading Three.js film engine…</span></div>
 <section><h2>01 / Model turnaround</h2><div id="turnaround" class="grid"></div></section>
 <section><h2>02 / Emotional faces</h2><div id="emotions" class="grid"></div></section>
+<section><h2>03 / Environment-only first frame</h2><p>Actors hidden. Set materials, lighting, props, and vertical framing are rendered from the same 3D world. Caption-safe placement must be visually approved.</p><figure style="max-width:360px"><img id="environment" alt="Environment-only 3D render"><figcaption>3D environment · unapproved</figcaption></figure></section>
 <p>Source guide: NMXWZ specifies front / three-quarter / side / back at matching scale plus four close-up expressions. The source character engine remains independently authored; creator marketing media are reference material only.</p>
 <iframe id="studio" src="./index.html" title="FrameForge renderer"></iframe></main>
 <footer>Character identity and first-frame approval statuses remain unapproved until visual QA is complete.</footer>
@@ -48,6 +49,7 @@ async function make(){
    const png=api.capture(who,'front',expression,360,460);
    shots.push({name:expression,png});return viewFigure(expression,png);
   }));
+  if(!$('environment').src){$('environment').src=api.captureEnvironment(360,640);}
   save.disabled=false;status.textContent=who.toUpperCase()+' · 8 true 3D frames rendered; art approval pending';
  }catch(error){status.textContent='Rendering error: '+error.message;console.error(error)}
  finally{btn.disabled=false}

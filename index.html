@@ -839,12 +839,35 @@ function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,
   renderer.render(scene,cam);
  }
 }
+function captureEnvironment(width=360,height=640){
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<160||height<220||width>1024||height>1400)throw new Error('Invalid environment output size');
+ const actors=[dev,b.root,o.root];
+ const previous=actors.map(actor=>actor.visible);
+ const oldSize=renderer.getSize(new T.Vector2()),position=cam.position.clone(),quat=cam.quaternion.clone();
+ const oldFov=cam.fov,oldAspect=cam.aspect,oldTime=time,wasRunning=running;
+ try{
+  running=false;soundtrack.pause();
+  actors.forEach(actor=>actor.visible=false);
+  renderer.setSize(width,height,false);
+  cam.aspect=width/height;cam.fov=40;cam.updateProjectionMatrix();
+  cam.position.set(0,3.1,8.6);cam.lookAt(0,1.45,0);
+  renderer.render(scene,cam);
+  return renderer.domElement.toDataURL('image/png');
+ }finally{
+  actors.forEach((actor,i)=>actor.visible=previous[i]);
+  renderer.setSize(oldSize.x,oldSize.y,false);
+  cam.position.copy(position);cam.quaternion.copy(quat);cam.fov=oldFov;cam.aspect=oldAspect;cam.updateProjectionMatrix();
+  time=oldTime;running=wasRunning;
+  renderer.render(scene,cam);
+ }
+}
 window.FrameForgeArtLab=Object.freeze({
  version:'v5-phase1c-actual-rigs',
  actors:()=>['dev','blue','orange'],
  views:()=>ART_VIEWS.map(x=>x.id),
  expressions:()=>[...ART_EXPRESSIONS],
- capture:captureCharacterView
+ capture:captureCharacterView,
+ captureEnvironment
 });
 
 window.FrameForgeQA={
