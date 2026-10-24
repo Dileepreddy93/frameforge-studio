@@ -6,6 +6,7 @@ The validator is `src/project-core.js`. It runs unchanged in Node and in the bro
 
 Examples:
 - `projects/zero-latency.frameforge.json` is fully directed, with 14 shots and mastered audio.
+- `projects/dark-mode.frameforge.json` (episode 02) was written only as data, with no code changes.
 - `projects/mountain-mystery.frameforge.json` is a storyboard with no voice and relies on defaults.
 
 ## Episode fields
@@ -58,6 +59,6 @@ Older files that use `emotion`, `action` or `acting.devEmotion` on shots still o
 ```
 
 ## Loading an episode
-- Use **Import project** in the studio, or add the file to `projectFiles` in `index.html`.
+- Publish an episode by adding `{key, file, label}` to `projects/index.json`; the studio lists every entry. Or use **Import project** in the studio.
 - **Download episode JSON** saves the edits made in the studio.
 - Tests: `node tests/project-core.test.cjs` checks the format, and `node tests/episode-data-browser.cjs` checks that the renderer follows it.

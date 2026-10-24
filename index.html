@@ -564,15 +564,19 @@ update=function(){
 };
 // V5 projects are versioned documents, NOT hardcoded dialogue arrays.
 const projectCatalog=Object.create(null);
-const projectFiles={comedy:'./projects/zero-latency.frameforge.json',
-                    mystery:'./projects/mountain-mystery.frameforge.json'};
-const projectReady=Promise.all(Object.entries(projectFiles).map(async ([key,path])=>{
+// The episode list is data: add an entry to projects/index.json to publish a new episode.
+const projectReady=fetch('./projects/index.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Missing projects/index.json (HTTP '+r.status+')');return r.json()}).then(index=>{
+ const select=$('preset');select.innerHTML='';
+ for(const {key,label} of index.episodes){const o=document.createElement('option');o.value=key;o.textContent=label;select.appendChild(o)}
+ return Promise.all(index.episodes.map(async ({key,file})=>{
+ const path='./projects/'+file;
  const response=await fetch(path,{cache:'no-cache'});
  if(!response.ok)throw new Error('Missing project '+path+' (HTTP '+response.status+')');
  const document=await response.json();
  window.FrameForgeProjectCore.assertProject(document);
  projectCatalog[key]=document;
-})).then(()=>{window.FrameForgeProjectsLoaded=true;});
+ }));
+}).then(()=>{window.FrameForgeProjectsLoaded=true;});
 let shots=[],duration=30,time=0,running=false,last=performance.now(),selected=0;
 function load(){const p=$('preset').value;const project=projectCatalog[p];if(!project){$('recordStatus').textContent='Project not yet loaded';return;}
  window.FrameForgeProjectCore.assertRendererCompatible(project);
