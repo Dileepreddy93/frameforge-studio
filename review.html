@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameForge V5.2 | Watch the Films</title><meta name="theme-color" content="#0b1120">
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:#080d18;color:#eff4ff}
+header,main,footer{padding:25px max(20px,5vw)}header{border-bottom:1px solid #29374c;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+header strong{font-size:21px}strong span{color:#6fdaf4}nav{display:flex;gap:19px;flex-wrap:wrap;font-size:13px}
+a{color:#85e2f8}main{max-width:1300px;margin:auto;padding-top:55px}
+.kicker{color:#83e0f5;font-size:11px;letter-spacing:.16em;font-weight:800}
+h1{font-size:clamp(37px,5vw,76px);letter-spacing:-.055em;line-height:1.09;margin:14px 0}
+.lead{font-size:17px;color:#adbfd1;max-width:760px}
+.warning{border:1px solid #3a4a67;background:#111b2c;padding:14px 20px;border-radius:12px;color:#c9d4e2;margin:25px 0 45px;max-width:850px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.card{background:#121d30;border:1px solid #344158;border-radius:16px;overflow:hidden}
+.card video{width:100%;height:455px;object-fit:contain;background:#080c13;display:block}
+.card div{padding:17px 20px 22px}
+h2{margin:0 0 6px;font-size:21px}.card p{color:#a8bed0;font-size:13px;margin:0 0 15px}
+a.button{display:inline-block;background:#75d8ec;color:#081b26;padding:9px 15px;font-weight:800;text-decoration:none;border-radius:9px;font-size:13px}
+.gallery{margin:66px 0}.gallery img{width:100%;max-width:950px;height:auto;border-radius:13px;border:1px solid #344158}
+footer{border-top:1px solid #26334b;color:#94a5b7;font-size:12px}
+@media(max-width:710px){.grid{grid-template-columns:1fr}.card video{height:390px}}
+</style></head><body>
+<header><strong>◆ Frame<span>Forge</span> V5.2</strong><nav><a href="/">Full Studio</a><a href="/character-lab.html">Character Lab</a><a href="https://github.com/Dileepreddy93/frameforge-studio/tree/develop">Code and versions</a></nav></header>
+<main><div class="kicker">ACTUAL RENDERED FILMS · EXPERIMENTAL CHECKPOINT</div>
+<h1>Watch the output.<br>Judge the pixels.</h1>
+<p class="lead">Real MP4 exports from the FrameForge Three.js engine, with audio and deterministic animation. These are short tests, not our target-quality finished episodes.</p>
+<div class="warning"><b>Quality status:</b> Video decoding and rendering verified. Reference-level art, natural acting, precise speech alignment and full production quality are <b>not yet achieved</b>.</div>
+<section class="grid">
+<article class="card"><video controls playsinline preload="metadata" aria-label="Six-second character acting preview" src="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5/v5-2-facial-acting-6sec-hegPkOQgcOuQRBzbMDfGfItMrwTLkM.mp4"></video><div><h2>Six-second acting study</h2><p>180 frames · 30 FPS · H.264 + stereo AAC.</p><a class="button" target="_blank" rel="noopener" href="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5/v5-2-facial-acting-6sec-hegPkOQgcOuQRBzbMDfGfItMrwTLkM.mp4">Open MP4 ↗</a></div></article>
+<article class="card"><video controls playsinline preload="metadata" aria-label="Three-second cloud render" src="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5/v5-2-facial-motion-3s-uNkVYR36sJSnlezYLjQln1W9I6FzhK.mp4"></video><div><h2>Three-second CI render</h2><p>90 frames · 30 FPS · portable FFmpeg software encoding, verified in GitHub Actions.</p><a class="button" target="_blank" rel="noopener" href="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5/v5-2-facial-motion-3s-uNkVYR36sJSnlezYLjQln1W9I6FzhK.mp4">Open MP4 ↗</a></div></article>
+</section><section class="gallery"><div class="kicker">RIG EVIDENCE</div><h2>Character turnaround and expressions</h2><p class="lead">Actual renders of our editable 3D models; not separately-generated character portraits.</p><img loading="lazy" src="/assets/v5-art-evidence/v5-expression-sheet.jpg" alt="FrameForge V5 expressive character sheet"><p><a class="button" href="/character-lab.html">Inspect interactive 3D models ↗</a></p></section>
+</main><footer>V5.2 development preview · Previous versions preserved · All visual-quality claims subject to film-level review.</footer>
+</body></html>
