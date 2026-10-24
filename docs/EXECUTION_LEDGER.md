@@ -110,3 +110,6 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - PR #15 merged to develop as `2c91e6ff5755dd12107f915063aa4f6869520ff1` after four jobs SUCCESS at GitHub run `40099817197`; tested head `5a44587f4a3ebbbf78234452bc6f21d2c161dee5`.
 - Actual artifact 12561864724 independently inspected; viewport 390x844 mobile emulation (canvas 332x565), no horizontal overflow, 0 JS page errors, 69 bones, 63 clips; real facial morph mouthFrown control persists across seek. GH runner time-to-ready 753ms does NOT measure actual Android device.
 - Mobile-sized technical browser subgate passed; **P1 cinematic ART NOT APPROVED**. Remote Vercel one-click preview remains blocked by private GitHub app permissions and empty large-file inline deployment. Issue #14 remains OPEN. Continue artistic improvement Issue #13; no main production modifications.
+
+## P2 first muted acting test — 2026-10-24
+- Branch `feature/p2-muted-acting-study` from `b486c749b2d7baf7fa86a9c72d5217005890ada4`; adds actual GLB face/bone 5sec original timecoded emotion/eye/neck performance UI and deterministic tests. Refer to docs/releases/P2_FIVE_SECOND_ACTING_STUDY.md. This is one narrative-driven acting scene with a silent blink and recovery, NOT a finished character or P2 gate approval. CI/MP4 evidence pending at initial commit.

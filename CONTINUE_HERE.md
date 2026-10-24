@@ -63,3 +63,6 @@ Branch `feature/p1-mobile-character-lab-qa` contains 390×844 touch-mode Chromiu
 
 ## VERIFIED P1 mobile Chromium follow-up
 PR #15 [mobile browser QA](https://github.com/Dileepreddy93/frameforge-studio/pull/15) merged to develop as `2c91e6ff5755dd12107f915063aa4f6869520ff1`; all FOUR CI jobs passed run 40099817197. Real WebGL artifact 12561864724, mobile 390×844 emulation, canvas 332×565, no overflow, loaded generated Ara human and facial morph slider after seek, no page errors. Actual screenshot reviewed. This is **NOT** physical mobile GPU performance or P1 cinematic art approval. P1 art Issue #13 and Vercel private repo connection Issue #14 still open; do not claim mobile one-click Vercel preview works.
+
+## NEXT P2 ACTING STUDY — real facial rig, not a preset slideshow
+Branch `feature/p2-muted-acting-study`: `src/acting-study-core.mjs` and `asset-lab.html` five-second originally directed silent miniature facial performance using actual Ara GLB Head/Neck/LeftEye/RightEye rig and 20 morphology channels. Read docs/releases/P2_FIVE_SECOND_ACTING_STUDY.md. Needs 150-frame H.264 MP4 playback review before artistic acceptance; P1 art gate still NOT APPROVED. Existing main/V3 unchanged.
