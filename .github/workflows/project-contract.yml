@@ -20,6 +20,7 @@ jobs:
           node tests/phase0-contract.test.mjs
           node tests/project-core.test.cjs
           node tests/project-integration.test.mjs
+          node tests/performance-core.test.cjs
       - name: Verify existing film source remains valid
         run: |
           node tests/check-source.mjs
@@ -46,3 +47,4 @@ jobs:
           node tests/character-art-browser.cjs dev
           node tests/character-art-browser.cjs blue
           node tests/character-art-browser.cjs orange
+          node tests/performance-browser.cjs
