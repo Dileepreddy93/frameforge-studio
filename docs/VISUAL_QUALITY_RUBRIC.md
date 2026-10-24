@@ -1,5 +1,5 @@
 # FrameForge objective + artistic quality rubric — P0
-This rubric has no approved benchmark score until exact reference video bytes are inspected.
+Actual user reference SHA256-verified and 24 frames inspected on 2026-10-24 (spec/git-blame-reference.json), but **NO output-vs-reference score has been approved** without matched-sized decoded FrameForge frames and full playback/listening.
 
 For each selected timestamp keep original SHA256, output SHA256, both frame filenames/hashes, source/audio marker and comparison viewing size. Scale 0=broken, 1=crude, 2=readable prototype, 3=polished/consistent, 4=reference competitive. Never average over a blocker. Unavailable reference => NOT COMPARABLE, not a pass.
 

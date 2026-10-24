@@ -48,3 +48,12 @@ YYYY-MM-DD | P#.step | branch + commit SHA | changed files | tests with PASS/FAI
 - develop moved from 79bac8a to 1d4bb48 (V5.3 merged) during P0 work. PR #5 is based on older develop and is **mergeable**; GitHub PR CI tests the merged result. Do not replace latest develop with the old P0 branch tree. Use GitHub's normal non-force PR merge to preserve both histories.
 - V5.3 handles Unicode Telugu/Hindi text mapping experimentally; it does NOT supply actual high-quality Telugu/Hindi production voice models or validated phoneme alignment. Preserve that distinction for future chats.
 - Latest P0 technical evidence extractor commit 461e623: new 5-frame V4 extraction, source SHA, PNG hashes and CI artifact. Workflow run https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40090426377 recorded as source tests+FFmpeg successful, browser character-render still running at this ledger update.
+
+## P0 direct reference audit — 2026-10-24 (THIS SUPERSEDES earlier `git-blame.mp4` blocked status)
+- Raw user-designated source actually opened at `/mnt/data/git-blame.mp4` (not downloaded from publisher). Exact SHA256 **560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e**, bytes 3,365,415; FFprobe 52.181 s, H264 720x1280 30 FPS 1,564 video frames; AAC stereo 48000 Hz. Full `ffmpeg -xerror -f null -` decoding PASS.
+- FFmpeg loudnorm input -14.38 LUFS, -0.79 dBTP true peak, LRA 4.60. Auditory performance / speech alignment not personally listen-certified.
+- Existing `tools/capture_reference.py` decoded 24 native stills and measured per-frame SHA256 in `spec/git-blame-reference.json`. Visually sampled candidate shots and compiled `docs/GIT_BLAME_SHOT_MATRIX.csv`, plus descriptions in `docs/GIT_BLAME_REFERENCE_AUDIT.md`.
+- Scene cuts: 26 candidates at FFmpeg `gt(scene,0.22)` resulting in 27 approximate time intervals; manually inspected thumbnail midpoint samples, not frame-perfect edit validation.
+- New reference file no longer blocked by missing bytes. Its publisher provenance and redistribution license remain unverified; exact matched-frame comparison with FrameForge output, full listen-through/word alignment and clean-room tool pins remain OPEN. P0 acceptance NOT complete and P1/P8 art gates remain NOT APPROVED.
+- Existing PR #5 run 40089784168 (SHA 942d852) ALL THREE jobs PASS. Later 40090426377 succeeded per GitHub. Verify all CI on latest new SHA separately.
+- P0 branch and new manifest should be merged by normal PR only; `develop` already contains merged V5.3. Preserve other contributors' commits.

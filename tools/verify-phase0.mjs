@@ -46,6 +46,18 @@ if(at>=0) {
  const real=path.resolve(provided);
  assert.equal(path.basename(real).toLowerCase(),'git-blame.mp4','Exact named reference file required. Do not silently relabel other uploads.');
  const ref=measure(real);
- // Having a file called git-blame.mp4 does NOT prove it is an authenticated source original.
+ const referenceContract=JSON.parse(fs.readFileSync(path.join(repo,'spec/git-blame-reference.json'),'utf8'));
+ assert.equal(ref.sha256,referenceContract.source.sha256,'Reference file does not match the user-supplied verified SHA256');
+ assert.equal(ref.bytes,referenceContract.source.bytes,'Reference file byte count mismatch');
+ assert.equal(ref.video.width,referenceContract.technical.width);
+ assert.equal(ref.video.height,referenceContract.technical.height);
+ assert.equal(ref.video.frames,referenceContract.technical.frames);
+ assert.equal(ref.video.fps,referenceContract.technical.fps);
+ assert.equal(ref.video.codec,referenceContract.technical.codec_video);
+ assert.equal(ref.audio.codec,referenceContract.technical.codec_audio);
+ assert.equal(ref.audio.channels,referenceContract.technical.audio_channels);
+ assert.ok(Math.abs(ref.duration-referenceContract.technical.duration_s)<0.02);
+ command('ffmpeg',['-hide_banner','-v','error','-xerror','-i',real,'-f','null','-']);
+ // Matching filename, metadata, and bytes proves this user-supplied copy, not publisher provenance.
  console.log('PHASE0_REFERENCE_CANDIDATE_MEASURED_IDENTITY_NOT_YET_APPROVED',JSON.stringify(ref));
 }

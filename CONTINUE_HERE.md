@@ -17,7 +17,7 @@ V5.3 speech system: PR #4 merged into develop at 1d4bb48e07613fac1aeb8917df9c060
 Tags v3.0-stable and v4.0-rc1 preserved; no force pushes. V3 live URL https://frameforge-3d-director-preview.vercel.app/ is not newest V5 source.
 
 ## Reference video
-EXACT user file named git-blame.mp4 exists in ChatGPT Library at /video Analysis/git-blame.mp4 (metadata 3,365,415 bytes). Raw-byte materialization returned no artifact in this execution, so no new SHA256, frame measurement or video binary has been ingested into GitHub. Older 65469.mp4 is a DIFFERENT UNPROVEN comparison candidate. Do not label any reference verified without hashing actual source bytes. Don't redistribute original reference without rights.
+User-designated exact-reference file `git-blame.mp4` WAS ACCESSED as mounted `/mnt/data/git-blame.mp4` on 2026-10-24, SHA256 `560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e`, 3,365,415 bytes, 52.181s, 720x1280 30fps, 1564 frames. Direct full decode PASS and 24 native PNG frame hashes recorded in `spec/git-blame-reference.json`. Publisher provenance is unverified; original binary NOT pushed. The file may not remount automatically in every new chat. Do NOT confuse with historical `65469.mp4`.
 
 ## Current product gaps
 V4 full 41.842s 480x854 H264/AAC movie previously technically verified; NOT artistically reference approved. V5.2 source on develop has actual Three.js rigs, project JSON, some emotion controls and 3s/6s previews. P1 models UNAPPROVED. Arbitrary custom rigs rejected; source currently includes only DEV, BLUE, ORANGE. Hindi/Telugu voice synthesis (distinct from recently merged Unicode text handling), phoneme-level sync, fully authorable 3D creator, 1080x1920 full film and final quality parity are NOT verified.
@@ -27,4 +27,4 @@ node tests/phase0-nine-phase-contract.mjs
 node tests/phase0-contract.test.mjs
 node tools/verify-phase0.mjs        # FFmpeg+ffprobe, SHA256, 1254 frames, full decode
 node tests/phase0-video-playback.cjs # real Chromium+Playwright local MP4 playback
-Review GitHub CI for actual pass/fail, then **update the execution ledger**. Next close exact reference hash/timecoded matrix, then P1 static art and performance quality gate. Never claim release from a passing unit test or button working.
+Review GitHub CI for actual pass/fail, then **update the execution ledger**. Next: manually validate the approximate reference shot boundaries, listen through/mark dialogue and caption timestamps, compare matched FrameForge output frames; finish P0 runtime version pins, then unblock P1 static art/acting quality. Never claim release from a passing unit test or button working.
