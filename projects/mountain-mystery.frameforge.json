@@ -79,7 +79,10 @@
       "intent": "setup",
       "emotion": "neutral",
       "action": "speak",
-      "firstFrameStatus": "not_created"
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "neutral"
+      }
     },
     {
       "id": "shot-02",
@@ -90,7 +93,10 @@
       "intent": "contrast",
       "emotion": "neutral",
       "action": "speak",
-      "firstFrameStatus": "not_created"
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "surprised"
+      }
     },
     {
       "id": "shot-03",
@@ -101,7 +107,10 @@
       "intent": "escalation",
       "emotion": "neutral",
       "action": "speak",
-      "firstFrameStatus": "not_created"
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
     },
     {
       "id": "shot-04",
@@ -112,7 +121,10 @@
       "intent": "reaction",
       "emotion": "neutral",
       "action": "speak",
-      "firstFrameStatus": "not_created"
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "surprised"
+      }
     },
     {
       "id": "shot-05",
@@ -123,7 +135,10 @@
       "intent": "reveal",
       "emotion": "neutral",
       "action": "speak",
-      "firstFrameStatus": "not_created"
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
     },
     {
       "id": "shot-06",
@@ -134,7 +149,10 @@
       "intent": "punchline",
       "emotion": "neutral",
       "action": "speak",
-      "firstFrameStatus": "not_created"
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "happy"
+      }
     }
   ],
   "audio": {

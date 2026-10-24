@@ -13,6 +13,7 @@
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">The dialogue and 43 original sound cues share the 41.8-second scene clock. Mouth movement follows the voice amplitude; actual aligned phoneme visemes and studio-grade character acting remain in development.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply shot changes</button><p class="fine">Click a shot to edit the dialogue, speaker and camera, then scrub or press Play to preview.</p></aside></div>
 <script src="./src/project-core.js"></script>
+<script src="./src/performance-core.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
@@ -350,6 +351,58 @@ function createExpressionMouth(smile){
  tube.visible=false;humanHead.add(tube);return tube;
 }
 const humanSmile=createExpressionMouth(true),humanFrown=createExpressionMouth(false);
+
+// A composited facial rig: eyelid meshes, cheeks and lip corners share one pose driver.
+const humanUpperLids=[],humanLowerLids=[],humanCheeks=[],humanLipCorners=[];
+const cheekMat=new T.MeshStandardMaterial({color:0xa97066,roughness:.92,metalness:0,transparent:true,opacity:.28,depthWrite:false,side:T.DoubleSide});
+for(const side of [-1,1]){
+ const lid=new T.Mesh(new T.PlaneGeometry(.174,.074),artSkin);
+ lid.position.set(side*.184,.101,.519);humanHead.add(lid);humanUpperLids.push(lid);
+ const lower=new T.Mesh(new T.PlaneGeometry(.172,.041),artSkin);
+ lower.position.set(side*.184,-.014,.518);humanHead.add(lower);humanLowerLids.push(lower);
+ const cheek=new T.Mesh(new T.CircleGeometry(.064,20),cheekMat);
+ cheek.position.set(side*.305,-.169,.450);cheek.scale.set(1,.34,1);humanHead.add(cheek);humanCheeks.push(cheek);
+ const corner=new T.Mesh(new T.SphereGeometry(.014,12,9),mouthDark);
+ corner.position.set(side*.112,-.304,.517);corner.scale.set(.88,.66,.35);
+ humanHead.add(corner);humanLipCorners.push(corner);
+}
+function applyHumanFacePose(pose){
+ const lid=pose.lid,raise=pose.brow,tilt=pose.slope;
+ browsNew.forEach((b,i)=>{
+  const side=i===0?-1:1;
+  b.position.y=.235+raise*.13;
+  b.rotation.z=side*(.04+tilt*.36);
+ });
+ humanEyes.forEach((eye,i)=>{
+  eye.scale.y=Math.max(.04,lid*.81);
+  const iris=humanIrises[i];
+  iris.scale.y=Math.max(.04,lid*.95);
+  iris.position.x=(i===0?-.184:.184)+pose.gazeX*.023;
+  iris.position.y=.052+pose.gazeY*.020;
+  const upper=humanUpperLids[i],lower=humanLowerLids[i];
+  upper.position.y=.111-(1-lid)*.060;upper.scale.y=1+(1-lid)*.53;
+  lower.position.y=-.008+(1-lid)*.026;lower.scale.y=.87+(1-lid)*.24;
+  const cheek=humanCheeks[i];
+  cheek.material.opacity=.17+pose.cheek*.17;
+  cheek.position.y=-.169+pose.cheek*.018;
+  cheek.scale.y=.35+pose.cheek*.12;
+  const corner=humanLipCorners[i];
+  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019);
+  corner.position.y=-.304+pose.smile*.024;
+ });
+ const smile=pose.smile>.30&&pose.mouthOpen<.34;
+ const frown=pose.smile<-.25&&pose.mouthOpen<.35;
+ humanSmile.visible=smile;humanFrown.visible=frown;
+ mouthNew.visible=!smile&&!frown;
+ mouthNew.scale.x=pose.mouthWidth;
+ mouthNew.scale.y=Math.max(.09,pose.mouthOpen*1.04+pose.round*.18);
+ mouthNew.position.y=-.305-pose.jaw*.013;
+ chin.position.y=-.32-pose.mouthOpen*.022;
+ beard.position.y=-.395-pose.mouthOpen*.019;
+ humanHead.rotation.x+=pose.headPitch;
+ humanHead.rotation.z+=pose.headRoll;
+}
+
 const hairCrown=new T.Mesh(new T.IcosahedronGeometry(.51,1),artHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
 for(let j=0;j<10;j++){
  const xx=(j-4.5)*.104,yy=.465+Math.sin(j*1.8)*.030;
@@ -499,6 +552,16 @@ update=function(){
  faces.orange.orangeBrows?.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(orangeAction==='celebrate'?-.13:orangeAction==='announce'?.20:.10)});
 
  oldUpdate();
+ // Apply coordinated facial acting AFTER the legacy mouth, brow and head updates.
+ const prior=shots[index-1];
+ const fromEmotion=prior?.acting?.devEmotion||'neutral';
+ const toEmotion=shot.acting?.devEmotion||'neutral';
+ const facialPose=window.FrameForgePerformanceCore.evaluate({
+  time:t,local,duration:shot.duration,emotion:toEmotion,fromEmotion,
+  speaking:shot.speaker==='dev',energy:shot.speaker==='dev'?open:0,
+  gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
+ });
+ applyHumanFacePose(facialPose);
 };
 // V5 projects are versioned documents, NOT hardcoded dialogue arrays.
 const projectCatalog=Object.create(null);
@@ -806,21 +869,13 @@ const ART_VIEWS=[
 const ART_EXPRESSIONS=['neutral','happy','worried','surprised'];
 function artPose(actorId,emotion){
  if(actorId==='dev'){
-  const baseBrow=[.235,.235];
-  browsNew.forEach((br,i)=>{
-   const side=i===0?-1:1;
-   br.position.y=baseBrow[i]+(emotion==='worried'?.075:emotion==='angry'?-.050:emotion==='surprised'?.088:emotion==='happy'?.028:0);
-   br.rotation.z=side*(emotion==='worried'?-.22:emotion==='angry'?.27:emotion==='happy'?.12:.06);
+  const pose=window.FrameForgePerformanceCore.evaluate({
+    time:1.25,local:1,duration:2,emotion,
+    speaking:emotion==='surprised',energy:emotion==='surprised'?.42:0,
+    gazeX:0,gazeY:0
   });
-  const mouthHeight={neutral:.12,happy:.12,worried:.12,surprised:.76}[emotion]??.12;
-  mouthNew.scale.y=mouthHeight;
-  mouthNew.scale.x=emotion==='surprised'?.62:1.0;
-  mouthNew.visible=emotion!=='happy'&&emotion!=='worried';
-  humanSmile.visible=emotion==='happy';
-  humanFrown.visible=emotion==='worried';
-  humanEyes.forEach(eye=>eye.scale.y=emotion==='happy'?.45:emotion==='worried'?.80:emotion==='surprised'?.93:.61);
-  humanHead.rotation.x=emotion==='worried'?-.09:emotion==='happy'?.07:0;
-  humanHead.rotation.y=emotion==='surprised'?.06:0;
+  humanHead.rotation.set(0,0,0);
+  applyHumanFacePose(pose);
  }else{
   const face=actorId==='blue'?faces.blue:faces.orange;
   drawActorFace(face,emotion,emotion==='surprised'?.4:emotion==='worried'?.16:0,.5,emotion==='surprised'?'round':'rest',0);
@@ -904,6 +959,12 @@ function captureEnvironment(width=360,height=640){
   renderer.render(scene,cam);
  }
 }
+window.FrameForgePerformanceQA=Object.freeze({
+ poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
+ facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
+ humanRig:()=>({upperLids:humanUpperLids.length,lowerLids:humanLowerLids.length,cheeks:humanCheeks.length,lipCorners:humanLipCorners.length}),
+ peek:()=>({mouthScale:mouthNew.scale.y,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
+});
 window.FrameForgeArtLab=Object.freeze({
  version:'v5-phase1c-actual-rigs',
  actors:()=>['dev','blue','orange'],

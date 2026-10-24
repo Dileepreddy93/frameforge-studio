@@ -47,6 +47,7 @@
    if(!Number.isFinite(s.duration)||s.duration<.4||s.duration>15)fail(at+'.duration','Duration outside 0.4 to 15 seconds');
    else total+=s.duration;
    if(!goodText(s.intent,200)||!goodText(s.emotion,80)||!goodText(s.action,80))fail(at,'Director intent, emotion and action required');
+   if(s.acting!==undefined&&(!isRecord(s.acting)||!['neutral','happy','worried','surprised','angry'].includes(s.acting.devEmotion)))fail(at+'.acting.devEmotion','Unsupported DEV emotional beat');
    if(!allowedStatuses.has(s.firstFrameStatus))fail(at+'.firstFrameStatus','Missing explicit first frame approval status');
    if(s.styleLock!==undefined&&s.styleLock!==p.style?.styleLock)fail(at+'.styleLock','Shot style lock drift');
   });
@@ -65,7 +66,7 @@
   assertProject(p);
   return p.shots.map(s=>({
    id:s.id,text:s.dialogue,speaker:s.speaker,camera:s.camera,
-   duration:s.duration,intent:s.intent,emotion:s.emotion,action:s.action
+   duration:s.duration,intent:s.intent,emotion:s.emotion,action:s.action,acting:s.acting??null
   }));
  }
  function assertRendererCompatible(p){
