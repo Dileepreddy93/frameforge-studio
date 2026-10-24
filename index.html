@@ -9,6 +9,7 @@
 <main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div><details id="renderedFilm" style="max-width:550px;margin:16px auto;background:#1a2540;border:1px solid #53699d;border-radius:14px;padding:12px"><summary style="cursor:pointer;font-weight:750;color:#fff;font-size:14px">▶ Watch revised film · Directed acting + Foley (41.8s)</summary><p class="fine" style="margin:9px 0 12px">New directed-acting cut: native 480×854, 30 FPS, 1,254 frames, three English voices, 43 Foley cues and synchronized stereo audio. Facial animation is still below the reference-quality target.</p><video controls playsinline preload="metadata" style="display:block;width:min(100%,320px);margin:8px auto;border-radius:12px" src="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4">Your browser cannot play MP4 video.</video><p style="font-size:12px;text-align:center;margin:12px auto 2px"><a style="color:#c5b4ff" href="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4" target="_blank" rel="noopener noreferrer">Open MP4 directly in a new tab</a></p></details>
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">The dialogue and 43 original sound cues share the 41.8-second scene clock. Mouth movement follows the voice amplitude; actual aligned phoneme visemes and studio-grade character acting remain in development.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply shot changes</button><p class="fine">Click a shot to edit the dialogue, speaker and camera, then scrub or press Play to preview.</p></aside></div>
+<script src="./src/project-core.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
@@ -461,27 +462,19 @@ update=function(){
 
  oldUpdate();
 };
-const templates={
-comedy:[
-["Our app takes twelve seconds to load.","dev","dev",3.2],
-["I can make it instant.","blue","blue",2.6],
-["Without breaking anything?","dev","dev",2.6],
-["Define anything.","blue","blue",2.3],
-["Backup created. Emotionally.","orange","orange",3],
-["Okay. One tiny change.","dev","duo",3],
-["Done. Zero milliseconds.","blue","screen",2.6],
-["Wow! The screen opens immediately.","dev","dev",3.8],
-["It no longer requests data.","orange","screen",3.2],
-["What about the customers?","dev","dev",2.8],
-["Also removed. No more waiting.","blue","blue",2.8],
-["You deleted the users?","dev","dev",2.8],
-["Technically, retention is perfect.","orange","orange",3.3],
-["Because nobody can leave.","dev","duo",3.8]],
-mystery:[
-["The scanner says there is something under this mountain.","dev","wide",5],["It's not a mountain. It's a door.","blue","blue",4],["A door to what?","dev","dev",4],["To a city everyone forgot.","orange","orange",6],["Then why is it opening for us?","dev","duo",5],["Because someone has been waiting.","blue","wide",6]]
-};
+// V5 projects are versioned documents, NOT hardcoded dialogue arrays.
+const projectCatalog=Object.create(null);
+const projectFiles={comedy:'./projects/zero-latency.frameforge.json',
+                    mystery:'./projects/mountain-mystery.frameforge.json'};
+const projectReady=Promise.all(Object.entries(projectFiles).map(async ([key,path])=>{
+ const response=await fetch(path,{cache:'no-cache'});
+ if(!response.ok)throw new Error('Missing project '+path+' (HTTP '+response.status+')');
+ const document=await response.json();
+ window.FrameForgeProjectCore.assertProject(document);
+ projectCatalog[key]=document;
+})).then(()=>{window.FrameForgeProjectsLoaded=true;});
 let shots=[],duration=30,time=0,running=false,last=performance.now(),selected=0;
-function load(){const p=$('preset').value;let lines=templates[p];soundtrack.pause();if(p==='comedy'){soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.load();$('recordStatus').textContent='14 scenes with real Kokoro dialogue ready';}else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Mystery is storyboard-only: no voice master exists';}shots=lines.map(a=>({text:a[0],speaker:a[1],camera:a[2],duration:a[3]}));$('idea').value=p==='comedy'?'A developer asks two AI assistants to make an app load instantly. Their solution is spectacularly wrong.':'A mysterious mountain hides a forgotten futuristic city.';time=0;selected=0;running=false;refresh();update();}
+function load(){const p=$('preset').value;const project=projectCatalog[p];if(!project){$('recordStatus').textContent='Project not yet loaded';return;}soundtrack.pause();if(p==='comedy'){soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.load();$('recordStatus').textContent='14 scenes with real Kokoro dialogue ready';}else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Mystery is storyboard-only: no voice master exists';}shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();}
 function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});$('dialogue').value=shots[selected].text;$('speaker').value=shots[selected].speaker;$('camera').value=shots[selected].camera;}
 const reactionCutMap={
  2:{role:'blue',seconds:.58},
@@ -736,5 +729,5 @@ window.FrameForgeQA={
  renderFilmFrame:(t,w=360,h=640)=>renderFilmFrame(t,w,h)
 };
 
-load();requestAnimationFrame(frame);
+projectReady.then(()=>{load();requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
 </script></body></html>
