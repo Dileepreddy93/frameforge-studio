@@ -284,10 +284,10 @@ bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
 // Preserve original developer root for camera coordinates but replace its flat proxy geometry.
 dev.children.forEach(child=>child.visible=false);
 const humanRig=new T.Group();dev.add(humanRig);
-const personSkin=velvet(0xad8170,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
+const personSkin=velvet(0x9f7869,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
  hoodie=velvet(0x263a51,.85,.02),hoodieLight=velvet(0x40556a,.78,.03),hoodieDark=velvet(0x182638,.94,0),
  trouser=velvet(0x20283c,.9,0),shoeMat=velvet(0x141b23,.86,0),
- eyeWhite=velvet(0xe5dbd7,.5,0),eyeDark=velvet(0x15151c,.28,0),
+ eyeWhite=velvet(0xddd5cf,.55,0),eyeDark=velvet(0x15151c,.28,0),
  mouthDark=velvet(0x3a2125,.88,0);
 function poly(parent,r,material,x,y,z,subdivision=0){const o=new T.Mesh(new T.IcosahedronGeometry(r,subdivision),material);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
 const bodyGroup=new T.Group();humanRig.add(bodyGroup);
@@ -322,36 +322,39 @@ const beard=new T.Mesh(new T.SphereGeometry(.29,32,24),skinDark);beard.position.
 for(const side of [-1,1]){
  const ear=new T.Mesh(new T.SphereGeometry(.125,24,18),personSkin);ear.position.set(side*.47,-.08,-.04);ear.scale.set(.64,.96,.76);humanHead.add(ear);
  poly(humanHead,.061,skinDark,side*.48,-.09,.002,1);
- const socket=new T.Mesh(new T.SphereGeometry(.105,16,12),skinDark);
- socket.position.set(side*.184,.035,.466);socket.scale.set(1,.65,.27);humanHead.add(socket);
- const eye=new T.Mesh(new T.SphereGeometry(.083,24,16),eyeWhite);
- eye.position.set(side*.184,.052,.493);eye.scale.set(.99,.79,.57);humanHead.add(eye);humanEyes.push(eye);
- const iris=new T.Mesh(new T.SphereGeometry(.043,20,16),eyeDark);
- iris.position.set(side*.184,.050,.538);iris.scale.set(.92,.96,.54);humanHead.add(iris);humanIrises.push(iris);
- const catchlight=new T.Mesh(new T.SphereGeometry(.012,12,8),eyeWhite);
- catchlight.position.set(side*.184-.014,.067,.562);humanHead.add(catchlight);
+ // Eye planes sit flush with the face; no protruding spheres or googly-eye anatomy.
+ const socket=new T.Mesh(new T.CircleGeometry(.088,28),skinDark);
+ socket.position.set(side*.184,.053,.501);socket.scale.set(1.13,1.16,1);humanHead.add(socket);
+ const eye=new T.Mesh(new T.CircleGeometry(.082,28),eyeWhite);
+ eye.position.set(side*.184,.053,.504);eye.scale.set(.96,.82,1);humanHead.add(eye);humanEyes.push(eye);
+ const iris=new T.Mesh(new T.CircleGeometry(.037,28),eyeDark);
+ iris.position.set(side*.184,.052,.509);iris.scale.set(.92,.96,1);humanHead.add(iris);humanIrises.push(iris);
+ const catchlight=new T.Mesh(new T.CircleGeometry(.010,14),eyeWhite);
+ catchlight.position.set(side*.184-.013,.068,.514);humanHead.add(catchlight);
 }
 const browsNew=[];
 for(const side of [-1,1]){const br=bevel(.22,.051,.046,.015,artHair,humanHead,side*.19,.235,.485);br.rotation.z=side*.11;browsNew.push(br)}
-const noseNew=new T.Mesh(new T.SphereGeometry(.105,24,16),personSkin);noseNew.position.set(0,-.075,.49);noseNew.scale.set(.73,.83,.71);humanHead.add(noseNew);
+const noseNew=new T.Mesh(new T.IcosahedronGeometry(.085,0),artSkin);
+noseNew.position.set(0,-.078,.501);noseNew.scale.set(.66,.96,.44);humanHead.add(noseNew);
 const moustache=bevel(.23,.046,.038,.013,skinDark,humanHead,0,-.225,.448);
-const mouthNew=new T.Mesh(new T.SphereGeometry(.17,24,16),mouthDark);
-mouthNew.position.set(0,-.302,.481);
-mouthNew.scale.set(1.12,.23,.18);humanHead.add(mouthNew);
+// A flat morphable mouth stays attached to the skin under every camera angle.
+const mouthNew=new T.Mesh(new T.CircleGeometry(.115,28),mouthDark);
+mouthNew.position.set(0,-.305,.514);
+mouthNew.scale.set(1.0,.12,1);humanHead.add(mouthNew);
 // Actual 3D mouth curves, not a screenshot or a flat overlay.
 function createExpressionMouth(smile){
- const points=[[-.16,smile?-.26:-.34],[ -.08,smile?-.33:-.28],
-               [0,smile?-.35:-.26],[.08,smile?-.33:-.28],[.16,smile?-.26:-.34]];
+ const points=[[-.135,smile?-.286:-.322],[-.068,smile?-.309:-.286],
+               [0,smile?-.313:-.278],[.068,smile?-.309:-.286],[.135,smile?-.286:-.322]];
  const curve=new T.CatmullRomCurve3(points.map(([x,y])=>new T.Vector3(x,y,.524)));
- const tube=new T.Mesh(new T.TubeGeometry(curve,24,.021,8,false),mouthDark);
+ const tube=new T.Mesh(new T.TubeGeometry(curve,24,.012,8,false),mouthDark);
  tube.visible=false;humanHead.add(tube);return tube;
 }
 const humanSmile=createExpressionMouth(true),humanFrown=createExpressionMouth(false);
 const hairCrown=new T.Mesh(new T.IcosahedronGeometry(.51,1),artHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
 for(let j=0;j<10;j++){
- const xx=(j-4.5)*.104,yy=.37+Math.sin(j*1.8)*.050;
+ const xx=(j-4.5)*.104,yy=.465+Math.sin(j*1.8)*.030;
  const tuft=new T.Mesh(new T.IcosahedronGeometry(.16+(j%3)*.012,0),artHair);tuft.position.set(xx,yy,.24+(j%2)*.063);humanHead.add(tuft);
- tuft.scale.set(.85,.69,.79);tuft.rotation.z=(j-4.5)*.11;
+ tuft.scale.set(.80,.61,.71);tuft.rotation.z=(j-4.5)*.11;
 }
 for(const side of [-1,1]){
  const sideHair=new T.Mesh(new T.IcosahedronGeometry(.24,0),artHair);sideHair.position.set(side*.37,.19,-.07);humanHead.add(sideHair);sideHair.scale.set(.7,1.1,.80);
@@ -360,8 +363,8 @@ for(const side of [-1,1]){
 for(let i=0;i<7;i++){
  const x=(i-3)*.118;
  const lock=new T.Mesh(new T.IcosahedronGeometry(.195+(i%2)*.019,0),artHair);
- lock.position.set(x,.295+(.035*Math.sin(i*2.1)),.375);
- lock.scale.set(.82,1.0,.79);lock.rotation.z=(i-3)*.115;
+ lock.position.set(x,.390+(.025*Math.sin(i*2.1)),.370);
+ lock.scale.set(.76,.78,.74);lock.rotation.z=(i-3)*.115;
  lock.rotation.x=-.22;lock.castShadow=true;humanHead.add(lock);
 }
 for(const side of [-1,1]){
@@ -459,7 +462,7 @@ update=function(){
  }
  brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
  mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
- mouthNew.scale.y=.23*(shot.speaker==='dev'?1+open*2.3:1);mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
+ mouthNew.scale.y=.12*(shot.speaker==='dev'?1+open*3.3:1);mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
  browsNew.forEach((br,i)=>{const side=i?1:-1;br.rotation.z=shot.speaker==='dev'?side*(-.06+open*.09):side*.11;});
  humanHead.rotation.x=(shot.speaker==='dev' ?-.10: .035)+Math.sin(t*.78)*.025;
  humanHead.rotation.z=shot.speaker==='dev'?.035*Math.sin(t*1.2):.0;
@@ -809,9 +812,9 @@ function artPose(actorId,emotion){
    br.position.y=baseBrow[i]+(emotion==='worried'?.075:emotion==='angry'?-.050:emotion==='surprised'?.088:emotion==='happy'?.028:0);
    br.rotation.z=side*(emotion==='worried'?-.22:emotion==='angry'?.27:emotion==='happy'?.12:.06);
   });
-  const mouthHeight={neutral:.23,happy:.28,worried:.19,surprised:.86}[emotion]??.23;
+  const mouthHeight={neutral:.12,happy:.12,worried:.12,surprised:.76}[emotion]??.12;
   mouthNew.scale.y=mouthHeight;
-  mouthNew.scale.x=emotion==='surprised'?.67:1.12;
+  mouthNew.scale.x=emotion==='surprised'?.62:1.0;
   mouthNew.visible=emotion!=='happy'&&emotion!=='worried';
   humanSmile.visible=emotion==='happy';
   humanFrown.visible=emotion==='worried';
