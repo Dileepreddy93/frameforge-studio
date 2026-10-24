@@ -28,7 +28,7 @@
     {
       "id": "P2",
       "name": "Body and facial performance",
-      "status": "planned",
+      "status": "in_progress",
       "requirements": [
         "Eyelines, brows, asymmetry, lids, visemes",
         "Timed speech gestures from validated markers",
@@ -110,6 +110,12 @@
       "phase": "P5",
       "type": "partial_only",
       "value": "1254 frames at 480x854, stereo AAC; NOT proof P5 passed"
+    },
+    {
+      "id": "V5-2-facial-core",
+      "phase": "P2",
+      "type": "partial_code_and_browser",
+      "value": "Deterministic facial poses, 4 distinct rendered expressions, eyelids/cheeks/lip corners; does NOT complete phoneme or body-motion requirements."
     }
   ]
 }
