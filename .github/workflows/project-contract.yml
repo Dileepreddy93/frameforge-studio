@@ -98,6 +98,19 @@ jobs:
           name: frameforge-v5-3-audio-guided-motion-3sec
           path: artifacts/v5-3-audio-guided-3s.mp4
           if-no-files-found: error
+      - name: Reuse verified Chromium plus FFmpeg for 150 real acting frames and 5s muted MP4
+        run: |
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          export FRAMEFORGE_ACTING_OUT=artifacts/p2-acting-study
+          node tests/acting-study-browser.cjs
+      - name: Retain actual acting MP4, 14 CGI keyframes and SHA verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p2-actual-silent-5sec-30fps-film
+          path: artifacts/p2-acting-study/
+          if-no-files-found: error
+          retention-days: 30
 
   rigged-character-import:
     runs-on: ubuntu-24.04
@@ -140,36 +153,3 @@ jobs:
           name: frameforge-p1-real-glb-7-frames
           path: artifacts/p1-rigged-asset-lab/
           if-no-files-found: warn
-
-  muted-acting-film:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 22
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install real H264 FFmpeg encoder and Chromium renderer
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-          command -v ffmpeg
-          command -v ffprobe
-          ffmpeg -hide_banner -version | head -n 1
-          npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
-          ffmpeg -hide_banner -encoders | grep libx264
-      - name: Render all 150 authored real 3D acting frames and encode 5 second muted film
-        run: |
-          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-acting-http.log 2>&1 &
-          export FRAMEFORGE_URL=http://127.0.0.1:8959/
-          export FRAMEFORGE_ACTING_OUT=artifacts/p2-acting-study
-          node tests/acting-study-browser.cjs
-      - name: Archive native video and selected real CGI keyframes
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frameforge-p2-actual-silent-5sec-30fps-film
-          path: artifacts/p2-acting-study/
-          if-no-files-found: warn
-          retention-days: 30

@@ -117,3 +117,6 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 ## P2 CI iteration — 2026-10-24
 - Experimental branch `feature/p2-muted-acting-study` source/browser initial run 40101322110: 150 real source frames generated, 14 PNGs in artifact 12563346810 (visual inspection completed). **Video job FAIL**, actual error `spawnSync ffmpeg ENOENT` on clean Ubuntu runner. Source tests PASS. Real visual issue: surprise jaw far too open exposes full teeth; shoulders mostly static. This is recorded as failed art, no false approval.
 - Corrective changes explicitly install ffmpeg and libx264 and reduce jaw from .86/.73 to .45/.36. Video export and cinematic-art signoff PENDING rerun.
+
+## P2 CI resource optimization
+- Separate experimental `muted-acting-film` job duplicated Chromium+FFmpeg setup and its apt update was slow. Removed the redundant fifth runner and appended the 150-frame original acting film validator to the already proven `portable-video-export` runner. Reuses encoder and browser while still creating an independent H264 MP4+PNG artifact. No code/character/film regression removed.
