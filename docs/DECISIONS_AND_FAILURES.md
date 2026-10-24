@@ -27,3 +27,7 @@
 - License/rights check for all third-party assets, voices and copyrighted character inspiration.
 - User wants real paid-product-grade polish, but reference superiority is a hypothesis until actual peer-quality audio/visual comparison.
 - Design the second episode as proof of engine reusability; source-editing every story is not acceptable as final state.
+
+
+## Long-context handoff preservation decision, 2026-10-24
+The ChatGPT conversation exceeds what a new chat can reliably reconstruct. Durable source of truth is the private GitHub feature/studio-v5-foundations branch containing this handoff, the user-source extracts, film/character media and SHA manifests. New chat should use GitHub and Project Files, not speculative conversation recall. The exact Git Blame clip and private vendor code are not contained in this archive. Reference-quality artistic approval remains outstanding.

@@ -8,7 +8,8 @@ Snapshot 2026-10-24. This consolidates the earlier conversations, NMXWZ five-pag
 - [x] Record primary websites, confidence limits, licensing cautions and known failures.
 - [x] Record reference-engineering quality requirements, honest phases and restore instructions.
 - [ ] Obtain, locally hash and analyze the exact user-named Git Blame reference MP4. Website sample or a differently named upload is NOT equivalent.
-- [ ] Archive the actual NMXWZ PDF and reverse-engineering report if authorized bytes are accessible in a new chat/Project; current repo has detailed notes but no complete original attachments.
+- [x] Preserve extracted text of the NMXWZ guide and the original Studio Reverse Engineering Report Markdown inside docs/history. These are historical user-provided documents, not an independent audit.
+- [ ] Preserve original PDF bytes and images/layout if available from the user's Project Files; the repo currently contains only extracted text.
 - [ ] Make an exact reference shot/action/camera/voice/sound/lighting/typography timing matrix.
 - [ ] Freeze exact tool/package/runtime versions and prove a fresh clean-room clone and browser render.
 

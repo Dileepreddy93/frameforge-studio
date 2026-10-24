@@ -77,3 +77,9 @@ V4 public sample: https://agz0k9i7nymp3png.public.blob.vercel-storage.com/framef
 Fresh clone, tracked files present, git rev-parse tag consistency, no credentials in docs, all manifest hashes pass, meaningful real browser tests, linked film public HTTP and actual playback for any new deploy. Distinguish V5 engineering milestone from artistic reference parity.
 
 Next action when user says CONTINUE: focus on actual character art/acting, compare V5 real rigs against known reference and fix visible defects; keep unapproved art unchecked. Never simply repeat the handoff plan.
+
+
+## User research and experimental patch archive
+- docs/history/NMXWZ-1-PDF_EXTRACTED_TEXT.md: text of 5-page guide; original page illustrations are NOT preserved.
+- docs/history/Studio_Reverse_Engineering_Report_SOURCE.md: previously uploaded detailed research Markdown, containing public-source claims and measurements with stated verification limitations.
+- docs/history/wip-expressive-character-portraits/UNCOMMITTED_SOURCE.patch: non-shipped experimental source diffs saved rather than thrown away. Code here has not been accepted or verified for production. Review and re-test before cherry-picking.
