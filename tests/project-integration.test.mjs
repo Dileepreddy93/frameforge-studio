@@ -13,3 +13,7 @@ for(const name of ['zero-latency','mountain-mystery']){
  assert.ok(html.includes(pathname),'browser loads project file');
 }
 console.log('PROJECT_BROWSER_INTEGRATION_STATIC_PASS');
+assert.match(html,/id="projectImport"/);
+assert.match(html,/FrameForgeProjectCore\.assertRendererCompatible\(project\)/);
+assert.match(html,/function snapshotProject\(\)/);
+assert.match(html,/Import rejected:/);

@@ -68,6 +68,13 @@
    duration:s.duration,intent:s.intent,emotion:s.emotion,action:s.action
   }));
  }
+ function assertRendererCompatible(p){
+  assertProject(p);
+  const rigs=new Set(['dev','blue','orange']);
+  const unsupported=p.characters.filter(c=>!rigs.has(c.id)).map(c=>c.id);
+  if(unsupported.length)throw new Error('This renderer cannot animate custom rigs yet: '+unsupported.join(', '));
+  return p;
+ }
  function summary(p){const v=validateProject(p);return{id:p?.id||null,valid:v.valid,shotCount:v.shotCount,duration:v.duration,errors:v.errors};}
- return Object.freeze({schema:format,validateProject,assertProject,toTimelineShots,summary});
+ return Object.freeze({schema:format,validateProject,assertProject,toTimelineShots,assertRendererCompatible,summary});
 });

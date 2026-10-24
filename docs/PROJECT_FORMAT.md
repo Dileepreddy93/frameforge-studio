@@ -26,3 +26,7 @@ The 1080x1920 output is a **target in project metadata**, NOT a claim the curren
 Create projects/new-story.frameforge.json based on an existing example. Validate with the Node tests and link it to the projectFiles map in index.html. The eventual editor must remove this last catalog registration step and implement save/import. Never spoof audio for storyboard-only projects.
 
 Tests: node tests/project-core.test.cjs; node tests/project-integration.test.mjs.
+
+
+## Manual project interchange (Phase 1B)
+Import any schema-valid JSON episode through the project file input. Only the already rigged dev/blue/orange characters are supported by the actual V4 renderer. The import refuses unsupported rigs. Apply changes to shot dialogue, speaker or camera, then Download episode JSON to get the full versioned project with updated shot data. Reimporting that file should preserve those edits. This is local file interchange, NOT server-side persistence; custom mastered video export still requires an aligned voice asset/renderer integration and is not certified.
