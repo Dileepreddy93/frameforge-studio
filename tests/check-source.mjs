@@ -1,0 +1,13 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const s=readFileSync('index.html','utf8');
+assert.match(s,/function drawActorFace\(f,emotion,open,time,/);
+assert.match(s,/const energy=Math.max/);
+assert.match(s,/const performanceCues=\[/);
+assert.match(s,/FrameForgeMP4Test/);
+assert.match(s,/zero-latency-acting-v3-with-foley\.mp4/);
+const script=s.match(/<script type="module">([\s\S]+?)<\/script>/)?.[1];
+assert.ok(script,'inline Three.js module exists');
+const clean=script.replace(/^import\s+\*\s+as\s+T\s+from\s+['"][^'"]+['"];\s*/m,'');
+new Function(clean);
+console.log('V4 source checks PASS');
