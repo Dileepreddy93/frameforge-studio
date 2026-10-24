@@ -1,37 +1,32 @@
-# FRAMEFORGE STUDIO — CONTINUE HERE IN A NEW CHAT
+# FRAMEFORGE STUDIO — START HERE
 
-Private repository: https://github.com/Dileepreddy93/frameforge-studio
+**This private repository IS the project handoff. Continue from the existing code; DO NOT start over or ask the user to reconstruct old context.**
 
-ACTIVE experimental branch at audit: feature/v5-expressive-character-portraits
-Original HEAD at audit: bd2c625857c5
-Other V5 branch: feature/studio-v5-foundations (same code commit at audit; not the checked-out branch).
-LIVE PRODUCTION: https://frameforge-3d-director-preview.vercel.app/ — V3, NOT this experimental V5.
-ARTISTIC QUALITY: P1 visual studies unapproved; P2-P7 unfinished; reference parity NOT established.
+## Latest verified source position
 
-## Essential documents — read in order
-1. docs/HANDOFF_2026-10-24.md — comprehensive charter, architecture, history, research and failures.
-2. docs/HANDOFF_STATE_2026-10-24.json — exact source hashes, branch, tags, all preserved image/movie assets.
-3. docs/MASTER_IMPLEMENTATION_CHECKLIST.md — eight phases with explicit unpassed quality gates.
-4. docs/DEVELOPMENT_RUNBOOK.md — reproduce, test, restore, patch recovery and deployment rules.
-5. docs/DECISIONS_AND_FAILURES.md and docs/history/USER_TAKEOVER_2026-10-23.md — mistakes and original user goals.
-6. docs/RENDER_ASSET_CATALOG.json — original FrameForge-generated artwork/movie checksums.
-7. spec/reference-register.json, spec/quality-gates.json, AGENTS.md — original requirements and guardrails.
-8. docs/releases/V5_PHASE1C_3D_ART_STUDIES.md — latest real 3D character-art evidence.
+- **Active developer branch:** feature/v5-expressive-character-portraits
+- **Last pre-handoff source-code commit:** 8ae00022391ba175f3a23b35f33bf1ab80ab0910 (face geometry and portrait changes).
+- **V3 protected production:** main / v3.0-stable, live https://frameforge-3d-director-preview.vercel.app/
+- **V4 integrated branch:** develop (merge commit 06ec0d7); V4 media and tag v4.0-rc1 preserved.
+- **Current artistic gate:** P1 character design remains UNAPPROVED. The latest face edit is newer than archived character-sheet renders. Do not assert reference-level quality.
+- **Current request scope:** handoff-only push. No new development or production deployment was requested in this handoff turn.
 
-## Pending code changes are NOT committed as application code
-The original sandbox has uncommitted changes to index.html and character-lab.html; their exact recoverable diff is saved in docs/history/PENDING_APP_CHANGES_2026-10-24.patch.
-The untracked script tools/refine-v5-faces.py is preserved as docs/history/PENDING_FACE_REFINEMENT_SCRIPT.py.txt.
-Review before applying to a new scratch branch; the handoff commit does not apply or validate that unfinished code.
+## Mandatory reading (in order)
 
-## Preserved review assets
-- assets/v5-art-evidence — 24 3D character view/expression PNGs and comparison image.
-- media/v5-evidence — original DEV, BLUE, ORANGE 3D contact sheets and environment.
-- media/v4-review — verified full V4 movie, two shorter previews, and stills.
-Assets are created by FrameForge, NOT original Agent Poly or Claude & Pixel media, and do NOT constitute art approval.
+1. [CURRENT complete narrative handoff](docs/HANDOFF_CURRENT.md) — newest verified situation, mission, missing sources, source history and next work.
+2. [Machine-readable current state + hashes](docs/HANDOFF_STATE_LATEST.json) — source head, tags, artifact checksums, open limitations.
+3. [Original extensive handoff](docs/HANDOFF_2026-10-24.md) — previous thorough architectural decisions and failures.
+4. [Master P0–P7 checklist](docs/MASTER_IMPLEMENTATION_CHECKLIST.md) and [implementation contract](docs/IMPLEMENTATION_CONTRACT.md).
+5. [Development runbook](docs/DEVELOPMENT_RUNBOOK.md) and [decisions/failures](docs/DECISIONS_AND_FAILURES.md).
+6. [Recovered NMXWZ PDF text](docs/history/NMXWZ-1-PDF_EXTRACTED_TEXT.md), [reverse-engineering report text](docs/history/Studio_Reverse_Engineering_Report_SOURCE.md), [original user takeover request](docs/history/USER_TAKEOVER_2026-10-23.md).
+7. [Reference registry](spec/reference-register.json), [quality gates](spec/quality-gates.json), [art/media manifest](docs/RENDER_ASSET_CATALOG.json), [release reports](docs/releases/).
+8. [Historical WIP diffs](docs/history/) — preserved for recovery; potentially superseded, **do not replay blindly**.
 
-## Successor workflow
-First inspect GitHub HEAD, branch/status and protected tags. Review every handoff document. Verify media hashes. Reacquire user-only PDFs and the exact original reference video if accessible; do not silently substitute other clips. Continue original high-quality expressive 3D character rig work and full cinematic visual/audio QA only AFTER reviewing actual evidence. Keep main/V3 production and existing tags intact. Do not claim a successful film from passing JavaScript tests.
+## Tests and evidence
 
-OWNER'S CURRENT REQUEST: only push the comprehensive handoff. No new coding, branch merge or deployment in this step.
+- Code: node tests/phase0-contract.test.mjs; node tests/project-core.test.cjs; node tests/project-integration.test.mjs; node tests/check-source.mjs; node tests/check-v4.mjs; node tests/check-cinematic-v4.mjs.
+- Render evidence: python3 tools/verify-preserved-renders.py (25 art files + 8 media/catalog items).
+- Browser QA: tests/character-art-browser.cjs, tests/render-cinematic.cjs, tests/project-browser.cjs, tests/project-import-export-browser.cjs. Requires actual Chromium, WebGL and HTTP server.
+- Preserve all git tags and validate any live URL via actual browser/media playback, not deployment dashboard status.
 
-- 3D render evidence checksums: docs/RENDER_FRAME_SHA256SUMS.txt.
+**Known missing exact source**: original git-blame.mp4 is not verified in GitHub. Original NMXWZ binary and source-report attachment are not included as original binaries; recovered text is included. Nothing in the handoff proves final reference parity.
