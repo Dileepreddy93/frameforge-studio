@@ -75,13 +75,13 @@
       "dialogue": "The scanner says there is something under this mountain.",
       "speaker": "dev",
       "camera": "wide",
-      "duration": 5.0,
+      "duration": 5,
       "intent": "setup",
-      "emotion": "neutral",
-      "action": "speak",
       "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "neutral"
+      "cast": {
+        "dev": {
+          "emotion": "neutral"
+        }
       }
     },
     {
@@ -89,13 +89,13 @@
       "dialogue": "It's not a mountain. It's a door.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 4.0,
+      "duration": 4,
       "intent": "contrast",
-      "emotion": "neutral",
-      "action": "speak",
       "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "surprised"
+      "cast": {
+        "dev": {
+          "emotion": "surprised"
+        }
       }
     },
     {
@@ -103,13 +103,13 @@
       "dialogue": "A door to what?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 4.0,
+      "duration": 4,
       "intent": "escalation",
-      "emotion": "neutral",
-      "action": "speak",
       "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
+      "cast": {
+        "dev": {
+          "emotion": "worried"
+        }
       }
     },
     {
@@ -117,13 +117,13 @@
       "dialogue": "To a city everyone forgot.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 6.0,
+      "duration": 6,
       "intent": "reaction",
-      "emotion": "neutral",
-      "action": "speak",
       "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "surprised"
+      "cast": {
+        "dev": {
+          "emotion": "surprised"
+        }
       }
     },
     {
@@ -131,13 +131,13 @@
       "dialogue": "Then why is it opening for us?",
       "speaker": "dev",
       "camera": "duo",
-      "duration": 5.0,
+      "duration": 5,
       "intent": "reveal",
-      "emotion": "neutral",
-      "action": "speak",
       "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
+      "cast": {
+        "dev": {
+          "emotion": "worried"
+        }
       }
     },
     {
@@ -145,13 +145,13 @@
       "dialogue": "Because someone has been waiting.",
       "speaker": "blue",
       "camera": "wide",
-      "duration": 6.0,
+      "duration": 6,
       "intent": "punchline",
-      "emotion": "neutral",
-      "action": "speak",
       "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "happy"
+      "cast": {
+        "dev": {
+          "emotion": "happy"
+        }
       }
     }
   ],

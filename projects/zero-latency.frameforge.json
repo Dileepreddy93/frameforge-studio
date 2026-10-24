@@ -3,6 +3,7 @@
   "id": "zero-latency",
   "title": "Zero Latency",
   "logline": "A developer asks two AI assistants to make an app load instantly. Their solution is spectacularly wrong.",
+  "banner": "FRAMEFORGE STORIES  /  EPISODE 01",
   "output": {
     "width": 1080,
     "height": 1920,
@@ -72,199 +73,479 @@
   "shots": [
     {
       "id": "shot-01",
+      "title": "TWELVE SECONDS",
       "dialogue": "Our app takes twelve seconds to load.",
       "speaker": "dev",
       "camera": "dev",
       "duration": 3.2,
       "intent": "setup",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
-      }
+      "cast": {
+        "dev": {
+          "action": "typing",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 4.7,
+        "offset": -0.18,
+        "up": 0.09,
+        "fov": 36
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-02",
+      "title": "THE OFFER",
       "dialogue": "I can make it instant.",
       "speaker": "blue",
       "camera": "blue",
       "duration": 2.6,
       "intent": "setup",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
-      }
+      "cast": {
+        "dev": {
+          "action": "react",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "announce",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 4.25,
+        "offset": 0.2,
+        "up": 0.05,
+        "fov": 35
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-03",
+      "title": "NO REGRETS?",
       "dialogue": "Without breaking anything?",
       "speaker": "dev",
       "camera": "dev",
       "duration": 2.6,
       "intent": "setup",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
-      }
+      "cast": {
+        "dev": {
+          "action": "question",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "worried"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 3.95,
+        "offset": -0.16,
+        "up": 0.08,
+        "fov": 36
+      },
+      "reactionCut": {
+        "role": "blue",
+        "seconds": 0.58,
+        "emotion": "surprised"
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-04",
+      "title": "THE DEFINITION",
       "dialogue": "Define anything.",
       "speaker": "blue",
       "camera": "blue",
       "duration": 2.3,
       "intent": "contrast",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "surprised"
-      }
+      "cast": {
+        "dev": {
+          "action": "react",
+          "emotion": "surprised"
+        },
+        "blue": {
+          "action": "shrug",
+          "emotion": "surprised"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 3.75,
+        "offset": 0.16,
+        "up": 0.07,
+        "fov": 34
+      },
+      "reactionCut": {
+        "role": "dev",
+        "seconds": 0.5
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-05",
+      "title": "THE BACKUP",
       "dialogue": "Backup created. Emotionally.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 3.0,
+      "duration": 3,
       "intent": "contrast",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
-      }
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "announce",
+          "emotion": "worried"
+        }
+      },
+      "framing": {
+        "distance": 4.18,
+        "offset": -0.1,
+        "up": 0.04,
+        "fov": 34
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-06",
+      "title": "ONE CHANGE",
       "dialogue": "Okay. One tiny change.",
       "speaker": "dev",
       "camera": "duo",
-      "duration": 3.0,
+      "duration": 3,
       "intent": "escalation",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "happy"
-      }
+      "cast": {
+        "dev": {
+          "action": "plead",
+          "emotion": "happy"
+        },
+        "blue": {
+          "action": "anticipate",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 7.15,
+        "offset": -0.3,
+        "up": 0.15,
+        "fov": 40
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-07",
+      "title": "ZERO LATENCY",
       "dialogue": "Done. Zero milliseconds.",
       "speaker": "blue",
       "camera": "screen",
       "duration": 2.6,
       "intent": "escalation",
-      "emotion": "neutral",
-      "action": "listen",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "surprised"
-      }
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "surprised"
+        },
+        "blue": {
+          "action": "celebrate",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 6.9,
+        "offset": 0,
+        "up": 0.03,
+        "fov": 42
+      },
+      "insert": {
+        "window": "FRAMEFORGE  /  LIVE TELEMETRY",
+        "context": "prod / deployment 7a4f",
+        "headline": "PAGE LOAD TIME",
+        "value": "0 ms",
+        "caption": "Instant page delivery achieved.",
+        "request": "GET /api       -> disabled",
+        "status": "REQUESTS ELIMINATED",
+        "footer": "LOAD TIME: 0.000 SECONDS",
+        "label": "Page response time",
+        "tone": "good",
+        "graph": "drop"
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-08",
+      "title": "INSTANT!",
       "dialogue": "Wow! The screen opens immediately.",
       "speaker": "dev",
       "camera": "dev",
       "duration": 3.8,
       "intent": "reaction",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "happy"
-      }
+      "cast": {
+        "dev": {
+          "action": "surprise",
+          "emotion": "happy"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 3.84,
+        "offset": 0.19,
+        "up": 0.06,
+        "fov": 36
+      },
+      "reactionCut": {
+        "role": "orange",
+        "seconds": 0.67,
+        "emotion": "worried"
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-09",
+      "title": "THE TRADE",
       "dialogue": "It no longer requests data.",
       "speaker": "orange",
       "camera": "screen",
       "duration": 3.2,
       "intent": "reaction",
-      "emotion": "neutral",
-      "action": "listen",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "surprised"
-      }
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "surprised"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "explain",
+          "emotion": "angry"
+        }
+      },
+      "framing": {
+        "distance": 6.9,
+        "offset": 0,
+        "up": 0.03,
+        "fov": 42
+      },
+      "insert": {
+        "window": "FRAMEFORGE  /  LIVE TELEMETRY",
+        "context": "prod / deployment 7a4f",
+        "headline": "CUSTOMER SESSIONS",
+        "value": "0",
+        "caption": "No one can use the app.",
+        "request": "GET /customers  -> []",
+        "status": "0 ACTIVE USERS",
+        "footer": "NO CUSTOMERS DETECTED",
+        "label": "Active customer sessions",
+        "tone": "bad",
+        "graph": "flat"
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-10",
+      "title": "WHAT ABOUT USERS?",
       "dialogue": "What about the customers?",
       "speaker": "dev",
       "camera": "dev",
       "duration": 2.8,
       "intent": "reaction",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
-      }
+      "cast": {
+        "dev": {
+          "action": "question",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "worried"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 3.48,
+        "offset": -0.17,
+        "up": 0.05,
+        "fov": 34
+      },
+      "reactionCut": {
+        "role": "blue",
+        "seconds": 0.64,
+        "emotion": "surprised"
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-11",
+      "title": "NO MORE WAITING",
       "dialogue": "Also removed. No more waiting.",
       "speaker": "blue",
       "camera": "blue",
       "duration": 2.8,
       "intent": "reveal",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "surprised"
-      }
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "surprised"
+        },
+        "blue": {
+          "action": "shrug",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 3.62,
+        "offset": 0.15,
+        "up": 0.08,
+        "fov": 35
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-12",
+      "title": "YOU DID WHAT?",
       "dialogue": "You deleted the users?",
       "speaker": "dev",
       "camera": "dev",
       "duration": 2.8,
       "intent": "reveal",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "angry"
-      }
+      "cast": {
+        "dev": {
+          "action": "alarm",
+          "emotion": "angry"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "surprised"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 3.85,
+        "offset": 0.13,
+        "up": 0.09,
+        "fov": 36,
+        "lookUp": 0.07
+      },
+      "reactionCut": {
+        "role": "orange",
+        "seconds": 0.72,
+        "emotion": "worried"
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-13",
+      "title": "PERFECT RETENTION",
       "dialogue": "Technically, retention is perfect.",
       "speaker": "orange",
       "camera": "orange",
       "duration": 3.3,
       "intent": "punchline",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
-      }
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "celebrate",
+          "emotion": "happy"
+        }
+      },
+      "framing": {
+        "distance": 4.12,
+        "offset": -0.19,
+        "up": 0.03,
+        "fov": 36
+      },
+      "firstFrameStatus": "not_created"
     },
     {
       "id": "shot-14",
+      "title": "THE PUNCHLINE",
       "dialogue": "Because nobody can leave.",
       "speaker": "dev",
       "camera": "duo",
       "duration": 3.8,
       "intent": "punchline",
-      "emotion": "neutral",
-      "action": "speak",
-      "firstFrameStatus": "not_created",
-      "acting": {
-        "devEmotion": "worried"
-      }
+      "cast": {
+        "dev": {
+          "action": "defeat",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "worried"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "framing": {
+        "distance": 7.22,
+        "offset": 0.26,
+        "up": 0.12,
+        "fov": 40
+      },
+      "reactionCut": {
+        "role": "blue",
+        "seconds": 0.92,
+        "emotion": "surprised"
+      },
+      "firstFrameStatus": "not_created"
     }
   ],
   "audio": {

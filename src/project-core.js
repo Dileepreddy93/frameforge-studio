@@ -11,6 +11,12 @@
  const isRecord=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
  const goodText=(s,max=2048)=>typeof s==='string'&&s.trim().length>0&&s.length<=max;
  const allowedStatuses=new Set(['not_created','draft','approved']);
+ const EMOTIONS=new Set(['neutral','happy','worried','surprised','angry']);
+ const ACTIONS=new Set(['listen','typing','react','question','plead','alarm','surprise','defeat','announce','explain','celebrate','shrug','anticipate']);
+ const INSERT_TEXT=['window','context','headline','value','caption','request','status','footer','label'];
+ // Camera framing used when a shot does not author its own: [distance, offset, up, fov].
+ const DEFAULT_FRAMING={dev:[4.2,0,.06,35],blue:[3.9,0,.06,35],orange:[3.9,0,.06,35],duo:[7,0,.08,41],wide:[7,0,.08,41],screen:[7,0,.08,41]};
+ const inRange=(x,lo,hi)=>Number.isFinite(x)&&x>=lo&&x<=hi;
  function validateProject(p){
   const errors=[];
   const fail=(path,message)=>errors.push({path,message});
@@ -46,12 +52,27 @@
    if(!CAMERAS.has(s.camera))fail(at+'.camera','Unknown camera preset');
    if(!Number.isFinite(s.duration)||s.duration<.4||s.duration>15)fail(at+'.duration','Duration outside 0.4 to 15 seconds');
    else total+=s.duration;
-   if(!goodText(s.intent,200)||!goodText(s.emotion,80)||!goodText(s.action,80))fail(at,'Director intent, emotion and action required');
+   if(!goodText(s.intent,200))fail(at+'.intent','Director intent required');
+   if(s.title!==undefined&&!goodText(s.title,60))fail(at+'.title','Title must be short text');
+   if(s.cast!==undefined){
+    if(!isRecord(s.cast))fail(at+'.cast','Expected object keyed by character id');
+    else for(const [id,c] of Object.entries(s.cast)){
+     if(!characterIds.has(id))fail(at+'.cast.'+id,'Not a registered character');
+     else if(!isRecord(c)||(c.action!==undefined&&!ACTIONS.has(c.action))||(c.emotion!==undefined&&!EMOTIONS.has(c.emotion)))fail(at+'.cast.'+id,'Unknown action or emotion');
+    }
+   }
+   const f=s.framing;
+   if(f!==undefined&&!(isRecord(f)&&inRange(f.distance,1,15)&&inRange(f.offset,-2,2)&&inRange(f.up,-1,1)&&inRange(f.fov,15,75)&&(f.lookUp===undefined||inRange(f.lookUp,-1,1))))fail(at+'.framing','Expected distance 1-15, offset -2..2, up -1..1, fov 15-75');
+   const r=s.reactionCut;
+   if(r!==undefined&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');
+   const ins=s.insert;
+   if(ins!==undefined&&!(isRecord(ins)&&INSERT_TEXT.every(k=>goodText(ins[k],80))&&['good','bad'].includes(ins.tone)&&['drop','flat'].includes(ins.graph)))fail(at+'.insert','Screen insert needs '+INSERT_TEXT.join('/')+', tone good|bad and graph drop|flat');
    if(s.acting!==undefined&&(!isRecord(s.acting)||!['neutral','happy','worried','surprised','angry'].includes(s.acting.devEmotion)))fail(at+'.acting.devEmotion','Unsupported DEV emotional beat');
    if(!allowedStatuses.has(s.firstFrameStatus))fail(at+'.firstFrameStatus','Missing explicit first frame approval status');
    if(s.styleLock!==undefined&&s.styleLock!==p.style?.styleLock)fail(at+'.styleLock','Shot style lock drift');
   });
   if(total>180)fail('shots','Film exceeds 180-second limit');
+  if(p.banner!==undefined&&!goodText(p.banner,80))fail('banner','Banner must be short text');
   if(!isRecord(p.audio)||!['mastered','storyboard_only'].includes(p.audio.state))fail('audio.state','Mastered/storyboard_only state required');
   if(p.audio?.state==='mastered'&&!goodText(p.audio.masterUrl))fail('audio.masterUrl','Mastered episodes need a real media URL');
   if(p.audio?.state==='storyboard_only'&&p.audio.masterUrl)fail('audio.masterUrl','Storyboard-only episodes must not claim a master');
@@ -64,10 +85,20 @@
  }
  function toTimelineShots(p){
   assertProject(p);
-  return p.shots.map(s=>({
-   id:s.id,text:s.dialogue,speaker:s.speaker,camera:s.camera,
-   duration:s.duration,intent:s.intent,emotion:s.emotion,action:s.action,acting:s.acting??null
-  }));
+  // Every shot carries its own complete direction, so nothing downstream depends on shot order.
+  return p.shots.map(s=>{
+   const cast={};
+   for(const {id} of p.characters)cast[id]={
+    action:s.cast?.[id]?.action??(id===s.speaker?'explain':'listen'),
+    emotion:s.cast?.[id]?.emotion??(id==='dev'?s.acting?.devEmotion:undefined)??'neutral'
+   };
+   const [distance,offset,up,fov]=DEFAULT_FRAMING[s.camera];
+   return{
+    id:s.id,text:s.dialogue,speaker:s.speaker,camera:s.camera,duration:s.duration,intent:s.intent,
+    title:s.title??'',cast,framing:{distance,offset,up,fov,lookUp:0,...s.framing},
+    reactionCut:s.reactionCut??null,insert:s.insert??null
+   };
+  });
  }
  function assertRendererCompatible(p){
   assertProject(p);

@@ -1,32 +1,57 @@
-# FrameForge project format v1 — source of truth for episodes
+# FrameForge episode format (`frameforge.project/1`)
 
-The V5 browser reads actual JSON documents from the projects/ directory. It no longer embeds script/shot dialogue arrays in index.html. The pure validator is src/project-core.js; it is shared between Node.js tests and the browser.
+An episode is one JSON file. The renderer takes every per-shot decision from it, including title, acting, camera framing, reaction cuts and screen inserts. Nothing is keyed by shot position, so you can reorder, add or delete shots without touching code.
 
-## Required fields
-- schema: frameforge.project/1
-- id, title, logline; output target 1080x1920 at 30 FPS
-- style.styleLock: invariant visual style; shot.styleLock, if present, must match exactly
-- environment: id, description, safeZone top/bottom overlay margins in 1080x1920 coordinates
-- characters: stable id, name, visualIdentity, voice.profile and voice.voiceLock, sheetStatus, four or more unique expressions
-- shots: stable id, dialogue, registered speaker, allowed camera, 0.4-15s duration, intent, emotion, action, firstFrameStatus
-- audio: state mastered with valid media URL or storyboard_only with no URL
+The validator is `src/project-core.js`. It runs unchanged in Node and in the browser. `toTimelineShots()` fills in defaults so every shot reaches the renderer complete.
 
-Examples: projects/zero-latency.frameforge.json (mastered, 14 scenes) and projects/mountain-mystery.frameforge.json (unvoiced storyboard, 6 scenes). The original V3 lines, speaker, camera and durations were transferred bit-for-bit into JSON and regression-tested.
+Examples:
+- `projects/zero-latency.frameforge.json` is fully directed, with 14 shots and mastered audio.
+- `projects/mountain-mystery.frameforge.json` is a storyboard with no voice and relies on defaults.
 
-The 1080x1920 output is a **target in project metadata**, NOT a claim the current GPU-free rendering pipeline already provides that native resolution. V4 verified export was 480x854, and the benchmark remains unreached.
+## Episode fields
+| Field | Required | Notes |
+|---|---|---|
+| `schema` | yes | `"frameforge.project/1"` |
+| `id`, `title`, `logline` | yes | `id` is a lowercase slug |
+| `banner` | no | Small line above the shot title, e.g. `"FRAMEFORGE STORIES  /  EPISODE 01"`. Default: `FRAMEFORGE STORIES`. |
+| `output` | yes | `{width:1080,height:1920,fps:30}` |
+| `style.styleLock` | yes | A shot's `styleLock`, if present, must match it exactly |
+| `environment` | yes | `id`, `description`, `safeZone {top,bottom}` in 1080x1920 pixels |
+| `characters[]` | yes | `id`, `name`, `visualIdentity`, `voice {profile,voiceLock}`, `sheetStatus`, 4+ `expressions`. The current renderer animates `dev`, `blue` and `orange` only. |
+| `shots[]` | yes | 1–120 shots, 180 s total maximum |
+| `audio` | yes | `{state:"mastered",masterUrl}` or `{state:"storyboard_only",masterUrl:null}` |
 
-## Stage gates still open
-- Character sheets must be created from identity specs and actually approved; sheetStatus is not_created.
-- First frames are NOT approved; firstFrameStatus is not_created. No fabricated approval.
-- Viseme timing is still heuristic from V4; requires word/phoneme alignment.
-- Existing scene UI permits edits during one browser session. File-backed save/reopen, undo and full scene editing are future work; this milestone provides reusable, validated **loading**, not persistent in-browser writes.
-- Camera and acting direction still use V4 preset mapping; P2 and P3 gates are open.
+## Shot fields
+| Field | Required | Values | Default |
+|---|---|---|---|
+| `id` | yes | unique slug | |
+| `dialogue`, `speaker` | yes | text; a registered character id | |
+| `camera` | yes | `dev` `blue` `orange` `duo` `wide` `screen` | |
+| `duration` | yes | 0.4–15 s | |
+| `intent` | yes | short director note | |
+| `firstFrameStatus` | yes | `not_created` `draft` `approved` | |
+| `title` | no | ≤ 60 chars, shown in the title card | episode `title`, uppercased |
+| `cast.<id>.action` | no | `listen` `typing` `react` `question` `plead` `alarm` `surprise` `defeat` `announce` `explain` `celebrate` `shrug` `anticipate` | `explain` for the speaker, `listen` for everyone else |
+| `cast.<id>.emotion` | no | `neutral` `happy` `worried` `surprised` `angry` | `neutral` (for `dev`: legacy `acting.devEmotion` if present) |
+| `framing` | no | `distance` 1–15, `offset` −2..2, `up` −1..1, `fov` 15–75, `lookUp` −1..1 | from the camera preset |
+| `reactionCut` | no | `{role, seconds, emotion?}`: cut to `role` for the last `seconds` of the shot, optionally changing their emotion | none |
+| `insert` | no | Full-frame telemetry card for `camera:"screen"` shots: `window`, `context`, `headline`, `value`, `caption`, `request`, `status`, `footer`, `label` (all text), `tone` `good`/`bad`, `graph` `drop`/`flat` | none (a plain 3D shot) |
 
-## How to add an episode
-Create projects/new-story.frameforge.json based on an existing example. Validate with the Node tests and link it to the projectFiles map in index.html. The eventual editor must remove this last catalog registration step and implement save/import. Never spoof audio for storyboard-only projects.
+Older files that use `emotion`, `action` or `acting.devEmotion` on shots still open.
 
-Tests: node tests/project-core.test.cjs; node tests/project-integration.test.mjs.
+## Example shot
+```json
+{
+  "id": "shot-03", "title": "NO REGRETS?",
+  "dialogue": "Without breaking anything?", "speaker": "dev", "camera": "dev", "duration": 2.6, "intent": "setup",
+  "cast": {"dev": {"action": "question", "emotion": "worried"}, "blue": {"action": "listen", "emotion": "worried"}},
+  "framing": {"distance": 3.95, "offset": -0.16, "up": 0.08, "fov": 36},
+  "reactionCut": {"role": "blue", "seconds": 0.58, "emotion": "surprised"},
+  "firstFrameStatus": "not_created"
+}
+```
 
-
-## Manual project interchange (Phase 1B)
-Import any schema-valid JSON episode through the project file input. Only the already rigged dev/blue/orange characters are supported by the actual V4 renderer. The import refuses unsupported rigs. Apply changes to shot dialogue, speaker or camera, then Download episode JSON to get the full versioned project with updated shot data. Reimporting that file should preserve those edits. This is local file interchange, NOT server-side persistence; custom mastered video export still requires an aligned voice asset/renderer integration and is not certified.
+## Loading an episode
+- Use **Import project** in the studio, or add the file to `projectFiles` in `index.html`.
+- **Download episode JSON** saves the edits made in the studio.
+- Tests: `node tests/project-core.test.cjs` checks the format, and `node tests/episode-data-browser.cjs` checks that the renderer follows it.

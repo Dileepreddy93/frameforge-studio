@@ -57,3 +57,33 @@ alien.shots[0].speaker='alien';
 assert.equal(validateProject(alien).valid,true);
 assert.throws(()=>core.assertRendererCompatible(alien),/cannot animate custom rigs/);
 console.log('RIG_COMPATIBILITY_GATE_PASS');
+
+// Per-shot direction lives on the shot itself, so reordering shots never changes what a shot shows.
+const comedyShots=toTimelineShots(comedy);
+const reversed=clone(comedy);reversed.shots.reverse();
+const byId=Object.fromEntries(toTimelineShots(reversed).map(s=>[s.id,s]));
+for(const s of comedyShots)assert.deepEqual(byId[s.id],s,'shot '+s.id+' keeps its own direction when moved');
+const trade=comedyShots.find(s=>s.id==='shot-09');
+assert.equal(trade.title,'THE TRADE');assert.equal(trade.insert.tone,'bad');assert.equal(trade.cast.orange.emotion,'angry');
+assert.deepEqual(comedyShots.find(s=>s.id==='shot-03').reactionCut,{role:'blue',seconds:.58,emotion:'surprised'});
+assert.equal(comedyShots.find(s=>s.id==='shot-12').framing.lookUp,.07);
+// Unauthored shots get complete defaults: speaker explains, others listen, framing comes from the camera preset.
+const plain=toTimelineShots(mystery)[0];
+assert.deepEqual(plain.cast.blue,{action:'listen',emotion:'neutral'});
+assert.equal(plain.cast[plain.speaker].action,'explain');
+assert.deepEqual(plain.framing,{distance:7,offset:0,up:.08,fov:41,lookUp:0});
+assert.equal(plain.title,'');assert.equal(plain.insert,null);assert.equal(plain.reactionCut,null);
+// Older files that only set acting.devEmotion still open.
+const legacy=clone(mystery);delete legacy.shots[0].cast;legacy.shots[0].acting={devEmotion:'happy'};
+assert.equal(toTimelineShots(legacy)[0].cast.dev.emotion,'happy');
+invalid('unknown action',p=>p.shots[0].cast.dev.action='moonwalk');
+invalid('unknown emotion',p=>p.shots[0].cast.blue.emotion='smug');
+invalid('cast for unregistered character',p=>p.shots[0].cast.alien={action:'listen'});
+invalid('framing out of range',p=>p.shots[0].framing.fov=120);
+invalid('reaction longer than shot',p=>p.shots[2].reactionCut.seconds=99);
+invalid('reaction by unknown role',p=>p.shots[2].reactionCut.role='nobody');
+invalid('incomplete screen insert',p=>delete p.shots[8].insert.caption);
+invalid('bad insert tone',p=>p.shots[8].insert.tone='meh');
+invalid('empty title',p=>p.shots[0].title='');
+invalid('empty banner',p=>p.banner='');
+console.log('SHOT_DIRECTION_TESTS_PASS: order-independent shots, defaults, legacy acting, 10 invalid cases');
