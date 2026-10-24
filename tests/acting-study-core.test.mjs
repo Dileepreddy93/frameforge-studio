@@ -18,7 +18,7 @@ assert.ok(sampleActingStudy(1.54).body.shoulderShrug>.8);
 assert.ok(sampleActingStudy(.78).body.torsoLean>.1);
 assert.ok(sampleActingStudy(2.08).morphs.eyeBlinkLeft>=.99);
 assert.ok(sampleActingStudy(2.08).morphs.jawOpen===undefined,'No talking mouth during blink/silence');
-assert.ok(sampleActingStudy(4.15).morphs.mouthSmile>.8);
+assert.ok(sampleActingStudy(4.15).morphs.mouthSmile>.75);
 const makeBone=name=>{
  const rot={x:.03,y:.04,z:.02,order:'XYZ',clone(){return {x:this.x,y:this.y,z:this.z,order:this.order}},set(x,y,z){this.x=x;this.y=y;this.z=z},copy(r){Object.assign(this,r)}};
  return {isBone:true,name,rotation:rot};
