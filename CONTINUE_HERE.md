@@ -66,3 +66,6 @@ PR #15 [mobile browser QA](https://github.com/Dileepreddy93/frameforge-studio/pu
 
 ## NEXT P2 ACTING STUDY — real facial rig, not a preset slideshow
 Branch `feature/p2-muted-acting-study`: `src/acting-study-core.mjs` and `asset-lab.html` five-second originally directed silent miniature facial performance using actual Ara GLB Head/Neck/LeftEye/RightEye rig and 20 morphology channels. Read docs/releases/P2_FIVE_SECOND_ACTING_STUDY.md. Needs 150-frame H.264 MP4 playback review before artistic acceptance; P1 art gate still NOT APPROVED. Existing main/V3 unchanged.
+
+## LATEST P2 actored MP4 (verified, NOT art approved)
+Experimental PR #16 `feature/p2-muted-acting-study` rendered genuine silent 5sec 150-frame H264 portrait MP4, 330x590, 30fps, no audio, SHA256 d628a3dd85e62bdfb0d5e83594a43122b6c1bbb38d5af5db7fea225650eba806. GH Action 40102526756 four jobs green, artifact ID 12562899629. Real video sampled every 1/3sec and visually reviewed: emotion progression visible, shoulders/arms static, gasp artificial, no prop/environment reaction, semi-realistic character vs stylized Git Blame reference. **ART GATE REJECTED; PR #16 remains DRAFT, NOT merged.** See docs/releases/P2_ACTUAL_FILM_QA_2026-10-24.md and issue #17. Do not call P2 complete or make false production deploy claims.

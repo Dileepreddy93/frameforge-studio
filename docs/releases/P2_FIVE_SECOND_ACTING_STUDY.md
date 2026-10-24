@@ -25,3 +25,6 @@ Instead of a fifth independent Ubuntu runner (which repeated slow Ubuntu apt upd
 
 ## Second real-frame QA / correct video pixel format
 Run 40102200391 via verified shared exporter generated all 150 actual WebGL frame PNGs, but `libx264` correctly rejected **617×590** RGBA canvas because `yuv420p` requires an EVEN luma width. This was a real stream-format bug; not an artistic/frame generation failure. Solution: FFmpeg **center-crops** the real 617×590 source to even 9:16 portrait ~332×590 using expression `crop=trunc(ih*9/16/2)*2:trunc(ih/2)*2:(iw-ow)/2:(ih-oh)/2`. Explicitly assert decoded output even dimensions, ratio within ±.008 of 9/16, 150 frames at 30fps, full 5.0s and no audio. The output is cropped *native source pixels*; it is NOT upscaled to claim professional 1080×1920. Full film QA remains open until new run passes and MP4 visually watched.
+
+## FINAL first vertical slice verdict
+Full actual MP4 PASS technically as described in `docs/releases/P2_ACTUAL_FILM_QA_2026-10-24.md`, but fails artistic/physical performance quality: weak shoulders/arms/torso, artificial gasp and not reference-compelling. New Issue #17 tracks targeted correction. Keep this PR as experimental and unmerged until visual gate met.
