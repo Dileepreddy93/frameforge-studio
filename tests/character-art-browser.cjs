@@ -4,11 +4,11 @@ const actor=process.argv[2]||'dev';
 assert.ok(['dev','blue','orange'].includes(actor));
 (async()=>{
  const browser=await chromium.launch({args:['--no-sandbox','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
- const page=await browser.newPage({viewport:{width:1030,height:850},acceptDownloads:true});
+ const page=await browser.newPage({viewport:{width:1030,height:850},acceptDownloads:true});page.setDefaultTimeout(85000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const r=await page.goto((process.env.FRAMEFORGE_URL||'http://127.0.0.1:8959/')+'character-lab.html',{waitUntil:'domcontentloaded',timeout:30000});
  assert.equal(r.status(),200);
- await page.waitForFunction(()=>document.querySelectorAll('#turnaround img').length===4&&document.querySelector('#environment').src.startsWith('data:image/png'),null,{timeout:45000});
+ await page.waitForFunction(()=>document.querySelectorAll('#turnaround img').length===4 && document.querySelector('#environment').src.startsWith('data:image/png') && document.querySelector('#save').disabled===false && document.querySelector('#status').textContent.includes('export ready'),null,{timeout:95000});
  if(actor!=='dev'){await page.locator('#actor').selectOption(actor);await page.waitForFunction(a=>document.getElementById('status').textContent.includes(a.toUpperCase()+' · 8 true 3D'),actor,{timeout:20000});}
  const samples=await page.evaluate(()=>[...document.querySelectorAll('#turnaround img,#emotions img')].map(x=>x.src));
  assert.equal(samples.length,8);
