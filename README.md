@@ -28,3 +28,22 @@ The HTML needs the internet for its Three.js dependency and externally hosted V3
 The v3.0-stable tag is protected by our workflow, not by GitHub branch protection. Keep main stable and perform later experiments on dedicated branches.
 
 Do not commit .env, API credentials, private keys or GitHub/Vercel tokens.
+
+## V5 experimental foundation (feature branch only)
+
+The new browser now loads JSON from the projects/ directory. Existing episodes are preserved in a validated schema with character, voice and style locks. You can import a JSON project with the current three rigs, edit dialogue/speaker/camera and download a complete revised project file. The source of truth is documented at docs/PROJECT_FORMAT.md.
+
+Tests (Node 22+):
+- node tests/phase0-contract.test.mjs
+- node tests/project-core.test.cjs
+- node tests/project-integration.test.mjs
+- node tests/check-source.mjs
+- node tests/check-v4.mjs
+- node tests/check-cinematic-v4.mjs
+
+Browser QA requires Playwright Chromium, a local HTTP server, and the FRAMEFORGE_URL environment variable:
+- node tests/project-browser.cjs
+- node tests/project-import-export-browser.cjs
+- node tests/render-cinematic.cjs
+
+The GitHub Actions configuration TEMPLATE is in docs/GITHUB_ACTIONS_SUGGESTED.yml; it is NOT enabled due to insufficient GitHub workflow scope. The exact cinematic reference, character-sheet assets and full V5 release quality remain open tasks; this branch is not the production site.
