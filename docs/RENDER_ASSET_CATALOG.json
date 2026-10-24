@@ -1,0 +1,87 @@
+{
+  "schema": "frameforge.render-asset-catalog/1",
+  "date": "2026-10-24",
+  "description": "Our own V4/V5 development renders; exact reference clips and user PDFs are not included.",
+  "assets": [
+    {
+      "path": "media/v4-review/frameforge-v4-complete-director-41s.mp4",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/frameforge-v4-complete-director-41s.mp4",
+      "known_expected_sha256": "7aa90314e91208ad14254b70f2e5b8738c3333544789a46ea167b9e41daf4590",
+      "actual_sha256": "7aa90314e91208ad14254b70f2e5b8738c3333544789a46ea167b9e41daf4590",
+      "size_bytes": 11682636,
+      "verified_against_known_checksum": true,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    },
+    {
+      "path": "media/v4-review/v4-first-15sec-preview.mp4",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v4-actual-15sec-preview-20261023.mp4",
+      "known_expected_sha256": null,
+      "actual_sha256": "4861d97b79a76c25cb68440ddc090dc34c77b8583857181a9fdb86f1a197bf66",
+      "size_bytes": 2738477,
+      "verified_against_known_checksum": false,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    },
+    {
+      "path": "media/v4-review/v4-cinematic-story-reaction-test-15s.mp4",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v4-cinematic-story-reaction-test-15s.mp4",
+      "known_expected_sha256": null,
+      "actual_sha256": "641e5414efa6ec9e7b900a0fed7f6127cd685b957367f358e568d0f3a9d703a0",
+      "size_bytes": 1881008,
+      "verified_against_known_checksum": false,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    },
+    {
+      "path": "media/v4-review/v4-preview-stills.jpg",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v4-private-review-stills.jpg",
+      "known_expected_sha256": null,
+      "actual_sha256": "941223fa19de5613aabb8ce58b96b1b3789ee9d1a37d0ae7a2168d3143d34f1f",
+      "size_bytes": 45629,
+      "verified_against_known_checksum": false,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    },
+    {
+      "path": "media/v5-evidence/dev-character-sheet.png",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5-phase1-dev-unapproved.png",
+      "known_expected_sha256": "53debfbb618014b3906cca0d33ea7e71433286745a3cb1da0b9f93051d3b725e",
+      "actual_sha256": "53debfbb618014b3906cca0d33ea7e71433286745a3cb1da0b9f93051d3b725e",
+      "size_bytes": 470601,
+      "verified_against_known_checksum": true,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    },
+    {
+      "path": "media/v5-evidence/blue-character-sheet.png",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5-phase1-blue-unapproved.png",
+      "known_expected_sha256": "f73d9a0f2be9e774617e8a6ac64e5e7b3027735e7c6edc7834059e60af8ccc2e",
+      "actual_sha256": "f73d9a0f2be9e774617e8a6ac64e5e7b3027735e7c6edc7834059e60af8ccc2e",
+      "size_bytes": 462368,
+      "verified_against_known_checksum": true,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    },
+    {
+      "path": "media/v5-evidence/orange-character-sheet.png",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5-phase1-orange-unapproved.png",
+      "known_expected_sha256": "84a448df6dc75692c97ed2006b93e2100a2cb479daa25299e98b30f51493e978",
+      "actual_sha256": "84a448df6dc75692c97ed2006b93e2100a2cb479daa25299e98b30f51493e978",
+      "size_bytes": 457209,
+      "verified_against_known_checksum": true,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    },
+    {
+      "path": "media/v5-evidence/environment-first-frame.png",
+      "source_url": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/v5-phase1-environment-unapproved.png",
+      "known_expected_sha256": "04ea0bb3fa4c91685f75b2b062b5b28467356a2c432acbcf0ce3008a5830ed47",
+      "actual_sha256": "04ea0bb3fa4c91685f75b2b062b5b28467356a2c432acbcf0ce3008a5830ed47",
+      "size_bytes": 131204,
+      "verified_against_known_checksum": true,
+      "available_in_repository": true,
+      "artistic_approval": "NOT APPROVED"
+    }
+  ]
+}

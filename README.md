@@ -47,3 +47,8 @@ Browser QA requires Playwright Chromium, a local HTTP server, and the FRAMEFORGE
 - node tests/render-cinematic.cjs
 
 The GitHub Actions configuration TEMPLATE is in docs/GITHUB_ACTIONS_SUGGESTED.yml; it is NOT enabled due to insufficient GitHub workflow scope. The exact cinematic reference, character-sheet assets and full V5 release quality remain open tasks; this branch is not the production site.
+
+## Start here to continue in a new conversation
+
+Read [CONTINUE_HERE.md](CONTINUE_HERE.md), [the comprehensive technical handoff](docs/HANDOFF_2026-10-24.md), [the P0–P7 acceptance checklist](docs/MASTER_IMPLEMENTATION_CHECKLIST.md), and [the development runbook](docs/DEVELOPMENT_RUNBOOK.md). The repo also preserves V4 review footage, V5 true 3D character sheet evidence and exact SHA-256 manifests. These are not user-provided reference video assets. Do not mark incomplete artistic phases as done.
+
