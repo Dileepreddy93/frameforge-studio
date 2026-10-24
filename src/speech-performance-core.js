@@ -14,6 +14,11 @@
  const syllableWeights={a:1.1,e:1.1,i:1.0,o:1.2,u:1.0};
  const visemeOf=token=>{
   const s=token.toLowerCase();
+  // Indic grapheme heuristics, not linguistic forced alignment or speech recognition.
+  if(/[మపబభमपबभ]/u.test(s[0]||''))return 'closed';
+  if(/[ఫవफ़फव]/u.test(s[0]||''))return 'teeth';
+  if(/[ఊఉఒఓఔుూఒొోౌउऊओऔुूोौ]/u.test(s))return 'round';
+  if(/[ఇఈఎఏఐిీెేైइईएऐिीेै]/u.test(s))return 'wide';
   if(/^(m|b|p)/.test(s))return 'closed';
   if(/^(f|v)/.test(s))return 'teeth';
   if(/^(oo|ou|ow|u|o|w|r)/.test(s))return 'round';
@@ -22,14 +27,16 @@
   return 'open';
  };
  function textUnits(text){
-  const words=(typeof text==='string'?text:'').toLowerCase().match(/[a-z']+/g)||[];
+  const words=(typeof text==='string'?text:'').normalize('NFC').toLowerCase().match(/[\p{L}\p{M}']+/gu)||[];
   const units=[];
   for(let wi=0;wi<words.length;wi++){
    const word=words[wi];
-   const segments=word.match(/sh|th|ch|ph|oo|ee|ea|ow|ou|[a-z]/g)||[word];
+   const segments=/^[a-z']+$/u.test(word)
+     ?(word.match(/sh|th|ch|ph|oo|ee|ea|ow|ou|[a-z]/g)||[word])
+     :Array.from(new Intl.Segmenter('und',{granularity:'grapheme'}).segment(word),part=>part.segment);
    for(let i=0;i<segments.length;i++){
     const letter=segments[i];
-    const vowel=/[aeiouy]/.test(letter);
+    const vowel=/[aeiouyఅఆఇఈఉఊఋఎఏఐఒఓఔాిీుూఋెేైొోౌअआइईउऊऋएऐओऔािीुूृेैोौ]/u.test(letter);
     units.push({type:visemeOf(letter),weight:(vowel?1.35:.8)*(syllableWeights[letter]||1),
       wordIndex:wi,word,segment:letter});
    }

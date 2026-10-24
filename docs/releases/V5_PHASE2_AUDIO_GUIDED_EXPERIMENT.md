@@ -17,3 +17,4 @@
 
 ## Frame-level acceptance
 - At 32.45s DEV's mouth is visibly open; at 33.80s the detected silence closes it. Seeking back restores the identical pose. Chromium directly inspects the Three.js rig and decoded voice waveform.
+\n## Script-aware and visible articulation\n- Telugu and Devanagari dialogue now produces Unicode-grapheme cue units instead of silently returning an empty mouth track. Indic mouth mappings remain heuristic, not language-trained alignments.\n- The human 3D mouth width responds to rounded versus wide vowel cues, and bilabial closures are flattened. Browser QA checks actual rendered shape variation on the voiced DEV line.\n

@@ -34,9 +34,25 @@ const {chromium}=require('playwright');
  assert.equal(mouth.quiet.cue.voiced,false,'DEV falls silent');
  assert.ok(mouth.voiced.rig.mouthScale>mouth.quiet.rig.mouthScale+.25,'Mouth closes between syllables');
  assert.deepEqual(mouth.voiced.rig,mouth.rewind,'Same timestamp restores identical facial mesh');
+ const mouthWidths=await page.evaluate(()=>{
+   const frames=[];
+   for(let i=0;i<84;i++){
+     const t=31.9+i/30,cue=FrameForgeSpeechQA.at(t);
+     FrameForgeQA.setTime(t);
+     if(cue.voiced&&['round','wide'].includes(cue.viseme)){
+       frames.push({viseme:cue.viseme,width:FrameForgePerformanceQA.peek().mouthWidth});
+     }
+   }
+   return frames;
+ });
+ const round=mouthWidths.find(f=>f.viseme==='round');
+ const wide=mouthWidths.find(f=>f.viseme==='wide');
+ assert.ok(round&&wide,'the reference dialogue must contain both round and wide poses');
+ assert.ok(wide.width>round.width+.30,'rendered human mouth width must follow viseme shapes');
+
 
  assert.deepEqual(errors,[]);
  assert.deepEqual(failed.filter(u=>/speech-performance|project-core|\.frameforge\.json/.test(u)),[]);
- console.log('V5_3_SPEECH_BROWSER_PASS '+JSON.stringify({version:result.version,samples:result.cues.length,deterministic:true,imageBytes:result.frame.length,mouthDuringSpeech:mouth.voiced.rig.mouthScale,mouthAtSilence:mouth.quiet.rig.mouthScale,seekStable:true,pageErrors:errors.length}));
+ console.log('V5_3_SPEECH_BROWSER_PASS '+JSON.stringify({version:result.version,samples:result.cues.length,deterministic:true,imageBytes:result.frame.length,mouthDuringSpeech:mouth.voiced.rig.mouthScale,mouthAtSilence:mouth.quiet.rig.mouthScale,seekStable:true,wideMouth:wide.width,roundedMouth:round.width,pageErrors:errors.length}));
  await browser.close();
 })().catch(e=>{console.error('V5_3_SPEECH_BROWSER_FAIL '+e.stack);process.exit(1)});

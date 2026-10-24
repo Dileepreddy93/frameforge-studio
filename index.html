@@ -367,7 +367,7 @@ for(const side of [-1,1]){
  corner.position.set(side*.112,-.304,.517);corner.scale.set(.88,.66,.35);
  humanHead.add(corner);humanLipCorners.push(corner);
 }
-function applyHumanFacePose(pose){
+function applyHumanFacePose(pose,speech=null){
  const lid=pose.lid,raise=pose.brow,tilt=pose.slope;
  browsNew.forEach((b,i)=>{
   const side=i===0?-1:1;
@@ -391,12 +391,18 @@ function applyHumanFacePose(pose){
   corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019);
   corner.position.y=-.304+pose.smile*.024;
  });
- const smile=pose.smile>.30&&pose.mouthOpen<.34;
- const frown=pose.smile<-.25&&pose.mouthOpen<.35;
+ const speaking=!!speech&&speech.viseme!=='rest';
+ const smile=!speaking&&pose.smile>.30&&pose.mouthOpen<.34;
+ const frown=!speaking&&pose.smile<-.25&&pose.mouthOpen<.35;
  humanSmile.visible=smile;humanFrown.visible=frown;
  mouthNew.visible=!smile&&!frown;
- mouthNew.scale.x=pose.mouthWidth;
- mouthNew.scale.y=Math.max(.09,pose.mouthOpen*1.04+pose.round*.18);
+ const visemeWidth={rest:1,closed:.88,round:.62,wide:1.34,teeth:1.10,open:1}[speech?.viseme]??1;
+ mouthNew.scale.x=pose.mouthWidth*visemeWidth;
+ mouthNew.scale.y=speech?.viseme==='closed'?.045:
+  Math.max(speech?.viseme==='rest'?.075:.09,pose.mouthOpen*1.04+pose.round*.18);
+ humanLipCorners.forEach((corner,i)=>{
+  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019)*visemeWidth;
+ });
  mouthNew.position.y=-.305-pose.jaw*.013;
  chin.position.y=-.32-pose.mouthOpen*.022;
  beard.position.y=-.395-pose.mouthOpen*.019;
@@ -568,7 +574,7 @@ update=function(){
   speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0,
   gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
  });
- applyHumanFacePose(facialPose);
+ applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null);
 };
 // V5 projects are versioned documents, NOT hardcoded dialogue arrays.
 const projectCatalog=Object.create(null);
@@ -981,7 +987,7 @@ window.FrameForgePerformanceQA=Object.freeze({
  poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
  facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
  humanRig:()=>({upperLids:humanUpperLids.length,lowerLids:humanLowerLids.length,cheeks:humanCheeks.length,lipCorners:humanLipCorners.length}),
- peek:()=>({mouthScale:mouthNew.scale.y,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
+ peek:()=>({mouthScale:mouthNew.scale.y,mouthWidth:mouthNew.scale.x,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
 });
 window.FrameForgeArtLab=Object.freeze({
  version:'v5-phase1c-actual-rigs',
