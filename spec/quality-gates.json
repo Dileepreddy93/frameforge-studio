@@ -1,0 +1,15 @@
+{
+ "version":1,"referenceStatus":"not_met",
+ "promotionPolicy":"Do not merge to main or deploy production before independent complete-film artistic AND engineering checks pass.",
+ "phases":[
+  {"id":"P0","name":"Research, evidence, reproducibility","status":"in_progress","requirements":["Retain tagged V3/V4 restores","Source/claim register with verification status","Reviewed quality contract and tests","Exact benchmark clip and SHA256, still missing"]},
+  {"id":"P1","name":"Project and art direction","status":"planned","requirements":["Typed scene/story documents and cross-reference validation","Reusable character identity and locked style","Character sheets and first-frame approval","Second episode loaded without changing engine source"]},
+  {"id":"P2","name":"Body and facial performance","status":"planned","requirements":["Eyelines, brows, asymmetry, lids, visemes","Timed speech gestures from validated markers","Anticipation, action, reaction, hold, recovery","Pose transition and intersection testing"]},
+  {"id":"P3","name":"Cinematic direction","status":"planned","requirements":["Story-aware shots and screen continuity","Camera eye heights, safe framing, purposeful cuts","Detailed set, lighting, materials and shadows","Story readable without subtitles"]},
+  {"id":"P4","name":"Audio and captions","status":"planned","requirements":["Consistent voice IDs and actual speaking review","Real word/phoneme timing and sync verification","Foley, music ducking, transitions","Face-safe word-timed captions, highlight and punchline"]},
+  {"id":"P5","name":"Rendering","status":"planned","requirements":["Deterministic seek and rerender","Native 1080x1920 at 30 FPS","Frame/audio/decode/loudness validation","Worker limits, fallback, retries and progress"]},
+  {"id":"P6","name":"Reusable studio","status":"planned","requirements":["Project editor and undo/save/open/recovery","Character/style/environment asset library","Reliable import/export and media relinking","Second fully independent episode using same engine"]},
+  {"id":"P7","name":"Reference acceptance","status":"planned","requirements":["Exact reference-frame comparison","Full-frame and full-audio artistic evaluation","Proven functional user flow and second film","Versioned release and verified public playback"]}
+ ],
+ "evidence":[{"id":"V3","phase":"P0","type":"git_tag","value":"v3.0-stable"},{"id":"V4","phase":"P0","type":"git_tag","value":"v4.0-rc1"},{"id":"V4-tech","phase":"P5","type":"partial_only","value":"1254 frames at 480x854, stereo AAC; NOT proof P5 passed"}]
+}
