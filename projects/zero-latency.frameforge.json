@@ -174,7 +174,7 @@
       "dialogue": "Without breaking anything?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.066666666666667,
+      "duration": 2.3333333333333335,
       "intent": "setup",
       "cast": {
         "dev": {
@@ -205,7 +205,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.61
       },
       "firstFrameStatus": "not_created",
       "voice": {
@@ -219,7 +219,7 @@
       "dialogue": "Define anything.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 1.6,
+      "duration": 1.8,
       "intent": "contrast",
       "cast": {
         "dev": {
@@ -250,7 +250,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.53
       },
       "sfx": [
         {
@@ -358,7 +358,7 @@
       "dialogue": "Done. Zero milliseconds.",
       "speaker": "blue",
       "camera": "screen",
-      "duration": 2.1666666666666665,
+      "duration": 2.433333333333333,
       "intent": "escalation",
       "cast": {
         "dev": {
@@ -395,7 +395,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.6
       },
       "sfx": [
         {
@@ -420,7 +420,7 @@
       "dialogue": "Wow! The screen opens immediately.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.7333333333333334,
+      "duration": 3.1,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -451,7 +451,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.7
       },
       "firstFrameStatus": "not_created",
       "voice": {
@@ -465,7 +465,7 @@
       "dialogue": "It no longer requests data.",
       "speaker": "orange",
       "camera": "screen",
-      "duration": 2.8,
+      "duration": 3.1666666666666665,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -502,7 +502,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.7
       },
       "sfx": [
         {
@@ -528,7 +528,7 @@
       "dialogue": "What about the customers?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 1.9666666666666666,
+      "duration": 2.2666666666666666,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -559,7 +559,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.67
       },
       "firstFrameStatus": "not_created",
       "voice": {
@@ -573,7 +573,7 @@
       "dialogue": "Also removed. No more waiting.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.533333333333333,
+      "duration": 2.6333333333333333,
       "intent": "reveal",
       "cast": {
         "dev": {
@@ -599,7 +599,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.45
       },
       "sfx": [
         {
@@ -620,7 +620,7 @@
       "dialogue": "You deleted the users?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.066666666666667,
+      "duration": 2.466666666666667,
       "intent": "reveal",
       "cast": {
         "dev": {
@@ -653,7 +653,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.75
       },
       "sfx": [
         {
@@ -674,7 +674,7 @@
       "dialogue": "Technically, retention is perfect.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 3.1,
+      "duration": 3.4,
       "intent": "punchline",
       "cast": {
         "dev": {
@@ -700,7 +700,7 @@
       },
       "timing": {
         "lead": 0.15,
-        "pauseAfter": 0.35
+        "pauseAfter": 0.65
       },
       "firstFrameStatus": "not_created",
       "voice": {

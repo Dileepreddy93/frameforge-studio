@@ -116,6 +116,7 @@
    };
   });
  }
+ function defaultFraming(camera){const [distance,offset,up,fov]=DEFAULT_FRAMING[camera];return{distance,offset,up,fov,lookUp:0}}
  function assertRendererCompatible(p){
   assertProject(p);
   const rigs=new Set(['dev','blue','orange']);
@@ -124,5 +125,6 @@
   return p;
  }
  function summary(p){const v=validateProject(p);return{id:p?.id||null,valid:v.valid,shotCount:v.shotCount,duration:v.duration,errors:v.errors};}
- return Object.freeze({schema:format,validateProject,assertProject,toTimelineShots,assertRendererCompatible,summary});
+ return Object.freeze({schema:format,validateProject,assertProject,toTimelineShots,assertRendererCompatible,summary,defaultFraming,
+  actions:[...ACTIONS],emotions:[...EMOTIONS],moves:[...MOVES]});
 });

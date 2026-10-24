@@ -52,6 +52,7 @@ jobs:
           node tests/speech-performance-browser.cjs
           node tests/determinism-browser.cjs
           node tests/episode-data-browser.cjs
+          node tests/studio-editor-browser.cjs
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

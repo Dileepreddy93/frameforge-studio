@@ -19,7 +19,7 @@ Examples:
 | `environment` | yes | `id`, `description`, `safeZone {top,bottom}` in 1080x1920 pixels |
 | `characters[]` | yes | `id`, `name`, `visualIdentity`, `voice {profile,voiceLock,kokoro?:{voice,speed}}`, `sheetStatus`, 4+ `expressions`. The current renderer animates `dev`, `blue` and `orange` only. |
 | `shots[]` | yes | 1–120 shots, 180 s total maximum |
-| `audio` | yes | `{state:"mastered",masterUrl,voiceUrl}` or `{state:"storyboard_only",masterUrl:null}`; optional `music {bpm, cues:[{shot, style: groove|tension|stop|sting, at?: start|afterLine}]}` |
+| `audio` | yes | `{state:"mastered",masterUrl,voiceUrl}` or `{state:"storyboard_only",masterUrl:null}`; optional `music {bpm, cues:[{shot, style, at?}]}` with style `groove`/`tension`/`stop`/`sting` and `at` `start`/`afterLine` |
 
 ## Shot fields
 | Field | Required | Values | Default |
