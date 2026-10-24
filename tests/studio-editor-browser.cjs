@@ -19,7 +19,7 @@ function serve(){
 
 (async()=>{
  const server=await serve();
- const url=process.env.FRAMEFORGE_URL||`http://127.0.0.1:${server.address().port}/`;
+ const url=(process.env.FRAMEFORGE_URL||`http://127.0.0.1:${server.address().port}/`)+'studio.html';
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||undefined,
   args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
  const page=await browser.newPage({viewport:{width:1280,height:900},acceptDownloads:true});

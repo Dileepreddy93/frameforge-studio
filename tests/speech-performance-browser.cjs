@@ -5,7 +5,7 @@ const {chromium}=require('playwright');
  const page=await browser.newPage({viewport:{width:1100,height:850}});
  const errors=[],failed=[];page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>failed.push(r.url()));
- const resp=await page.goto(process.env.FRAMEFORGE_URL||'http://127.0.0.1:8968/',{waitUntil:'domcontentloaded',timeout:42000});
+ const resp=await page.goto((process.env.FRAMEFORGE_URL||'http://127.0.0.1:8968/')+'studio.html',{waitUntil:'domcontentloaded',timeout:42000});
  assert.equal(resp.status(),200);
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgeSpeechQA&&FrameForgeQA?.envelopeReady()&&window.FrameForgePerformanceQA,null,{timeout:65000});
  const result=await page.evaluate(()=>{

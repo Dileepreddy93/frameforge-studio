@@ -26,7 +26,7 @@ const sha=dataUrl=>crypto.createHash('sha256').update(dataUrl.split(',')[1]).dig
 
 (async()=>{
  const server=await serve();
- const url=process.env.FRAMEFORGE_URL||`http://127.0.0.1:${server.address().port}/`;
+ const url=(process.env.FRAMEFORGE_URL||`http://127.0.0.1:${server.address().port}/`)+'studio.html';
  const outDir=process.env.FRAMEFORGE_ARTIFACT_DIR;
  if(outDir)fs.mkdirSync(outDir,{recursive:true});
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||undefined,

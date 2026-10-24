@@ -63,7 +63,7 @@ const started=Date.now();
 try{
  const page=await browser.newPage({viewport:{width:1100,height:900},deviceScaleFactor:1});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(`http://127.0.0.1:${server.address().port}/`,{waitUntil:'domcontentloaded',timeout:60000});
+ await page.goto(`http://127.0.0.1:${server.address().port}/studio.html`,{waitUntil:'domcontentloaded',timeout:60000});
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgeQA?.openProject,null,{timeout:90000});
  await page.evaluate(p=>FrameForgeQA.openProject(p),project);
  await page.waitForFunction(()=>FrameForgeQA.envelopeReady(),null,{timeout:60000});

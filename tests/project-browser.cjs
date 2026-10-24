@@ -9,7 +9,7 @@ const fsdata=JSON.parse(fs.readFileSync('projects/zero-latency.frameforge.json',
  page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>failed.push(r.url()+': '+r.failure()?.errorText));
  const origin=process.env.FRAMEFORGE_URL||'http://127.0.0.1:8957/';
- const resp=await page.goto(origin,{waitUntil:'domcontentloaded',timeout:35000});
+ const resp=await page.goto(origin+'studio.html',{waitUntil:'domcontentloaded',timeout:35000});
  assert.equal(resp.status(),200);
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded===true&&window.FrameForgeQA?.shots().length===14,null,{timeout:35000});
  const current=await page.evaluate(()=>({id:FrameForgeCurrentProject?.id,shots:FrameForgeQA.shots(),contract:FrameForgeProjectCore.schema}));

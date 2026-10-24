@@ -31,7 +31,7 @@ async function main(){
       '--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
     const page=await browser.newPage({viewport:{width:1000,height:830}});
     page.on('pageerror',err=>errors.push(err.message));
-    const response=await page.goto(process.env.FRAMEFORGE_URL||'http://127.0.0.1:8959/',
+    const response=await page.goto((process.env.FRAMEFORGE_URL||'http://127.0.0.1:8959/')+'studio.html',
       {waitUntil:'domcontentloaded',timeout:35000});
     assert.equal(response.status(),200);
     await page.waitForFunction(()=>window.FrameForgeQA?.envelopeReady() &&
