@@ -14,6 +14,7 @@
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply shot changes</button><p class="fine">Click a shot to edit the dialogue, speaker and camera, then scrub or press Play to preview.</p></aside></div>
 <script src="./src/project-core.js"></script>
 <script src="./src/performance-core.js"></script>
+<script src="./src/speech-performance-core.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
@@ -366,7 +367,7 @@ for(const side of [-1,1]){
  corner.position.set(side*.112,-.304,.517);corner.scale.set(.88,.66,.35);
  humanHead.add(corner);humanLipCorners.push(corner);
 }
-function applyHumanFacePose(pose){
+function applyHumanFacePose(pose,speech=null){
  const lid=pose.lid,raise=pose.brow,tilt=pose.slope;
  browsNew.forEach((b,i)=>{
   const side=i===0?-1:1;
@@ -390,12 +391,18 @@ function applyHumanFacePose(pose){
   corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019);
   corner.position.y=-.304+pose.smile*.024;
  });
- const smile=pose.smile>.30&&pose.mouthOpen<.34;
- const frown=pose.smile<-.25&&pose.mouthOpen<.35;
+ const speaking=!!speech&&speech.viseme!=='rest';
+ const smile=!speaking&&pose.smile>.30&&pose.mouthOpen<.34;
+ const frown=!speaking&&pose.smile<-.25&&pose.mouthOpen<.35;
  humanSmile.visible=smile;humanFrown.visible=frown;
  mouthNew.visible=!smile&&!frown;
- mouthNew.scale.x=pose.mouthWidth;
- mouthNew.scale.y=Math.max(.09,pose.mouthOpen*1.04+pose.round*.18);
+ const visemeWidth={rest:1,closed:.88,round:.62,wide:1.34,teeth:1.10,open:1}[speech?.viseme]??1;
+ mouthNew.scale.x=pose.mouthWidth*visemeWidth;
+ mouthNew.scale.y=speech?.viseme==='closed'?.045:
+  Math.max(speech?.viseme==='rest'?.075:.09,pose.mouthOpen*1.04+pose.round*.18);
+ humanLipCorners.forEach((corner,i)=>{
+  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019)*visemeWidth;
+ });
  mouthNew.position.y=-.305-pose.jaw*.013;
  chin.position.y=-.32-pose.mouthOpen*.022;
  beard.position.y=-.395-pose.mouthOpen*.019;
@@ -492,7 +499,13 @@ update=function(){
  const speechEnd=Math.min(shot.duration*.82,Math.max(.6,shot.text.length/16));
  const beat=Math.floor(local*9);
  let open=0;if(envReady&&decodedEnvelope){open=decodedEnvelope[Math.min(decodedEnvelope.length-1,Math.max(0,Math.floor(time*20)))]||0}else if(running&&analyser&&audioSamples){analyser.getByteTimeDomainData(audioSamples);let sq=0;for(const v of audioSamples){const x=(v-128)/128;sq+=x*x}open=Math.max(0,Math.min(1,(Math.sqrt(sq/audioSamples.length)-.015)*14))}
- const viseme=estimateViseme(shot.text,local,shot.duration);
+ // Acoustic envelope maps graphemes into speaking regions and pauses.
+ const speechCue=window.FrameForgeSpeechCore.evaluate({
+   text:shot.text,local,duration:shot.duration,shotStart:t-local,
+   samples:envReady?decodedEnvelope:null,rate:20,audioEnergy:open,speaker:shot.speaker
+ });
+ const viseme=speechCue.viseme;
+ const speechPower=speechCue.mouthOpen;
  const index=shots.indexOf(shot);const emotionMap=[{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'worried',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'worried'},{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'neutral',orange:'neutral'},{blue:'neutral',orange:'angry'},{blue:'worried',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'happy'},{blue:'worried',orange:'neutral'}];const expression=emotionMap[index]||emotionMap[0];
  const reaction=cinematicReaction(index,local,shot.duration);
  if(reaction){
@@ -503,13 +516,13 @@ update=function(){
  const blueGaze=shot.speaker==='dev'?-0.55:shot.speaker==='orange'?0.45:0;
  const orangeGaze=shot.speaker==='dev'?-0.75:shot.speaker==='blue'?-0.48:0;
  if(offlineMode||Math.abs(t-lastFaceDraw)>.04){
-  drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?open:0,t,viseme,blueGaze);
-  drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?open:0,t,viseme,orangeGaze);
+  drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?speechPower:0,t,viseme,blueGaze);
+  drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?speechPower:0,t,viseme,orangeGaze);
   lastFaceDraw=t;
  }
  faces.blue.group.rotation.z=Math.sin(t*1.5)*.035+(shot.speaker==='blue'?.035:0);faces.orange.group.rotation.z=Math.sin(t*1.05)*.035+(shot.speaker==='orange'?.04:0);
  if(faces.orange.orangeMouth){
-   faces.orange.orangeMouth.scale.y=shot.speaker==='orange'?1+open*1.9:1;
+   faces.orange.orangeMouth.scale.y=shot.speaker==='orange'?1+speechPower*1.9:1;
    faces.orange.orangeBrows.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(shot.speaker==='orange'?.20:.10)});
    faces.orange.group.rotation.y=shot.speaker==='orange'?Math.sin(t*1.25)*.045:0;
  }
@@ -558,10 +571,10 @@ update=function(){
  const toEmotion=shot.acting?.devEmotion||'neutral';
  const facialPose=window.FrameForgePerformanceCore.evaluate({
   time:t,local,duration:shot.duration,emotion:toEmotion,fromEmotion,
-  speaking:shot.speaker==='dev',energy:shot.speaker==='dev'?open:0,
+  speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0,
   gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
  });
- applyHumanFacePose(facialPose);
+ applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null);
 };
 // V5 projects are versioned documents, NOT hardcoded dialogue arrays.
 const projectCatalog=Object.create(null);
@@ -959,11 +972,22 @@ function captureEnvironment(width=360,height=640){
   renderer.render(scene,cam);
  }
 }
+window.FrameForgeSpeechQA=Object.freeze({
+ version:window.FrameForgeSpeechCore.version,
+ types:window.FrameForgeSpeechCore.types,
+ at:(seconds)=>{
+  const secondsSafe=Math.max(0,Number(seconds)||0);let cursor=0,shot=shots.at(-1);
+  for(const s of shots){if(secondsSafe<cursor+s.duration){shot=s;break}cursor+=s.duration}
+  return window.FrameForgeSpeechCore.evaluate({text:shot.text,local:secondsSafe-cursor,
+    duration:shot.duration,shotStart:cursor,samples:envReady?decodedEnvelope:null,
+    rate:20,audioEnergy:0,speaker:shot.speaker});
+ }
+});
 window.FrameForgePerformanceQA=Object.freeze({
  poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
  facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
  humanRig:()=>({upperLids:humanUpperLids.length,lowerLids:humanLowerLids.length,cheeks:humanCheeks.length,lipCorners:humanLipCorners.length}),
- peek:()=>({mouthScale:mouthNew.scale.y,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
+ peek:()=>({mouthScale:mouthNew.scale.y,mouthWidth:mouthNew.scale.x,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
 });
 window.FrameForgeArtLab=Object.freeze({
  version:'v5-phase1c-actual-rigs',
