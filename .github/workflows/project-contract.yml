@@ -48,8 +48,27 @@ jobs:
           node tests/character-art-browser.cjs blue
           node tests/character-art-browser.cjs orange
           node tests/performance-browser.cjs
-      - name: Render short V5.2 voiced performance MP4
+  portable-video-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: source-and-project-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and software H264 encoder
         run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y -qq ffmpeg
+          ffmpeg -hide_banner -encoders | grep -w libx264
+          ffprobe -version | head -1
+      - name: Render deterministic V5.2 voiced performance MP4
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
           export FRAMEFORGE_URL=http://127.0.0.1:8959/
           node tests/export-performance-preview.cjs
           ffprobe -v error -count_frames -show_entries stream=codec_type,nb_read_frames -of json artifacts/v5-2-facial-motion-3s.mp4
