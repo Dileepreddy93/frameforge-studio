@@ -12,3 +12,7 @@ A single character listens, grows suspicious, suddenly realizes an error, gasps,
 
 ## Why this is NOT P2 completion
 No word or phoneme-aligned Telugu/Hindi/English acting, fully skinned hand gestures, authored body weight, cinematic lighting or props. This is one isolated emotional shot, not arbitrary-length directing and not quality parity. Do not merge if browser frames are corrupted; do not call it reference competitive based on 150 frames alone.
+
+## Actual video acceptance procedure
+Dedicated `muted-acting-film` CI renders 150 browser frames at absolute time `frame/30`, encodes H264/yuv420p using libx264/CRF20 (no audio), asserts 150 decoded frames and exactly 5s at 30fps, runs full FFmpeg decode, and saves 14 representative original PNG stills plus MP4 and SHA manifest in Actions artifact `frameforge-p2-actual-silent-5sec-30fps-film`.
+No score on film/emotion quality until actual native MP4 played and visually inspected. Source tests pass alone are insufficient. Robust against random seeking and accidental injected voice track.
