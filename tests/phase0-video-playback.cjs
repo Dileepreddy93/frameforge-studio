@@ -5,7 +5,8 @@ const path=require('node:path');
 const {pathToFileURL}=require('node:url');
 
 (async()=>{
- const browser=await chromium.launch({headless:true,args:['--no-sandbox','--autoplay-policy=no-user-gesture-required','--disable-dev-shm-usage']});
+ // Chrome, not Chromium headless shell: archived V4 uses patent-licensed H.264/AAC codecs.
+ const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox','--autoplay-policy=no-user-gesture-required','--disable-dev-shm-usage']});
  try {
   const page=await browser.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));

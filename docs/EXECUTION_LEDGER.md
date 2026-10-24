@@ -30,3 +30,8 @@ V4 41.842358s, H.264/AAC, 480x854, 30fps, 1,254 frames, 11,682,636 bytes; archiv
 
 ## Update template
 YYYY-MM-DD | P#.step | branch + commit SHA | changed files | tests with PASS/FAIL evidence | decoded video/audio comparison | artistic approval | unresolved defects | next action.
+
+## CI iteration: 2026-10-24, Phase0 verification
+- First PR #5 run 40089620405: source/contract tests PASSED. Browser proof FAILED with Chromium media error code 4 (unsupported source). This was default Playwright **Chromium headless shell**, not Google Chrome with AAC/H264 codec support.
+- Corrective code: tests/phase0-video-playback.cjs switches to actual installed Chrome `channel:'chrome'`; CI prints chrome version and reruns. Do not retroactively mark browser test PASS until new run verified.
+- Portable FFmpeg V4 film verification from initial run remained in progress at correction time. Track latest CI run/commit, not the old run.

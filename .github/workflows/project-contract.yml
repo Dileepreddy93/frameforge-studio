@@ -46,6 +46,7 @@ jobs:
         run: |
           python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
           export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          google-chrome --version
           node tests/phase0-video-playback.cjs
           node tests/character-art-browser.cjs dev
           node tests/character-art-browser.cjs blue
