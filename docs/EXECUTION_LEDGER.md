@@ -69,3 +69,10 @@ YYYY-MM-DD | P#.step | branch + commit SHA | changed files | tests with PASS/FAI
 
 ## Branch reconciliation
 PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a handoff-document merge conflict because its feature branch forked before the develop integration checkpoint. This branch reapplies only verified reference changes on top of develop at 7d42035675711fe16dd80881e4c3fac9ede3a608; other develop commits, README, V5.3 speech and existing release files are preserved.
+
+## P0 exact user reference merged — 2026-10-24
+- PR #7 https://github.com/Dileepreddy93/frameforge-studio/pull/7 merged into **develop** at `0f66345e654b6834464df26486cbb98a4f4ffca0` after independently passing ALL THREE GitHub Actions jobs in https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40091928524 (source+reference contract, Chromium real-character/browser, portable FFmpeg video export). Main and deployed V3 unchanged.
+- User-designated reference `git-blame.mp4` accessible at `/mnt/data/git-blame.mp4` during audit; SHA256 `560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e`, 3,365,415 bytes, 52.181s, 720x1280 30fps, 1564 frames, H264/AAC stereo, -14.38 LUFS, -0.79 dBTP; full native decode completed successfully. Publisher provenance not independently authenticated.
+- The actual source binary and extracted images are not in Git; `spec/git-blame-reference.json` stores 24 native frame hashes and `docs/GIT_BLAME_SHOT_MATRIX.csv` records 27 approximate FFmpeg scene-detection intervals. `docs/GIT_BLAME_REFERENCE_AUDIT.md` records inspected visual traits and honest evidence limits.
+- P0 status: **substantial verified evidence, NOT fully exited**; outstanding manual timing/audio-caption matrix, direct candidate-vs-reference matched render comparison, clean-clone runtime/dependency pinning, and artistic acceptance. P1 art direction remains unapproved; do not claim complete production-quality film.
+- Obsolete conflicted PR #6 was closed and replaced by clean PR #7; older Phase 0 PR #5 was merged beforehand.

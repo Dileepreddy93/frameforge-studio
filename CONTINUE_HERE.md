@@ -36,3 +36,6 @@ node tests/phase0-contract.test.mjs
 node tools/verify-phase0.mjs        # FFmpeg+ffprobe, SHA256, 1254 frames, full decode
 node tests/phase0-video-playback.cjs # real Chromium+Playwright local MP4 playback
 Review GitHub CI for actual pass/fail, then **update the execution ledger**. Next: review candidate shot-boundary accuracy, voice/word captions, run matched FrameForge-vs-reference review, then P1 art gate. Reference manifest is hash-verified. Never claim release from a passing unit test or button working.
+
+## LATEST MERGED REFERENCE AUDIT
+PR #7 merged into develop as 0f66345e654b6834464df26486cbb98a4f4ffca0 with all three CI jobs green (run 40091928524). Actual Git Blame 52.181s target bytes were SHA256-verified: 560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e. Start with spec/git-blame-reference.json, docs/GIT_BLAME_SHOT_MATRIX.csv and docs/GIT_BLAME_REFERENCE_AUDIT.md. Do not restart P0 because older handoffs say reference inaccessible. P0 final quality/runtimes acceptance remains OPEN and P1 artistic close-up gate is still NOT APPROVED.
