@@ -380,7 +380,7 @@ function applyHumanFacePose(pose){
   iris.position.x=(i===0?-.184:.184)+pose.gazeX*.023;
   iris.position.y=.052+pose.gazeY*.020;
   const upper=humanUpperLids[i],lower=humanLowerLids[i];
-  upper.position.y=.111-(1-lid)*.060;upper.scale.y=1+(1-lid)*.53;
+  upper.position.y=.128-(1-lid)*.071;upper.scale.y=.78+(1-lid)*.90;
   lower.position.y=-.008+(1-lid)*.026;lower.scale.y=.87+(1-lid)*.24;
   const cheek=humanCheeks[i];
   cheek.material.opacity=.17+pose.cheek*.17;

@@ -13,9 +13,9 @@
   const smooth = x => {const t=clamp(x);return t*t*(3-2*t);};
   const mix = (a,b,t) => a+(b-a)*t;
   const EMOTIONS=Object.freeze({
-    neutral:{lid:.79,brow:0,slope:0,cheek:.05,smile:0,round:0,jaw:.10,headPitch:0,headRoll:0},
-    happy:{lid:.64,brow:.12,slope:-.24,cheek:.74,smile:.82,round:0,jaw:.12,headPitch:.035,headRoll:.012},
-    worried:{lid:.87,brow:.34,slope:.41,cheek:.10,smile:-.70,round:.04,jaw:.08,headPitch:-.08,headRoll:-.035},
+    neutral:{lid:.95,brow:0,slope:0,cheek:.05,smile:0,round:0,jaw:.10,headPitch:0,headRoll:0},
+    happy:{lid:.76,brow:.12,slope:-.24,cheek:.74,smile:.82,round:0,jaw:.12,headPitch:.035,headRoll:.012},
+    worried:{lid:.99,brow:.34,slope:.41,cheek:.10,smile:-.70,round:.04,jaw:.08,headPitch:-.08,headRoll:-.035},
     surprised:{lid:1,brow:.83,slope:.03,cheek:0,smile:0,round:.90,jaw:.85,headPitch:-.045,headRoll:.02},
     angry:{lid:.53,brow:-.51,slope:-.45,cheek:.24,smile:-.5,round:0,jaw:.16,headPitch:.04,headRoll:-.02}
   });
