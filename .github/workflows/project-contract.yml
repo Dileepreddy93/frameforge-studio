@@ -55,6 +55,7 @@ jobs:
           node tests/character-art-browser.cjs orange
           node tests/performance-browser.cjs
           node tests/speech-performance-browser.cjs
+          node tests/determinism-browser.cjs
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

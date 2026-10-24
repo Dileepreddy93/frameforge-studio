@@ -528,12 +528,9 @@ update=function(){
  }
  brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
  mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
- mouthNew.scale.y=.12*(shot.speaker==='dev'?1+open*3.3:1);mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
- browsNew.forEach((br,i)=>{const side=i?1:-1;br.rotation.z=shot.speaker==='dev'?side*(-.06+open*.09):side*.11;});
  humanHead.rotation.x=(shot.speaker==='dev' ?-.10: .035)+Math.sin(t*.78)*.025;
  humanHead.rotation.z=shot.speaker==='dev'?.035*Math.sin(t*1.2):.0;
  humanHead.rotation.y=(index%4===1?.11:index%4===3?-.09:0)+.018*Math.sin(t*.62);
- humanEyes.forEach(e=>{e.scale.y=index>=11?.37:index>=7?.50:.62});
  humanPivots.forEach(({side,shoulder})=>{const speaking=shot.speaker==='dev';shoulder.rotation.z=speaking?side*(.14+.18*Math.sin(t*1.85)):-side*.09;shoulder.rotation.x=speaking?.32*Math.sin(t*.95+(side<0?0:1.6)):0;});
 
 // Directed deterministic gestures: each shot has an action, not just one repeating movement.
@@ -559,8 +556,6 @@ update=function(){
    shoulder.rotation.x=-.08-Math.max(0,devPose.arms)*.52;
  });
  const blink=(Math.sin(t*2.25+1.2)>.987||Math.sin(t*.86+2.4)>.996);
- humanEyes.forEach(e=>{e.scale.y=blink?.12:(humanAction==='alarm'?.70:humanAction==='defeat'?.30:.61)});
- humanIrises.forEach((iris,i)=>{iris.scale.y=blink?.14:.81;iris.position.x=(i?1:-1)*.184+(devPose.head>0?.012:-.010)});
  faces.orange.orangeEyes?.forEach(e=>{e.scale.y=blink?.18:orangeAction==='surprise'?1.25:1});
  faces.orange.orangeBrows?.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(orangeAction==='celebrate'?-.13:orangeAction==='announce'?.20:.10)});
 
@@ -575,6 +570,7 @@ update=function(){
   gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
  });
  applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null);
+ renderer.render(scene,cam);
 };
 // V5 projects are versioned documents, NOT hardcoded dialogue arrays.
 const projectCatalog=Object.create(null);
@@ -638,7 +634,7 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
   cam.fov=listenerCut.role==='dev'?34:31;
   cam.updateProjectionMatrix();
  }
- b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);renderer.render(scene,cam);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
+ b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
 $('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{shots[selected].text=$('dialogue').value;shots[selected].speaker=$('speaker').value;shots[selected].camera=$('camera').value;refresh();update()};function snapshotProject(){
@@ -778,8 +774,8 @@ function renderFilmFrame(t,w=360,hh=640,encode=true){
   outCtx.fillStyle=revealUsers?'#f4a1a8':'#a3f1cf';outCtx.font='bold 12px monospace';
   outCtx.fillText(revealUsers?'0 ACTIVE USERS':'REQUESTS ELIMINATED',52,445);
   const graphY=Math.min(H-60,505),barMax=240;
-  outCtx.strokeStyle='#344b67';outCtx.lineWidth=1;outCtx.beginPath();
-  outCtx.moveTo(45,graphY+80);outCtx.lineTo(315,graphY+80);outCtx.stroke();
+  // A filled rect, not a 1px stroke: Chrome anti-aliases stroke ends differently on its first draw.
+  outCtx.fillStyle='#344b67';outCtx.fillRect(45,graphY+79.5,270,1);
   outCtx.strokeStyle=revealUsers?'#f1a0aa':'#80e5bf';outCtx.lineWidth=3;outCtx.beginPath();
   for(let i=0;i<10;i++){
    let px=46+i*(barMax/9),v=revealUsers?72:75-23*Math.exp(-i*.6);
