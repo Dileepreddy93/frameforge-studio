@@ -1,0 +1,61 @@
+name: P1 experimental CC0 humanoid asset generation (Ara spike)
+on:
+  push:
+    branches: ["feature/p1-ara-character-spike"]
+permissions:
+  contents: read
+jobs:
+  ara-makehuman-character:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect available resources, pin upstream source
+        run: |
+          free -h
+          df -h .
+          git clone --no-checkout https://github.com/olatunde85/3d-gen.git "$RUNNER_TEMP/ara"
+          git -C "$RUNNER_TEMP/ara" checkout --detach 8aa993d7141b6f37e5d16f611264e6f1ab520f30
+          test "$(git -C "$RUNNER_TEMP/ara" rev-parse HEAD)" = "8aa993d7141b6f37e5d16f611264e6f1ab520f30"
+          cat "$RUNNER_TEMP/ara/LICENSE" | head -n 6
+          cat "$RUNNER_TEMP/ara/scripts/ASSETS_LICENSE.txt" | head -n 17
+      - name: Install locked NPM dependencies in isolated Ara checkout
+        run: npm ci --prefix "$RUNNER_TEMP/ara" --no-audit --no-fund
+      - name: Acquire CC0 MakeHuman assets and build local asset packs
+        run: npm run setup-assets --prefix "$RUNNER_TEMP/ara"
+      - name: Export licensed rigged expressive human to our GLB interface
+        run: |
+          mkdir -p artifacts/ara-generated
+          cd "$RUNNER_TEMP/ara"
+          npm run export -- --preset "Athletic man" --detail medium --formats glb --out "$GITHUB_WORKSPACE/artifacts/ara-generated"
+      - name: Independently inspect real exported morphs/skin/animation
+        run: |
+          find artifacts/ara-generated -type f -maxdepth 1 -printf '%f %s bytes\n'
+          file="$(find artifacts/ara-generated -maxdepth 1 -type f -name '*.glb' | head -n 1)"
+          test -n "$file"
+          node tools/check-ara-candidate.mjs "$file" artifacts/ara-generated/export-manifest.json
+      - name: Install Chromium WebGL preview renderer
+        run: |
+          npm install --no-save playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Import generated human into FrameForge and inspect real 9-frame face/body sheet
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 >/tmp/frameforge-ara-http.log 2>&1 &
+          file="$(find artifacts/ara-generated -maxdepth 1 -type f -name '*.glb' | head -n 1)"
+          test -n "$file"
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          export FRAMEFORGE_ARA_ART_DIR=artifacts/ara-generated/screenshots
+          node tests/ara-generated-browser.cjs "$file"
+      - name: Preserve independently inspectable CC0 GLB and genuine GPU renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-ara-generated-rig-morph-first-proof
+          path: artifacts/ara-generated/
+          if-no-files-found: warn
+          retention-days: 30
