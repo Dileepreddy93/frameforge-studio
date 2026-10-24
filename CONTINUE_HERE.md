@@ -1,37 +1,29 @@
-# FRAMEFORGE STUDIO — CONTINUE HERE IN A NEW CHAT
+# FRAMEFORGE STUDIO — START HERE IN A NEW CHAT
 
-Private repository: https://github.com/Dileepreddy93/frameforge-studio
+**Read [FRAMEFORGE_COMPLETE_HANDOFF_2026-10-24.md](FRAMEFORGE_COMPLETE_HANDOFF_2026-10-24.md) first.** This is the comprehensive, current cross-chat transfer: goals, complete earlier engineering handoff, P0–P7 checklist, recovery/runbook, specific source docs, QA evidence, render archive, current branch differences, known uncertainties and next steps. User explicitly asked for **handoff only**; this documentation push is NOT a code merge, new render or deployment.
 
-ACTIVE experimental branch at audit: feature/v5-expressive-character-portraits
-Original HEAD at audit: bd2c625857c5
-Other V5 branch: feature/studio-v5-foundations (same code commit at audit; not the checked-out branch).
-LIVE PRODUCTION: https://frameforge-3d-director-preview.vercel.app/ — V3, NOT this experimental V5.
-ARTISTIC QUALITY: P1 visual studies unapproved; P2-P7 unfinished; reference parity NOT established.
+## Primary facts
+- Private repo: https://github.com/Dileepreddy93/frameforge-studio
+- **Canonical handoff / media-archive branch:** feature/studio-v5-foundations
+- **Newest experimental character-code branch:** feature/v5-expressive-character-portraits, previously verified HEAD 8ae0002 (inspect new HEAD).
+- Protected: main (V3), develop (merged V4), v3.0-stable, v4.0-rc1, v5.0-phase0, v5.1-phase1b, v5.1-phase1c-artstudies, v5-handoff-2026-10-24.
+- Production: https://frameforge-3d-director-preview.vercel.app/ — **V3**, not latest V5.
+- Exact external Git Blame reference video not yet checksum-verified; 65469.mp4 cannot automatically be called the same clip.
+- P1 art/character approvals remain open; P2–P7 not accepted. Existing render QA is technical evidence, not artistic reference parity.
 
-## Essential documents — read in order
-1. docs/HANDOFF_2026-10-24.md — comprehensive charter, architecture, history, research and failures.
-2. docs/HANDOFF_STATE_2026-10-24.json — exact source hashes, branch, tags, all preserved image/movie assets.
-3. docs/MASTER_IMPLEMENTATION_CHECKLIST.md — eight phases with explicit unpassed quality gates.
-4. docs/DEVELOPMENT_RUNBOOK.md — reproduce, test, restore, patch recovery and deployment rules.
-5. docs/DECISIONS_AND_FAILURES.md and docs/history/USER_TAKEOVER_2026-10-23.md — mistakes and original user goals.
-6. docs/RENDER_ASSET_CATALOG.json — original FrameForge-generated artwork/movie checksums.
-7. spec/reference-register.json, spec/quality-gates.json, AGENTS.md — original requirements and guardrails.
-8. docs/releases/V5_PHASE1C_3D_ART_STUDIES.md — latest real 3D character-art evidence.
+## Follow-on files (on the canonical handoff branch)
+1. FRAMEFORGE_COMPLETE_HANDOFF_2026-10-24.md — the single unified 400+-line handoff.
+2. docs/HANDOFF_ARCHIVE_INDEX.json — **49** archived file paths/sizes/checksums, including first-party media and extracted source reports.
+3. docs/HANDOFF_2026-10-24.md — detailed prior engineering summary.
+4. docs/MASTER_IMPLEMENTATION_CHECKLIST.md — complete phased checklists.
+5. docs/DEVELOPMENT_RUNBOOK.md — exact restore/build/test/deploy procedure.
+6. docs/history/NMXWZ-1-PDF_EXTRACTED_TEXT.md and docs/history/Studio_Reverse_Engineering_Report_SOURCE.md — source text as archived, distinct from raw PDF bytes.
+7. assets/v5-art-evidence/, media/v4-review/, media/v5-evidence/, docs/RENDER_ASSET_CATALOG.json, docs/RENDER_FRAME_SHA256SUMS.txt — original output and QA.
+8. spec/reference-register.json, spec/quality-gates.json, docs/DECISIONS_AND_FAILURES.md and AGENTS.md — verified evidence, open tasks and guardrails.
 
-## Pending code changes are NOT committed as application code
-The original sandbox has uncommitted changes to index.html and character-lab.html; their exact recoverable diff is saved in docs/history/PENDING_APP_CHANGES_2026-10-24.patch.
-The untracked script tools/refine-v5-faces.py is preserved as docs/history/PENDING_FACE_REFINEMENT_SCRIPT.py.txt.
-Review before applying to a new scratch branch; the handoff commit does not apply or validate that unfinished code.
+**Important:** docs/HANDOFF_STATE_2026-10-24.json exists on the later experimental branch, **not** this canonical handoff branch. Use docs/HANDOFF_ARCHIVE_INDEX.json here.
 
-## Preserved review assets
-- assets/v5-art-evidence — 24 3D character view/expression PNGs and comparison image.
-- media/v5-evidence — original DEV, BLUE, ORANGE 3D contact sheets and environment.
-- media/v4-review — verified full V4 movie, two shorter previews, and stills.
-Assets are created by FrameForge, NOT original Agent Poly or Claude & Pixel media, and do NOT constitute art approval.
+## Scope and status
+This is a preservation/transfer operation only. Never call Phase 1 completed, skip rendered-film QA, merge the experimental branch or deploy live production merely because a handoff document was published.
 
-## Successor workflow
-First inspect GitHub HEAD, branch/status and protected tags. Review every handoff document. Verify media hashes. Reacquire user-only PDFs and the exact original reference video if accessible; do not silently substitute other clips. Continue original high-quality expressive 3D character rig work and full cinematic visual/audio QA only AFTER reviewing actual evidence. Keep main/V3 production and existing tags intact. Do not claim a successful film from passing JavaScript tests.
-
-OWNER'S CURRENT REQUEST: only push the comprehensive handoff. No new coding, branch merge or deployment in this step.
-
-- 3D render evidence checksums: docs/RENDER_FRAME_SHA256SUMS.txt.
+For precise context, requirements and project continuation, read the complete handoff file now.
