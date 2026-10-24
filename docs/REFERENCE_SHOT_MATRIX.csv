@@ -1,0 +1,15 @@
+asset,shot,start_s,end_s,speaker,camera,emotion,intent,action,dialogue,evidence
+own-zero-latency,1,0.0,3.2,dev,dev,neutral,setup,speak,"Our app takes twelve seconds to load.",project-json
+own-zero-latency,2,3.2,5.8,blue,blue,neutral,setup,speak,"I can make it instant.",project-json
+own-zero-latency,3,5.8,8.4,dev,dev,neutral,setup,speak,"Without breaking anything?",project-json
+own-zero-latency,4,8.4,10.7,blue,blue,neutral,contrast,speak,"Define anything.",project-json
+own-zero-latency,5,10.7,13.7,orange,orange,neutral,contrast,speak,"Backup created. Emotionally.",project-json
+own-zero-latency,6,13.7,16.7,dev,duo,neutral,escalation,speak,"Okay. One tiny change.",project-json
+own-zero-latency,7,16.7,19.3,blue,screen,neutral,escalation,listen,"Done. Zero milliseconds.",project-json
+own-zero-latency,8,19.3,23.1,dev,dev,neutral,reaction,speak,"Wow! The screen opens immediately.",project-json
+own-zero-latency,9,23.1,26.3,orange,screen,neutral,reaction,listen,"It no longer requests data.",project-json
+own-zero-latency,10,26.3,29.1,dev,dev,neutral,reaction,speak,"What about the customers?",project-json
+own-zero-latency,11,29.1,31.9,blue,blue,neutral,reveal,speak,"Also removed. No more waiting.",project-json
+own-zero-latency,12,31.9,34.7,dev,dev,neutral,reveal,speak,"You deleted the users?",project-json
+own-zero-latency,13,34.7,38.0,orange,orange,neutral,punchline,speak,"Technically, retention is perfect.",project-json
+own-zero-latency,14,38.0,41.8,dev,duo,neutral,punchline,speak,"Because nobody can leave.",project-json
