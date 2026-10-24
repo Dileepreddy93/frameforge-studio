@@ -21,6 +21,7 @@ jobs:
           node tests/project-core.test.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
+          node tests/speech-performance-core.test.cjs
       - name: Verify existing film source remains valid
         run: |
           node tests/check-source.mjs
@@ -48,6 +49,7 @@ jobs:
           node tests/character-art-browser.cjs blue
           node tests/character-art-browser.cjs orange
           node tests/performance-browser.cjs
+          node tests/speech-performance-browser.cjs
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -70,11 +72,11 @@ jobs:
         run: |
           python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
           export FRAMEFORGE_URL=http://127.0.0.1:8959/
-          node tests/export-performance-preview.cjs
-          ffprobe -v error -count_frames -show_entries stream=codec_type,nb_read_frames -of json artifacts/v5-2-facial-motion-3s.mp4
+          FRAMEFORGE_PREVIEW_OUTPUT=artifacts/v5-3-audio-guided-3s.mp4 node tests/export-performance-preview.cjs
+          ffprobe -v error -count_frames -show_entries stream=codec_type,nb_read_frames -of json artifacts/v5-3-audio-guided-3s.mp4
       - name: Save motion preview for visual review
         uses: actions/upload-artifact@v4
         with:
-          name: frameforge-v5-2-facial-motion-3sec
-          path: artifacts/v5-2-facial-motion-3s.mp4
+          name: frameforge-v5-3-audio-guided-motion-3sec
+          path: artifacts/v5-3-audio-guided-3s.mp4
           if-no-files-found: error
