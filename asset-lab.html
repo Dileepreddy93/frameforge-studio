@@ -35,7 +35,9 @@ footer{color:#94a8bc;font-size:12px;padding:0 22px 25px;max-width:1500px;margin:
 </header>
 <div class="layout">
 <section class="panel">
-<button id="sample" class="primary">Load rigged sample character</button>
+<button id="human" class="primary">Load generated realistic human (10.6 MB)</button>
+<div class="warn">Actual MakeHuman-based model created with free Ara 3D Gen: 20 facial morph names and 63 animations. It is a <strong>research actor, not art-approved</strong>. <a href="./assets/rigged-samples/AraAthleticMan.CREDITS.md">Asset credits and limits</a>.</div>
+<button id="sample" style="margin-top:12px">Compare basic rigged test model · Cesium Man</button>
 <div class="warn">Cesium Man: third-party CC BY 4.0 technical demonstration with a Cesium mark. Not an original film actor. <a href="./assets/rigged-samples/CesiumMan.CREDITS.md" target="_blank" rel="noopener">Attribution</a>.</div>
 <label for="upload">Import your own self-contained .glb (local only, max 25 MiB)</label>
 <input id="upload" type="file" accept=".glb,model/gltf-binary">
@@ -146,16 +148,15 @@ async function loadBytes(arrayBuffer,name){
  }catch(err){setStatus('REJECTED: '+(err?.message||String(err)),true);throw err}
 }
 function resizeAndCompose(){sizeCanvas();compose()}
-async function loadSample(){
- $('sample').disabled=true;
- try{
-  const r=await fetch('./assets/rigged-samples/CesiumMan.glb',{cache:'no-store'});
-  if(!r.ok)throw new Error('Sample GLB HTTP '+r.status);
-  await loadBytes(await r.arrayBuffer(),'CesiumMan · CC BY technical sample');
- }catch(e){setStatus('Sample failed: '+e.message,true)}
- finally{$('sample').disabled=false}
+async function loadBundled(url,name,button){
+ button.disabled=true;
+ try{const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error('GLB HTTP '+response.status);
+ await loadBytes(await response.arrayBuffer(),name);}
+ catch(e){setStatus('Asset failed: '+e.message,true)}finally{button.disabled=false}
 }
-$('sample').addEventListener('click',loadSample);
+async function loadSample(){return loadBundled('./assets/rigged-samples/CesiumMan.glb','CesiumMan · CC BY technical sample',$('sample'))}
+async function loadHuman(){return loadBundled('./assets/rigged-samples/AraAthleticMan.glb','Ara human research rig · MakeHuman CC0 based',$('human'))}
+$('sample').addEventListener('click',loadSample);$('human').addEventListener('click',loadHuman);
 $('upload').addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
  if(!file.name.toLowerCase().endsWith('.glb')){setStatus('Only self-contained .glb accepted; VRM plugin is not integrated yet.',true);return}
@@ -184,6 +185,7 @@ resizeAndCompose();requestAnimationFrame(loop);
 window.FrameForgeRigLabQA=Object.freeze({
  version:'p1-rigged-glb-poc1',
  loadSample,
+ loadHuman,
  getSummary:()=>summary,
  setView:v=>{if(!Object.hasOwn(ANGLES,v))throw Error('Unknown view');$('view').value=v;compose()},
  setExpression:em=>{$('expression').value=em;$('expression').dispatchEvent(new Event('change'))},

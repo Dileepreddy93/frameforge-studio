@@ -86,3 +86,8 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - Branch `feature/p1-real-glb-character-lab`, fork `1b37356cfd57d1f299b6dc87516d7705eec3fed1`; existing rejected P1 art PR #8 not merged. Isolated new glTF2 loader and honest morph capability inspector from source, no change to working characters/MP4 code. Khronos CesiumMan test asset ©2017 Cesium CC BY 4.0 (source blob SHA 8586c4e6a59bf8ef585c2a685c50a80d28503216). Test fixture is NOT production art and no trademark rights implied.
 - Real Chromium pipeline `tests/rigged-asset-browser.cjs` asserts real skin/bones/animation and exports 7 PNGs. Results/status PENDING until actual CI check. Source contract test and import page are recorded in docs/releases/P1_RIGGED_GLB_ENGINEERING_PROOF.md.
 - Next: proof-of-quality CC0 humanoid with actual facial morphs and integrated movie engine. P1 exit remains unapproved.
+
+## P1 bundled research human — 2026-10-24
+- Generated 10,587,092 byte Ara/MakeHuman-based GLB in pinned 40096258152; SHA256 3faf7629bd6f62f70e916d665b4051de35b0b27832e8da3b19b8a4dd93c4be22, 69 bones, 63 clips, 20 facial morph types, 9 real Chromium frames. Source + actual visual inspected: improved anatomy but weak happy/worried, style mismatch, ART NOT APPROVED.
+- GitHub Actions model-preservation initially failed with HTTP 403 missing `actions:read`; fixed and imported byte-exact audited GLB into `feature/p1-real-human-preview`. Branch includes one-click human loader and expression QA; do not claim CI of this integration until current run completes.
+- docs/releases/P1_ARA_HUMAN_BUNDLED_REVIEW.md and credits record rights and unresolved gates. Existing Zero Latency and reference evidence unchanged.
