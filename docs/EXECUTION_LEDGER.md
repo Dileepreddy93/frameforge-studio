@@ -76,3 +76,16 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 - The actual source binary and extracted images are not in Git; `spec/git-blame-reference.json` stores 24 native frame hashes and `docs/GIT_BLAME_SHOT_MATRIX.csv` records 27 approximate FFmpeg scene-detection intervals. `docs/GIT_BLAME_REFERENCE_AUDIT.md` records inspected visual traits and honest evidence limits.
 - P0 status: **substantial verified evidence, NOT fully exited**; outstanding manual timing/audio-caption matrix, direct candidate-vs-reference matched render comparison, clean-clone runtime/dependency pinning, and artistic acceptance. P1 art direction remains unapproved; do not claim complete production-quality film.
 - Obsolete conflicted PR #6 was closed and replaced by clean PR #7; older Phase 0 PR #5 was merged beforehand.
+
+## P1 original character-art experiment — 2026-10-24
+- New branch feature/p1-character-identity-art-revision forked from develop d6651066c669b206a32c44b7b96c0d755d3b2300. Main & stable releases unchanged.
+- Actual baseline samples inspected via GitHub: dev neutral/happy and blue worried/orange surprised. Finding: human hair disconnected sphere blobs and cartoon geometry, especially visible at mobile thumbnail size; remaining actor sheets NOT artist-approved.
+- Modified index.html to loft consistent closed swept sculpted hair, add coherent hoodie details and rebalance human nose/lips/skin tone. Changes are production-real 3D rig geometry, not pasted raster overlays.
+- tests/character-art-browser.cjs and .github/workflows/project-contract.yml export 24 actual Chrome-rendered PNGs to CI artifact for visual acceptance. Contract test and art bible added; no pass claimed until new commit CI reports.
+- docs/releases/P1_CHARACTER_IDENTITY_REVIEW_2026-10-24.md defines exact manual QA and phase gate; approval remains NOT_APPROVED until actual resulting images inspected.
+
+## P1 visual QA verdict — 2026-10-24
+- GitHub CI for corrected P1 geometry `83f512773fe927fd395217fc5a7e356fd57bf1d9`: https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40093527917 — all technical jobs SUCCESS, 24 PNGs in artifact ID `12560052408` (original native 360×460 captured Three.js frames).
+- Visual inspection at usable size confirms new DEV hair is **overly regular/comb-like**, mouth/eyebrow area remains crude, clothing and anatomy not film-quality. BLUE/ORANGE emotions change too little despite valid rendered PNG output. Approx mean absolute RGB emotion changes DEV 7.93/17.09/11.97 vs BLUE 2.00/3.40/2.62 and ORANGE 1.55/2.64/2.22 (happy/worried/surprised; not a quality score).
+- **P1 ART GATE REJECTED.** Source checks / browser rendering / FFmpeg export PASS do not override this decision. Keep PR #8 draft, unmerged; no public deploy.
+- Pivot main P1 investigation to licensed sculpted/rigged GLB/VRM asset pipeline using Issue #9, with MakeHuman CC0 assets/Blender and @pixiv/three-vrm/M3 CharacterStudio reference approaches. JSONCut optional P5/P7 research Issue #10, paid-export limitation confirmed.

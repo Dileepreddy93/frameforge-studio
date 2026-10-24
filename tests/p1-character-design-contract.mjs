@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const spec=JSON.parse(fs.readFileSync('spec/character-design-lock-v1.json','utf8'));
+assert.equal(spec.schema,'frameforge.character-design-lock/1');
+assert.equal(spec.artApproval,'NOT_APPROVED');
+assert.deepEqual(Object.keys(spec.characters),['dev','blue','orange']);
+assert.ok(Object.values(spec.characters).every(x=>x.approval===false));
+const source=fs.readFileSync('index.html','utf8');
+assert.ok(source.includes('function sweptLock(points,thickness'));
+assert.ok(source.includes('sweptLock([[x*.86,.615,-.155]'));
+assert.ok(!source.includes('const tuft=new T.Mesh(new T.IcosahedronGeometry'));
+assert.ok(source.includes('const scalp=new T.Mesh(new T.SphereGeometry'));
+const qa=fs.readFileSync('tests/character-art-browser.cjs','utf8');
+assert.ok(qa.includes('FRAMEFORGE_ART_OUT'));
+console.log('P1_CHARACTER_DESIGN_CONTRACT_PASS');

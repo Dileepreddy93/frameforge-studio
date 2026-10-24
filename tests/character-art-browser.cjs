@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),crypto=require('node:crypto');
+const assert=require('node:assert/strict'),crypto=require('node:crypto'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright');
 const actor=process.argv[2]||'dev';
 assert.ok(['dev','blue','orange'].includes(actor));
@@ -12,6 +12,22 @@ assert.ok(['dev','blue','orange'].includes(actor));
  if(actor!=='dev'){await page.locator('#actor').selectOption(actor);await page.waitForFunction(a=>document.getElementById('status').textContent.includes(a.toUpperCase()+' · 8 true 3D'),actor,{timeout:20000});}
  const samples=await page.evaluate(()=>[...document.querySelectorAll('#turnaround img,#emotions img')].map(x=>x.src));
  assert.equal(samples.length,8);
+ // Real PNG frames are saved to CI evidence, not accepted from URL differences alone.
+ const artifactFolder=process.env.FRAMEFORGE_ART_OUT;
+ if(artifactFolder){
+  const folder=path.join(artifactFolder,actor);
+  fs.mkdirSync(folder,{recursive:true});
+  const labels=['front','three-quarter','side','back','neutral','happy','worried','surprised'];
+  for(let i=0;i<samples.length;i++){
+   assert.match(samples[i],/^data:image\/png;base64,/);
+   const payload=Buffer.from(samples[i].split(',')[1],'base64');
+   assert.ok(payload.byteLength>5000,'Invalid or extremely small actual render '+i);
+   assert.equal(payload.subarray(0,8).toString('hex'),'89504e470d0a1a0a','PNG magic');
+   fs.writeFileSync(path.join(folder,String(i).padStart(2,'0')+'-'+labels[i]+'.png'),payload);
+  }
+  console.log('ART_EVIDENCE_SAVED '+JSON.stringify({actor,frames:8,folder}));
+ }
+
  const unique=new Set(samples.map(x=>crypto.createHash('sha256').update(x).digest('hex')));
  assert.ok(unique.size>=7,'poses must differ across views and expressions');
  await page.waitForFunction(()=>!document.querySelector('#save').disabled&&document.querySelector('#status').textContent.includes('export ready'),null,{timeout:50000});
