@@ -8,7 +8,7 @@
   "upstream_head_at_audit": "bd2c625857c53722ef2d805513cc20ba9c49306d",
   "protected_refs": {
     "main": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
-    "develop": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
+    "develop": "06ec0d77dc3011edf71530295e8c62ad717e1a55",
     "v3.0-stable": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
     "v4.0-rc1": "86eef99400d1ba7a97534bbe683fcd8f35bb9572",
     "v5.0-phase0": "a4108067281e3a0157ce0f5da6525c1d221d69f3",
@@ -252,5 +252,13 @@
   "reference_identity_warning": "65469.mp4 is not confirmed to be git-blame.mp4",
   "art_status": "Phase 1 art unapproved, P2-P7 not passed",
   "handoff_only": true,
-  "production_changed": false
+  "production_changed": false,
+  "verified_git_refs_at_handoff": {
+    "checked_on": "2026-10-24",
+    "main": "f7b20bd20ebd4bc37db6f2f6dd6f0085a544f04b",
+    "develop": "06ec0d77dc3011edf71530295e8c62ad717e1a55",
+    "feature_studio_v5_foundations": "4dc22d102db190252ee70a159919143e9ade060e",
+    "feature_v5_expressive_portraits": "8d335ff2abd32a1a73f02658fd197025e54590e2",
+    "note": "Git commit refs reflect repository state at handoff audit; check GitHub again before editing. v5 expressive branch includes committed human face WIP 2ce223b, while render evidence remains art-unapproved. All user-provided raw PDFs and exact Git Blame reference are not stored in this repository."
+  }
 }
