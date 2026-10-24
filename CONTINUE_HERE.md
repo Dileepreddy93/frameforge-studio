@@ -60,3 +60,6 @@ Mobile review blocker: Vercel private GitHub repo integration `repo_not_found` a
 
 ## P1 mobile browser QA experiment
 Branch `feature/p1-mobile-character-lab-qa` contains 390×844 touch-mode Chromium test `tests/ara-mobile-browser.cjs` that must actually load full generated model, exercise real facial morph slider, verify no overflow and retain a PNG artifact. This is a browser emulation, NOT a physical phone GPU or public URL. See docs/releases/P1_MOBILE_CHROMIUM_QA.md; after passing CI consider merging independent technical regression. Production V3 unaffected.
+
+## VERIFIED P1 mobile Chromium follow-up
+PR #15 [mobile browser QA](https://github.com/Dileepreddy93/frameforge-studio/pull/15) merged to develop as `2c91e6ff5755dd12107f915063aa4f6869520ff1`; all FOUR CI jobs passed run 40099817197. Real WebGL artifact 12561864724, mobile 390×844 emulation, canvas 332×565, no overflow, loaded generated Ara human and facial morph slider after seek, no page errors. Actual screenshot reviewed. This is **NOT** physical mobile GPU performance or P1 cinematic art approval. P1 art Issue #13 and Vercel private repo connection Issue #14 still open; do not claim mobile one-click Vercel preview works.

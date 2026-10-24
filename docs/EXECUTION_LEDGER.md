@@ -105,3 +105,8 @@ PR #5 merged to develop before exact-reference follow-up. Earlier PR #6 hit a ha
 
 ## P1 mobile-browser regression — 2026-10-24
 - Branch `feature/p1-mobile-character-lab-qa` isolated from latest develop `b3317bf976f74ffbcc2a236494fb5b446d0b2952`. Test `tests/ara-mobile-browser.cjs` exercises actual source GLB, 390x844 Chromium touch viewport, full model asset download, morph slider, preserved seek, rendered screenshot and DOM overflow. CI captures a new artifact `frameforge-p1-human-mobile-chromium`. No pass claimed until exact new run completes; see docs/releases/P1_MOBILE_CHROMIUM_QA.md.
+
+## P1 mobile Chrome technical gate VERIFIED — 2026-10-24
+- PR #15 merged to develop as `2c91e6ff5755dd12107f915063aa4f6869520ff1` after four jobs SUCCESS at GitHub run `40099817197`; tested head `5a44587f4a3ebbbf78234452bc6f21d2c161dee5`.
+- Actual artifact 12561864724 independently inspected; viewport 390x844 mobile emulation (canvas 332x565), no horizontal overflow, 0 JS page errors, 69 bones, 63 clips; real facial morph mouthFrown control persists across seek. GH runner time-to-ready 753ms does NOT measure actual Android device.
+- Mobile-sized technical browser subgate passed; **P1 cinematic ART NOT APPROVED**. Remote Vercel one-click preview remains blocked by private GitHub app permissions and empty large-file inline deployment. Issue #14 remains OPEN. Continue artistic improvement Issue #13; no main production modifications.

@@ -32,3 +32,6 @@ Date: 2026-10-24 (Asia/Kolkata). Canonical development line: `develop`; existing
 
 ## What the next chat must do
 Read `CONTINUE_HERE.md`, `docs/EXECUTION_LEDGER.md`, this status, `docs/releases/P1_FACE_CLOSEUP_MORPH_QA.md`, `docs/releases/P1_RENDERED_ART_QA_2026-10-24.md`, research issue #9 and specific issue #13. Preserve original model SHA, use latest `develop` and do not revive rejected primitive art PR #8 or assume Vercel URL works. Work on **art-first** changes with actual PNG and film evidence, not another unreviewed UI makeover.
+
+## Additional mobile engineering verification (later 2026-10-24)
+PR #15 merged mobile Chromium regression to develop as `2c91e6ff5755dd12107f915063aa4f6869520ff1`. Run 40099817197 four green jobs. Browser emulated 390×844 touch viewport with real imported human/morph and screenshot manifest artifact 12561864724; 0 horizontal overflow; no JS errors; 753ms ready on GitHub runner only. Does not close P1 artistic gate or verify a public mobile deployment. Full phase status and blockers above unchanged.
