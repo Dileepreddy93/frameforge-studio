@@ -9,6 +9,14 @@ Existing PRIVATE GitHub repo: https://github.com/Dileepreddy93/frameforge-studio
 5. docs/HANDOFF_CURRENT.md, docs/HANDOFF_2026-10-24.md, docs/history/USER_TAKEOVER_2026-10-23.md, docs/MASTER_IMPLEMENTATION_CHECKLIST.md — preserved older handoffs with some superseded branch/phase claims.
 6. docs/history/NMXWZ-1-PDF_EXTRACTED_TEXT.md; docs/history/Studio_Reverse_Engineering_Report_SOURCE.md, preserved sources.
 
+## Current merged state — verified October 24, 2026
+- **Canonical implementation branch:** `develop` (Phase 0 PR #5 successfully merged, commit `8204aa36c898b24bea29e29c4fbe94b4082756e4`).
+- `main` still protects V3 at `f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b`.
+- V5.3 experimental Unicode Telugu/Hindi **text** mapping and approximate audio-guided mouth controls were already merged into develop via PR #4. This is not multilingual production voice synthesis and not true forced-phoneme alignment.
+- PR #5 source and exact V4 movie/5-frame extraction jobs were successful; see [verified code/evidence run](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40090426377). The post-merge CI run must be checked separately.
+- Exact `git-blame.mp4` raw bytes remain unavailable to current tools despite existing Library metadata. This alone prevents Phase 0 reference-audit exit. Current Phase 0 engineering work has been merged, but **Phase 0 is not closed**.
+- Resume from the CURRENT `develop` head, not from old `chore/p0-evidence-nine-phase-plan` branch or historical handoff refs.
+
 ## Safe branches
 main: V3 `f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b`, preserved production.
 develop baseline at this effort: `79bac8a80b67b37f4462215fb1df818b8b7bc202` (merged V4 and V5.2).

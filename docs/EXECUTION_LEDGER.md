@@ -48,3 +48,11 @@ YYYY-MM-DD | P#.step | branch + commit SHA | changed files | tests with PASS/FAI
 - develop moved from 79bac8a to 1d4bb48 (V5.3 merged) during P0 work. PR #5 is based on older develop and is **mergeable**; GitHub PR CI tests the merged result. Do not replace latest develop with the old P0 branch tree. Use GitHub's normal non-force PR merge to preserve both histories.
 - V5.3 handles Unicode Telugu/Hindi text mapping experimentally; it does NOT supply actual high-quality Telugu/Hindi production voice models or validated phoneme alignment. Preserve that distinction for future chats.
 - Latest P0 technical evidence extractor commit 461e623: new 5-frame V4 extraction, source SHA, PNG hashes and CI artifact. Workflow run https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40090426377 recorded as source tests+FFmpeg successful, browser character-render still running at this ledger update.
+
+## Phase 0 merged checkpoint — 2026-10-24
+- Normal GitHub merge PR #5 → develop at **8204aa36c898b24bea29e29c4fbe94b4082756e4**; main remains untouched at f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b.
+- develop now contains V5.3 audio-guided speech text handling and our P0 source/QA additions together. 130 GitHub-tracked files in merged tree; archived V4 MP4, source/tests, docs and evidence extraction verified present.
+- **Successful PR source CI** https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40089784168 — all 3 jobs passed, including Google Chrome 155.0.8059.39 MP4 playback, V4 exact hash+FFprobe+decode and character renders. FFmpeg/ffprobe version observed 6.1.1-3ubuntu5.
+- **Successful PR frame-proof CI** https://github.com/Dileepreddy93/frameforge-studio/actions/runs/40090426377 — all 3 jobs passed, including five native timestamped PNG samples and manifest checks, uploaded under `frameforge-phase0-v4-five-frames` artifact, plus short-film exporter.
+- Latest doc-only commit d21a40f and develop merge may trigger additional checks; **do not mark those runs passed without checking**.
+- All visual/cinematic parity claims remain UNAPPROVED. P0.4 original reference film is identifiable as a Library entry, but not byte-accessible; original film SHA and true timed reference matrix unverified. Next step is approved raw input, then exact frame/audio matrix and direct art comparison.
