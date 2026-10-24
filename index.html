@@ -5,10 +5,15 @@
 :root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:block}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;min-height:400px}.shots{grid-template-columns:1fr 1fr}}
 </style></head>
 <body><header><div><div class="brand">◈ Frame<em>Forge</em> <span style="font-size:12px;color:#a7b3d6">STUDIO</span></div><div class="hint">LIVE DIRECTOR PREVIEW · Original 3D characters</div></div><div class="tag">DIRECTOR BUILD · Preview, not cinema-quality</div></header>
-<div class="wrap"><aside><h3>Quick Create</h3><label>Story idea</label><textarea id="idea">A developer asks two robot assistants to fix one tiny bug. They argue over a missing semicolon.</textarea><label>Language</label><select id="language"><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option></select><label>Episode template</label><select id="preset"><option value="comedy">ZERO LATENCY — Voiced episode (41.8s)</option><option value="mystery">Mystery storyboarding (no voice)</option></select><button id="build" class="primary full">✦ Build episode timeline</button><div class="note">This director preview includes English Kokoro dialogue, stereo music and 43 designed Foley/UI accents. It is not a reference-quality film, and video export is not included.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Manual Narrate uses system TTS. Hindi/Telugu voice tracks are not connected.</p></aside>
+<div class="wrap"><aside><h3>Quick Create</h3><label>Story idea</label><textarea id="idea">A developer asks two robot assistants to fix one tiny bug. They argue over a missing semicolon.</textarea><label>Language</label><select id="language"><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option></select><label>Episode template</label><select id="preset"><option value="comedy">ZERO LATENCY — Voiced episode (41.8s)</option><option value="mystery">Mystery storyboarding (no voice)</option></select><button id="build" class="primary full">✦ Build episode timeline</button>
+<label for="projectImport">Import a FrameForge JSON episode</label>
+<input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
+<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">This director preview includes English Kokoro dialogue, stereo music and 43 designed Foley/UI accents. It is not a reference-quality film, and video export is not included.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Manual Narrate uses system TTS. Hindi/Telugu voice tracks are not connected.</p></aside>
 <main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div><details id="renderedFilm" style="max-width:550px;margin:16px auto;background:#1a2540;border:1px solid #53699d;border-radius:14px;padding:12px"><summary style="cursor:pointer;font-weight:750;color:#fff;font-size:14px">▶ Watch revised film · Directed acting + Foley (41.8s)</summary><p class="fine" style="margin:9px 0 12px">New directed-acting cut: native 480×854, 30 FPS, 1,254 frames, three English voices, 43 Foley cues and synchronized stereo audio. Facial animation is still below the reference-quality target.</p><video controls playsinline preload="metadata" style="display:block;width:min(100%,320px);margin:8px auto;border-radius:12px" src="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4">Your browser cannot play MP4 video.</video><p style="font-size:12px;text-align:center;margin:12px auto 2px"><a style="color:#c5b4ff" href="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4" target="_blank" rel="noopener noreferrer">Open MP4 directly in a new tab</a></p></details>
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">The dialogue and 43 original sound cues share the 41.8-second scene clock. Mouth movement follows the voice amplitude; actual aligned phoneme visemes and studio-grade character acting remain in development.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply shot changes</button><p class="fine">Click a shot to edit the dialogue, speaker and camera, then scrub or press Play to preview.</p></aside></div>
+<script src="./src/project-core.js"></script>
+<script src="./src/performance-core.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
@@ -280,10 +285,10 @@ bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
 // Preserve original developer root for camera coordinates but replace its flat proxy geometry.
 dev.children.forEach(child=>child.visible=false);
 const humanRig=new T.Group();dev.add(humanRig);
-const personSkin=velvet(0xad8170,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
+const personSkin=velvet(0x9f7869,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
  hoodie=velvet(0x263a51,.85,.02),hoodieLight=velvet(0x40556a,.78,.03),hoodieDark=velvet(0x182638,.94,0),
  trouser=velvet(0x20283c,.9,0),shoeMat=velvet(0x141b23,.86,0),
- eyeWhite=velvet(0xe5dbd7,.5,0),eyeDark=velvet(0x15151c,.28,0),
+ eyeWhite=velvet(0xddd5cf,.55,0),eyeDark=velvet(0x15151c,.28,0),
  mouthDark=velvet(0x3a2125,.88,0);
 function poly(parent,r,material,x,y,z,subdivision=0){const o=new T.Mesh(new T.IcosahedronGeometry(r,subdivision),material);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
 const bodyGroup=new T.Group();humanRig.add(bodyGroup);
@@ -309,30 +314,117 @@ for(const side of [-1,1]){
  humanPivots.push({side,shoulder});
 }
 const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);const humanEyes=[],humanIrises=[];
-const skull=new T.Mesh(new T.SphereGeometry(.55,48,32),personSkin);skull.position.set(0,0,0);skull.scale.set(.88,1.06,.86);skull.castShadow=true;humanHead.add(skull);
+const artSkin=personSkin.clone();artSkin.flatShading=true;artSkin.needsUpdate=true;
+const artHair=blackHair.clone();artHair.flatShading=true;artHair.needsUpdate=true;
+// Purposeful, moderately faceted head silhouette instead of a perfectly round balloon.
+const skull=new T.Mesh(new T.SphereGeometry(.55,20,14),artSkin);skull.position.set(0,0,0);skull.scale.set(.88,1.06,.86);skull.castShadow=true;humanHead.add(skull);
 const chin=new T.Mesh(new T.SphereGeometry(.35,32,24),personSkin);chin.position.set(0,-.32,.09);chin.scale.set(.91,.52,.96);humanHead.add(chin);
 const beard=new T.Mesh(new T.SphereGeometry(.29,32,24),skinDark);beard.position.set(0,-.395,.13);beard.scale.set(.93,.26,.97);humanHead.add(beard);
 for(const side of [-1,1]){
  const ear=new T.Mesh(new T.SphereGeometry(.125,24,18),personSkin);ear.position.set(side*.47,-.08,-.04);ear.scale.set(.64,.96,.76);humanHead.add(ear);
  poly(humanHead,.061,skinDark,side*.48,-.09,.002,1);
- const eye=new T.Mesh(new T.SphereGeometry(.067,24,20),eyeWhite);eye.position.set(side*.184,.035,.449);eye.scale.set(.89,.61,.46);humanHead.add(eye);humanEyes.push(eye);
- const iris=new T.Mesh(new T.SphereGeometry(.034,20,16),eyeDark);iris.position.set(side*.184,.032,.477);iris.scale.set(.85,.83,.51);humanHead.add(iris);humanIrises.push(iris);
+ // Eye planes sit flush with the face; no protruding spheres or googly-eye anatomy.
+ const socket=new T.Mesh(new T.CircleGeometry(.088,28),skinDark);
+ socket.position.set(side*.184,.053,.501);socket.scale.set(1.13,1.16,1);humanHead.add(socket);
+ const eye=new T.Mesh(new T.CircleGeometry(.082,28),eyeWhite);
+ eye.position.set(side*.184,.053,.504);eye.scale.set(.96,.82,1);humanHead.add(eye);humanEyes.push(eye);
+ const iris=new T.Mesh(new T.CircleGeometry(.037,28),eyeDark);
+ iris.position.set(side*.184,.052,.509);iris.scale.set(.92,.96,1);humanHead.add(iris);humanIrises.push(iris);
+ const catchlight=new T.Mesh(new T.CircleGeometry(.010,14),eyeWhite);
+ catchlight.position.set(side*.184-.013,.068,.514);humanHead.add(catchlight);
 }
 const browsNew=[];
-for(const side of [-1,1]){const br=bevel(.20,.042,.040,.015,blackHair,humanHead,side*.19,.19,.471);br.rotation.z=side*.11;browsNew.push(br)}
-const noseNew=new T.Mesh(new T.SphereGeometry(.105,24,16),personSkin);noseNew.position.set(0,-.075,.49);noseNew.scale.set(.73,.83,.71);humanHead.add(noseNew);
+for(const side of [-1,1]){const br=bevel(.22,.051,.046,.015,artHair,humanHead,side*.19,.235,.485);br.rotation.z=side*.11;browsNew.push(br)}
+const noseNew=new T.Mesh(new T.IcosahedronGeometry(.085,0),artSkin);
+noseNew.position.set(0,-.078,.501);noseNew.scale.set(.66,.96,.44);humanHead.add(noseNew);
 const moustache=bevel(.23,.046,.038,.013,skinDark,humanHead,0,-.225,.448);
-const mouthNew=new T.Mesh(new T.SphereGeometry(.17,24,16),mouthDark);
-mouthNew.position.set(0,-.302,.481);
-mouthNew.scale.set(1.12,.23,.18);humanHead.add(mouthNew);
-const hairCrown=new T.Mesh(new T.SphereGeometry(.51,36,24),blackHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
+// A flat morphable mouth stays attached to the skin under every camera angle.
+const mouthNew=new T.Mesh(new T.CircleGeometry(.115,28),mouthDark);
+mouthNew.position.set(0,-.305,.514);
+mouthNew.scale.set(1.0,.12,1);humanHead.add(mouthNew);
+// Actual 3D mouth curves, not a screenshot or a flat overlay.
+function createExpressionMouth(smile){
+ const points=[[-.135,smile?-.286:-.322],[-.068,smile?-.309:-.286],
+               [0,smile?-.313:-.278],[.068,smile?-.309:-.286],[.135,smile?-.286:-.322]];
+ const curve=new T.CatmullRomCurve3(points.map(([x,y])=>new T.Vector3(x,y,.524)));
+ const tube=new T.Mesh(new T.TubeGeometry(curve,24,.012,8,false),mouthDark);
+ tube.visible=false;humanHead.add(tube);return tube;
+}
+const humanSmile=createExpressionMouth(true),humanFrown=createExpressionMouth(false);
+
+// A composited facial rig: eyelid meshes, cheeks and lip corners share one pose driver.
+const humanUpperLids=[],humanLowerLids=[],humanCheeks=[],humanLipCorners=[];
+const cheekMat=new T.MeshStandardMaterial({color:0xa97066,roughness:.92,metalness:0,transparent:true,opacity:.28,depthWrite:false,side:T.DoubleSide});
+for(const side of [-1,1]){
+ const lid=new T.Mesh(new T.PlaneGeometry(.174,.074),artSkin);
+ lid.position.set(side*.184,.101,.519);humanHead.add(lid);humanUpperLids.push(lid);
+ const lower=new T.Mesh(new T.PlaneGeometry(.172,.041),artSkin);
+ lower.position.set(side*.184,-.014,.518);humanHead.add(lower);humanLowerLids.push(lower);
+ const cheek=new T.Mesh(new T.CircleGeometry(.064,20),cheekMat);
+ cheek.position.set(side*.305,-.169,.450);cheek.scale.set(1,.34,1);humanHead.add(cheek);humanCheeks.push(cheek);
+ const corner=new T.Mesh(new T.SphereGeometry(.014,12,9),mouthDark);
+ corner.position.set(side*.112,-.304,.517);corner.scale.set(.88,.66,.35);
+ humanHead.add(corner);humanLipCorners.push(corner);
+}
+function applyHumanFacePose(pose){
+ const lid=pose.lid,raise=pose.brow,tilt=pose.slope;
+ browsNew.forEach((b,i)=>{
+  const side=i===0?-1:1;
+  b.position.y=.235+raise*.13;
+  b.rotation.z=side*(.04+tilt*.36);
+ });
+ humanEyes.forEach((eye,i)=>{
+  eye.scale.y=Math.max(.04,lid*.81);
+  const iris=humanIrises[i];
+  iris.scale.y=Math.max(.04,lid*.95);
+  iris.position.x=(i===0?-.184:.184)+pose.gazeX*.023;
+  iris.position.y=.052+pose.gazeY*.020;
+  const upper=humanUpperLids[i],lower=humanLowerLids[i];
+  upper.position.y=.128-(1-lid)*.071;upper.scale.y=.78+(1-lid)*.90;
+  lower.position.y=-.008+(1-lid)*.026;lower.scale.y=.87+(1-lid)*.24;
+  const cheek=humanCheeks[i];
+  cheek.material.opacity=.17+pose.cheek*.17;
+  cheek.position.y=-.169+pose.cheek*.018;
+  cheek.scale.y=.35+pose.cheek*.12;
+  const corner=humanLipCorners[i];
+  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019);
+  corner.position.y=-.304+pose.smile*.024;
+ });
+ const smile=pose.smile>.30&&pose.mouthOpen<.34;
+ const frown=pose.smile<-.25&&pose.mouthOpen<.35;
+ humanSmile.visible=smile;humanFrown.visible=frown;
+ mouthNew.visible=!smile&&!frown;
+ mouthNew.scale.x=pose.mouthWidth;
+ mouthNew.scale.y=Math.max(.09,pose.mouthOpen*1.04+pose.round*.18);
+ mouthNew.position.y=-.305-pose.jaw*.013;
+ chin.position.y=-.32-pose.mouthOpen*.022;
+ beard.position.y=-.395-pose.mouthOpen*.019;
+ humanHead.rotation.x+=pose.headPitch;
+ humanHead.rotation.z+=pose.headRoll;
+}
+
+const hairCrown=new T.Mesh(new T.IcosahedronGeometry(.51,1),artHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
 for(let j=0;j<10;j++){
- const xx=(j-4.5)*.104,yy=.37+Math.sin(j*1.8)*.050;
- const tuft=new T.Mesh(new T.SphereGeometry(.16+(j%3)*.012,16,12),blackHair);tuft.position.set(xx,yy,.24+(j%2)*.063);humanHead.add(tuft);
- tuft.scale.set(.85,.69,.79);tuft.rotation.z=(j-4.5)*.11;
+ const xx=(j-4.5)*.104,yy=.465+Math.sin(j*1.8)*.030;
+ const tuft=new T.Mesh(new T.IcosahedronGeometry(.16+(j%3)*.012,0),artHair);tuft.position.set(xx,yy,.24+(j%2)*.063);humanHead.add(tuft);
+ tuft.scale.set(.80,.61,.71);tuft.rotation.z=(j-4.5)*.11;
 }
 for(const side of [-1,1]){
- const sideHair=new T.Mesh(new T.SphereGeometry(.24,20,16),blackHair);sideHair.position.set(side*.37,.19,-.07);humanHead.add(sideHair);sideHair.scale.set(.7,1.1,.80);
+ const sideHair=new T.Mesh(new T.IcosahedronGeometry(.24,0),artHair);sideHair.position.set(side*.37,.19,-.07);humanHead.add(sideHair);sideHair.scale.set(.7,1.1,.80);
+}
+// Angular swept fringe and temple locks from the same authored 3D hairstyle at any view.
+for(let i=0;i<7;i++){
+ const x=(i-3)*.118;
+ const lock=new T.Mesh(new T.IcosahedronGeometry(.195+(i%2)*.019,0),artHair);
+ lock.position.set(x,.390+(.025*Math.sin(i*2.1)),.370);
+ lock.scale.set(.76,.78,.74);lock.rotation.z=(i-3)*.115;
+ lock.rotation.x=-.22;lock.castShadow=true;humanHead.add(lock);
+}
+for(const side of [-1,1]){
+ const sideLock=new T.Mesh(new T.IcosahedronGeometry(.235,0),artHair);
+ sideLock.position.set(side*.438,.145,.09);
+ sideLock.scale.set(.57,1.1,.79);sideLock.rotation.z=side*.24;
+ humanHead.add(sideLock);
 }
 // Secondary face/shirt highlights keep the sculpt readable under low-key studio lighting.
 const clothStripe=velvet(0x6f8493,.66,.07);
@@ -423,7 +515,7 @@ update=function(){
  }
  brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
  mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
- mouthNew.scale.y=.23*(shot.speaker==='dev'?1+open*2.3:1);mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
+ mouthNew.scale.y=.12*(shot.speaker==='dev'?1+open*3.3:1);mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
  browsNew.forEach((br,i)=>{const side=i?1:-1;br.rotation.z=shot.speaker==='dev'?side*(-.06+open*.09):side*.11;});
  humanHead.rotation.x=(shot.speaker==='dev' ?-.10: .035)+Math.sin(t*.78)*.025;
  humanHead.rotation.z=shot.speaker==='dev'?.035*Math.sin(t*1.2):.0;
@@ -460,28 +552,34 @@ update=function(){
  faces.orange.orangeBrows?.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(orangeAction==='celebrate'?-.13:orangeAction==='announce'?.20:.10)});
 
  oldUpdate();
+ // Apply coordinated facial acting AFTER the legacy mouth, brow and head updates.
+ const prior=shots[index-1];
+ const fromEmotion=prior?.acting?.devEmotion||'neutral';
+ const toEmotion=shot.acting?.devEmotion||'neutral';
+ const facialPose=window.FrameForgePerformanceCore.evaluate({
+  time:t,local,duration:shot.duration,emotion:toEmotion,fromEmotion,
+  speaking:shot.speaker==='dev',energy:shot.speaker==='dev'?open:0,
+  gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
+ });
+ applyHumanFacePose(facialPose);
 };
-const templates={
-comedy:[
-["Our app takes twelve seconds to load.","dev","dev",3.2],
-["I can make it instant.","blue","blue",2.6],
-["Without breaking anything?","dev","dev",2.6],
-["Define anything.","blue","blue",2.3],
-["Backup created. Emotionally.","orange","orange",3],
-["Okay. One tiny change.","dev","duo",3],
-["Done. Zero milliseconds.","blue","screen",2.6],
-["Wow! The screen opens immediately.","dev","dev",3.8],
-["It no longer requests data.","orange","screen",3.2],
-["What about the customers?","dev","dev",2.8],
-["Also removed. No more waiting.","blue","blue",2.8],
-["You deleted the users?","dev","dev",2.8],
-["Technically, retention is perfect.","orange","orange",3.3],
-["Because nobody can leave.","dev","duo",3.8]],
-mystery:[
-["The scanner says there is something under this mountain.","dev","wide",5],["It's not a mountain. It's a door.","blue","blue",4],["A door to what?","dev","dev",4],["To a city everyone forgot.","orange","orange",6],["Then why is it opening for us?","dev","duo",5],["Because someone has been waiting.","blue","wide",6]]
-};
+// V5 projects are versioned documents, NOT hardcoded dialogue arrays.
+const projectCatalog=Object.create(null);
+const projectFiles={comedy:'./projects/zero-latency.frameforge.json',
+                    mystery:'./projects/mountain-mystery.frameforge.json'};
+const projectReady=Promise.all(Object.entries(projectFiles).map(async ([key,path])=>{
+ const response=await fetch(path,{cache:'no-cache'});
+ if(!response.ok)throw new Error('Missing project '+path+' (HTTP '+response.status+')');
+ const document=await response.json();
+ window.FrameForgeProjectCore.assertProject(document);
+ projectCatalog[key]=document;
+})).then(()=>{window.FrameForgeProjectsLoaded=true;});
 let shots=[],duration=30,time=0,running=false,last=performance.now(),selected=0;
-function load(){const p=$('preset').value;let lines=templates[p];soundtrack.pause();if(p==='comedy'){soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.load();$('recordStatus').textContent='14 scenes with real Kokoro dialogue ready';}else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Mystery is storyboard-only: no voice master exists';}shots=lines.map(a=>({text:a[0],speaker:a[1],camera:a[2],duration:a[3]}));$('idea').value=p==='comedy'?'A developer asks two AI assistants to make an app load instantly. Their solution is spectacularly wrong.':'A mysterious mountain hides a forgotten futuristic city.';time=0;selected=0;running=false;refresh();update();}
+function load(){const p=$('preset').value;const project=projectCatalog[p];if(!project){$('recordStatus').textContent='Project not yet loaded';return;}
+ window.FrameForgeProjectCore.assertRendererCompatible(project);
+ soundtrack.pause();
+ if(project.audio.state==='mastered'){soundtrack.src=project.audio.masterUrl;soundtrack.load();$('recordStatus').textContent=project.shots.length+' scenes with mastered audio ready';}
+ else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard only: no voice master attached';}shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();}
 function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});$('dialogue').value=shots[selected].text;$('speaker').value=shots[selected].speaker;$('camera').value=shots[selected].camera;}
 const reactionCutMap={
  2:{role:'blue',seconds:.58},
@@ -530,7 +628,41 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
  b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);renderer.render(scene,cam);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
-$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{shots[selected].text=$('dialogue').value;shots[selected].speaker=$('speaker').value;shots[selected].camera=$('camera').value;refresh();update()};$('download').onclick=()=>{const blob=new Blob([JSON.stringify({title:'FrameForge Episode',shots},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='frameforge-episode.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};$('narrate').onclick=()=>{if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
+$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{shots[selected].text=$('dialogue').value;shots[selected].speaker=$('speaker').value;shots[selected].camera=$('camera').value;refresh();update()};function snapshotProject(){
+ const base=window.FrameForgeCurrentProject;
+ if(!base)throw new Error('No episode loaded');
+ const project=structuredClone(base);
+ project.shots=shots.map((shot,i)=>({...project.shots[i],dialogue:shot.text,speaker:shot.speaker,camera:shot.camera,duration:shot.duration}));
+ window.FrameForgeProjectCore.assertProject(project);
+ return project;
+}
+$('download').onclick=()=>{
+ try{
+  const project=snapshotProject();
+  const blob=new Blob([JSON.stringify(project,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=project.id+'.frameforge.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  $('projectImportStatus').textContent='Exported '+project.title+' as a validated, reusable episode.';
+ }catch(err){$('projectImportStatus').textContent='Export refused: '+err.message;}
+};
+$('projectImport').onchange=async event=>{
+ const file=event.target.files?.[0];if(!file)return;
+ try{
+  if(file.size>1048576)throw new Error('Maximum project file size is 1 MiB');
+  const project=JSON.parse(await file.text());
+  window.FrameForgeProjectCore.assertRendererCompatible(project);
+  projectCatalog.custom=project;
+  const select=$('preset');
+  let option=select.querySelector('option[value="custom"]');
+  if(!option){option=document.createElement('option');option.value='custom';select.add(option);}
+  option.textContent=project.title+' — Imported project';
+  select.value='custom';
+  load();
+  $('projectImportStatus').textContent='Loaded '+project.title+' ('+project.shots.length+' scenes). Save edits with Download episode JSON.';
+ }catch(err){$('projectImportStatus').textContent='Import rejected: '+err.message;}
+ finally{event.target.value='';}
+};$('narrate').onclick=()=>{if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
 let recorder=null,recordedChunks=[],recordingStream=null;
 function stopRecording(){if(!recorder||recorder.state==='inactive')return;recorder.stop();$('recordStatus').textContent='Finalizing the WebM recording…';}
 $('record').onclick=async()=>{
@@ -727,6 +859,121 @@ $('exportMP4').onclick=async()=>{const size=Number($('mp4Res').value);$('exportM
 window.FrameForgeMP4Test=exportFrameAccurateMP4;
 
 window.FrameForgeActing={pose:()=>({human:{head:humanHead.rotation.toArray(),body:bodyGroup.rotation.toArray()},blue:faces.blue.armJoints?.map(a=>a.pivot.rotation.toArray()),orange:faces.orange.armJoints?.map(a=>a.pivot.rotation.toArray())})};
+// V5 Phase 1C — render existing studio rig geometry for actual art QA.
+const ART_VIEWS=[
+ {id:'front',radians:0,label:'Front'},
+ {id:'three-quarter',radians:-Math.PI/4,label:'Three-quarter'},
+ {id:'side',radians:-Math.PI/2,label:'Side'},
+ {id:'back',radians:Math.PI,label:'Back'}
+];
+const ART_EXPRESSIONS=['neutral','happy','worried','surprised'];
+function artPose(actorId,emotion){
+ if(actorId==='dev'){
+  const pose=window.FrameForgePerformanceCore.evaluate({
+    time:1.25,local:1,duration:2,emotion,
+    speaking:emotion==='surprised',energy:emotion==='surprised'?.42:0,
+    gazeX:0,gazeY:0
+  });
+  humanHead.rotation.set(0,0,0);
+  applyHumanFacePose(pose);
+ }else{
+  const face=actorId==='blue'?faces.blue:faces.orange;
+  drawActorFace(face,emotion,emotion==='surprised'?.4:emotion==='worried'?.16:0,.5,emotion==='surprised'?'round':'rest',0);
+ }
+}
+function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,height=460,portrait=false){
+ const actors={dev,blue:b.root,orange:o.root};
+ if(!Object.hasOwn(actors,actorId))throw new Error('Unknown character '+actorId);
+ const view=ART_VIEWS.find(x=>x.id===angle);
+ if(!view)throw new Error('Unknown view '+angle);
+ if(!ART_EXPRESSIONS.includes(emotion))throw new Error('Unknown expression '+emotion);
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<160||height<200||width>1024||height>1024)throw new Error('Invalid sheet resolution');
+ const selected=actors[actorId];
+ if(typeof portrait!=='boolean')throw new Error('portrait must be boolean');
+ const show=scene.children.map(child=>[child,child.visible]);
+ const camera={position:cam.position.clone(),quaternion:cam.quaternion.clone(),fov:cam.fov,aspect:cam.aspect,near:cam.near,far:cam.far};
+ const size=renderer.getSize(new T.Vector2());
+ const bg=scene.background,fog=scene.fog;
+ const baseRotation=selected.rotation.y;
+ const wasRunning=running;
+ const faceData={
+  mouthScale:mouthNew.scale.clone(),mouthVisible:mouthNew.visible,smileVisible:humanSmile.visible,frownVisible:humanFrown.visible,headRotation:humanHead.rotation.clone(),
+  eyebrows:browsNew.map(x=>({position:x.position.clone(),rotation:x.rotation.clone()})),
+  eyes:humanEyes.map(x=>x.scale.clone())
+ };
+ try{
+  running=false;soundtrack.pause();
+  scene.children.forEach(child=>{
+   if(child.isLight)return;
+   child.visible=(child===selected);
+  });
+  selected.visible=true;
+  selected.rotation.y=view.radians;
+  artPose(actorId,emotion);
+  scene.background=new T.Color(0x111d30);
+  scene.fog=null;
+  renderer.setSize(width,height,false);
+  cam.aspect=width/height;cam.fov=portrait?31:34;cam.near=.1;cam.far=50;cam.updateProjectionMatrix();
+  const centerY=actorId==='dev'?1.84:1.54;
+  const faceY=actorId==='dev'?selected.position.y+2.30:selected.position.y+1.45;
+  const targetY=portrait?faceY:centerY;
+  cam.position.set(selected.position.x,targetY+(portrait?.04:.15),selected.position.z+(portrait?2.8:6.6));
+  cam.lookAt(selected.position.x,targetY,selected.position.z);
+  renderer.render(scene,cam);
+  return renderer.domElement.toDataURL('image/png');
+ }finally{
+  selected.rotation.y=baseRotation;
+  for(const [child,visible]of show)child.visible=visible;
+  mouthNew.scale.copy(faceData.mouthScale);mouthNew.visible=faceData.mouthVisible;humanSmile.visible=faceData.smileVisible;humanFrown.visible=faceData.frownVisible;
+  humanHead.rotation.copy(faceData.headRotation);
+  browsNew.forEach((x,i)=>{x.position.copy(faceData.eyebrows[i].position);x.rotation.copy(faceData.eyebrows[i].rotation)});
+  humanEyes.forEach((x,i)=>x.scale.copy(faceData.eyes[i]));
+  scene.background=bg;scene.fog=fog;
+  renderer.setSize(size.x,size.y,false);
+  cam.position.copy(camera.position);cam.quaternion.copy(camera.quaternion);
+  cam.fov=camera.fov;cam.aspect=camera.aspect;cam.near=camera.near;cam.far=camera.far;cam.updateProjectionMatrix();
+  if(typeof update==='function'&&shots.length)update();
+  running=wasRunning;
+  renderer.render(scene,cam);
+ }
+}
+function captureEnvironment(width=360,height=640){
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<160||height<220||width>1024||height>1400)throw new Error('Invalid environment output size');
+ const actors=[dev,b.root,o.root];
+ const previous=actors.map(actor=>actor.visible);
+ const oldSize=renderer.getSize(new T.Vector2()),position=cam.position.clone(),quat=cam.quaternion.clone();
+ const oldFov=cam.fov,oldAspect=cam.aspect,oldTime=time,wasRunning=running;
+ try{
+  running=false;soundtrack.pause();
+  actors.forEach(actor=>actor.visible=false);
+  renderer.setSize(width,height,false);
+  cam.aspect=width/height;cam.fov=40;cam.updateProjectionMatrix();
+  cam.position.set(0,3.1,8.6);cam.lookAt(0,1.45,0);
+  renderer.render(scene,cam);
+  return renderer.domElement.toDataURL('image/png');
+ }finally{
+  actors.forEach((actor,i)=>actor.visible=previous[i]);
+  renderer.setSize(oldSize.x,oldSize.y,false);
+  cam.position.copy(position);cam.quaternion.copy(quat);cam.fov=oldFov;cam.aspect=oldAspect;cam.updateProjectionMatrix();
+  time=oldTime;running=wasRunning;
+  renderer.render(scene,cam);
+ }
+}
+window.FrameForgePerformanceQA=Object.freeze({
+ poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
+ facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
+ humanRig:()=>({upperLids:humanUpperLids.length,lowerLids:humanLowerLids.length,cheeks:humanCheeks.length,lipCorners:humanLipCorners.length}),
+ peek:()=>({mouthScale:mouthNew.scale.y,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
+});
+window.FrameForgeArtLab=Object.freeze({
+ version:'v5-phase1c-actual-rigs',
+ actors:()=>['dev','blue','orange'],
+ views:()=>ART_VIEWS.map(x=>x.id),
+ expressions:()=>[...ART_EXPRESSIONS],
+ capture:captureCharacterView,
+ captureEnvironment
+});
+
 window.FrameForgeQA={
  renderer,scene,cam,shots:()=>shots,time:()=>time,
  setPreviewSize:(w,h)=>renderer.setSize(w,h,false),
@@ -736,5 +983,5 @@ window.FrameForgeQA={
  renderFilmFrame:(t,w=360,h=640)=>renderFilmFrame(t,w,h)
 };
 
-load();requestAnimationFrame(frame);
+projectReady.then(()=>{load();requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
 </script></body></html>

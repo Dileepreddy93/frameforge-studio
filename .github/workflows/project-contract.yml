@@ -1,0 +1,80 @@
+name: FrameForge code quality
+on:
+  push:
+    branches: [develop, "feature/**"]
+  pull_request:
+    branches: [develop, main]
+jobs:
+  source-and-project-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile and validate the project contract
+        run: |
+          node tests/phase0-contract.test.mjs
+          node tests/project-core.test.cjs
+          node tests/project-integration.test.mjs
+          node tests/performance-core.test.cjs
+      - name: Verify existing film source remains valid
+        run: |
+          node tests/check-source.mjs
+          node tests/check-v4.mjs
+          node tests/check-cinematic-v4.mjs
+  real-character-render-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real Chromium rendering dependencies
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Render 3D character views, emotions, and environment in Chromium
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/character-art-browser.cjs dev
+          node tests/character-art-browser.cjs blue
+          node tests/character-art-browser.cjs orange
+          node tests/performance-browser.cjs
+  portable-video-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: source-and-project-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and software H264 encoder
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y -qq ffmpeg
+          ffmpeg -hide_banner -encoders | grep -w libx264
+          ffprobe -version | head -1
+      - name: Render deterministic V5.2 voiced performance MP4
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/export-performance-preview.cjs
+          ffprobe -v error -count_frames -show_entries stream=codec_type,nb_read_frames -of json artifacts/v5-2-facial-motion-3s.mp4
+      - name: Save motion preview for visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-v5-2-facial-motion-3sec
+          path: artifacts/v5-2-facial-motion-3s.mp4
+          if-no-files-found: error

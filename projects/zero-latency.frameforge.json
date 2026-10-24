@@ -1,0 +1,275 @@
+{
+  "schema": "frameforge.project/1",
+  "id": "zero-latency",
+  "title": "Zero Latency",
+  "logline": "A developer asks two AI assistants to make an app load instantly. Their solution is spectacularly wrong.",
+  "output": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "style": {
+    "styleLock": "Original cinematic stylized low-poly 3D. Unified characters, detailed moody studio, rich key/fill/rim lighting. No anime, no Pixar imitation, no photorealism. Stable proportions and identities."
+  },
+  "environment": {
+    "id": "developer-neon-lab",
+    "description": "Moody layered developer studio with desk, monitor, ambient fixtures and readable story-relevant interface props.",
+    "safeZone": {
+      "top": 220,
+      "bottom": 420
+    }
+  },
+  "characters": [
+    {
+      "id": "dev",
+      "name": "DEV",
+      "visualIdentity": "Original stylized low-poly adult developer, visible facial expressions, coherent hoodie and hair silhouette",
+      "voice": {
+        "profile": "developer",
+        "voiceLock": "Consistent expressive adult voice, clear words, measured comic timing; maintain this exact profile between shots"
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "worried",
+        "surprised",
+        "happy"
+      ]
+    },
+    {
+      "id": "blue",
+      "name": "BLUE",
+      "visualIdentity": "Original blue-grey expressive robot with a cohesive rounded metal body and contrasting digital face",
+      "voice": {
+        "profile": "blue-assistant",
+        "voiceLock": "Distinct playful high-mid synthetic English voice with precise pacing and consistent timbre"
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "happy",
+        "worried",
+        "surprised"
+      ]
+    },
+    {
+      "id": "orange",
+      "name": "ORANGE",
+      "visualIdentity": "Original warm orange robot with a cohesive rounded metal body and expressive contrasting digital face",
+      "voice": {
+        "profile": "orange-assistant",
+        "voiceLock": "Distinct warm synthetic English voice, emotionally controlled, deadpan comedic delivery"
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "happy",
+        "worried",
+        "surprised"
+      ]
+    }
+  ],
+  "shots": [
+    {
+      "id": "shot-01",
+      "dialogue": "Our app takes twelve seconds to load.",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 3.2,
+      "intent": "setup",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
+    },
+    {
+      "id": "shot-02",
+      "dialogue": "I can make it instant.",
+      "speaker": "blue",
+      "camera": "blue",
+      "duration": 2.6,
+      "intent": "setup",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
+    },
+    {
+      "id": "shot-03",
+      "dialogue": "Without breaking anything?",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 2.6,
+      "intent": "setup",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
+    },
+    {
+      "id": "shot-04",
+      "dialogue": "Define anything.",
+      "speaker": "blue",
+      "camera": "blue",
+      "duration": 2.3,
+      "intent": "contrast",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "surprised"
+      }
+    },
+    {
+      "id": "shot-05",
+      "dialogue": "Backup created. Emotionally.",
+      "speaker": "orange",
+      "camera": "orange",
+      "duration": 3.0,
+      "intent": "contrast",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
+    },
+    {
+      "id": "shot-06",
+      "dialogue": "Okay. One tiny change.",
+      "speaker": "dev",
+      "camera": "duo",
+      "duration": 3.0,
+      "intent": "escalation",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "happy"
+      }
+    },
+    {
+      "id": "shot-07",
+      "dialogue": "Done. Zero milliseconds.",
+      "speaker": "blue",
+      "camera": "screen",
+      "duration": 2.6,
+      "intent": "escalation",
+      "emotion": "neutral",
+      "action": "listen",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "surprised"
+      }
+    },
+    {
+      "id": "shot-08",
+      "dialogue": "Wow! The screen opens immediately.",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 3.8,
+      "intent": "reaction",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "happy"
+      }
+    },
+    {
+      "id": "shot-09",
+      "dialogue": "It no longer requests data.",
+      "speaker": "orange",
+      "camera": "screen",
+      "duration": 3.2,
+      "intent": "reaction",
+      "emotion": "neutral",
+      "action": "listen",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "surprised"
+      }
+    },
+    {
+      "id": "shot-10",
+      "dialogue": "What about the customers?",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 2.8,
+      "intent": "reaction",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
+    },
+    {
+      "id": "shot-11",
+      "dialogue": "Also removed. No more waiting.",
+      "speaker": "blue",
+      "camera": "blue",
+      "duration": 2.8,
+      "intent": "reveal",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "surprised"
+      }
+    },
+    {
+      "id": "shot-12",
+      "dialogue": "You deleted the users?",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 2.8,
+      "intent": "reveal",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "angry"
+      }
+    },
+    {
+      "id": "shot-13",
+      "dialogue": "Technically, retention is perfect.",
+      "speaker": "orange",
+      "camera": "orange",
+      "duration": 3.3,
+      "intent": "punchline",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
+    },
+    {
+      "id": "shot-14",
+      "dialogue": "Because nobody can leave.",
+      "speaker": "dev",
+      "camera": "duo",
+      "duration": 3.8,
+      "intent": "punchline",
+      "emotion": "neutral",
+      "action": "speak",
+      "firstFrameStatus": "not_created",
+      "acting": {
+        "devEmotion": "worried"
+      }
+    }
+  ],
+  "audio": {
+    "state": "mastered",
+    "masterUrl": "https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg",
+    "audioAlignment": "approximate_existing_v4_engine_not_phoneme_aligned"
+  }
+}

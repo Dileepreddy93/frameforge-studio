@@ -1,0 +1,26 @@
+# Real V5 browser-rendered 3D frames, not supplied references
+346f11f0f4ad541848787af086490598e31a7ef13c296870b311310260065c8e  assets/v5-art-evidence/blue-00-front.png
+0fddedbc58553bb75cd1aa9a03fa7b4819b7f30ab365de1a87969bdd8908e27a  assets/v5-art-evidence/blue-01-three-quarter.png
+d012402de79e9012ba28899daab86be35f406124ba1659203eefb0389fca4ca8  assets/v5-art-evidence/blue-02-side.png
+77da1e9f907787be0dc8e8e022e164ab2fb663e7ca55c3026187bfe5f1bb78a1  assets/v5-art-evidence/blue-03-back.png
+346f11f0f4ad541848787af086490598e31a7ef13c296870b311310260065c8e  assets/v5-art-evidence/blue-04-neutral.png
+e96c8af65745b902eaf1fabbfc8324c870d3c226b0b1063c1f04b76c23f0ef67  assets/v5-art-evidence/blue-05-happy.png
+6cc89b1b245839beba5c26e726436ef9d53ab60e329cf68ecce7f31f90840548  assets/v5-art-evidence/blue-06-worried.png
+487f44ff97256e4f95148201a9f6680569e293fe6ff4e1db8c9640818836d72a  assets/v5-art-evidence/blue-07-surprised.png
+4c435a6174191fabc50ffd20597ac190f750eadee6dbc97fd603704ad494c695  assets/v5-art-evidence/dev-00-front.png
+363fc851be26f5f9e1469ec09c1331c0d8c0763254f34dd4f7dd78066d2852e5  assets/v5-art-evidence/dev-01-three-quarter.png
+c5f947ace4af64314222de4e3380984c2915ef8aea20bfee489ae7cdabda1363  assets/v5-art-evidence/dev-02-side.png
+85d843e2982d90652a8dbedfe12b85cd22ad54d61d39a23c11ebd4c740eb73e0  assets/v5-art-evidence/dev-03-back.png
+4c435a6174191fabc50ffd20597ac190f750eadee6dbc97fd603704ad494c695  assets/v5-art-evidence/dev-04-neutral.png
+b891ae9099c3a498d802ce7dca43f0e89b3b9e0f6b5469e44f88fece4da0e136  assets/v5-art-evidence/dev-05-happy.png
+d57cd6ae7b15ac2b25ba3ce65edfc7b3197e46f0c658501ae833992d9c665b5a  assets/v5-art-evidence/dev-06-worried.png
+341b5474ca773b6b81ee81b9c1246ac3540e6d308e0505368c315493f12baa3f  assets/v5-art-evidence/dev-07-surprised.png
+40591c8acd2a4b348c0174515a7d634dad35354e45802f39a597c3d2ecc67a46  assets/v5-art-evidence/orange-00-front.png
+368c1772f468f0eed5976945422f757e512e2a4cba8a023e15886fa654e797c9  assets/v5-art-evidence/orange-01-three-quarter.png
+c5392b3e65fad6ae16965a738e028866daab6f3d2a06e95af26e9cde1b588be3  assets/v5-art-evidence/orange-02-side.png
+cb87f72f3beeede3251ec47caeb110a54410382b29f18704a21bc2244ef2bd9c  assets/v5-art-evidence/orange-03-back.png
+40591c8acd2a4b348c0174515a7d634dad35354e45802f39a597c3d2ecc67a46  assets/v5-art-evidence/orange-04-neutral.png
+21a2eafb83410800da72f49fb4651def332b7248b1d1821bfaf4acf40cae83df  assets/v5-art-evidence/orange-05-happy.png
+b5710ce79b56fa2ce14df963fa7a49e67fd72c6db63138182046a06ae23e0b27  assets/v5-art-evidence/orange-06-worried.png
+7b6d615ae10f09f2aec4424ec2d917a21c0092d5470825adde4f38ad1f0dbf49  assets/v5-art-evidence/orange-07-surprised.png
+ca4059422fda8e41191a65c748a0ce52e16bbdb3e475ef6a58f5f427c55fa9ac  assets/v5-art-evidence/v5-expression-sheet.jpg

@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+const result=execFileSync(process.execPath,['tools/check-gates.mjs'],{encoding:'utf8'});
+assert.match(result,/PASS/);
+const refs=JSON.parse(fs.readFileSync('spec/reference-register.json','utf8'));
+assert.equal(refs.references.find(r=>r.id==='nmxwz-pdf').status,'all_five_pages_read');
+assert.ok(refs.references.find(r=>r.id==='git-blame-video').status.includes('not_reverified'));
+const gates=JSON.parse(fs.readFileSync('spec/quality-gates.json','utf8'));
+assert.equal(gates.referenceStatus,'not_met');
+console.log('PHASE0_CONTRACT_PASS');
