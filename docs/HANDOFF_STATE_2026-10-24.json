@@ -1,0 +1,256 @@
+{
+  "project": "FrameForge Studio",
+  "recorded_on": "2026-10-24",
+  "repository": "Dileepreddy93/frameforge-studio",
+  "private": true,
+  "branch": "feature/v5-expressive-character-portraits",
+  "source_head_before_handoff": "bd2c625857c53722ef2d805513cc20ba9c49306d",
+  "upstream_head_at_audit": "bd2c625857c53722ef2d805513cc20ba9c49306d",
+  "protected_refs": {
+    "main": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
+    "develop": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
+    "v3.0-stable": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
+    "v4.0-rc1": "86eef99400d1ba7a97534bbe683fcd8f35bb9572",
+    "v5.0-phase0": "a4108067281e3a0157ce0f5da6525c1d221d69f3",
+    "v5.1-phase1b": "f807ab021028408445a677e8f29f78d3bfeb6f00",
+    "v5.1-phase1c-artstudies": "00fb971a72a230d455a6307b6bac086193a9aad7"
+  },
+  "pending_source_patches": [
+    {
+      "path": "docs/history/PENDING_APP_CHANGES_2026-10-24.patch",
+      "sha256": "f1c35321536adc0a5e7b03ad60c7bd0e17d6518732e4fd98655c610dbaed4868",
+      "description": "Uncommitted tracked index.html/character-lab.html differences; not incorporated into live source"
+    },
+    {
+      "path": "docs/history/PENDING_FACE_REFINEMENT_SCRIPT.py.txt",
+      "sha256": "2e18a98d00b952c449ec8bfc07ac8d4ada14d045010e780bd5be08f2bcd796c6",
+      "description": "Untracked face-refinement script preserved as plain text"
+    }
+  ],
+  "uncommitted_sources": {
+    "index.html": {
+      "bytes": 73696,
+      "sha256": "22ccc7cd06ba6381ff9945c9ca6bff9803a63627c3357f7079adf357a081a5ce",
+      "state": "uncommitted working copy, archived only"
+    },
+    "character-lab.html": {
+      "bytes": 6794,
+      "sha256": "268327e167c007d109f55a88a74b64b366bc6ca63eeee0f7fc5151401004ed06",
+      "state": "uncommitted working copy, archived only"
+    },
+    "tools/refine-v5-faces.py": {
+      "bytes": 5214,
+      "sha256": "2e18a98d00b952c449ec8bfc07ac8d4ada14d045010e780bd5be08f2bcd796c6",
+      "state": "uncommitted working copy, archived only"
+    }
+  },
+  "archived_render_files": [
+    {
+      "path": "assets/v5-art-evidence/blue-00-front.png",
+      "bytes": 47920,
+      "sha256": "346f11f0f4ad541848787af086490598e31a7ef13c296870b311310260065c8e",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-01-three-quarter.png",
+      "bytes": 41694,
+      "sha256": "0fddedbc58553bb75cd1aa9a03fa7b4819b7f30ab365de1a87969bdd8908e27a",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-02-side.png",
+      "bytes": 33140,
+      "sha256": "d012402de79e9012ba28899daab86be35f406124ba1659203eefb0389fca4ca8",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-03-back.png",
+      "bytes": 39536,
+      "sha256": "77da1e9f907787be0dc8e8e022e164ab2fb663e7ca55c3026187bfe5f1bb78a1",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-04-neutral.png",
+      "bytes": 47920,
+      "sha256": "346f11f0f4ad541848787af086490598e31a7ef13c296870b311310260065c8e",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-05-happy.png",
+      "bytes": 48132,
+      "sha256": "e96c8af65745b902eaf1fabbfc8324c870d3c226b0b1063c1f04b76c23f0ef67",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-06-worried.png",
+      "bytes": 48098,
+      "sha256": "6cc89b1b245839beba5c26e726436ef9d53ab60e329cf68ecce7f31f90840548",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-07-surprised.png",
+      "bytes": 48037,
+      "sha256": "487f44ff97256e4f95148201a9f6680569e293fe6ff4e1db8c9640818836d72a",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-00-front.png",
+      "bytes": 38536,
+      "sha256": "4c435a6174191fabc50ffd20597ac190f750eadee6dbc97fd603704ad494c695",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-01-three-quarter.png",
+      "bytes": 35048,
+      "sha256": "363fc851be26f5f9e1469ec09c1331c0d8c0763254f34dd4f7dd78066d2852e5",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-02-side.png",
+      "bytes": 26945,
+      "sha256": "c5f947ace4af64314222de4e3380984c2915ef8aea20bfee489ae7cdabda1363",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-03-back.png",
+      "bytes": 34346,
+      "sha256": "85d843e2982d90652a8dbedfe12b85cd22ad54d61d39a23c11ebd4c740eb73e0",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-04-neutral.png",
+      "bytes": 38536,
+      "sha256": "4c435a6174191fabc50ffd20597ac190f750eadee6dbc97fd603704ad494c695",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-05-happy.png",
+      "bytes": 38386,
+      "sha256": "b891ae9099c3a498d802ce7dca43f0e89b3b9e0f6b5469e44f88fece4da0e136",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-06-worried.png",
+      "bytes": 38790,
+      "sha256": "d57cd6ae7b15ac2b25ba3ce65edfc7b3197e46f0c658501ae833992d9c665b5a",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-07-surprised.png",
+      "bytes": 38166,
+      "sha256": "341b5474ca773b6b81ee81b9c1246ac3540e6d308e0505368c315493f12baa3f",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-00-front.png",
+      "bytes": 47682,
+      "sha256": "40591c8acd2a4b348c0174515a7d634dad35354e45802f39a597c3d2ecc67a46",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-01-three-quarter.png",
+      "bytes": 42349,
+      "sha256": "368c1772f468f0eed5976945422f757e512e2a4cba8a023e15886fa654e797c9",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-02-side.png",
+      "bytes": 33353,
+      "sha256": "c5392b3e65fad6ae16965a738e028866daab6f3d2a06e95af26e9cde1b588be3",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-03-back.png",
+      "bytes": 39103,
+      "sha256": "cb87f72f3beeede3251ec47caeb110a54410382b29f18704a21bc2244ef2bd9c",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-04-neutral.png",
+      "bytes": 47682,
+      "sha256": "40591c8acd2a4b348c0174515a7d634dad35354e45802f39a597c3d2ecc67a46",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-05-happy.png",
+      "bytes": 47919,
+      "sha256": "21a2eafb83410800da72f49fb4651def332b7248b1d1821bfaf4acf40cae83df",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-06-worried.png",
+      "bytes": 47882,
+      "sha256": "b5710ce79b56fa2ce14df963fa7a49e67fd72c6db63138182046a06ae23e0b27",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-07-surprised.png",
+      "bytes": 47819,
+      "sha256": "7b6d615ae10f09f2aec4424ec2d917a21c0092d5470825adde4f38ad1f0dbf49",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "assets/v5-art-evidence/v5-expression-sheet.jpg",
+      "bytes": 58171,
+      "sha256": "ca4059422fda8e41191a65c748a0ce52e16bbdb3e475ef6a58f5f427c55fa9ac",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v4-review/frameforge-v4-complete-director-41s.mp4",
+      "bytes": 11682636,
+      "sha256": "7aa90314e91208ad14254b70f2e5b8738c3333544789a46ea167b9e41daf4590",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v4-review/v4-cinematic-story-reaction-test-15s.mp4",
+      "bytes": 1881008,
+      "sha256": "641e5414efa6ec9e7b900a0fed7f6127cd685b957367f358e568d0f3a9d703a0",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v4-review/v4-first-15sec-preview.mp4",
+      "bytes": 2738477,
+      "sha256": "4861d97b79a76c25cb68440ddc090dc34c77b8583857181a9fdb86f1a197bf66",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v4-review/v4-preview-stills.jpg",
+      "bytes": 45629,
+      "sha256": "941223fa19de5613aabb8ce58b96b1b3789ee9d1a37d0ae7a2168d3143d34f1f",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v5-evidence/blue-character-sheet.png",
+      "bytes": 462368,
+      "sha256": "f73d9a0f2be9e774617e8a6ac64e5e7b3027735e7c6edc7834059e60af8ccc2e",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v5-evidence/dev-character-sheet.png",
+      "bytes": 470601,
+      "sha256": "53debfbb618014b3906cca0d33ea7e71433286745a3cb1da0b9f93051d3b725e",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v5-evidence/environment-first-frame.png",
+      "bytes": 131204,
+      "sha256": "04ea0bb3fa4c91685f75b2b062b5b28467356a2c432acbcf0ce3008a5830ed47",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    },
+    {
+      "path": "media/v5-evidence/orange-character-sheet.png",
+      "bytes": 457209,
+      "sha256": "84a448df6dc75692c97ed2006b93e2100a2cb479daa25299e98b30f51493e978",
+      "description": "FrameForge-created QA evidence, not original external reference"
+    }
+  ],
+  "missing_raw_references": [
+    "git-blame.mp4",
+    "NMXWZ-1.pdf",
+    "Studio_Reverse_Engineering_Report.md"
+  ],
+  "reference_identity_warning": "65469.mp4 is not confirmed to be git-blame.mp4",
+  "art_status": "Phase 1 art unapproved, P2-P7 not passed",
+  "handoff_only": true,
+  "production_changed": false
+}
