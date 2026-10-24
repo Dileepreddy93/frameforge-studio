@@ -11,3 +11,4 @@ __pycache__/
 .venv/
 audio/*/lines/
 audio/*/.work/
+renders/

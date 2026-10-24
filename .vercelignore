@@ -4,3 +4,4 @@ artifacts
 audio/*/lines
 audio/*/.work
 .env*
+renders

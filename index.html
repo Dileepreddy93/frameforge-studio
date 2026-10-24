@@ -977,6 +977,7 @@ window.FrameForgeQA={
  envelopeReady:()=>envReady,envelope:()=>decodedEnvelope,
  setOffline:(enabled)=>{offlineMode=Boolean(enabled);running=false;soundtrack.pause();},
  renderFilmFrame:(t,w=360,h=640)=>renderFilmFrame(t,w,h),
+ renderFrameJPEG:(t,w,h,quality=.95)=>renderFilmFrame(t,w,h,false).toDataURL('image/jpeg',quality),
  project:(key)=>structuredClone(projectCatalog[key]),
  openProject,
  sceneTitle:()=>$('sceneTitle').textContent

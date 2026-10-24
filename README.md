@@ -48,3 +48,11 @@ Browser tests need Playwright (`npm install --no-save playwright@1.56.1 && npx p
 - Others (`performance-browser`, `speech-performance-browser`, `project-browser`, ...) need a local HTTP server and FRAMEFORGE_URL.
 
 CI runs these in .github/workflows/project-contract.yml.
+
+## Making an episode
+1. Write or edit `projects/<episode>.frameforge.json` (format: docs/PROJECT_FORMAT.md).
+2. Audio: `node tools/build-audio.mjs projects/<episode>.frameforge.json` generates voice lines with local Kokoro,
+   times every shot from its line, synthesises music and sound effects, and masters to -14 LUFS.
+   This needs the Kokoro venv: `python3.12 -m venv .venv && .venv/bin/pip install kokoro-onnx soundfile`.
+3. Video: `node tools/render-episode.mjs projects/<episode>.frameforge.json` renders every frame at 1080x1920, 30 fps
+   and writes `renders/<id>-1080x1920.mp4`. Use `--shots shot-01:shot-04` for a part.
