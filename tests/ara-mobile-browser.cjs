@@ -30,7 +30,7 @@ const {chromium}=require('playwright');
   await page.locator('#faceLab summary').click();
   const slider=page.locator('input[data-morph="mouthFrown"]');
   await slider.scrollIntoViewIfNeeded();
-  await slider.fill('1');
+  await slider.evaluate(el=>{el.value='1';el.dispatchEvent(new Event('input',{bubbles:true}));});
   await page.evaluate(()=>window.FrameForgeRigLabQA.setTime(.33));
   assert.equal(await page.evaluate(()=>window.FrameForgeRigLabQA.getManualMorphs().mouthFrown),1);
   const out=process.env.FRAMEFORGE_MOBILE_OUT||'artifacts/p1-mobile-character';
