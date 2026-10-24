@@ -75,7 +75,11 @@ assert.equal(comedyShots.find(s=>s.id==='shot-12').framing.lookUp,.07);
 const plain=toTimelineShots(mystery)[0];
 assert.deepEqual(plain.cast.blue,{action:'listen',emotion:'neutral'});
 assert.equal(plain.cast[plain.speaker].action,'explain');
-assert.deepEqual(plain.framing,{distance:7,offset:0,up:.08,fov:41,lookUp:0});
+assert.deepEqual(plain.framing,{distance:7,offset:0,up:.08,fov:41,lookUp:0,move:'push',amount:.33,roll:0,aim:'center'});
+const duo=toTimelineShots(mystery).find(s=>s.camera==='duo');assert.equal(duo.framing.aim,duo.speaker,'two-shots favour the speaker by default');
+invalid('unknown camera move',p=>p.shots[0].framing.move='orbit');
+invalid('roll too steep',p=>p.shots[0].framing.roll=45);
+invalid('aim at unknown character',p=>p.shots[0].framing.aim='nobody');
 assert.equal(plain.title,'');assert.equal(plain.insert,null);assert.equal(plain.reactionCut,null);
 // Older files that only set acting.devEmotion still open.
 const legacy=clone(mystery);delete legacy.shots[0].cast;legacy.shots[0].acting={devEmotion:'happy'};

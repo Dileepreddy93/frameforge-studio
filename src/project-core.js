@@ -15,6 +15,7 @@
  const ACTIONS=new Set(['listen','typing','react','question','plead','alarm','surprise','defeat','announce','explain','celebrate','shrug','anticipate']);
  const SFX=new Set(['typing','chime','buzz','zap','scratch','whoosh','pop']);
  const MUSIC=new Set(['groove','tension','stop','sting']);
+ const MOVES=new Set(['push','pull','drift','static']);
  const INSERT_TEXT=['window','context','headline','value','caption','request','status','footer','label'];
  // Camera framing used when a shot does not author its own: [distance, offset, up, fov].
  const DEFAULT_FRAMING={dev:[4.2,0,.06,35],blue:[3.9,0,.06,35],orange:[3.9,0,.06,35],duo:[7,0,.08,41],wide:[7,0,.08,41],screen:[7,0,.08,41]};
@@ -67,6 +68,7 @@
    }
    const f=s.framing;
    if(f!==undefined&&!(isRecord(f)&&inRange(f.distance,1,15)&&inRange(f.offset,-2,2)&&inRange(f.up,-1,1)&&inRange(f.fov,15,75)&&(f.lookUp===undefined||inRange(f.lookUp,-1,1))))fail(at+'.framing','Expected distance 1-15, offset -2..2, up -1..1, fov 15-75');
+   else if(f!==undefined&&!((f.move===undefined||MOVES.has(f.move))&&(f.amount===undefined||inRange(f.amount,0,2))&&(f.roll===undefined||inRange(f.roll,-20,20))&&(f.aim===undefined||f.aim==='center'||characterIds.has(f.aim))))fail(at+'.framing','Expected move push|pull|drift|static, amount 0-2, roll -20..20 degrees, aim center or a character id');
    const r=s.reactionCut;
    if(r!==undefined&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');
    const tm=s.timing;
@@ -107,7 +109,9 @@
    const [distance,offset,up,fov]=DEFAULT_FRAMING[s.camera];
    return{
     id:s.id,text:s.dialogue,speaker:s.speaker,camera:s.camera,duration:s.duration,intent:s.intent,
-    title:s.title??'',cast,framing:{distance,offset,up,fov,lookUp:0,...s.framing},
+    title:s.title??'',cast,
+    framing:{distance,offset,up,fov,lookUp:0,move:'push',amount:.33,roll:0,aim:s.camera==='duo'?s.speaker:'center',...s.framing},
+    timing:{lead:s.timing?.lead??0,pauseAfter:s.timing?.pauseAfter??0},voice:s.voice??null,
     reactionCut:s.reactionCut??null,insert:s.insert??null
    };
   });

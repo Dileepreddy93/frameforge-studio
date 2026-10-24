@@ -17,9 +17,9 @@ Examples:
 | `output` | yes | `{width:1080,height:1920,fps:30}` |
 | `style.styleLock` | yes | A shot's `styleLock`, if present, must match it exactly |
 | `environment` | yes | `id`, `description`, `safeZone {top,bottom}` in 1080x1920 pixels |
-| `characters[]` | yes | `id`, `name`, `visualIdentity`, `voice {profile,voiceLock}`, `sheetStatus`, 4+ `expressions`. The current renderer animates `dev`, `blue` and `orange` only. |
+| `characters[]` | yes | `id`, `name`, `visualIdentity`, `voice {profile,voiceLock,kokoro?:{voice,speed}}`, `sheetStatus`, 4+ `expressions`. The current renderer animates `dev`, `blue` and `orange` only. |
 | `shots[]` | yes | 1–120 shots, 180 s total maximum |
-| `audio` | yes | `{state:"mastered",masterUrl}` or `{state:"storyboard_only",masterUrl:null}` |
+| `audio` | yes | `{state:"mastered",masterUrl,voiceUrl}` or `{state:"storyboard_only",masterUrl:null}`; optional `music {bpm, cues:[{shot, style: groove|tension|stop|sting, at?: start|afterLine}]}` |
 
 ## Shot fields
 | Field | Required | Values | Default |
@@ -34,6 +34,12 @@ Examples:
 | `cast.<id>.action` | no | `listen` `typing` `react` `question` `plead` `alarm` `surprise` `defeat` `announce` `explain` `celebrate` `shrug` `anticipate` | `explain` for the speaker, `listen` for everyone else |
 | `cast.<id>.emotion` | no | `neutral` `happy` `worried` `surprised` `angry` | `neutral` (for `dev`: legacy `acting.devEmotion` if present) |
 | `framing` | no | `distance` 1–15, `offset` −2..2, `up` −1..1, `fov` 15–75, `lookUp` −1..1 | from the camera preset |
+| `framing.move`, `framing.amount` | no | `push` `pull` `drift` `static`; travel 0–2 | `push`, 0.33 |
+| `framing.roll` | no | canted angle, −20..20 degrees | 0 |
+| `framing.aim` | no | `center` or a character id: which side a duo/wide shot favours | the speaker for `duo`, else `center` |
+| `timing` | no | `{lead, pauseAfter}` seconds before and after the spoken line | 0.15 / 0.35 (used by `tools/build-audio.mjs`) |
+| `sfx` | no | up to 8 `{cue, at, gain?}`, cue: `typing` `chime` `buzz` `zap` `scratch` `whoosh` `pop` | none |
+| `voice` | generated | `{file, seconds}` written by `tools/build-audio.mjs` | |
 | `reactionCut` | no | `{role, seconds, emotion?}`: cut to `role` for the last `seconds` of the shot, optionally changing their emotion | none |
 | `insert` | no | Full-frame telemetry card for `camera:"screen"` shots: `window`, `context`, `headline`, `value`, `caption`, `request`, `status`, `footer`, `label` (all text), `tone` `good`/`bad`, `graph` `drop`/`flat` | none (a plain 3D shot) |
 
