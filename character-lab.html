@@ -32,12 +32,12 @@ figcaption{padding:7px 4px;text-align:center;color:#d4e2eb;font-size:12px}footer
 <script>
 const $=id=>document.getElementById(id);
 const engine=$('studio'),status=$('status'),actor=$('actor'),btn=$('render'),save=$('save');
-let shots=[];
+let shots=[],preparedSheet=null;
 function engineApi(){const w=engine.contentWindow;return w&&w.FrameForgeArtLab&&w.FrameForgeProjectsLoaded?w.FrameForgeArtLab:null}
 function viewFigure(title,url){const fig=document.createElement('figure');const img=document.createElement('img');img.src=url;img.alt=actor.value+' '+title+' 3D render';const cap=document.createElement('figcaption');cap.textContent=title;fig.append(img,cap);return fig}
 async function make(){
  const api=engineApi();if(!api){status.textContent='Renderer unavailable';return}
- btn.disabled=true;save.disabled=true;status.textContent='Rendering real 3D rig...';
+ btn.disabled=true;save.disabled=true;preparedSheet=null;status.textContent='Rendering real 3D rig...';
  try{
   const who=actor.value;shots=[];
   const views=api.views(),expressions=api.expressions();
@@ -50,21 +50,31 @@ async function make(){
    shots.push({name:expression,png});return viewFigure(expression,png);
   }));
   if(!$('environment').src){$('environment').src=api.captureEnvironment(360,640);}
-  save.disabled=false;status.textContent=who.toUpperCase()+' · 8 true 3D frames rendered; art approval pending';
+  status.textContent='Preparing contact sheet for reliable one-click export...';
+  preparedSheet=await composeSheet(shots);
+  save.disabled=false;status.textContent=who.toUpperCase()+' · 8 true 3D frames rendered; export ready; art approval pending';
  }catch(error){status.textContent='Rendering error: '+error.message;console.error(error)}
  finally{btn.disabled=false}
 }
-async function exportSheet(){
- if(!shots.length)return;
+async function composeSheet(frames){
+ if(frames.length!==8)throw new Error('Expected four views and four expression frames');
  const cellW=360,cellH=500;
  const cvs=document.createElement('canvas');cvs.width=cellW*4;cvs.height=cellH*2;const ctx=cvs.getContext('2d');
  ctx.fillStyle='#0c1523';ctx.fillRect(0,0,cvs.width,cvs.height);
- for(let i=0;i<shots.length;i++){
-  const img=new Image();img.src=shots[i].png;await img.decode();
+ for(let i=0;i<frames.length;i++){
+  const img=new Image();img.src=frames[i].png;await img.decode();
   const x=(i%4)*cellW,y=Math.floor(i/4)*cellH;
-  ctx.drawImage(img,x,y,cellW,460);ctx.fillStyle='#e0eafb';ctx.font='bold 19px sans-serif';ctx.fillText(shots[i].name.toUpperCase(),x+17,y+488);
+  ctx.drawImage(img,x,y,cellW,460);ctx.fillStyle='#e0eafb';ctx.font='bold 19px sans-serif';ctx.fillText(frames[i].name.toUpperCase(),x+17,y+488);
  }
- const a=document.createElement('a');a.download='frameforge-'+actor.value+'-turnaround-expression-unapproved.png';a.href=cvs.toDataURL('image/png');a.click();
+ return cvs.toDataURL('image/png');
+}
+function exportSheet(){
+ // No asynchronous work after the actual user click: preserve user activation
+ // even on slow software-rendered browser sessions and mobile devices.
+ if(!preparedSheet){status.textContent='Contact sheet is still being prepared';return}
+ const a=document.createElement('a');
+ a.download='frameforge-'+actor.value+'-turnaround-expression-unapproved.png';
+ a.href=preparedSheet;document.body.append(a);a.click();a.remove();
 }
 btn.addEventListener('click',make);actor.addEventListener('change',make);save.addEventListener('click',exportSheet);
 const loader=setInterval(()=>{if(engineApi()){clearInterval(loader);btn.disabled=false;make()}},400);
