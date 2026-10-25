@@ -69,6 +69,9 @@ British voices (`b*_`, ORANGE) read British English from misaki's GB dictionarie
 `pronunciations` (`{word: "Kokoro", sayAs: "koh-KOR-oh"}`, edited under Voices). The offline renders read every line
 through the same pronouncer (`tools/phonemize.mjs`), so both paths say words the same way.
 
+Each shot's timing (pause before the line, pause after it, and the line's pace) is set in the Shot inspector and
+saved with the episode; both voice paths honour it.
+
 Browser-voiced episodes are mixed like our offline renders (`src/episode-mix.mjs`, in `src/mix-worker.js`): the
 episode's music cues and each shot's sound cues from `src/sound-kit.mjs`, music ducked under speech, mastered to
 -14 LUFS in stereo. An edited finished episode keeps its score. Test: `node tests/episode-mix.test.mjs` and

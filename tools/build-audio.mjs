@@ -1,6 +1,6 @@
 // Build an episode's audio from its JSON: the voice is the clock.
 //   node tools/build-audio.mjs projects/zero-latency.frameforge.json
-// 1. (Re)generates voice lines with tools/voice_lines.py when the text, voice, speaker's emotion or the way a line
+// 1. (Re)generates voice lines with tools/voice_lines.py when the text, voice, pace, speaker's emotion or the way a line
 //    is pronounced (src/kokoro-g2p.js and the episode's pronunciations) changed.
 // 2. Sets each shot's duration = timing.lead + line length + timing.pauseAfter (frame-rounded).
 // 3. Places the lines on one voice track, synthesises music and sound effects from the cue lists,
@@ -34,7 +34,7 @@ const pronouncers={},phonemesOf=s=>{
 };
 const readManifest=()=>{try{return JSON.parse(fs.readFileSync(path.join(linesDir,'lines.json'),'utf8'))}catch{return null}};
 const stale=m=>!m||project.shots.some(s=>{const l=m.lines.find(x=>x.shot===s.id),v=voiceOf[s.speaker];
- return !l||l.text!==s.dialogue||l.voice!==v?.voice||l.speed!==(v?.speed??1)||(l.emotion??'neutral')!==lineEmotion(s)||l.phonemes!==phonemesOf(s)||!fs.existsSync(path.join(linesDir,l.file))});
+ return !l||l.text!==s.dialogue||l.voice!==v?.voice||l.speed!==(v?.speed??1)||(l.emotion??'neutral')!==lineEmotion(s)||(l.pace??1)!==(s.timing?.pace??1)||l.phonemes!==phonemesOf(s)||!fs.existsSync(path.join(linesDir,l.file))});
 let manifest=readManifest();
 if(stale(manifest)){
  console.log('Generating voice lines…');

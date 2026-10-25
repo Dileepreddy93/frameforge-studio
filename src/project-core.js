@@ -75,7 +75,7 @@
    const r=s.reactionCut;
    if(r!==undefined&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');
    const tm=s.timing;
-   if(tm!==undefined&&!(isRecord(tm)&&(tm.lead===undefined||inRange(tm.lead,0,2))&&(tm.pauseAfter===undefined||inRange(tm.pauseAfter,0,4))))fail(at+'.timing','Expected lead 0-2 s and pauseAfter 0-4 s');
+   if(tm!==undefined&&!(isRecord(tm)&&(tm.lead===undefined||inRange(tm.lead,0,2))&&(tm.pauseAfter===undefined||inRange(tm.pauseAfter,0,4))&&(tm.pace===undefined||inRange(tm.pace,.7,1.4))))fail(at+'.timing','Expected lead 0-2 s, pauseAfter 0-4 s and pace 0.7-1.4');
    const vo=s.voice;
    if(vo!==undefined&&!(isRecord(vo)&&goodText(vo.file,200)&&inRange(vo.seconds,.1,15)&&Number.isFinite(s.duration)&&vo.seconds<=s.duration+.001))fail(at+'.voice','Generated voice needs a file and seconds that fit the shot');
    if(s.sfx!==undefined&&!(Array.isArray(s.sfx)&&s.sfx.length<=8&&s.sfx.every(x=>isRecord(x)&&SFX.has(x.cue)&&inRange(x.at,0,15)&&(x.gain===undefined||inRange(x.gain,-40,6)))))fail(at+'.sfx','Expected up to 8 {cue,at,gain?} with cue in '+[...SFX].join('/'));
@@ -120,7 +120,7 @@
     id:s.id,text:s.dialogue,speaker:s.speaker,camera:s.camera,duration:s.duration,intent:s.intent,
     title:s.title??'',cast,
     framing:{distance,offset,up,fov,lookUp:0,move:'push',amount:.33,roll:0,aim:s.camera==='duo'?s.speaker:'center',...s.framing},
-    timing:{lead:s.timing?.lead??.15,pauseAfter:s.timing?.pauseAfter??.35},voice:s.voice??null,
+    timing:{lead:s.timing?.lead??.15,pauseAfter:s.timing?.pauseAfter??.35,pace:s.timing?.pace??1},voice:s.voice??null,
     reactionCut:s.reactionCut??null,insert:s.insert??null,wall:s.wall??null
    };
   });

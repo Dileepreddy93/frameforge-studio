@@ -23,8 +23,10 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply line changes</button>
 <h4>Camera</h4><div class="controlrow"><div><label>Move</label><select id="move"><option value="push">Push in</option><option value="pull">Pull out</option><option value="drift">Drift</option><option value="static">Locked off</option></select></div><div><label>Amount</label><input id="moveAmount" type="range" min="0" max="1.2" step=".05"></div></div>
 <label>Dutch angle <span id="rollValue"></span></label><input id="roll" type="range" min="-12" max="12" step="1">
+<h4>Timing</h4><div class="controlrow"><div><label>Before the line <span id="leadValue"></span></label><input id="lead" type="range" min="0" max="1.5" step=".05"></div><div><label>Pause after <span id="pauseValue"></span></label><input id="pauseAfter" type="range" min="0" max="2" step=".05"></div></div>
+<label>Line pace <span id="paceValue"></span></label><input id="pace" type="range" min=".8" max="1.25" step=".05">
 <h4>Performance</h4><div class="castgrid" id="castGrid"></div>
-<p class="fine" id="audioState" role="status"></p><p class="fine">Click a shot to select it. Title, camera and performance update live; line, speaker, the speaker's emotion and shot order changes are re-voiced in your browser.</p></aside></div>
+<p class="fine" id="audioState" role="status"></p><p class="fine">Click a shot to select it. Title, camera and performance update live; line, speaker, the speaker's emotion, timing and shot order changes are re-voiced in your browser.</p></aside></div>
 <script src="./src/project-core.js"></script>
 <script src="./src/performance-core.js"></script>
 <script src="./src/speech-performance-core.js"></script>
@@ -907,7 +909,7 @@ async function voiceAllLines(){
   for(let i=0;i<shots.length;i++){
    const s=shots[i],v=voiceOf(s.speaker);
    status.textContent='Voicing line '+(i+1)+' of '+shots.length+'…';
-   lines.push(await voiceCall({type:'speak',text:s.text,voice:v.voice,speed:v.speed??1,emotion:lineEmotion(s),pronunciations:projectPronunciations()}));
+   lines.push(await voiceCall({type:'speak',text:s.text,voice:v.voice,speed:(v.speed??1)*s.timing.pace,emotion:lineEmotion(s),pronunciations:projectPronunciations()}));
    if(run!==voiceRun)return false;
   }
   // The voice is the clock: each shot lasts lead + its line + pause, frame-rounded.
@@ -952,6 +954,7 @@ $('resetLooks').onclick=()=>{const project=window.FrameForgeCurrentProject;if(!p
 function fillInspector(){
  const s=shots[selected];if(!s)return;
  $('dialogue').value=s.text;$('speaker').value=s.speaker;$('camera').value=s.camera;$('shotTitle').value=s.title;
+ showTiming(s);
  $('move').value=s.framing.move;$('moveAmount').value=s.framing.amount;$('roll').value=s.framing.roll;$('rollValue').textContent=s.framing.roll+'°';
  for(const id of ['dev','blue','orange']){$('act-'+id).value=s.cast[id].action;$('emo-'+id).value=s.cast[id].emotion;}
  const canVoice=['ready','downloaded','loading'].includes(voiceEngine.state);
@@ -979,6 +982,17 @@ function fillInspector(){
 $('shotTitle').onchange=e=>{shots[selected].title=e.target.value.trim();refresh();update()};
 $('move').onchange=e=>{shots[selected].framing.move=e.target.value;update()};
 $('moveAmount').oninput=e=>{shots[selected].framing.amount=Number(e.target.value);update()};
+// Timing: the pause before and after a line, and how fast it is spoken. Lead and pause re-time the cut from the
+// cached lines; a new pace re-voices the line.
+function showTiming(s){
+ $('lead').value=s.timing.lead;$('pauseAfter').value=s.timing.pauseAfter;$('pace').value=s.timing.pace;
+ $('leadValue').textContent=s.timing.lead.toFixed(2)+' s';$('pauseValue').textContent=s.timing.pauseAfter.toFixed(2)+' s';
+ $('paceValue').textContent='×'+s.timing.pace.toFixed(2);
+}
+for(const [id,key] of [['lead','lead'],['pauseAfter','pauseAfter'],['pace','pace']]){
+ $(id).oninput=e=>{const s=shots[selected];s.timing={...s.timing,[key]:Number(e.target.value)};showTiming(s);};
+ $(id).onchange=()=>{shots[selected].voice=null;markAudioStale();refresh();update();};
+}
 $('roll').oninput=e=>{shots[selected].framing.roll=Number(e.target.value);$('rollValue').textContent=e.target.value+'°';update()};
 function reorder(apply){apply();markAudioStale();time=shotStart(selected);refresh();update()}
 $('shotUp').onclick=()=>{if(selected>0)reorder(()=>{[shots[selected-1],shots[selected]]=[shots[selected],shots[selected-1]];selected--})};
@@ -998,7 +1012,9 @@ function snapshotProject(){
  project.shots=shots.map(s=>{
   const out={...(byId[s.id]??byId[s.id.replace(/-copy\d*$/,'')]),id:s.id,dialogue:s.text,speaker:s.speaker,camera:s.camera,duration:s.duration,
    intent:s.intent,cast:s.cast,framing:s.framing};
-  for(const [key,value] of [['title',s.title||undefined],['reactionCut',s.reactionCut],['insert',s.insert],['voice',s.voice]])
+  // Timing is saved only where it differs from the defaults.
+  const timing=Object.fromEntries(Object.entries(s.timing).filter(([k,v])=>v!=={lead:.15,pauseAfter:.35,pace:1}[k]));
+  for(const [key,value] of [['title',s.title||undefined],['reactionCut',s.reactionCut],['insert',s.insert],['voice',s.voice],['timing',Object.keys(timing).length?timing:undefined]])
    if(value)out[key]=value;else delete out[key];
   delete out.acting;delete out.emotion;delete out.action;
   return out;
@@ -1036,7 +1052,7 @@ $('projectImport').onchange=async event=>{
   $('projectImportStatus').textContent='Loaded '+project.title+' ('+project.shots.length+' scenes). Save edits with Download episode JSON.';
  }catch(err){$('projectImportStatus').textContent='Import rejected: '+err.message;}
  finally{event.target.value='';}
-};$('narrate').onclick=()=>{if(['ready','downloaded'].includes(voiceEngine.state)){const s=shots[selected];audition(s.text,voiceOf(s.speaker),lineEmotion(s));return}if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
+};$('narrate').onclick=()=>{if(['ready','downloaded'].includes(voiceEngine.state)){const s=shots[selected];audition(s.text,{...voiceOf(s.speaker),speed:(voiceOf(s.speaker).speed??1)*s.timing.pace},lineEmotion(s));return}if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
 let recorder=null,recordedChunks=[],recordingStream=null;
 function stopRecording(){if(!recorder||recorder.state==='inactive')return;recorder.stop();$('recordStatus').textContent='Finalizing the WebM recording…';}
 $('record').onclick=async()=>{

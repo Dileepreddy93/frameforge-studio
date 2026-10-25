@@ -101,9 +101,10 @@ def episode(args, kokoro):
     for shot, r in zip(project["shots"], read):
         v, emotion = voices[shot["speaker"]], line_emotion(shot)
         path = os.path.join(args.out, shot["id"] + ".wav")
-        seconds = synth(kokoro, r["phonemes"], v["voice"], v.get("speed", 1.0), path, emotion)
+        pace = (shot.get("timing") or {}).get("pace", 1.0)
+        seconds = synth(kokoro, r["phonemes"], v["voice"], v.get("speed", 1.0) * pace, path, emotion)
         manifest["lines"].append({"shot": shot["id"], "speaker": shot["speaker"], "voice": v["voice"],
-                                  "speed": v.get("speed", 1.0), "emotion": emotion, "text": shot["dialogue"],
+                                  "speed": v.get("speed", 1.0), "pace": pace, "emotion": emotion, "text": shot["dialogue"],
                                   "phonemes": r["phonemes"], "file": os.path.basename(path), "seconds": round(seconds, 3)})
         print(f"{shot['id']}  {v['voice']:<11} {emotion:<9} {seconds:5.2f}s  {shot['dialogue']}")
     with open(os.path.join(args.out, "lines.json"), "w") as f:
