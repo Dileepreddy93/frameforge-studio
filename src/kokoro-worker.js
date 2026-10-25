@@ -49,14 +49,16 @@ async function pickSource(){
 }
 
 // --- the model ------------------------------------------------------------------------------------
-let ready=null,session=null,device=null,vocab=null,source=null,g2p=null,lexicon=null;
+let ready=null,session=null,device=null,vocab=null,source=null;
+const pronouncers={};
 const styles=new Map();
 // The pronunciation dictionary is enough to read text: no model needed.
-function loadG2P(){
- lexicon??=fetch(new URL('../assets/voice/en-us-lexicon.json',import.meta.url))
+// American English, or British for the b*_ voices; each dictionary loads the first time a voice needs it.
+function loadG2P(dialect='us'){
+ pronouncers[dialect]??=fetch(new URL('../assets/voice/en-'+dialect+'-lexicon.json',import.meta.url))
   .then(r=>{if(!r.ok)throw new Error('Pronunciation dictionary HTTP '+r.status);return r.json()})
-  .then(data=>g2p=G2P.createG2P(data)).catch(e=>{lexicon=null;throw e});
- return lexicon;
+  .then(data=>G2P.createG2P(data)).catch(e=>{delete pronouncers[dialect];throw e});
+ return pronouncers[dialect];
 }
 async function webgpu(){try{return Boolean(navigator.gpu&&await navigator.gpu.requestAdapter())}catch{return false}}
 const open=(bytes,ep)=>ort.InferenceSession.create(bytes,{executionProviders:[ep],graphOptimizationLevel:'all'});
@@ -152,27 +154,34 @@ function finishLine(raw,offset=0){
 }
 
 // --- lines ------------------------------------------------------------------------------------------
-// Neutral lines keep the key they had before emotions, so lines already voiced stay cached.
-async function lineKey(text,voice,speed,emotion){
+// American neutral lines with no custom pronunciations keep the key they had before emotions, British English
+// and pronunciation lists, so lines already voiced stay cached. (British lines voiced before M2.3 were read
+// with American pronunciation; their old keys are never asked for again.)
+async function lineKey(text,voice,speed,emotion,own){
  const parts=[MODEL_ID,G2P.version,voice,speed,text];
  if(!EMOTION.isNeutral(emotion))parts.push(emotion,EMOTION.version);
+ if(G2P.dialectOf(voice)==='gb')parts.push('en-gb');
+ if(own.length)parts.push(own.map(p=>[String(p.word).trim().toLowerCase(),String(p.sayAs).trim()]));
  const data=new TextEncoder().encode(JSON.stringify(parts));
  const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',data))].map(b=>b.toString(16).padStart(2,'0')).join('');
  return new URL('../__voice-lines/'+hash.slice(0,40)+'.f32',import.meta.url).href;
 }
-async function speak({text,voice,speed=1,emotion='neutral'}){
+async function speak({text,voice,speed=1,emotion='neutral',pronunciations=[]}){
  if(!/^[a-z]{2}_[a-z]+$/.test(voice))throw new Error('Unknown voice '+voice);
  if(!EMOTION.emotions.includes(emotion))throw new Error('Unknown emotion '+emotion);
  // The emotion sets the pace through Kokoro's own speed, then reshapes the melody and tone of the raw line.
  const delivery=EMOTION.delivery(emotion),pace=speed*delivery.speed;
- const started=performance.now(),key=await lineKey(text,voice,pace,emotion),cache=await caches.open(LINES),hit=await cache.match(key);
+ // The episode's pronunciations that this line uses.
+ const own=G2P.pronunciationsIn(text,pronunciations);
+ const started=performance.now(),key=await lineKey(text,voice,pace,emotion,own),cache=await caches.open(LINES),hit=await cache.match(key);
  let raw,phonemes,guessed=[];
  if(hit){
   raw=new Float32Array(await hit.arrayBuffer());
   phonemes=decodeURIComponent(hit.headers.get('x-phonemes')||'');guessed=JSON.parse(decodeURIComponent(hit.headers.get('x-guessed')||'%5B%5D'));
  }else{
   await init();
-  ({phonemes,guessed}=g2p.phonemize(text));
+  const g2p=await loadG2P(G2P.dialectOf(voice));
+  ({phonemes,guessed}=g2p.phonemize(text,g2p.pronunciations(own)));
   if(!phonemes)throw new Error('Nothing to say in "'+text+'"');
   const parts=[];for(const ps of G2P.splitPhonemes(phonemes))parts.push(await run(ps,voice,pace));
   raw=new Float32Array(parts.reduce((n,p)=>n+p.length,0));let at=0;for(const p of parts){raw.set(p,at);at+=p.length;}
@@ -194,7 +203,10 @@ self.onmessage=({data})=>{
    if(type==='status'){const s=await cachedSource();post({id,type,modelCached:Boolean(s),source:s===SOURCES[0]?'local':s?'huggingface':null,model:MODEL_ID,g2p:G2P.version});}
    else if(type==='init')post({id,type,...await init()});
    else if(type==='speak'){const r=await speak(data);post({id,type,...r},[r.samples.buffer]);}
-   else if(type==='phonemize'){await loadG2P();post({id,type,...g2p.phonemize(data.text)});}
+   else if(type==='phonemize'){
+    const g2p=await loadG2P(G2P.dialectOf(data.voice));
+    post({id,type,...g2p.phonemize(data.text,g2p.pronunciations(G2P.pronunciationsIn(data.text,data.pronunciations)))});
+   }
    else throw new Error('Unknown request '+type);
   }catch(e){post({id,type:'error',message:e.message||String(e)});}
  });

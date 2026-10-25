@@ -95,6 +95,10 @@
   if(mu!==undefined&&!(isRecord(mu)&&(mu.bpm===undefined||inRange(mu.bpm,60,180))&&Array.isArray(mu.cues)&&mu.cues.every(c=>isRecord(c)&&shotIds.has(c.shot)&&MUSIC.has(c.style)&&(c.at===undefined||c.at==='start'||c.at==='afterLine'))))fail('audio.music','Expected {bpm?,cues:[{shot,style,at?}]} with style in '+[...MUSIC].join('/'));
   if(p.audio?.voiceUrl!==undefined&&!goodText(p.audio.voiceUrl))fail('audio.voiceUrl','Voice stem URL must be text');
   if(p.audio?.state==='storyboard_only'&&p.audio.masterUrl)fail('audio.masterUrl','Storyboard-only episodes must not claim a master');
+  // How the voices say words the dictionary does not know: [{word, sayAs}], sayAs as "koh-KOR-oh" or /phonemes/.
+  const pr=p.pronunciations,prWords=new Set();
+  if(pr!==undefined&&!(Array.isArray(pr)&&pr.length<=200&&pr.every(x=>isRecord(x)&&typeof x.word==='string'&&/^[\p{L}\d][\p{L}\d'-]{0,39}$/u.test(x.word)&&
+   goodText(x.sayAs,120)&&!prWords.has(x.word.toLowerCase())&&prWords.add(x.word.toLowerCase()))))fail('pronunciations','Expected up to 200 [{word, sayAs}] with distinct single words');
   return{valid:errors.length===0,errors,duration:+total.toFixed(3),shotCount:Array.isArray(p.shots)?p.shots.length:0};
  }
  function assertProject(p){

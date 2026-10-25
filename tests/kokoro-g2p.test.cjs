@@ -56,4 +56,42 @@ assert.equal(parts.join(' '),long);
 
 // Phonemes to model ids: "$" pads both ends and unknown symbols are dropped.
 assert.deepEqual(G2P.encode('ab?x',{a:43,b:44,'?':6}),[0,43,44,6,0]);
-console.log('KOKORO_G2P_PASS',MISAKI.length,'misaki lines');
+// British English (the b*_ voices): misaki 0.9.4 with british=True gives exactly these.
+const MISAKI_GB=[
+ ["Users keep asking for dark mode.","jˈuːzəz kˈiːp ˈaskɪŋ fɔː dˈɑːk mˈQd."],
+ ["Hello world, this is a test.","həlˈQ wˈɜːld, ðɪs ɪz ɐ tˈɛst."],
+ ["We shipped 3 fixes in 2024, and saved $1,250.50 on servers.","wˌiː ʃˈɪpt θɹˈiː fˈɪksɪz ɪn twˈɛnti twˈɛnti fˈɔː, and sˈAvd wˈʌn θˈWzᵊnd tˈuː hˈʌndɹəd fˈɪfti dˈɒləz and fˈɪfti sˈɛnts ˌɒn sˈɜːvəz."],
+ ["Is it 50% faster? Yes... about 1.5 times.","ˌɪz ɪt fˈɪfti pəsˈɛnt fˈɑːstə? jˈɛs... əbˈWt wˈʌn pYnt fˈIv tˈImz."],
+ ["She can't, he won't, they'd love to.","ʃˌiː kˈɑːnt, hiː wˈQnt, ðAd lˈʌv tuː."],
+ ["Ninety-nine problems, but the cache isn't one.","nˌIntɪnˈIn pɹˈɒbləmz, bˌʌt ðə kˈaʃ ˈɪzᵊnt wˈʌn."],
+ ["Read it, then I read it.","ɹˈiːd ɪt, ðˈɛn ˌI ɹˈɛd ɪt."],
+ ["Who wrote this code? Oh. I did.","hˌuː ɹˈQt ðɪs kˈQd? ˈQ. ˌI dˈɪd."],
+ ["Let's refactor everything... tomorrow.","lˈɛts ɹiːfˈaktə ˈɛvɹɪθɪŋ... tʊmˈɒɹQ."],
+ ["The tomato schedule was bothering everyone.","ðə təmˈɑːtQ ʃˈɛdjuːl wɒz bˈɒðəɹɪŋ ˈɛvɹɪwʌn."],
+ ["Where are the cars? Our servers are faster, aren't they?","wˌɛː ɑː ðə kˈɑːz? ˌWə sˈɜːvəz ɑː fˈɑːstə, ˌɑːnt ðA?"],
+ ["I can't find the water bottle in the garage.","ˌI kˈɑːnt fˈInd ðə wˈɔːtə bˈɒtᵊl ɪn ðə ɡˈaɹɑːʤ."],
+ ["ORANGE thinks the theatre was fantastic, but the colour was off.","ˈɒɹɪnʤ θˈɪŋks ðə θˈɪətə wɒz fantˈastɪk, bˌʌt ðə kˈʌlə wɒz ˈɒf."],
+ ["Can you fix it before half past four?","kˌan juː fˈɪks ɪt bɪfˈɔː hˈɑːf pˈɑːst fˈɔː?"],
+ ["The router was rebooted, and the data looked better.","ðə ɹˈuːtə wɒz ɹˌiːbˈuːtɪd, and ðə dˈAtə lˈʊkt bˈɛtə."]
+];
+const gb=G2P.createG2P(require('../assets/voice/en-gb-lexicon.json'));
+for(const [text,expected] of MISAKI_GB)assert.equal(gb.phonemize(text).phonemes,expected,'GB: '+text);
+assert.equal(G2P.dialectOf('bm_george'),'gb');assert.equal(G2P.dialectOf('bf_emma'),'gb');assert.equal(G2P.dialectOf('am_michael'),'us');
+// Guessed words follow the dialect: British guesses drop the r after a vowel.
+assert.equal(gb.phonemize('Frameforgery').phonemes,'fɹˈAmfˌɔːʤəɹi');
+assert.ok(!/ɹ$/.test(gb.phonemize('Zorbinater').phonemes),'non-rhotic guess');
+
+// The episode's own pronunciations: respellings with a capitalised stressed syllable, plain words, or /phonemes/.
+assert.equal(g2p.sayAs('koh-KOR-oh'),'kOkˈɔɹO');
+assert.equal(gb.sayAs('koh-KOR-oh'),'kQkˈɔːQ');
+assert.equal(g2p.sayAs('co core oh'),'kˈOkˌɔɹˌO');
+assert.equal(g2p.sayAs('/kəkˈɔɹO/'),'kəkˈɔɹO');
+assert.equal(g2p.sayAs('TEL-uh-goo'),'tˈɛləɡu');
+const list=[{word:'Kokoro',sayAs:'koh-KOR-oh'},{word:'Telugu',sayAs:'TEL-uh-goo'}];
+assert.deepEqual(G2P.pronunciationsIn("Kokoro's voice is ready.",list),[list[0]],'only the words a line uses, also with \'s');
+assert.deepEqual(G2P.pronunciationsIn('Nothing here.',list),[]);
+const own=g2p.pronunciations(list);
+assert.equal(g2p.phonemize("Kokoro's voice speaks Telugu.",own).phonemes,'kOkˈɔɹOz vˈYs spˈiks tˈɛləɡu.');
+assert.deepEqual(g2p.phonemize("Kokoro's voice speaks Telugu.",own).guessed,[],'listed words are not guessed');
+assert.deepEqual(g2p.phonemize('Kokoro speaks.').guessed,['Kokoro'],'without the list, Kokoro is guessed');
+console.log('KOKORO_G2P_PASS',MISAKI.length,'misaki lines,',MISAKI_GB.length,'British lines');

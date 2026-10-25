@@ -1,9 +1,10 @@
 # In-browser voices: third-party notices
 
-## Pronunciation dictionary (`en-us-lexicon.json`)
+## Pronunciation dictionaries (`en-us-lexicon.json`, `en-gb-lexicon.json`)
 From **misaki** by hexgrad (https://github.com/hexgrad/misaki), commit `fba1236595f2d2bf21d414ba6e57d25256afada3`,
-files `misaki/data/us_gold.json` and `misaki/data/us_silver.json`. Licensed under the Apache License 2.0
-(`LICENSE-misaki.txt`). Changes: both files merged into one JSON file, and silver entries that repeat a gold
+files `misaki/data/us_gold.json` and `misaki/data/us_silver.json` (American), `misaki/data/gb_gold.json` and
+`misaki/data/gb_silver.json` (British). Licensed under the Apache License 2.0
+(`LICENSE-misaki.txt`). Changes: each dialect's two files merged into one JSON file, and silver entries that repeat a gold
 entry removed (`tools/build-voice-lexicon.mjs`).
 
 `src/kokoro-g2p.js` is a JavaScript port of the dictionary rules in misaki's `misaki/en.py` (same licence).

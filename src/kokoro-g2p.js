@@ -1,5 +1,7 @@
 /*
- * English text -> Kokoro phonemes, for the in-browser voices (and Node tests).
+ * English text -> Kokoro phonemes, for the voices (browser worker, tools/phonemize.mjs and Node tests).
+ * American by default; a lexicon with "british": true (en-gb-lexicon.json) gives British English, as misaki's
+ * british=True does: its own dictionaries, -s/-ed with ɪ, no flapped t, and guessed words made non-rhotic.
  * The dictionary half is a JavaScript port of misaki's en.py (hexgrad/misaki, Apache-2.0, see
  * assets/voice/NOTICE.md): gold and silver dictionaries, the -s/-ed/-ing stem rules, stress rules,
  * function words and numbers. misaki asks spaCy for part-of-speech tags and eSpeak NG (GPL) for
@@ -85,7 +87,7 @@
  const parentTag=tag=>!tag?tag:tag.startsWith('VB')?'VERB':tag.startsWith('NN')?'NOUN':tag.startsWith('RB')?'ADV':tag.startsWith('JJ')?'ADJ':tag;
 
  function makeLexicon(data){
-  const golds=grow(data.gold),silvers=grow(data.silver),capStresses=[.5,2];
+  const golds=grow(data.gold),silvers=grow(data.silver),capStresses=[.5,2],british=Boolean(data.british);
   const has=(d,k)=>Object.prototype.hasOwnProperty.call(d,k);
   function getNNP(word){
    const ps=[...word].filter(c=>/\p{L}/u.test(c)).map(c=>golds[c.toUpperCase()]);
@@ -130,7 +132,8 @@
    if(ps==null||(isNNP&&!ps.includes(PRIMARY))){const nnp=getNNP(word);if(nnp[0]!=null)return nnp;}
    return [ps==null?null:applyStress(ps,stress),rating];
   }
-  const suffixS=stem=>!stem?null:'ptkfθ'.includes(stem.at(-1))?stem+'s':'szʃʒʧʤ'.includes(stem.at(-1))?stem+'ᵻz':stem+'z';
+  const weak=british?'ɪ':'ᵻ';
+  const suffixS=stem=>!stem?null:'ptkfθ'.includes(stem.at(-1))?stem+'s':'szʃʒʧʤ'.includes(stem.at(-1))?stem+weak+'z':stem+'z';
   function stemS(word,tag,stress,ctx){
    if(word.length<3||!word.endsWith('s'))return [null,null];
    let stem;
@@ -144,9 +147,9 @@
    if(!stem)return null;
    const last=stem.at(-1);
    if('pkfθʃsʧ'.includes(last))return stem+'t';
-   if(last==='d')return stem+'ᵻd';
+   if(last==='d')return stem+weak+'d';
    if(last!=='t')return stem+'d';
-   if(stem.length<2)return stem+'ɪd';
+   if(british||stem.length<2)return stem+'ɪd';
    if(US_TAUS.has(stem.at(-2)))return stem.slice(0,-1)+'ɾᵻd';
    return stem+'ᵻd';
   }
@@ -158,7 +161,8 @@
    else return [null,null];
    const [ps,rating]=lookup(stem,tag,stress,ctx);return [suffixEd(ps),rating];
   }
-  const suffixIng=stem=>!stem?null:stem.length>1&&stem.at(-1)==='t'&&US_TAUS.has(stem.at(-2))?stem.slice(0,-1)+'ɾɪŋ':stem+'ɪŋ';
+  const suffixIng=stem=>!stem?null:british?('əː'.includes(stem.at(-1))?null:stem+'ɪŋ'):
+   stem.length>1&&stem.at(-1)==='t'&&US_TAUS.has(stem.at(-2))?stem.slice(0,-1)+'ɾɪŋ':stem+'ɪŋ';
   function stemIng(word,tag,stress,ctx){
    if(word.length<5||!word.endsWith('ing'))return [null,null];
    let stem;
@@ -252,7 +256,7 @@
    if(isNumber(word,tk.isHead)){const [n,r]=getNumber(word,tk.currency,tk.isHead,tk.numFlags||'');return [n==null?null:applyStress(n,tk.stress),r];}
    return [null,null];
   }
-  return {call,lookup,isKnown,getNNP,golds,silvers,suffixS,suffixEd,suffixIng};
+  return {call,lookup,isKnown,getNNP,golds,silvers,suffixS,suffixEd,suffixIng,british};
  }
 
  // --- words the dictionary does not know --------------------------------------------------------
@@ -307,17 +311,40 @@
    }
    return letterToSound(w);
   }
-  return function guess(word){
+  // Our letter-to-sound rules are American; British guesses drop the r after vowels and use British vowels.
+  const dialect=ps=>!lex.british?ps:ps.replace(/ɑɹ/g,'ɑː').replace(/ɔɹ/g,'ɔː').replace(/[ɜə]ɹ(?![AIOQWYaiuæɑɒɔəɛɜɪʊʌᵻ])/g,m=>m[0]==='ɜ'?'ɜː':'ə')
+   .replace(/ɪɹ(?![AIOQWYaiuæɑɒɔəɛɜɪʊʌᵻ])/g,'ɪə').replace(/ɛɹ(?![AIOQWYaiuæɑɒɔəɛɜɪʊʌᵻ])/g,'ɛː').replace(/ʊɹ(?![AIOQWYaiuæɑɒɔəɛɜɪʊʌᵻ])/g,'ʊə')
+   .replace(/O/g,'Q').replace(/ɑ(?!ː)/g,'ɒ').replace(/ᵻ/g,'ɪ').replace(/ɾ/g,'t');
+  const guess=word=>dialect(guessAmerican(word));
+  guess.dialect=dialect;
+  return guess;
+  function guessAmerican(word){
    const letters=word.replace(/[^A-Za-z]/g,'');
    if(!letters)return '';
    // Acronyms and words with no vowel letters ("npm") are spelled out.
    if((isUpper(letters)&&letters.length<=5)||!/[aeiouy]/i.test(letters)){const [ps]=lex.getNNP(letters);if(ps)return ps;}
    const w=letters.toLowerCase();
-   if(w.length>5&&w.endsWith('ing'))return lex.suffixIng(stem(w.slice(0,-3)));
+   if(w.length>5&&w.endsWith('ing')){const base=stem(w.slice(0,-3));return lex.suffixIng(base)??base+'ɪŋ';}
    if(w.length>4&&w.endsWith('ed'))return lex.suffixEd(stem(w.slice(0,-2)));
    if(w.length>3&&w.endsWith('s')&&!/(ss|us|is)$/.test(w))return lex.suffixS(stem(w.slice(0,-1)));
    return stem(w);
   };
+ }
+
+ // Respelling, as dictionaries write how to say a word: "koh", "KOR", "ree", "ah", "shun". Longest match first.
+ const RESPELL=[['eer','ɪɹ'],['air','ɛɹ'],['ear','ɪɹ'],['ure','ʊɹ'],['igh','I'],['eye','I'],['oh','O'],['oe','O'],['ow','W'],['oy','Y'],
+  ['oi','Y'],['aw','ɔ'],['ah','ɑ'],['ay','A'],['ai','A'],['ee','i'],['ea','i'],['oo','u'],['ew','ju'],['uh','ʌ'],['ur','ɜɹ'],['er','ɜɹ'],
+  ['ir','ɜɹ'],['ar','ɑɹ'],['or','ɔɹ'],['ih','ɪ'],['eh','ɛ'],['ch','ʧ'],['sh','ʃ'],['zh','ʒ'],['th','θ'],['dh','ð'],['ng','ŋ'],['ck','k'],
+  ['ph','f'],['kh','k'],['a','æ'],['e','ɛ'],['i','ɪ'],['o','ɑ'],['u','ʌ'],['j','ʤ'],['g','ɡ'],['c','k'],['q','k'],['x','ks'],['r','ɹ']];
+ function respell(syllable){
+  let out='',i=0;
+  while(i<syllable.length){
+   const hit=RESPELL.find(([from])=>syllable.startsWith(from,i));
+   // A final y after a consonant is "ee" (as in "mee-ny"); elsewhere y is the consonant.
+   if(!hit&&syllable[i]==='y'){out+=i===syllable.length-1&&i>0?'i':'j';i++;continue;}
+   if(hit){out+=hit[1];i+=hit[0].length;}else{out+=syllable[i];i++;}
+  }
+  return out;
  }
 
  // --- tokens (standing in for spaCy) ------------------------------------------------------------
@@ -341,7 +368,7 @@
   return {text:ch,whitespace:'',phonemes:ps,isHead:true,punct:true};
  }
  // Splits text into words, word groups (parts written together: "9:30", "co-op", "$5") and punctuation.
- function tokenize(text,lex){
+ function tokenize(text,lex,custom={}){
   const out=[];
   for(const m of normalize(text).matchAll(/(\S+)(\s*)/g)){
    let chunk=m[1];const ws=m[2]?' ':'';const pieces=[];
@@ -351,7 +378,10 @@
    while(chunk&&CLOSERS.has(chunk.at(-1))&&!(keepDot&&chunk.at(-1)==='.')){tail.unshift(punctToken(chunk.at(-1)));chunk=chunk.slice(0,-1);}
    let group=[];
    const flush=()=>{if(group.length)pieces.push(group.length===1?group[0]:group);group=[];};
-   if(chunk&&(lex.isKnown(chunk)||keepDot))group.push({text:chunk,whitespace:'',isHead:true});
+   // The episode's own pronunciations win, also with 's ("Kokoro's").
+   const own=custom[chunk.toLowerCase()]??(/'s$/i.test(chunk)&&custom[chunk.slice(0,-2).toLowerCase()]?lex.suffixS(custom[chunk.slice(0,-2).toLowerCase()]):null);
+   if(chunk&&own!=null)group.push({text:chunk,whitespace:'',isHead:true,phonemes:own,custom:true});
+   else if(chunk&&(lex.isKnown(chunk)||keepDot))group.push({text:chunk,whitespace:'',isHead:true});
    else for(const sub of subtokenize(chunk)){
     if(sub.length===1&&PUNCTS.has(sub)&&sub!=='.'){flush();pieces.push(punctToken(sub));continue;}
     const prev=group.at(-1);
@@ -413,9 +443,34 @@
 
  function createG2P(lexiconData){
   const lex=makeLexicon(lexiconData),guess=makeGuesser(lex);
-  // Returns the phoneme string Kokoro reads, plus each word and where its sound came from.
-  function phonemize(text){
-   const words=tokenize(text,lex),guessed=[];
+  // How a word sounds, written by a person: "koh-KOR-oh" (syllables, the stressed one in capitals) or plain
+  // words ("co core oh"), or Kokoro phonemes between slashes ("/kəkˈɔɹO/").
+  function sayAs(text){
+   const t=String(text).trim();
+   if(/^\/.+\/$/.test(t))return t.slice(1,-1).trim();
+   const parts=t.split(/[\s-]+/).filter(Boolean),caps=p=>p.length>1&&p===p.toUpperCase()&&/[A-Z]/.test(p);
+   const marked=parts.some(caps);
+   return parts.map((p,i)=>{
+    const w=p.toLowerCase().replace(/[^a-z']/g,'');if(!w)return '';
+    // A real word reads as the dictionary has it; a made-up syllable ("koh") is read as a respelling.
+    const known=Object.prototype.hasOwnProperty.call(lex.golds,w)||Object.prototype.hasOwnProperty.call(lex.silvers,w);
+    let ps=(known?lex.lookup(w,null,null,null)[0]:null)??guess.dialect(respell(w));
+    // No capitals: the first syllable carries the stress.
+    if(!marked)return applyStress(known?ps:applyStress(ps,2),i?-1:null);
+    ps=ps.replaceAll(PRIMARY,'').replaceAll(SECONDARY,'');
+    return caps(p)?applyStress(ps,2):applyStress(ps.replace(/ʌ/g,'ə'),-2);
+   }).join('');
+  }
+  // [{word, sayAs}] -> {word (lower case): phonemes}
+  function pronunciations(list){
+   const out={};
+   for(const {word,sayAs:as} of list??[]){const k=String(word||'').trim().toLowerCase();if(k&&as&&String(as).trim())out[k]=sayAs(as);}
+   return out;
+  }
+  // Returns the phoneme string Kokoro reads, plus each word and where its sound came from. `custom` is the
+  // result of pronunciations(): words the episode says its own way.
+  function phonemize(text,custom={}){
+   const words=tokenize(text,lex,custom),guessed=[];
    let ctx={futureVowel:null,futureTo:false};
    for(let wi=words.length-1;wi>=0;wi--){
     const w=words[wi];
@@ -443,7 +498,7 @@
    const phonemes=merged.map(t=>(t.phonemes??'').replaceAll('ɾ','T').replaceAll('ʔ','t')+t.whitespace).join('').replace(/\s+/g,' ').trim();
    return {phonemes,words:merged.filter(t=>!t.punct).map(t=>({text:t.text,phonemes:t.phonemes})),guessed:guessed.reverse()};
   }
-  return {phonemize,version:VERSION};
+  return {phonemize,pronunciations,sayAs,british:lex.british,version:VERSION};
  }
 
  // Kokoro reads at most 510 phonemes at once: longer text is cut at the last sentence, clause or comma break.
@@ -463,5 +518,12 @@
   const ids=[0];for(const c of ps)if(vocab[c]!==undefined)ids.push(vocab[c]);ids.push(0);
   return ids;
  }
- return Object.freeze({version:VERSION,createG2P,splitPhonemes,encode,applyStress,cardinal,ordinal,year,letterToSound});
+ // Kokoro's British voices are named b*_ (bf_emma, bm_george); the rest read American English.
+ const dialectOf=voice=>/^b[fm]_/.test(String(voice))?'gb':'us';
+ // The episode pronunciations a line actually uses (whole words, any case, also with 's), in list order.
+ function pronunciationsIn(text,list){
+  const words=new Set((String(text).normalize('NFKC').replace(/[‘’]/g,"'").match(/[\p{L}\d'-]+/gu)||[]).map(w=>w.toLowerCase().replace(/'s$/,'')));
+  return (list??[]).filter(p=>p&&words.has(String(p.word||'').trim().toLowerCase()));
+ }
+ return Object.freeze({version:VERSION,createG2P,splitPhonemes,encode,applyStress,cardinal,ordinal,year,letterToSound,dialectOf,pronunciationsIn});
 });

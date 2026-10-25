@@ -20,6 +20,7 @@ Examples:
 | `environment` | yes | `id`, `description`, `safeZone {top,bottom}` in 1080x1920 pixels |
 | `characters[]` | yes | `id`, `name`, `visualIdentity`, `voice {profile,voiceLock,kokoro?:{voice,speed}}`, `sheetStatus`, 4+ `expressions`, optional `look` colours (`#rrggbb`): `dev` → `hoodie`, `hair`; `blue`/`orange` → `shell`. The current renderer animates `dev`, `blue` and `orange` only. |
 | `shots[]` | yes | 1–120 shots, 180 s total maximum |
+| `pronunciations` | no | up to 200 `{word, sayAs}`: how the voices say a word the dictionary does not know. `sayAs` is a respelling with the stressed syllable in capitals (`koh-KOR-oh`), plain words (`co core oh`) or Kokoro phonemes between slashes (`/kəkˈɔɹO/`). Used by the browser voices and `tools/voice_lines.py` alike |
 | `audio` | yes | `{state:"mastered",masterUrl,voiceUrl}` or `{state:"storyboard_only",masterUrl:null}`; optional `music {bpm, cues:[{shot, style, at?}]}` with style `groove`/`tension`/`stop`/`sting` and `at` `start`/`afterLine` |
 
 ## Shot fields

@@ -65,6 +65,10 @@ Neutral lines are untouched. The offline path (`tools/voice_lines.py`) runs the 
 (real model; set `FRAMEFORGE_EMOTION_OUT` to keep every take as a WAV). Browser tests run without jsDelivr access when
 `FRAMEFORGE_CDN_MIRROR` points at a folder with the pinned npm packages (`tests/cdn-mirror.cjs`).
 
+British voices (`b*_`, ORANGE) read British English from misaki's GB dictionaries. An episode can list its own
+`pronunciations` (`{word: "Kokoro", sayAs: "koh-KOR-oh"}`, edited under Voices). The offline renders read every line
+through the same pronouncer (`tools/phonemize.mjs`), so both paths say words the same way.
+
 Browser-voiced episodes are mixed like our offline renders (`src/episode-mix.mjs`, in `src/mix-worker.js`): the
 episode's music cues and each shot's sound cues from `src/sound-kit.mjs`, music ducked under speech, mastered to
 -14 LUFS in stereo. An edited finished episode keeps its score. Test: `node tests/episode-mix.test.mjs` and
