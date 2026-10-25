@@ -20,10 +20,11 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
 | Code / info | `#79C5FF` | `→ Index Scan …` lines |
 | Window lights | `#DEA32F` | dots: `#E05553` `#DEA32F` `#23A93B` |
 | Skin | lit `#C1361C` · mid `#8F2B19` · shadow `#260B06` | shadow side falls to near black |
-| DEV skin (warm brown) | lit `#B95D3D` · mid `#8B3F1D` · shadow `#3A1607` | base `#A3552F`; same lights |
+| DEV skin (warm brown) | lit `#C66C48` · mid `#8B3F1D` · shadow `#2C0F06` | the approved model sheet (M1.2); same lights |
 | Hoodie | lit `#667168` · base `#3D5D66` · top `#467498` | top faces turn blue from the rim |
 | Hair | `#120806`, rim edges `#4B87C0` | |
-| Ink (eyes, mouth, brows) | `#04030A`, mouth `#2A0911` | flat, unlit |
+| Ink (eyes, mouth, brows, glasses) | `#04030A`, mouth `#2A0911`, tongue `#7C2C33` | flat, unlit |
+| Glints, teeth | `#FFF7EE`, `#EADFD1` | flat, unlit |
 | Drawstrings | `#B098B1` | |
 | Desk | `#353790` → pool `#5F418C`; keys `#754DA6` | |
 | Caption | `#FFFFFF` | |
@@ -35,8 +36,9 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
   jaw and chin points on the face, a smooth staggered shell for the cranium; eye line 58% down from the crown.
 - Nothing on a head casts a shadow onto the face; faces are lit by their facets alone.
 - Matte only: roughness 1, metalness 0, no clearcoat, no specular highlight, no emissive on characters.
-- Faces are flat black geometry: pupils only (no whites, irises or catchlights), a box mouth whose height is
-  how open it is, thin box brows. No cheeks, lips, teeth or eyelid skin.
+- Faces are crisp flat shapes on the head, never textures (DEV, approved 2026-10-25, `design/dev-model-sheet.html`):
+  big ink pupils with two fixed glints, a heavy upper-lid line that carries the mood, rounded ink brows, and a curved
+  dark mouth with tongue and top teeth. No whites, irises, cheeks, lips or eyelid skin.
 - Screens are the only self-lit things (unlit, not tone-mapped).
 
 ## Light
@@ -70,6 +72,13 @@ Real monitors inside the set, seen in perspective and often cropped by the frame
 ## Characters
 Simple, graphic and built from a few primitives, with a big head (about half the torso height).
 Our own designs. Never Claude's mascot or any other studio's character.
+Each character is designed in 2D first (a model sheet the user approves), then built in 3D to match it.
+DEV's sheet is `design/dev-model-sheet.html`, and its numbers are in `design/dev-character.js`:
+- round head, wider than tall; small features set low (eye line 60%); 2 heads from crown to ground;
+- thick 12-sided round glasses;
+- a side-swept wave quiff;
+- a hoodie with a collar roll, a hood lying on the back, a pocket and drawstrings;
+- mitten hands with a thumb.
 
 ## How we draw this in code
 three.js; `MeshLambertMaterial({flatShading:true})` on low-detail geometry; black facial features as

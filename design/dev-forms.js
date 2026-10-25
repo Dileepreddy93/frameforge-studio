@@ -251,19 +251,23 @@
   return T.concat(Bt.reverse());
  }
  const roundEnds=(th,p=6)=>u=>th*Math.pow(Math.max(0,1-Math.abs(u)**p),.5);
- // Mouth: corners at +-w lifted by s; top bulge u; opening o; asym tilts it.
+ // Mouth: corners at +-w lifted by s; top bulge u; opening o; w/th scale width and line weight; shift slides it sideways.
  function mouthShapes(m,f,style){
-  const w=m.w,cy=m.y,q=x=>(x/w)**2,out=[];
+  const out=mouthAt(m,f,style),dx=f.shift||0;
+  return dx?out.map(o=>({...o,pts:o.pts.map(([x,y])=>[x+dx,y])})):out;
+ }
+ function mouthAt(m,f,style){
+  f={s:0,...f};const w=m.w*(f.w||1),cy=m.y,q=x=>(x/w)**2,out=[];
   const as=x=>(f.asym||0)*x/w;
   const top=x=>cy+f.s*q(x)+(f.u||0)*Math.sqrt(Math.max(0,1-q(x)))+as(x);
   if((f.o||0)<.006){
-   const th=m.th;out.push({pts:bar(u=>u*w,u=>cy+f.s*u*u+as(u*w),u=>th*Math.pow(Math.max(0,1-Math.abs(u)**4),.6)),fill:'ink'});
+   const th=m.th*(f.th||1);out.push({pts:bar(u=>u*w,u=>cy+f.s*u*u+as(u*w),u=>th*Math.pow(Math.max(0,1-Math.abs(u)**4),.6)),fill:'ink'});
    return out;
   }
   const bot=x=>cy+f.s*q(x)-f.o*Math.pow(Math.max(0,1-q(x)),f.round?.5:.75)+as(x);
   const shape=band(-w,w,[top],[bot],40);if(!shape)return out;
   out.push({pts:shape,fill:'mouth'});
-  if(style.teeth&&f.teeth){const tb=band(-w*.8,w*.8,[top],[bot,x=>top(x)-f.o*.32],30);if(tb)out.push({pts:tb,fill:'teeth'});}
+  if(style.teeth&&f.teeth){const tb=band(-w*.8,w*.8,[top],[bot,x=>top(x)-f.o*(f.teethH||.32)],30);if(tb)out.push({pts:tb,fill:'teeth'});}
   const tw=w*(f.round?.7:.62),tg=band(-tw,tw,[x=>bot(x)+f.o*.5*Math.max(0,1-(x/tw)**2),top],[bot],30);if(tg)out.push({pts:tg,fill:'tongue'});
   if(m.line){out.push({pts:bar(u=>u*w*1.02,u=>top(u*w),u=>m.line*Math.pow(Math.max(0,1-Math.abs(u)**6),.5)),fill:'ink'});}
   return out;
@@ -294,18 +298,20 @@
   },
   // Big ink pupils with two glints; a heavy upper lid line cuts them and carries the mood.
   glossy(e,f,side){
-   const cx=side*e.x+(f.gaze?.[0]||0)*.45,cy=e.y+(f.gaze?.[1]||0)*.35,rx=e.rx*(f.eyeScale||1),ry=e.ry*(f.eyeScale||1),u=x=>side*(x-cx)/rx,out=[];
+   const gx0=f.gaze?.[0]||0,gy0=f.gaze?.[1]||0,cx=side*e.x+gx0,cy=e.y+gy0*.8,rx=e.rx*(f.eyeScale||1),ry=e.ry*(f.eyeScale||1),u=x=>side*(x-cx)/rx,out=[];
+   const lx=side*e.x+gx0*.3,ly=e.y+gy0*.25;
    const U=x=>cy+ry*(1-2*(f.lidU||0))+ry*(f.lidSlope||0)*u(x)-ry*.12*u(x)**2;
    const L=x=>cy-ry+2*ry*(f.lidL||0)-ry*(f.lidArc||0)*u(x)**2;
+   if((f.lidU||0)>=.97){const X=v=>cx+v*rx*1.1;out.push({pts:bar(X,v=>cy-ry*.28+ry*.3*v*v,v=>e.lid*1.15*Math.pow(Math.max(0,1-Math.abs(v)**6),.5)),fill:'ink'});return out;}
    const s=band(cx-rx,cx+rx,[ellTop(cx,cy,rx,ry),U],[ellBot(cx,cy,rx,ry),L],40);if(!s)return out;
    out.push({pts:s,fill:'ink'});
-   for(const[gx,gy,gr]of[[cx+rx*.32,cy+ry*.3,rx*.3],[cx-rx*.3,cy-ry*.38,rx*.13]]){const g=band(gx-gr,gx+gr,[ellTop(gx,gy,gr,gr),U],[ellBot(gx,gy,gr,gr),L],14);if(g)out.push({pts:g,fill:'glint'});}
+   for(const[gx,gy,gr]of[[lx+rx*.32,ly+ry*.3,rx*.3],[lx-rx*.3,ly-ry*.38,rx*.13]]){const g=band(gx-gr,gx+gr,[ellTop(gx,gy,gr,gr),ellTop(cx,cy,rx,ry),U],[ellBot(gx,gy,gr,gr),ellBot(cx,cy,rx,ry),L],14);if(g)out.push({pts:g,fill:'glint'});}
    if((f.lidU||0)>.02||f.lidSlope){const x0=cx-rx*1.1,x1=cx+rx*1.1,X=v=>x0+(x1-x0)*(v+1)/2;out.push({pts:bar(X,v=>clamp(U(X(v)),cy-ry,cy+ry*1.02)+e.lid*.3,v=>e.lid*Math.pow(Math.max(0,1-Math.abs(v)**6),.5)),fill:'ink'});}
    return out;
   }
  };
  function browShapes(br,f,side){
-  const cx=side*br.x,cy=br.y+(f.browLift||0),hl=br.len/2,tilt=f.browTilt||0,arch=br.arch+(f.browArch||0);
+  const cx=side*br.x,cy=br.y+(f.browLift||0)+(f.browUp?.[side>0?1:0]||0),hl=br.len/2,tilt=f.browTilt||0,arch=br.arch+(f.browArch||0);
   const xAt=u=>cx+side*u*hl,yAt=u=>cy-tilt*u*.5+arch*(1-u*u)+(br.kink?br.kink*Math.max(0,u-.2):0);
   const th=br.taper?(u=>br.th*(1-.55*(u+1)/2)*Math.pow(Math.max(0,1-Math.abs(u)**8),.5)):roundEnds(br.th);
   return[{pts:bar(xAt,yAt,th),fill:'ink'}];
@@ -332,6 +338,23 @@
   const z=X=>fd*Math.pow(Math.max(0,1-Math.abs(X/hw)**n),1/n);
   return{p:[x,y,z(x)],n:norm([-(z(x+.01)-z(x-.01))/.02,0,1])};
  }
+ // Mitten hand with a thumb, built in hand space (x across toward the thumb, y from the wrist to the fingertips, z out of
+ // the palm) and placed at the wrist. pose: open, relaxed, fist or point.
+ function hand(pose,size,seed){
+  const L=size[1]*2,W=size[0],T=size[2],curl={open:0,relaxed:.35,fist:1,point:1}[pose]??.35,tris=[];
+  // Palm and fingers are one mitten; curling shortens it, thickens it and tips it toward the palm side.
+  tris.push(...blob(1,[0,L*(.52-.12*curl),T*.18*curl],[W,L*(.55-.13*curl),T*(.5+.38*curl)],'skin',seed,{rot:[-.35*curl,0,0],jitter:.04}));
+  // Thumb: out to the side when open, along the mitten when relaxed, across the front of the fist.
+  const th=curl>.6?{c:[W*.25,L*.5,T*.82],s:[W*.3,L*.24,W*.3],r:[-.2,0,-1.35]}:{c:[W*(1-.22*curl),L*(.36+.06*curl),T*(.12+.2*curl)],s:[W*.3,L*.29,W*.3],r:[0,0,-.7+.45*curl]};
+  tris.push(...blob(1,th.c,th.s,'skin',seed+2,{rot:th.r,jitter:.04}));
+  if(pose==='point')tris.push(...tube([[W*.28,L*.55,T*.42],[W*.32,L*.92,T*.38],[W*.34,L*1.2,T*.34]],[W*.4,W*.37,W*.32],6,'skin',{capEnd:1,up:[1,0,0]}));
+  return tris;
+ }
+ // Move hand-space parts to the wrist: x along B, y along D (wrist to fingers), z along C (palm normal).
+ function place(tris,origin,B,D,C){
+  const flip=dot(B,cross(D,C))<0;
+  return tris.map(t=>{const q=t.p.map(p=>add(origin,add(add(mul(B,p[0]),mul(D,p[1])),mul(C,p[2]))));return{...t,p:flip?[q[0],q[2],q[1]]:q};});
+ }
  function bodyParts(spec){
   const b=spec.body,objs=[];
   const trunk=trunkRings(b.trunk,12,'hood');
@@ -341,14 +364,15 @@
   const pk=b.pocket;decals.push(onTrunk([[-pk.tw,pk.top],[pk.tw,pk.top],[pk.bw,pk.bot],[-pk.bw,pk.bot]],{mat:'hoodDark',k:1}));
   decals.push(onTrunk([[-pk.tw,pk.top],[pk.tw,pk.top],[pk.tw*.98,pk.top-.012],[-pk.tw*.98,pk.top-.012]],{mat:'hoodDark',k:.6},.007));
   for(const s of[-1,1]){const x=s*b.strings.x;decals.push(onTrunk([[x-.008,b.strings.top],[x+.008,b.strings.top],[x+.008+s*.004,b.strings.bot],[x-.008+s*.004,b.strings.bot]],'string',.012));}
-  objs.push({id:'trunk',tris:trunk.concat(hood),decals,bias:0});
+  // The hood lies on the upper back below the collar roll.
+  const hp=b.hood.pouch||[.16,.13,.05],pouch=blob(1,[0,b.hood.y-hp[1]*.85,-b.hood.az-hp[2]*.4],hp,'hood',71,{rot:[.35,0,0],jitter:.05});
+  objs.push({id:'trunk',tris:trunk.concat(hood,pouch),decals,bias:0});
   for(const s of[-1,1]){
    const a=b.arm,P=p=>[s*p[0],p[1],p[2]],sh=P(a.shoulder),el=P(a.elbow),wr=P(a.wrist),dir=norm(sub(wr,el));
    const arm=tube([sh,el,wr],[a.r[0],a.r[1],a.r[2]],7,'hood',{capStart:1});
    const cuff=tube([sub(wr,mul(dir,.01)),add(wr,mul(dir,a.cuff))],[a.r[2]*1.12,a.r[2]*1.08],7,'hoodDark',{capStart:1,capEnd:1});
-   const hc=add(wr,mul(dir,a.cuff+a.hand[1]*.8)),hand=blob(1,hc,a.hand,'skin',31+s,{rot:[0,0,s*.15]});
-   const thumb=blob(0,add(hc,[-s*a.hand[0]*.55,a.hand[1]*.35,a.hand[2]*.75]),[a.hand[0]*.36,a.hand[1]*.48,a.hand[0]*.36],'skin',41+s,{rot:[-.5,0,-s*.5]});
-   objs.push({id:'arm'+s,tris:arm.concat(cuff,hand,thumb),decals:[],bias:0});
+   const C=[-s,0,0],B=mul(norm(cross(C,dir)),s),hd=place(hand(a.pose||'relaxed',a.hand,31+s),add(wr,mul(dir,a.cuff*.6)),B,dir,C);
+   objs.push({id:'arm'+s,tris:arm.concat(cuff,hd),decals:[],bias:0});
    const l=b.leg,hip=[s*l.x,l.top,0],ank=[s*l.x,l.bot,0];
    objs.push({id:'leg'+s,tris:tube([hip,ank],[l.r,l.r*.92],7,'pants',{capEnd:1}),decals:[],bias:-5});
    const sc=[s*l.x,b.ground+l.shoe[1]*.5,l.shoe[2]*.35];
@@ -419,5 +443,13 @@
   const sk=head.flatMap(t=>t.q),skullBox=[Math.min(...sk.map(p=>p[0])),Math.min(...sk.map(p=>-p[1])),Math.max(...sk.map(p=>p[0])),Math.max(...sk.map(p=>-p[1]))];
   return{svg,bbox:bb,headBox,skullBox};
  }
- return{build,render,headForm,curve,shade,MAT,KEY,RIM};
+ // Draw loose parts (e.g. a hand) with the same light, no head: rotate by yaw/pitch/roll, cull and depth-sort.
+ function renderParts(tris,view={}){
+  const X=p=>rotX(rotY(rotZ(p,rad(view.roll||0)),rad(view.yaw||0)),rad(view.pitch||0)),out=[];
+  for(const t of tris){const q=t.p.map(X);const n=norm(cross(sub(q[1],q[0]),sub(q[2],q[0])));if(n[2]<=1e-5)continue;out.push({q,z:centroid(q)[2],fill:shade(t.mat,n)});}
+  out.sort((a,b)=>a.z-b.z);
+  const all=out.flatMap(t=>t.q);
+  return{svg:out.map(t=>'<polygon points="'+ptsAttr(t.q)+'" fill="'+t.fill+'" stroke="'+t.fill+'"/>').join(''),bbox:[Math.min(...all.map(p=>p[0])),Math.min(...all.map(p=>-p[1])),Math.max(...all.map(p=>p[0])),Math.max(...all.map(p=>-p[1]))]};
+ }
+ return{build,render,renderParts,hand,place,tube,headForm,curve,shade,MAT,KEY,RIM};
 });
