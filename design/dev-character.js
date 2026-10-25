@@ -30,7 +30,7 @@
    [.55,-2.65,.02, .65,-2.7,.05, .76,-2.78,.04, .12,.035]]},
   body:{neck:{r:.1,z:-.03,bot:-.6},trunk:[[-.55,.18,.13,.13,2.4],[-.59,.29,.18,.18,2.6],[-.65,.34,.21,.2,2.6],[-.86,.345,.22,.2,2.6],[-1.02,.35,.22,.2,2.5],[-1.08,.32,.2,.19,2.4]],
    hood:{y:-.585,ax:.22,az:.185,r:[.095,.08],from:62,drop:.04,pouch:[.16,.12,.05]},pocket:{top:-.86,bot:-1.0,tw:.15,bw:.19},strings:{x:.055,top:-.6,bot:-.78},
-   arm:{shoulder:[.3,-.65,0],elbow:[.37,-.83,0],wrist:[.39,-.98,.03],r:[.085,.078,.07],cuff:.045,hand:[.062,.072,.058],pose:'relaxed'},
+   arm:{shoulder:[.3,-.65,0],elbow:[.37,-.83,0],wrist:[.39,-.98,.03],r:[.085,.078,.07],cuff:.045,hand:[.074,.088,.064],pose:'relaxed'},
    leg:{x:.125,top:-1.0,bot:-1.42,r:.1,shoe:[.085,.06,.135]},ground:-1.5}};
  // The 7 emotions on the engine's face channels: brow lift/tilt/arch (+ per-side browUp), lids (upper close and slope,
  // lower rise and arc), gaze, eye scale, mouth (smile s, open o, top bulge u, round, width w, teeth, asym, shift),

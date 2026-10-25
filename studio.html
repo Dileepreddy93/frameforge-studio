@@ -28,6 +28,7 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <script src="./src/speech-performance-core.js"></script>
 <script src="./design/dev-forms.js"></script>
 <script src="./design/dev-character.js"></script>
+<script src="./src/dev-acting-core.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
@@ -388,37 +389,65 @@ function jitter(geometry,amount){
  }
  geometry.computeVertexNormals();return geometry;
 }
-const bodyGroup=new T.Group();humanRig.add(bodyGroup);
-facet(bodyGroup,new T.CylinderGeometry(.5,.56,1.12,8).rotateY(Math.PI/8),hoodie,0,1.18,0,1,1,.64);
-facet(bodyGroup,jitter(new T.TorusGeometry(.43,.21,5,11).rotateX(Math.PI/2),.035),hoodie,0,1.7,-.02,1.08,.62,.95).rotation.x=.12;
-for(const side of [-1,1]){
- facet(bodyGroup,new T.BoxGeometry(.035,.34,.035),stringMat,side*.13,1.47,.37);
- facet(bodyGroup,new T.BoxGeometry(.3,.62,.34),trouser,side*.25,.31,0);
- facet(bodyGroup,new T.BoxGeometry(.34,.16,.5),shoeMat,side*.25,-.04,.07);
-}
-const humanPivots=[];
-for(const side of [-1,1]){
- const shoulder=new T.Group();shoulder.position.set(side*.62,1.6,0);bodyGroup.add(shoulder);
- facet(shoulder,new T.BoxGeometry(.27,.82,.32),hoodie,side*.04,-.4,0);
- facet(shoulder,new T.BoxGeometry(.31,.13,.35),hoodieDark,side*.04,-.83,0);
- facet(shoulder,new T.IcosahedronGeometry(.13,0),personSkin,side*.04,-.98,.03);
- humanPivots.push({side,shoulder});
-}
-// DEV's head and face are the approved model sheet (design/dev-character.js, M1.2), built from the same forms that draw
-// the sheet, so the 3D matches it facet for facet. The sheet's head height 1 is DEV_S engine units.
-const DEV_SPEC=window.FrameForgeDev.DEV,DEV_S=1.05,devBuild=window.FrameForgeDesign.build(DEV_SPEC);
+// DEV is the approved model sheet (design/dev-character.js), built from the same forms that draw it, so the 3D matches
+// it facet for facet: the head and face (M1.3) and the body (M1.4), 2 heads from crown to ground. The body is cut at
+// its joints and skinned to bones, so the waist, elbows and knees bend. DEV keeps his place in the set: feet on the
+// stage, head centre where the cameras aim. The sheet's head height 1 is DEV_S engine units.
+const DEV_SPEC=window.FrameForgeDev.DEV,devBuild=window.FrameForgeDesign.build(DEV_SPEC),devRigSpec=window.FrameForgeDesign.rig(DEV_SPEC);
+const DEV_HEAD_Y=2.30,DEV_FEET_Y=.14,DEV_S=(DEV_HEAD_Y-DEV_FEET_Y)/-devRigSpec.ground;
+// Close-ups were framed for the M1.3 head (1.05 units tall); they stand back by this much to frame the new head the same.
+const DEV_FRAME=DEV_S/1.05;
 function devGeometry(tris){
  const geometry=new T.BufferGeometry();
  geometry.setAttribute('position',new T.Float32BufferAttribute(tris.flatMap(t=>t.p.flat()),3));
  geometry.computeVertexNormals();return geometry;
 }
-// The neck rides with the body; its top reaches deep into the head, so nods and bobs never open a gap.
-facet(bodyGroup,new T.CylinderGeometry(.15,.17,.5,6),personSkin,0,1.86,-.05);
-const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);
-// Emotional tilts turn the head about the neck, as on the sheet, not about its centre.
-const DEV_PIVOT=devBuild.pivot[1]*DEV_S;
-const headTilt=new T.Group();headTilt.position.y=DEV_PIVOT;headTilt.rotation.order='YXZ';humanHead.add(headTilt);
-const devHead=new T.Group();devHead.position.y=-DEV_PIVOT;devHead.scale.setScalar(DEV_S);headTilt.add(devHead);
+const devRig=new T.Group();devRig.position.y=DEV_HEAD_Y;devRig.scale.setScalar(DEV_S);humanRig.add(devRig);
+const devBones={},devBoneList=devRigSpec.joints.map((j,i)=>{
+ const bone=new T.Bone(),parent=devRigSpec.joints.find(x=>x.name===j.parent)?.at||[0,0,0];
+ bone.name='dev-'+j.name;bone.position.set(j.at[0]-parent[0],j.at[1]-parent[1],j.at[2]-parent[2]);bone.userData.rest=bone.position.clone();
+ devBones[j.name]=bone;if(j.parent)devBones[j.parent].add(bone);return bone;
+});
+for(const k of['L','R']){devBones['shoulder'+k].rotation.order='ZXY';devBones['wrist'+k].rotation.order='YZX';}
+// Decals (pocket, its rim, drawstrings) sit a hair off the hoodie; a polygon offset keeps them from flickering.
+const decal=m=>Object.assign(m.clone(),{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
+const pocketMat=decal(hoodieDark),pocketRim=decal(flat(0x1c2f36)),stringDecal=decal(stringMat);
+let devBody;
+const DEV_BODY_MATS={hood:hoodie,hoodDark:hoodieDark,hoodRule:pocketRim,string:stringDecal,pants:trouser,shoe:shoeMat,sole:flat(0x8f8880),neck:personSkin};
+{
+ const mats=[...new Set(devRigSpec.tris.map(t=>t.mat))],index=Object.fromEntries(devRigSpec.joints.map((j,i)=>[j.name,i]));
+ const pos=[],skinIndex=[],skinWeight=[],geometry=new T.BufferGeometry();let start=0;
+ mats.forEach((m,g)=>{
+  const tris=devRigSpec.tris.filter(t=>t.mat===m);
+  for(const t of tris)t.p.forEach((p,i)=>{
+   pos.push(...p);const w=t.w[i].filter(x=>x[1]>1e-4);
+   for(let k=0;k<4;k++){skinIndex.push(w[k]?index[w[k][0]]:0);skinWeight.push(w[k]?w[k][1]:0);}
+  });
+  geometry.addGroup(start,tris.length*3,g);start+=tris.length*3;
+ });
+ geometry.setAttribute('position',new T.Float32BufferAttribute(pos,3));
+ geometry.setAttribute('skinIndex',new T.Uint16BufferAttribute(skinIndex,4));
+ geometry.setAttribute('skinWeight',new T.Float32BufferAttribute(skinWeight,4));
+ geometry.computeVertexNormals();
+ devBody=new T.SkinnedMesh(geometry,mats.map(m=>m==='hoodDark'?pocketMat:DEV_BODY_MATS[m]));
+ devBody.name='dev-body';devBody.castShadow=true;devBody.receiveShadow=true;devBody.frustumCulled=false;
+ devBody.add(devBones.hips);devRig.add(devBody);
+ dev.updateMatrixWorld(true);devBody.bind(new T.Skeleton(devBoneList));
+}
+// Mitten hands, one mesh per pose on each wrist; acting shows one at a time.
+const handSkin=Object.assign(flat(0xa3552f),{name:'dev-skin',emissive:new T.Color(0x2a0c04)});
+const devHands={L:{},R:{}};
+for(const k of['L','R'])for(const[pose,tris]of Object.entries(devRigSpec.hands[k])){
+ const at=devRigSpec.joints.find(j=>j.name==='wrist'+k).at,m=new T.Mesh(devGeometry(tris),handSkin);
+ m.position.set(-at[0],-at[1],-at[2]);m.castShadow=true;m.receiveShadow=true;m.visible=pose==='relaxed';
+ devBones['wrist'+k].add(m);devHands[k][pose]=m;
+}
+// The head rides on the neck. humanHead turns it about the top of the neck; headTilt adds each emotion's tilt.
+const DEV_NECK=devRigSpec.joints.find(j=>j.name==='neck').at,DEV_HEAD_PIVOT=devRigSpec.headPivot;
+const humanHead=new T.Group();humanHead.position.set(DEV_HEAD_PIVOT[0]-DEV_NECK[0],DEV_HEAD_PIVOT[1]-DEV_NECK[1],DEV_HEAD_PIVOT[2]-DEV_NECK[2]);
+devBones.neck.add(humanHead);
+const headTilt=new T.Group();headTilt.rotation.order='YXZ';humanHead.add(headTilt);
+const devHead=new T.Group();devHead.position.set(...DEV_HEAD_PIVOT.map(v=>-v));headTilt.add(devHead);
 const skull=facet(devHead,devGeometry(devBuild.head),personSkin,0,0,0);
 // Smiles lift the cheeks: a morph that pushes the cheek facets up and out, under the glasses.
 {
@@ -474,7 +503,7 @@ function drawDevFace(f){
 // The face is lit by its facets alone: soft shadows from hair, glasses, nose or ears smudge it as the head moves.
 // The skull still casts onto the body.
 devHead.children.forEach(m=>{if(m!==skull)m.castShadow=false});skull.receiveShadow=false;
-lookParts.dev.hoodie.push({material:hoodie,shade:0},{material:hoodieLight,shade:.16},{material:hoodieDark,shade:-.35});
+lookParts.dev.hoodie.push({material:hoodie,shade:0},{material:hoodieLight,shade:.16},{material:hoodieDark,shade:-.35},{material:pocketMat,shade:-.35},{material:pocketRim,shade:-.58});
 lookParts.dev.hair.push({material:blackHair,shade:0});
 // Face channels: the sheet's emotion presets, mixed by the performance core's blend, plus blinks, gaze and speech.
 const DEV_EMOTIONS=window.FrameForgeDev.EMOTIONS,DEV_MOUTHS=window.FrameForgeDev.MOUTH_CHART;
@@ -514,6 +543,21 @@ function applyHumanFacePose(pose,speech=null,inLine=false,from='neutral',to='neu
  const rad=T.MathUtils.degToRad;headTilt.rotation.set(rad(head.pitch||0),rad(head.yaw||0),rad(head.roll||0));
 }
 
+// The body pose from the acting core onto the bones. Crouches bend hips, knees and ankles so the feet stay planted.
+const DEV_THIGH=devRigSpec.legLength/2,DEV_REST={channels:Object.fromEntries(window.FrameForgeDevActing.channels.map(c=>[c,0])),hands:{L:'relaxed',R:'relaxed'}};
+function applyDevBody({channels:c,hands},look=0,talk=0,t=0){
+ const B=devBones,knee=Math.min(.9,c.crouch)*.75;
+ B.hips.position.copy(B.hips.userData.rest);B.hips.position.y+=c.bob+c.hop-2*DEV_THIGH*(1-Math.cos(knee));
+ B.spine.rotation.set(c.spineP,c.spineY,c.spineR);B.chest.rotation.set(c.chestP,c.chestY,c.chestR);B.neck.rotation.set(c.neckP,0,0);
+ humanHead.rotation.set(c.headP+.018*Math.sin(t*1.1),c.headY+look,c.headR+talk);
+ for(const[k,s]of[['L',1],['R',-1]]){
+  const a=n=>c[k+'.'+n],sh=B['shoulder'+k];
+  sh.position.copy(sh.userData.rest);sh.position.y+=a('lift');sh.rotation.set(-a('raise'),s*a('twist'),s*a('out'));
+  B['elbow'+k].rotation.set(-a('bend'),0,0);B['wrist'+k].rotation.set(0,s*a('wtwist'),-s*a('wflex'));
+  B['hip'+k].rotation.set(-knee,0,0);B['knee'+k].rotation.set(2*knee,0,0);B['ankle'+k].rotation.set(-knee,0,0);
+  for(const[pose,m]of Object.entries(devHands[k]))m.visible=pose===hands[k];
+ }
+}
 
 const smoothAction=x=>{const v=Math.max(0,Math.min(1,x));return v*v*(3-2*v)};
 function actPose(type,local,duration,t,accentAt=.5){
@@ -589,16 +633,16 @@ update=function(){
  }
  brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
  mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
- humanHead.rotation.z=shot.speaker==='dev'?.035*Math.sin(t*1.2):.0;
- humanPivots.forEach(({side,shoulder})=>{const speaking=shot.speaker==='dev';shoulder.rotation.z=speaking?side*(.14+.18*Math.sin(t*1.85)):-side*.09;shoulder.rotation.x=speaking?.32*Math.sin(t*.95+(side<0?0:1.6)):0;});
 
 // Directed deterministic gestures: each shot has an action, not just one repeating movement.
  const humanAction=shot.cast.dev.action,blueAction=shot.cast.blue.action,orangeAction=shot.cast.orange.action;
  // The speaker's accent hits the stressed middle of the line; listeners react just after it ends.
  const lineAt=shot.voice?shot.timing.lead:.1,lineLen=shot.voice?shot.voice.seconds:shot.duration*.7;
  const accentAt=id=>id===shot.speaker?(lineAt+.4*lineLen)/shot.duration:Math.min(.9,(lineAt+lineLen+.1)/shot.duration);
- const devPose=actPose(humanAction,local,shot.duration,t,accentAt('dev'));
- const bluePose=actPose(blueAction,local,shot.duration,t,accentAt('blue'));
+ // DEV acts with his whole body (src/dev-acting-core.js): key poses around the accent, each joint on its own spring.
+ const devAct=window.FrameForgeDevActing.evaluate({action:humanAction,local,duration:shot.duration,time:t,accentAt:accentAt('dev'),
+  speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0});
+const bluePose=actPose(blueAction,local,shot.duration,t,accentAt('blue'));
  const orangePose=actPose(orangeAction,local,shot.duration,t,accentAt('orange'));
  for(const [actor,pose] of [[faces.blue,bluePose],[faces.orange,orangePose]]){
    actor.group.rotation.z=pose.lean+Math.sin(t*1.1)*.009;
@@ -608,16 +652,9 @@ update=function(){
      arm.pivot.rotation.x=-.10-Math.max(0,pose.arms)*.50;
    }
  }
- humanHead.rotation.y=devPose.head+((shot.speaker==='orange')?.13:(shot.speaker==='blue')?-.12:0)+.018*Math.sin(t*.72);
- humanHead.rotation.x=-devPose.lean*.60+.018*Math.sin(t*1.1);
- bodyGroup.rotation.z=devPose.lean*.62;
- bodyGroup.position.y=devPose.jump*.64;
- humanHead.position.y=2.30+devPose.jump*.38;
- humanPivots.forEach(({side,shoulder})=>{
-   shoulder.rotation.z=side*(.07+devPose.arms)+Math.abs(devPose.arms)*Math.sin(local*5+side)*.08;
-   shoulder.rotation.x=-.08-Math.max(0,devPose.arms)*.52;
- });
- const blink=(Math.sin(t*2.25+1.2)>.987||Math.sin(t*.86+2.4)>.996);
+ // He looks toward whoever speaks and sways a little while he talks.
+ applyDevBody(devAct,(shot.speaker==='orange'?.13:shot.speaker==='blue'?-.12:0)+.018*Math.sin(t*.72),shot.speaker==='dev'?.035*Math.sin(t*1.2):0,t);
+const blink=(Math.sin(t*2.25+1.2)>.987||Math.sin(t*.86+2.4)>.996);
  faces.orange.orangeEyes?.forEach(e=>{e.scale.y=blink?.18:orangeAction==='surprise'?1.25:1});
  faces.orange.orangeBrows?.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(orangeAction==='celebrate'?-.13:orangeAction==='announce'?.20:.10)});
 
@@ -629,7 +666,7 @@ update=function(){
  const facialPose=window.FrameForgePerformanceCore.evaluate({
   time:t,local,duration:shot.duration,emotion:toEmotion,fromEmotion,
   speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0,
-  gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
+gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devAct.channels.headY*.6
  });
  const devInLine=shot.speaker==='dev'&&local>=lineAt-.05&&local<=lineAt+lineLen+.2;
  applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null,devInLine,fromEmotion,toEmotion);
@@ -665,8 +702,8 @@ const performerCoordinates={
 function cinematicReaction(shot,local){
  const cut=shot.reactionCut;
  if(!cut||local<shot.duration-cut.seconds)return null;
- const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:3.05;
- return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14),subject[1]+.08,subject[2]+scale]};
+ const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:3.05,k=cut.role==='dev'?DEV_FRAME:1;
+ return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14)*k,subject[1]+.08*k,subject[2]+scale*k]};
 }
 
 function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,2.13,.57]:s.camera==='orange'?[1.72,2.13,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
@@ -679,6 +716,7 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
  const pos=wide?[tgt[0]+offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance];
  cam.fov=fov;cam.updateProjectionMatrix();
  cam.position.set(pos[0]+drift+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
+ if(s.camera==='dev'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.sub(look).multiplyScalar(DEV_FRAME).add(look);}
  cam.lookAt(tgt[0],tgt[1]+lookUp,tgt[2]);
  if(roll)cam.rotateZ(roll*Math.PI/180);
  // Listener reaction inserts are intentional editorial cuts, not camera jitter.
@@ -1017,7 +1055,7 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
 $('exportMP4').onclick=async()=>{const size=Number($('mp4Res').value);$('exportMP4').disabled=true;try{await exportFrameAccurateMP4({width:size,height:Math.round(size*16/9)})}catch(e){console.error('MP4 export',e)}finally{$('exportMP4').disabled=false}};
 window.FrameForgeMP4Test=exportFrameAccurateMP4;
 
-window.FrameForgeActing={pose:()=>({human:{head:humanHead.rotation.toArray(),body:bodyGroup.rotation.toArray()},blue:faces.blue.armJoints?.map(a=>a.pivot.rotation.toArray()),orange:faces.orange.armJoints?.map(a=>a.pivot.rotation.toArray())})};
+window.FrameForgeActing={pose:()=>({human:{head:humanHead.rotation.toArray(),body:devBones.spine.rotation.toArray(),joints:Object.fromEntries(Object.entries(devBones).map(([k,b])=>[k,b.rotation.toArray().slice(0,3)]))},blue:faces.blue.armJoints?.map(a=>a.pivot.rotation.toArray()),orange:faces.orange.armJoints?.map(a=>a.pivot.rotation.toArray())})};
 // V5 Phase 1C — render existing studio rig geometry for actual art QA.
 const ART_VIEWS=[
  {id:'front',radians:0,label:'Front'},
@@ -1026,21 +1064,22 @@ const ART_VIEWS=[
  {id:'back',radians:Math.PI,label:'Back'}
 ];
 const ART_EXPRESSIONS=['neutral','happy','worried','surprised','angry','sad','thinking'];
-function artPose(actorId,emotion){
+// act (DEV only): {action, local, duration, accentAt} poses the body mid-action, with blinks and breathing at that time.
+function artPose(actorId,emotion,act=null){
  if(actorId==='dev'){
-  const pose=window.FrameForgePerformanceCore.evaluate({
+  const pose=window.FrameForgePerformanceCore.evaluate(act?{time:act.local,local:act.local,duration:act.duration,emotion,gazeX:0,gazeY:0}:{
     time:1.25,local:1,duration:2,emotion,
     speaking:emotion==='surprised',energy:emotion==='surprised'?.42:0,
     gazeX:0,gazeY:0
   });
-  humanHead.rotation.set(0,0,0);
+  applyDevBody(act?window.FrameForgeDevActing.evaluate({...act,time:act.local}):DEV_REST);
   applyHumanFacePose(pose,null,false,emotion,emotion);
  }else{
   const face=actorId==='blue'?faces.blue:faces.orange;
   drawActorFace(face,emotion,emotion==='surprised'?.4:emotion==='worried'?.16:0,.5,emotion==='surprised'?'round':'rest',0);
  }
 }
-function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,height=460,portrait=false){
+function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,height=460,portrait=false,act=null){
  const actors={dev,blue:b.root,orange:o.root};
  if(!Object.hasOwn(actors,actorId))throw new Error('Unknown character '+actorId);
  const view=ART_VIEWS.find(x=>x.id===angle);
@@ -1060,22 +1099,23 @@ function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,
  };
  try{
   running=false;soundtrack.pause();
+  // Mid-action views keep the stage under DEV, so hops and crouches show their contact with the floor.
   scene.children.forEach(child=>{
    if(child.isLight)return;
-   child.visible=(child===selected);
+   child.visible=(child===selected)||Boolean(act&&child===stageBox);
   });
   selected.visible=true;
   selected.rotation.y=view.radians;
-  artPose(actorId,emotion);
+  artPose(actorId,emotion,act);
   scene.background=new T.Color(0x111d30);
   scene.fog=null;
   renderer.setSize(width,height,false);
   cam.aspect=width/height;cam.fov=portrait?31:34;cam.near=.1;cam.far=50;cam.updateProjectionMatrix();
-  const centerY=actorId==='dev'?1.84:1.54;
+  const centerY=actorId==='dev'?2.1:1.54;
   // DEV's portrait frames the whole head, quiff included.
-  const faceY=actorId==='dev'?selected.position.y+2.40:selected.position.y+1.45;
+  const devK=actorId==='dev'?DEV_FRAME:1,faceY=actorId==='dev'?selected.position.y+DEV_HEAD_Y+.10*devK:selected.position.y+1.45;
   const targetY=portrait?faceY:centerY;
-  cam.position.set(selected.position.x,targetY+(portrait?.04:.15),selected.position.z+(portrait?(actorId==='dev'?3.3:2.8):6.6));
+  cam.position.set(selected.position.x,targetY+(portrait?.04*devK:.15),selected.position.z+(portrait?(actorId==='dev'?3.3*devK:2.8):6.6));
   cam.lookAt(selected.position.x,targetY,selected.position.z);
   renderer.render(scene,cam);
   return renderer.domElement.toDataURL('image/png');
@@ -1135,12 +1175,45 @@ window.FrameForgePerformanceQA=Object.freeze({
  peek:()=>{const m=devFace.mouth,br=DEV_SPEC.face.brows,r=x=>Math.round(x*1e6)/1e6;return{mouthScale:r(.24+(m.o||0)/.065*.7),mouthWidth:r(m.w??1),mouthY:r(DEV_SPEC.face.mouth.y-(m.o||0)/2),
   browHeights:[0,1].map(i=>r(br.y+(devFace.browLift||0)+(devFace.browUp?.[i]||0)+(devFace.browTilt||0)*.5)),eyeOpen:[0,1].map(()=>r(1-devFace.lidU))};}
 });
+// How deep DEV's forearms and hands sink into his trunk or head, and how far the two mittens overlap, in head heights
+// (0 = clear). Measured on the posed bones: limb samples are carried into the chest's and the head's rest frames and
+// tested against the sheet's trunk rings and an ellipsoid round the head and hair.
+function devBodyClearance(){
+ dev.updateMatrixWorld(true);
+ const J=Object.fromEntries(devRigSpec.joints.map(j=>[j.name,new T.Vector3(...j.at)])),a=DEV_SPEC.body.arm,rings=DEV_SPEC.body.trunk;
+ const world=(bone,p)=>p.clone().sub(J[bone]).applyMatrix4(devBones[bone].matrixWorld);
+ const into=(bone,w)=>w.clone().applyMatrix4(devBones[bone].matrixWorld.clone().invert()).add(J[bone]);
+ // devHead's own space is the sheet's head space (head centre at the origin), tilts included.
+ const trunkDepth=(p,r)=>{
+  if(p.y>rings[0][0]||p.y<rings.at(-1)[0])return 0;
+  let i=0;while(i<rings.length-2&&p.y<rings[i+1][0])i++;
+  const A=rings[i],B=rings[i+1],t=(p.y-A[0])/(B[0]-A[0]),L=k=>A[k]+(B[k]-A[k])*t,n=L(4);
+  const rho=Math.pow(Math.abs(p.x/L(1))**n+Math.abs(p.z/(p.z>=0?L(2):L(3)))**n,1/n),d=Math.hypot(p.x,p.z);
+  return Math.max(0,r-d*(1-1/Math.max(rho,1e-6)));
+ };
+ const headDepth=(p,r)=>{const q=p.clone().sub(new T.Vector3(0,.06,-.02)),rho=Math.hypot(q.x/.56,q.y/.6,q.z/.54);return Math.max(0,r-q.length()*(1-1/Math.max(rho,1e-6)));};
+ const out={trunk:0,head:0,hands:0},centres={},headFrame=devHead.matrixWorld.clone().invert();
+ for(const k of['L','R']){
+  const el=J['elbow'+k],wr=J['wrist'+k],dir=wr.clone().sub(el).normalize(),hand=wr.clone().addScaledVector(dir,a.cuff*.6+a.hand[1]);
+  const samples=[[.35,1],[.7,1],[1,1]].map(([u,r])=>['elbow'+k,el.clone().lerp(wr,u),a.r[2]*r]).concat([['wrist'+k,hand,a.hand[0]*.85]]);
+  for(const[bone,p,r]of samples){
+   const w=world(bone,p);
+   out.trunk=Math.max(out.trunk,trunkDepth(into('chest',w),r),trunkDepth(into('spine',w),r));
+   out.head=Math.max(out.head,headDepth(w.clone().applyMatrix4(headFrame),r));
+  }
+  centres[k]=world('wrist'+k,hand);
+ }
+ out.hands=Math.max(0,1.5*a.hand[0]-centres.L.distanceTo(centres.R)/DEV_S);
+ return Object.fromEntries(Object.entries(out).map(([k,v])=>[k,Math.round(v*1e4)/1e4]));
+}
 window.FrameForgeArtLab=Object.freeze({
  version:'v5-phase1c-actual-rigs',
  actors:()=>['dev','blue','orange'],
  views:()=>ART_VIEWS.map(x=>x.id),
  expressions:()=>[...ART_EXPRESSIONS],
  capture:captureCharacterView,
+ // DEV posed mid-action ({action, local, duration, accentAt}), or as the timeline has him now.
+ clearance:(act=null)=>{if(!act)return devBodyClearance();artPose('dev','neutral',act);const r=devBodyClearance();if(shots.length)update();return r;},
  captureEnvironment
 });
 

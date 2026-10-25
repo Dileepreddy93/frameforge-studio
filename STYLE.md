@@ -32,7 +32,7 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
 ## Shading and materials
 - Flat shading: one colour per triangle, hard facet edges. No smooth normals, textures, outlines or AO.
 - Few triangles: bodies are boxes or 6–8-sided cylinders, hair is cones/chunks, noses are octahedra, hands are
-  detail-0/1 icospheres. DEV's head (about 200 faces) is designed, not jittered: hand-placed brow, socket, cheekbone,
+  rounded-box mittens (8 x 6 facets) with a capsule thumb. DEV's head (about 200 faces) is designed, not jittered: hand-placed brow, socket, cheekbone,
   jaw and chin points on the face, a smooth staggered shell for the cranium; eye line 58% down from the crown.
 - Nothing on a head casts a shadow onto the face; faces are lit by their facets alone.
 - Matte only: roughness 1, metalness 0, no clearcoat, no specular highlight, no emissive on characters.

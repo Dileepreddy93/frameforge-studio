@@ -11,6 +11,12 @@ const {chromium}=require('playwright');
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgePerformanceQA&&window.FrameForgeArtLab&&window.FrameForgeQA?.shots().length===14,null,{timeout:45000});
  const props=await page.evaluate(()=>FrameForgePerformanceQA.humanRig());
  assert.deepEqual(props,{pupils:2,brows:2,mouths:1});
+ // DEV's body (M1.4): a 16-joint skinned rig; arms thrown up in celebrate stay clear of the head and the trunk.
+ const body=await page.evaluate(()=>({joints:Object.keys(FrameForgeActing.pose().human.joints).length,
+  rest:FrameForgeArtLab.clearance({action:'listen',local:0,duration:2,accentAt:.45}),
+  up:FrameForgeArtLab.clearance({action:'celebrate',local:1.05,duration:2,accentAt:.45})}));
+ assert.equal(body.joints,16);
+ assert.ok(body.up.head<.02&&body.up.trunk<body.rest.trunk+.02,'celebrating arms clear head and trunk '+JSON.stringify(body));
  let faces=[];
  for(const emotion of ['neutral','happy','worried','surprised']){
   const png=await page.evaluate(emotion=>FrameForgeArtLab.capture('dev','front',emotion,360,460,true),emotion);

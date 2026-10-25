@@ -344,22 +344,42 @@
   const z=X=>fd*Math.pow(Math.max(0,1-Math.abs(X/hw)**n),1/n);
   return{p:[x,y,z(x)],n:norm([-(z(x+.01)-z(x-.01))/.02,0,1])};
  }
+ // A rounded box (superellipsoid, exponent n) cut into su x sv flat facets: soft, broad ends instead of the points an
+ // icosphere gets at its poles. Rotated (x, then z) about its centre.
+ function mitt(center,scale,mat,o={}){
+  const n=o.n??2.6,su=o.su??8,sv=o.sv??6,r=o.rot||[0,0,0],e=2/n,P=[];
+  const X=p=>add(rotZ(rotX(p,r[0]),r[2]),center);
+  for(let j=1;j<sv;j++){const v=-PI/2+PI*j/sv;P.push(Array.from({length:su},(_,i)=>{const u=(i+.5)/su*2*PI;
+   return X([scale[0]*spow(Math.cos(v),e)*spow(Math.cos(u),e),scale[1]*spow(Math.sin(v),e),scale[2]*spow(Math.cos(v),e)*spow(Math.sin(u),e)]);}));}
+  const bot=X([0,-scale[1],0]),top=X([0,scale[1],0]),tris=[];
+  for(let i=0;i<su;i++){const k=(i+1)%su;
+   tris.push({p:[bot,P[0][i],P[0][k]],mat,o:center},{p:[top,P.at(-1)[k],P.at(-1)[i]],mat,o:center});
+   for(let j=0;j<P.length-1;j++)tris.push({p:[P[j][i],P[j+1][i],P[j+1][k]],mat,o:center},{p:[P[j][i],P[j+1][k],P[j][k]],mat,o:center});}
+  return orient(tris);
+ }
  // Mitten hand with a thumb, built in hand space (x across toward the thumb, y from the wrist to the fingertips, z out of
  // the palm) and placed at the wrist. pose: open, relaxed, fist or point.
  function hand(pose,size,seed){
-  const L=size[1]*2,W=size[0],T=size[2],curl={open:0,relaxed:.35,fist:1,point:1}[pose]??.35,tris=[];
-  // Palm and fingers are one mitten; curling shortens it, thickens it and tips it toward the palm side.
-  tris.push(...blob(1,[0,L*(.52-.12*curl),T*.18*curl],[W,L*(.55-.13*curl),T*(.5+.38*curl)],'skin',seed,{rot:[-.35*curl,0,0],jitter:.04}));
-  // Thumb: out to the side when open, along the mitten when relaxed, across the front of the fist.
-  const th=curl>.6?{c:[W*.25,L*.5,T*.82],s:[W*.3,L*.24,W*.3],r:[-.2,0,-1.35]}:{c:[W*(1-.22*curl),L*(.36+.06*curl),T*(.12+.2*curl)],s:[W*.3,L*.29,W*.3],r:[0,0,-.7+.45*curl]};
-  tris.push(...blob(1,th.c,th.s,'skin',seed+2,{rot:th.r,jitter:.04}));
-  if(pose==='point')tris.push(...tube([[W*.28,L*.55,T*.42],[W*.32,L*.92,T*.38],[W*.34,L*1.2,T*.34]],[W*.4,W*.37,W*.32],6,'skin',{capEnd:1,up:[1,0,0]}));
+  const L=size[1]*2,W=size[0],T=size[2],tris=[];
+  // One soft mitten for palm and fingers, curled toward the palm as the hand closes, and a capsule thumb.
+  const M={open:{c:[0,L*.5,0],s:[W,L*.52,T*.42],r:0},relaxed:{c:[0,L*.47,T*.06],s:[W*.96,L*.49,T*.47],r:.22},
+   fist:{c:[0,L*.36,T*.16],s:[W*.94,L*.37,T*.7],r:.15},point:{c:[0,L*.36,T*.16],s:[W*.94,L*.37,T*.7],r:.15}}[pose]||{c:[0,L*.47,T*.06],s:[W*.96,L*.49,T*.47],r:.22};
+  tris.push(...mitt(M.c,M.s,'skin',{rot:[M.r,0,0]}));
+  const th={open:{c:[W*1.02,L*.36,T*.06],r:[0,0,-.85]},relaxed:{c:[W*.9,L*.34,T*.26],r:[.3,0,-.42]},fist:{c:[W*.32,L*.42,T*.78],r:[.2,0,-1.45]},point:{c:[W*.32,L*.42,T*.78],r:[.2,0,-1.45]}}[pose]||{c:[W*.9,L*.34,T*.26],r:[.3,0,-.42]};
+  tris.push(...mitt(th.c,[W*.3,L*.24,W*.3],'skin',{rot:th.r,su:6,sv:4,n:2.2}));
+  if(pose==='point')tris.push(...mitt([W*.3,L*.78,T*.36],[W*.3,L*.34,W*.3],'skin',{su:6,sv:6,n:3.2}));
   return tris;
  }
  // Move hand-space parts to the wrist: x along B, y along D (wrist to fingers), z along C (palm normal).
  function place(tris,origin,B,D,C){
   const flip=dot(B,cross(D,C))<0;
   return tris.map(t=>{const q=t.p.map(p=>add(origin,add(add(mul(B,p[0]),mul(D,p[1])),mul(C,p[2]))));return{...t,p:flip?[q[0],q[2],q[1]]:q};});
+ }
+ // A hanging hand's palm faces the thigh, turned a little backward so the back of the mitten reads from the front.
+ // Returns the thumb axis B and the palm normal C, square to the forearm direction.
+ function palmFrame(s,dir){
+  const c=[-s,0,-.6],C=norm(sub(c,mul(dir,dot(c,dir))));
+  return[mul(norm(cross(C,dir)),s),C];
  }
  function bodyParts(spec){
   const b=spec.body,objs=[];
@@ -377,7 +397,7 @@
    const a=b.arm,P=p=>[s*p[0],p[1],p[2]],sh=P(a.shoulder),el=P(a.elbow),wr=P(a.wrist),dir=norm(sub(wr,el));
    const arm=tube([sh,el,wr],[a.r[0],a.r[1],a.r[2]],7,'hood',{capStart:1});
    const cuff=tube([sub(wr,mul(dir,.01)),add(wr,mul(dir,a.cuff))],[a.r[2]*1.12,a.r[2]*1.08],7,'hoodDark',{capStart:1,capEnd:1});
-   const C=[-s,0,0],B=mul(norm(cross(C,dir)),s),hd=place(hand(a.pose||'relaxed',a.hand,31+s),add(wr,mul(dir,a.cuff*.6)),B,dir,C);
+   const[B,C]=palmFrame(s,dir),hd=place(hand(a.pose||'relaxed',a.hand,31+s),add(wr,mul(dir,a.cuff*.6)),B,dir,C);
    objs.push({id:'arm'+s,tris:arm.concat(cuff,hd),decals:[],bias:0});
    const l=b.leg,hip=[s*l.x,l.top,0],ank=[s*l.x,l.bot,0];
    objs.push({id:'leg'+s,tris:tube([hip,ank],[l.r,l.r*.92],7,'pants',{capEnd:1}),decals:[],bias:-5});
@@ -385,6 +405,56 @@
    objs.push({id:'shoe'+s,tris:blob(1,sc,l.shoe,'shoe',51+s,{floor:b.ground+l.shoe[1]*.28}).concat(blob(1,[sc[0],b.ground+l.shoe[1]*.12,sc[2]],[l.shoe[0]*1.08,l.shoe[1]*.3,l.shoe[2]*1.05],'sole',61+s,{jitter:.02})),decals:[],bias:-4});
   }
   return objs;
+ }
+ // The same body cut at its joints for the 3D rig (M1.4). Joints are in sheet space at rest, parents first. Every
+ // triangle carries per-corner skin weights ([joint, weight] pairs), so elbows, knees and the waist bend smoothly; the
+ // hands are separate sets, one per pose, that ride on the wrists. At rest it has the sheet's silhouette.
+ function rig(spec){
+  const b=spec.body,a=b.arm,l=b.leg,nz=b.neck.z,joints=[],J={};
+  const joint=(name,parent,at)=>{J[name]=at;joints.push({name,parent,at});};
+  joint('hips',null,[0,l.top,0]);joint('spine','hips',[0,-.9,0]);joint('chest','spine',[0,-.74,0]);
+  joint('neck','chest',[0,b.trunk[0][0],nz]);
+  const SIDES=[['L',1],['R',-1]],P=(s,p)=>[s*p[0],p[1],p[2]];
+  for(const[k,s]of SIDES){
+   joint('shoulder'+k,'chest',P(s,a.shoulder));joint('elbow'+k,'shoulder'+k,P(s,a.elbow));joint('wrist'+k,'elbow'+k,P(s,a.wrist));
+   joint('hip'+k,'hips',[s*l.x,l.top,0]);joint('knee'+k,'hip'+k,[s*l.x,(l.top+l.bot)/2,0]);joint('ankle'+k,'knee'+k,[s*l.x,l.bot,0]);
+  }
+  const ss=(e0,e1,x)=>{const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t);};
+  const tris=[];
+  const skin=(list,wf)=>{for(const t of list)tris.push({p:t.p,mat:t.mat,w:t.p.map(wf)});};
+  // A two-segment limb bends at its middle joint: weights blend over `soft` either side of it, along the limb.
+  const limb=(A,M,C,j0,j1,soft)=>p=>{
+   const u=sub(M,A),v=sub(C,M),da=dot(sub(p,A),u)/dot(u,u),dv=dot(sub(p,M),v)/dot(v,v);
+   const along=da<1?(da-1)*Math.sqrt(dot(u,u)):dv*Math.sqrt(dot(v,v)),k=ss(-soft,soft,along);
+   return[[j0,1-k],[j1,k]];
+  };
+  // Trunk: the chest carries the collar, hood and shoulders; the waist blends into the spine and then the hips.
+  const trunkW=p=>{const y=p[1];if(y>-.84){const k=ss(-.82,-.7,y);return[['chest',k],['spine',1-k]];}const k=ss(-1,-.9,y);return[['spine',k],['hips',1-k]];};
+  const body=bodyParts(spec),trunk=body.find(o=>o.id==='trunk');
+  skin(trunk.tris,trunkW);
+  for(const d of trunk.decals){
+   const q=d.pts,mat=typeof d.fill==='string'?d.fill:d.fill.k<1?'hoodRule':d.fill.mat;
+   const out=dot(cross(sub(q[1],q[0]),sub(q[2],q[0])),d.n)>0;
+   skin(out?[{p:[q[0],q[1],q[2]],mat},{p:[q[0],q[2],q[3]],mat}]:[{p:[q[0],q[2],q[1]],mat},{p:[q[0],q[3],q[2]],mat}],trunkW);
+  }
+  const lerpR=(r0,r1,t)=>r0+(r1-r0)*t,hands={};
+  for(const[k,s]of SIDES){
+   const sh=J['shoulder'+k],el=J['elbow'+k],wr=J['wrist'+k],dir=norm(sub(wr,el));
+   // Extra rings around the elbow let it bend without pinching; a ball at the shoulder covers the joint when the arm lifts.
+   const path=[[sh,a.r[0]],[lerp3(sh,el,.5),lerpR(a.r[0],a.r[1],.5)],[lerp3(sh,el,.8),lerpR(a.r[0],a.r[1],.8)],[el,a.r[1]],
+    [lerp3(el,wr,.22),lerpR(a.r[1],a.r[2],.22)],[lerp3(el,wr,.6),lerpR(a.r[1],a.r[2],.6)],[wr,a.r[2]]];
+   skin(tube(path.map(x=>x[0]),path.map(x=>x[1]),7,'hood',{capStart:1}),limb(sh,el,wr,'shoulder'+k,'elbow'+k,.045));
+   skin(blob(1,sh,[a.r[0]*1.08,a.r[0]*1.08,a.r[0]*1.08],'hood',41+s,{jitter:.03}),()=>[['shoulder'+k,1]]);
+   skin(tube([sub(wr,mul(dir,.01)),add(wr,mul(dir,a.cuff))],[a.r[2]*1.12,a.r[2]*1.08],7,'hoodDark',{capStart:1,capEnd:1}),()=>[['elbow'+k,1]]);
+   const[B,C]=palmFrame(s,dir),at=add(wr,mul(dir,a.cuff*.6));
+   hands[k]=Object.fromEntries(['relaxed','open','fist','point'].map(pose=>[pose,place(hand(pose,a.hand,31+s),at,B,dir,C)]));
+   const hip=J['hip'+k],kn=J['knee'+k],ank=J['ankle'+k];
+   skin(tube([hip,lerp3(hip,kn,.6),kn,lerp3(kn,ank,.4),ank],[l.r,l.r*.98,l.r*.96,l.r*.94,l.r*.92],7,'pants',{capEnd:1}),limb(hip,kn,ank,'hip'+k,'knee'+k,.035));
+   const shoe=body.find(o=>o.id==='shoe'+s);skin(shoe.tris,()=>[['ankle'+k,1]]);
+  }
+  const neck=tube([[0,-.3,nz],[0,b.neck.bot,nz]],[b.neck.r,b.neck.r*1.05],7,'neck',{capEnd:1});
+  skin(neck,()=>[['neck',1]]);
+  return{joints,tris,hands,headPivot:[0,-.42,0],ground:b.ground,legLength:l.top-l.bot};
  }
 
  // ---------- character ----------
@@ -460,5 +530,5 @@
  // Face shapes for a spec and face channels, in face space ({pts:[[X,Y]...], fill}); each is a strip (top run, then
  // the bottom run reversed), so a 3D build can triangulate it and wrap it onto the head with faceAt.
  const faceShapes=(spec,f)=>faceFeatures({spec},f);
- return{build,render,renderParts,faceShapes,hand,place,tube,headForm,curve,shade,MAT,KEY,RIM};
+ return{build,rig,render,renderParts,faceShapes,hand,place,tube,headForm,curve,shade,MAT,KEY,RIM};
 });

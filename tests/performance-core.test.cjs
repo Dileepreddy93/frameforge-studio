@@ -35,3 +35,28 @@ for(let i=0;i<1200;i++){
  assert.ok(p.mouthOpen<=1&&p.lid<=1&&Number.isFinite(p.headRoll));
 }
 console.log('V5_2_PERFORMANCE_CORE_PASS: emotional distinction, deterministic blinks, easing, 1200 frames');
+// DEV's body acting (M1.4): every project action has its own pose, starts and ends at rest, overshoots and settles,
+// and is a pure function of time.
+{
+ const acting=require('../src/dev-acting-core.js');
+ assert.deepEqual([...acting.actions].sort(),[...require('../src/project-core.js').actions].sort(),'one body performance per project action');
+ const at=(action,local,extra={})=>acting.evaluate({action,local,duration:2.4,accentAt:.45,time:local,...extra});
+ const reach=p=>Math.max(...Object.entries(p.channels).filter(([k])=>/^(L|R)\.(raise|out|bend)$|^spineP$|^headP$|^crouch$/.test(k)).map(([,v])=>Math.abs(v)));
+ const holds={};
+ for(const action of acting.actions){
+  assert.deepEqual(at(action,1.3),at(action,1.3),action+' is deterministic');
+  assert.ok(reach(at(action,0))<.05,action+' starts at rest');
+  assert.ok(reach(at(action,2.39))<.12,action+' returns toward rest before the cut');
+  for(let f=0;f<=72;f++)for(const v of Object.values(at(action,f/30).channels))assert.ok(Number.isFinite(v)&&Math.abs(v)<3.2,action+' stays in joint range');
+  holds[action]=JSON.stringify(Object.values(at(action,1.45).channels).map(v=>v.toFixed(2)));
+ }
+ assert.equal(new Set(Object.values(holds)).size,acting.actions.length,'every action holds a different pose');
+ // The strike overshoots its hold and settles back (springs), and a jump leaves the floor.
+ const out=[...Array(61).keys()].map(f=>at('celebrate',f/30).channels['L.out']);
+ const peak=Math.max(...out),settled=at('celebrate',1.5).channels['L.out'];
+ assert.ok(peak>settled+.02,'arms overshoot their hold before settling');
+ assert.ok(Math.max(...[...Array(61).keys()].map(f=>at('surprise',f/30).channels.hop))>.03,'surprise hops');
+ assert.ok(at('typing',1.2).hands.L==='relaxed'&&at('announce',1.4).hands.R==='point'&&at('celebrate',1.4).hands.L==='fist','hands change shape per action');
+ assert.throws(()=>acting.evaluate({action:'typing',local:-1,duration:2}));
+ console.log('M1_4_DEV_ACTING_PASS: '+acting.actions.length+' actions, rest-to-rest, distinct holds, springs, hops, hand shapes');
+}
