@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync,spawnSync} from 'node:child_process';
-import {RATE,sfx,music} from './sound-kit.mjs';
+import {RATE,sfx,music} from '../src/sound-kit.mjs';
 import core from '../src/project-core.js';
 
 const FPS=30,LUFS=-14,TRUE_PEAK=-1.5;  // -1.5 leaves room for codec overshoot under the -1 dBTP limit

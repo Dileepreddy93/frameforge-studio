@@ -24,6 +24,7 @@ jobs:
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
           node tests/voice-emotion.test.cjs
+          node tests/episode-mix.test.mjs
       - name: Engine module parses
         run: node tests/engine-syntax.test.mjs
   real-character-render-tests:

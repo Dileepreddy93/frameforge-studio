@@ -811,14 +811,29 @@ function autoVoice(){
  clearTimeout(voiceTimer);
  if(['ready','downloaded','loading'].includes(voiceEngine.state))voiceTimer=setTimeout(()=>voiceAllLines().catch(e=>console.error('Voicing',e)),250);
 }
+// 16-bit WAV of one channel or an array of channels.
 function wavBlob(samples,rate){
- const data=new DataView(new ArrayBuffer(44+samples.length*2)),text=(at,s)=>[...s].forEach((c,i)=>data.setUint8(at+i,c.charCodeAt(0)));
- text(0,'RIFF');data.setUint32(4,36+samples.length*2,true);text(8,'WAVE');text(12,'fmt ');data.setUint32(16,16,true);data.setUint16(20,1,true);
- data.setUint16(22,1,true);data.setUint32(24,rate,true);data.setUint32(28,rate*2,true);data.setUint16(32,2,true);data.setUint16(34,16,true);
- text(36,'data');data.setUint32(40,samples.length*2,true);
- for(let i=0;i<samples.length;i++)data.setInt16(44+i*2,Math.max(-1,Math.min(1,samples[i]))*32767,true);
+ const channels=Array.isArray(samples)?samples:[samples],n=channels[0].length,k=channels.length,bytes=n*k*2;
+ const data=new DataView(new ArrayBuffer(44+bytes)),text=(at,s)=>[...s].forEach((c,i)=>data.setUint8(at+i,c.charCodeAt(0)));
+ text(0,'RIFF');data.setUint32(4,36+bytes,true);text(8,'WAVE');text(12,'fmt ');data.setUint32(16,16,true);data.setUint16(20,1,true);
+ data.setUint16(22,k,true);data.setUint32(24,rate,true);data.setUint32(28,rate*2*k,true);data.setUint16(32,2*k,true);data.setUint16(34,16,true);
+ text(36,'data');data.setUint32(40,bytes,true);
+ for(let i=0;i<n;i++)for(let c=0;c<k;c++)data.setInt16(44+(i*k+c)*2,Math.max(-1,Math.min(1,channels[c][i]))*32767,true);
  return new Blob([data],{type:'audio/wav'});
 }
+// Music, sound effects and mastering for browser-voiced episodes (src/episode-mix.mjs, in its own worker).
+let mixWorker=null,mixSeq=0;const mixPending=new Map();
+function mixCall(message){
+ if(!mixWorker){
+  mixWorker=new Worker('./src/mix-worker.js',{type:'module'});
+  mixWorker.onmessage=({data})=>{const p=mixPending.get(data.id);if(!p)return;mixPending.delete(data.id);data.error?p.reject(new Error(data.error)):p.resolve(data);};
+  mixWorker.onerror=e=>{e.preventDefault();for(const p of mixPending.values())p.reject(new Error('the mixer could not start'));mixPending.clear();mixWorker=null;};
+ }
+ const id=++mixSeq;
+ return new Promise((resolve,reject)=>{mixPending.set(id,{resolve,reject});mixWorker.postMessage({...message,id});});
+}
+// A shot's sound cues live in the episode file (a duplicated shot keeps its original's).
+function shotCues(project,id){const byId=Object.fromEntries(project.shots.map(s=>[s.id,s]));return (byId[id]??byId[id.replace(/-copy\d*$/,'')])?.sfx??[];}
 async function audition(text,v,emotion='neutral'){
  const status=$('voiceStatus');status.textContent='Voicing “'+text+'”…';
  try{
@@ -865,12 +880,18 @@ async function voiceAllLines(){
    starts.push(clock+s.timing.lead);clock=Math.round((clock+s.duration)*FPS)/FPS;});
   const rate=lines[0].rate,track=new Float32Array(Math.ceil(clock*rate));
   lines.forEach((l,i)=>{const at=Math.round(starts[i]*rate);for(let j=0;j<l.samples.length&&at+j<track.length;j++)track[at+j]+=l.samples[j];});
-  browserVoice={samples:track,rate,lines:lines.map((l,i)=>({shot:shots[i].id,start:starts[i],seconds:l.seconds,emotion:l.emotion,phonemes:l.phonemes,guessed:l.guessed,cached:l.cached,ms:l.ms}))};
+  // The soundtrack: the voices with the episode's music and sound effects, mastered like our offline renders.
+  status.textContent='Mixing music and sound effects…';
+  const mix=await mixCall({voice:track.slice(),music:project.audio?.music??null,
+   shots:shots.map((s,i)=>({id:s.id,start:starts[i]-s.timing.lead,lead:s.timing.lead,seconds:lines[i].seconds,sfx:shotCues(project,s.id)}))});
+  if(run!==voiceRun)return false;
+  browserVoice={samples:track,mix:{channels:[mix.left,mix.right],lufs:mix.lufs,peakDb:mix.peakDb,music:mix.music,effects:mix.effects,ms:mix.ms},rate,lines:lines.map((l,i)=>({shot:shots[i].id,start:starts[i],seconds:l.seconds,emotion:l.emotion,phonemes:l.phonemes,guessed:l.guessed,cached:l.cached,ms:l.ms}))};
   audioMode='browser';audioStale=false;running=false;soundtrack.pause();
-  if(trackUrl)URL.revokeObjectURL(trackUrl);trackUrl=URL.createObjectURL(wavBlob(track,rate));soundtrack.src=trackUrl;soundtrack.load();
+  if(trackUrl)URL.revokeObjectURL(trackUrl);trackUrl=URL.createObjectURL(wavBlob(browserVoice.mix.channels,rate));soundtrack.src=trackUrl;soundtrack.load();
   useEnvelope(track,rate);
   const fresh=lines.filter(l=>!l.cached).length,guessed=[...new Set(lines.flatMap(l=>l.guessed))];
-  status.textContent='Voiced '+lines.length+' lines in your browser ('+fresh+' new, '+(lines.length-fresh)+' from the cache).'+
+  status.textContent='Voiced '+lines.length+' lines in your browser ('+fresh+' new, '+(lines.length-fresh)+' from the cache)'+
+   (mix.music||mix.effects?', with '+[mix.music&&'music',mix.effects&&mix.effects+' sound effects'].filter(Boolean).join(' and '):'')+'.'+
    (guessed.length?' Guessed pronunciations: '+guessed.join(', ')+'.':'');
   $('recordStatus').textContent=lines.length+' scenes voiced in your browser';
   refresh();time=shotStart(selected);update();
@@ -898,7 +919,7 @@ function fillInspector(){
  for(const id of ['dev','blue','orange']){$('act-'+id).value=s.cast[id].action;$('emo-'+id).value=s.cast[id].emotion;}
  const canVoice=['ready','downloaded','loading'].includes(voiceEngine.state);
  $('audioState').textContent=audioStale?(canVoice?'Voices are out of date: re-voicing the changed lines in your browser…':'Voices are out of date: press Voice every line (left panel). Playback is silent until then.'):
-  audioMode==='browser'?'Voiced in your browser: each shot lasts as long as its line. Voice track only, no music yet.':
+  audioMode==='browser'?'Voiced and mixed in your browser: voices, music and sound effects; each shot lasts as long as its line.':
   audioMode==='master'?'Voice, music and timing are in sync.':'Storyboard: no voices yet. Press Voice every line (left panel).';
  $('audioState').className='fine'+(audioStale?' stale':'');
 }
@@ -1161,11 +1182,12 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   sourceVideo=new CanvasSource(outCanvas,{codec:'avc',quality:new Quality({bitrate:width>=1080?6800000:width>=720?4200000:width>=480?2400000:1300000}),keyFrameInterval:2,hardwareAcceleration:'no-preference'});
   sourceAudio=new AudioBufferSource({codec:'aac',quality:new Quality({bitrate:160000})});
   output.addVideoTrack(sourceVideo);output.addAudioTrack(sourceAudio);
-  // The browser voice track, or the episode's decoded mastered mix. Audio and video share one clock.
+  // The browser-made soundtrack, or the episode's decoded mastered mix. Audio and video share one clock.
   let decoded;
   if(audioMode==='browser'){
-   decoded=new AudioBuffer({sampleRate:browserVoice.rate,numberOfChannels:1,length:browserVoice.samples.length});
-   decoded.copyToChannel(browserVoice.samples,0);
+   const channels=browserVoice.mix.channels;
+   decoded=new AudioBuffer({sampleRate:browserVoice.rate,numberOfChannels:channels.length,length:channels[0].length});
+   channels.forEach((c,i)=>decoded.copyToChannel(c,i));
   }else{
    const voice=await fetch(project.audio.masterUrl);if(!voice.ok)throw new Error('Audio master failed to load: '+voice.status);
    const audioContextForExport=new(window.AudioContext||window.webkitAudioContext)();
@@ -1379,7 +1401,11 @@ window.FrameForgeQA={
 };
 // In-browser voice path, for tests: engine state, the voice track and its loudness.
 window.FrameForgeVoiceQA=Object.freeze({
- status:()=>({state:voiceEngine.state,device:voiceEngine.device,source:voiceEngine.source,model:voiceEngine.model,mode:audioMode,stale:audioStale,lines:browserVoice?.lines??null}),
+ status:()=>({state:voiceEngine.state,device:voiceEngine.device,source:voiceEngine.source,model:voiceEngine.model,mode:audioMode,stale:audioStale,lines:browserVoice?.lines??null,
+  mix:browserVoice?{lufs:browserVoice.mix.lufs,peakDb:browserVoice.mix.peakDb,music:browserVoice.mix.music,effects:browserVoice.mix.effects,ms:browserVoice.mix.ms}:null}),
+ // RMS of the mixed soundtrack (both channels) between two times.
+ mixRms:(from,to)=>{if(!browserVoice)return null;const {mix:{channels},rate}=browserVoice,a=Math.max(0,Math.round(from*rate)),b=Math.min(channels[0].length,Math.round(to*rate));
+  let s=0;for(const c of channels)for(let i=a;i<b;i++)s+=c[i]*c[i];return Math.sqrt(s/Math.max(1,(b-a)*channels.length));},
  ensure:()=>ensureVoices().then(e=>({state:e.state,device:e.device,source:e.source,model:e.model,ms:e.ms})),
  voiceAll:()=>voiceAllLines(),
  phonemize:text=>voiceCall({type:'phonemize',text}),

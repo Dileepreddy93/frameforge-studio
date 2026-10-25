@@ -3,7 +3,7 @@
 // The voice model is not cached here: the voice worker keeps it (src/kokoro-worker.js).
 const CACHE='frameforge-shell-v1';
 const SHELL=['studio.html','src/project-core.js','src/performance-core.js','src/speech-performance-core.js','src/dev-acting-core.js',
- 'src/kokoro-g2p.js','src/voice-emotion.js','src/kokoro-worker.js','design/dev-forms.js','design/dev-character.js','assets/voice/en-us-lexicon.json',
+ 'src/kokoro-g2p.js','src/voice-emotion.js','src/kokoro-worker.js','src/sound-kit.mjs','src/episode-mix.mjs','src/mix-worker.js','design/dev-forms.js','design/dev-character.js','assets/voice/en-us-lexicon.json',
  'projects/index.json','projects/zero-latency.frameforge.json','projects/dark-mode.frameforge.json','projects/mountain-mystery.frameforge.json',
  'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js',
  'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.bundle.min.mjs',
