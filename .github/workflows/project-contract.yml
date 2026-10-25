@@ -17,19 +17,14 @@ jobs:
           node-version: '22'
       - name: Compile and validate the project contract
         run: |
-          node tests/phase0-contract.test.mjs
-          node tests/phase0-nine-phase-contract.mjs
           node tests/git-blame-reference-contract.mjs
           node tests/rigged-asset-core.test.mjs
           node tests/project-core.test.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
-      - name: Verify existing film source remains valid
-        run: |
-          node tests/check-source.mjs
-          node tests/check-v4.mjs
-          node tests/check-cinematic-v4.mjs
+      - name: Engine module parses
+        run: node tests/engine-syntax.test.mjs
   real-character-render-tests:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -55,6 +50,10 @@ jobs:
           node tests/character-art-browser.cjs orange
           node tests/performance-browser.cjs
           node tests/speech-performance-browser.cjs
+          node tests/determinism-browser.cjs
+          node tests/episode-data-browser.cjs
+          node tests/studio-editor-browser.cjs
+          node tests/landing-browser.cjs
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

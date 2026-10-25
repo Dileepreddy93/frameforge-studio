@@ -1,0 +1,7 @@
+{
+  "episodes": [
+    {"key": "comedy", "file": "zero-latency.frameforge.json", "label": "ZERO LATENCY — Episode 01"},
+    {"key": "darkmode", "file": "dark-mode.frameforge.json", "label": "DARK MODE — Episode 02"},
+    {"key": "mystery", "file": "mountain-mystery.frameforge.json", "label": "Mountain mystery — storyboard (no voice)"}
+  ]
+}

@@ -1,0 +1,7 @@
+.venv
+node_modules
+artifacts
+audio/*/lines
+audio/*/.work
+.env*
+renders

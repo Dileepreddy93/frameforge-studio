@@ -6,7 +6,7 @@ const base=JSON.parse(fs.readFileSync('projects/mountain-mystery.frameforge.json
  const browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  const page=await browser.newPage({viewport:{width:1050,height:840},acceptDownloads:true});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(process.env.FRAMEFORGE_URL||'http://127.0.0.1:8958/',{waitUntil:'domcontentloaded',timeout:35000});
+ await page.goto((process.env.FRAMEFORGE_URL||'http://127.0.0.1:8958/')+'studio.html',{waitUntil:'domcontentloaded',timeout:35000});
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded===true&&FrameForgeQA?.shots().length===14,null,{timeout:35000});
  const project=structuredClone(base);
  project.id='uploaded-story';project.title='Uploaded Story';

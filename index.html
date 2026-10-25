@@ -1,1011 +1,295 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FrameForge Studio — Director Preview</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameForge — animated reels from a script</title>
+<meta name="description" content="FrameForge turns a short comedy script into a finished 9:16 animated reel with original 3D characters, a voice for every line, music, sound effects and captions, rendered at 1080 × 1920.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,700..900&family=Hanken+Grotesk:wght@400;500;600&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:block}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;min-height:400px}.shots{grid-template-columns:1fr 1fr}}
-</style></head>
-<body><header><div><div class="brand">◈ Frame<em>Forge</em> <span style="font-size:12px;color:#a7b3d6">STUDIO</span></div><div class="hint">LIVE DIRECTOR PREVIEW · Original 3D characters · <a href="./asset-lab.html" style="color:#9de6df;font-weight:750" title="Inspect real rigged GLB imports">Rigged character lab ↗</a></div></div><div class="tag">DIRECTOR BUILD · Preview, not cinema-quality</div></header>
-<div class="wrap"><aside><h3>Quick Create</h3><label>Story idea</label><textarea id="idea">A developer asks two robot assistants to fix one tiny bug. They argue over a missing semicolon.</textarea><label>Language</label><select id="language"><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option></select><label>Episode template</label><select id="preset"><option value="comedy">ZERO LATENCY — Voiced episode (41.8s)</option><option value="mystery">Mystery storyboarding (no voice)</option></select><button id="build" class="primary full">✦ Build episode timeline</button>
-<label for="projectImport">Import a FrameForge JSON episode</label>
-<input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
-<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">This director preview includes English Kokoro dialogue, stereo music and 43 designed Foley/UI accents. It is not a reference-quality film, and video export is not included.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Manual Narrate uses system TTS. Hindi/Telugu voice tracks are not connected.</p></aside>
-<main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div><details id="renderedFilm" style="max-width:550px;margin:16px auto;background:#1a2540;border:1px solid #53699d;border-radius:14px;padding:12px"><summary style="cursor:pointer;font-weight:750;color:#fff;font-size:14px">▶ Watch revised film · Directed acting + Foley (41.8s)</summary><p class="fine" style="margin:9px 0 12px">New directed-acting cut: native 480×854, 30 FPS, 1,254 frames, three English voices, 43 Foley cues and synchronized stereo audio. Facial animation is still below the reference-quality target.</p><video controls playsinline preload="metadata" style="display:block;width:min(100%,320px);margin:8px auto;border-radius:12px" src="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4">Your browser cannot play MP4 video.</video><p style="font-size:12px;text-align:center;margin:12px auto 2px"><a style="color:#c5b4ff" href="https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4" target="_blank" rel="noopener noreferrer">Open MP4 directly in a new tab</a></p></details>
-<div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">The dialogue and 43 original sound cues share the 41.8-second scene clock. Mouth movement follows the voice amplitude; actual aligned phoneme visemes and studio-grade character acting remain in development.</p></main>
-<aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply shot changes</button><p class="fine">Click a shot to edit the dialogue, speaker and camera, then scrub or press Play to preview.</p></aside></div>
-<script src="./src/project-core.js"></script>
-<script src="./src/performance-core.js"></script>
-<script src="./src/speech-performance-core.js"></script>
-<script type="module">
-import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-const $ = x=>document.getElementById(x);
-const stage=$('stage');
-const scene=new T.Scene();scene.background=new T.Color(0x140e28);scene.fog=new T.FogExp2(0x130e27,.035);
-const cam=new T.PerspectiveCamera(40,9/16,.1,110);
-const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true,alpha:false});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;renderer.setSize(720,1280,false);
-stage.prepend(renderer.domElement);
-scene.add(new T.HemisphereLight(0x98a2ff,0x181123,1.25));
-let key=new T.PointLight(0xffc5a1,58,19,2);key.position.set(-3,6,5);key.castShadow=true;scene.add(key);
-let rim=new T.PointLight(0x6f42ff,55,18,2);rim.position.set(4,3,-2);scene.add(rim);
-let fill=new T.PointLight(0x3fb4ff,24,18,2);fill.position.set(-2,4,-2);scene.add(fill);
-const mat=(c,r=.72,m=.05)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m});
-const dark=mat(0x101122),navy=mat(0x202443),white=mat(0xe3dbe0),blue=mat(0x4f83bb,.4,.45),orange=mat(0xf18427,.45,.24),skin=mat(0x9c6b4b),hair=mat(0x191524),suit=mat(0x3c4168),glow=new T.MeshStandardMaterial({color:0x6df6ff,emissive:0x43d7ff,emissiveIntensity:2});
-function cube(g,x,y,z,w,h,d,m){let o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;g.add(o);return o}
-function ball(g,x,y,z,r,m){let o=new T.Mesh(new T.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o}
-let floor=cube(scene,0,-.16,0,18,.24,15,mat(0x1b1530));let wall=cube(scene,0,3,-5,18,7,.2,mat(0x171026));for(let i=-5;i<=5;i+=2){cube(scene,i,3,-4.86,.035,5,.02,mat(0x4a256d));cube(scene,i,1.15,-4.78,1.4,.025,.04,glow)}
-let stageBox=cube(scene,0,.24,-1.5,6,.46,3,mat(0x29203e));
-cube(scene,0,1.3,-2.75,5,.15,1.7,mat(0x5c3559,.38));for(let x of [-2.3,2.3])cube(scene,x,.72,-2.75,.18,1.13,.3,dark);
-let screen=cube(scene,0,2.18,-3.15,2.5,1.5,.15,mat(0x080e2a,.22));cube(scene,0,2.2,-3.05,2.2,1.17,.03,mat(0x1d2767,.27));for(let j=0;j<5;j++)cube(scene,-.53,2.55-j*.17,-2.99,1.05-j*.1,.045,.022,new T.MeshStandardMaterial({color: j%2?0x39c8ff:0xb074f7,emissive:j%2?0x0b3555:0x342063,emissiveIntensity:.7}));
-for(let k=0;k<9;k++){let x=(k*17%13)/2-3,y=1+(k*7%16)/4;ball(scene,x,y,-4.7,.015,glow)}
+:root{
+ --indigo:#17123A;   /* the studio set at night: page */
+ --violet:#221A52;   /* raised panels */
+ --rule:#372C77;     /* exposure-sheet ruling */
+ --paper:#EDEBFA;    /* text */
+ --muted:#A9A4D2;    /* secondary text */
+ --cyan:#7DE9FF;     /* BLUE's visor: playhead, focus */
+ --orange:#F49A5E;   /* ORANGE's shell */
+ --slate:#9DB4D8;    /* DEV's hoodie */
+ --display:'Archivo',system-ui,sans-serif;
+ --body:'Hanken Grotesk',system-ui,sans-serif;
+ --mono:'Martian Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--indigo);color:var(--paper);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.02em}
 
-// CINEMATIC SET V2 — built as an inhabited space, not a flat neon backdrop.
-// Stage architecture has a consistent industrial palette, practical light sources,
-// depth layers, textured signs, and contact shadows. All assets are original.
-const artGroup=new T.Group();scene.add(artGroup);
-const satin=(hex,r=.52,metal=.1)=>new T.MeshStandardMaterial({color:hex,roughness:r,metalness:metal});
-const bronzed=satin(0x635258,.36,.55), warmWhite=satin(0xe3c5a4,.55,.06), midnight=satin(0x1a2432,.71,.08);
-const copper=satin(0xb16d54,.39,.39), steelSet=satin(0x354958,.36,.57);
-const cyanEmission=new T.MeshStandardMaterial({color:0x83d9e3,emissive:0x3f9eaf,emissiveIntensity:1.3,roughness:.28});
-const amberEmission=new T.MeshStandardMaterial({color:0xffc18b,emissive:0xb66b3b,emissiveIntensity:1.6,roughness:.35});
-const shadowMat=new T.MeshBasicMaterial({color:0x090e1b,transparent:true,opacity:.37,depthWrite:false,side:T.DoubleSide});
-renderer.toneMappingExposure=1.43;
-scene.add(new T.AmbientLight(0xe2f3ff,.48));
-const keyAreaApprox=new T.DirectionalLight(0xffd9b9,2.5);keyAreaApprox.position.set(-3.2,7,5);scene.add(keyAreaApprox);
-const fillStudio=new T.DirectionalLight(0x8ac5ff,1.1);fillStudio.position.set(4,5,4);scene.add(fillStudio);
-const upperRim=new T.DirectionalLight(0xccb5ff,1.85);upperRim.position.set(2,5,-5);scene.add(upperRim);
-key.position.set(-4,5.5,4.4);key.intensity=85;rim.position.set(3.6,4,-2);rim.intensity=77;
-fill.position.set(2.4,3.2,2.8);fill.intensity=32;
-floor.material=satin(0x202a35,.72,.14);wall.material=satin(0x202638,.87,.04);
-stageBox.material=satin(0x2e333e,.61,.25);
-function tube(parent,a,b,r,m,detail=10){
- const va=new T.Vector3(...a),vb=new T.Vector3(...b);
- const diff=vb.clone().sub(va),shape=new T.Mesh(new T.CylinderGeometry(r,r,diff.length(),detail),m);
- shape.position.copy(va.add(vb).multiplyScalar(.5));shape.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),diff.normalize());
- parent.add(shape);shape.castShadow=true;return shape
+/* Top bar */
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--indigo) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;gap:28px;height:64px}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none;font:900 17px/1 var(--display);font-stretch:125%;letter-spacing:.04em;text-transform:uppercase}
+.mark i{width:11px;height:11px;border-radius:2px;background:var(--orange)}
+.top nav{display:flex;gap:22px;margin-left:auto}
+.top nav a{text-decoration:none;color:var(--muted);font-weight:500;font-size:15px}
+.top nav a:hover{color:var(--paper)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:10px;border:1px solid var(--rule);background:transparent;color:var(--paper);font:600 15px/1 var(--body);text-decoration:none;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#0D1430}
+.btn.primary:hover{background:#A6F0FF}
+.top .btn{min-height:38px;padding:0 14px;font-size:14px}
+
+/* Hero: the headline, then the reel playing beside its own shot sheet */
+.hero{padding:48px 0 72px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,color-mix(in srgb,var(--rule) 45%,transparent) 31px 32px)}
+.hero h1{margin:0;font:900 clamp(44px,7.2vw,92px)/.92 var(--display);font-stretch:125%;letter-spacing:-.01em;text-transform:uppercase}
+.hero h1 span{display:block;color:var(--cyan)}
+.lede{max-width:660px;margin:22px 0 0;font-size:19px;color:var(--paper)}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.screening{display:grid;grid-template-columns:minmax(250px,330px) 1fr;gap:40px;margin-top:40px;align-items:start}
+.phone{position:relative;border:1px solid var(--rule);border-radius:30px;padding:9px;background:#0E0B26;box-shadow:0 30px 80px #05031999}
+.phone video{display:block;width:100%;aspect-ratio:9/16;border-radius:22px;background:#0E0B26;object-fit:cover}
+.reelbar{display:flex;gap:8px;margin-top:10px}
+.reelbar .btn{flex:1;min-height:38px;font-size:14px}
+.sheet{border:1px solid var(--rule);border-radius:16px;background:var(--violet);overflow:hidden}
+.sheet-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--rule)}
+.tabs{display:flex;gap:6px}
+.tabs button{border:1px solid var(--rule);background:transparent;color:var(--muted);border-radius:8px;padding:8px 12px;font:600 14px/1 var(--body);cursor:pointer}
+.tabs button[aria-pressed="true"]{color:var(--paper);border-color:var(--cyan)}
+.sheet-meta{color:var(--muted)}
+.rows{position:relative;list-style:none;margin:0;padding:0;max-height:min(560px,62vh);overflow-y:auto;scrollbar-color:var(--rule) transparent}
+.row{position:relative;display:grid;grid-template-columns:74px 82px 1fr;column-gap:12px;row-gap:3px;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--rule);background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer;overflow:hidden}
+.row:hover{background:#2A2163}
+.row .tc{grid-row:1/3;color:var(--muted);padding-top:3px}
+.row .who{grid-row:1/3;display:flex;align-items:flex-start;gap:7px;padding-top:2px;font:800 12px/1.4 var(--display);font-stretch:112%;letter-spacing:.06em}
+.row .who::before{content:"";flex:none;width:9px;height:9px;margin-top:3px;border-radius:2px;background:var(--c)}
+.row .line{font-weight:500;line-height:1.35}
+.row .meta{color:var(--muted);font-size:11px}
+.row .fill{position:absolute;inset:0 auto 0 0;width:calc(var(--p,0)*100%);background:color-mix(in srgb,var(--cyan) 11%,transparent);pointer-events:none}
+.row[aria-current="true"]{background:#2A2163;box-shadow:inset 3px 0 var(--cyan)}
+.row[aria-current="true"] .tc{color:var(--cyan)}
+.who.dev{--c:var(--slate)}.who.blue{--c:var(--cyan)}.who.orange{--c:var(--orange)}
+.sheet-note{margin:0;padding:12px 16px;color:var(--muted);font-size:14px}
+
+/* Sections */
+.band{padding:88px 0;border-top:1px solid var(--rule)}
+.band h2{margin:0 0 10px;font:900 clamp(30px,4.6vw,54px)/1 var(--display);font-stretch:118%;text-transform:uppercase}
+.band .intro{max-width:620px;margin:0;color:var(--muted)}
+.steps{list-style:none;margin:44px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:step}
+.steps li{counter-increment:step;border-top:2px solid var(--rule);padding-top:18px}
+.steps li::before{content:"0" counter(step);display:block;margin-bottom:14px;font:500 12px/1 var(--mono);color:var(--cyan)}
+.steps h3{margin:0 0 8px;font:800 20px/1.15 var(--display);font-stretch:112%}
+.steps p{margin:0 0 14px;color:var(--muted);font-size:16px}
+.steps code{display:block;padding:10px 12px;border-radius:8px;background:var(--violet);border:1px solid var(--rule);font:400 12px/1.5 var(--mono);color:var(--paper);overflow-wrap:anywhere}
+.cast{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+.card{margin:0;border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:var(--violet)}
+.card img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#0E0B26}
+.card figcaption{padding:16px 18px 18px}
+.card h3{display:flex;align-items:center;gap:9px;margin:0 0 4px;font:900 22px/1 var(--display);font-stretch:125%;letter-spacing:.03em}
+.card h3::before{content:"";width:11px;height:11px;border-radius:2px;background:var(--c)}
+.card p{margin:0 0 10px;color:var(--muted);font-size:16px}
+.card .mono{color:var(--paper)}
+.faq{max-width:820px;margin-top:36px}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{cursor:pointer;list-style:none;padding:20px 0;font:600 19px/1.3 var(--body);display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:500 20px/1 var(--mono);color:var(--cyan)}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:0 0 22px;color:var(--muted);max-width:680px}
+.closing{padding:96px 0;border-top:1px solid var(--rule);text-align:center}
+.closing h2{margin:0;font:900 clamp(40px,7vw,92px)/.92 var(--display);font-stretch:125%;text-transform:uppercase}
+.closing p{margin:18px auto 30px;max-width:520px;color:var(--muted)}
+footer{border-top:1px solid var(--rule);padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+
+@media (max-width:960px){
+ .screening{grid-template-columns:1fr;gap:28px}
+ .phone{max-width:340px;margin:0 auto;width:100%}
+ .steps{grid-template-columns:1fr 1fr}
+ .cast{grid-template-columns:1fr;max-width:420px}
 }
-function drum(parent,x,y,z,r,h,m){
- const mesh=new T.Mesh(new T.CylinderGeometry(r,r,h,28),m);
- mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh
+@media (max-width:640px){
+ .wrap{padding:0 16px}
+ .top nav{display:none}
+ .top .btn{margin-left:auto}
+ .hero{padding:40px 0 56px}
+ .steps{grid-template-columns:1fr}
+ .row{grid-template-columns:60px 1fr;padding:12px}
+ .row .tc{grid-row:auto}
+ .row .who{grid-row:auto}
+ .row .line,.row .meta{grid-column:1/-1}
+ .band{padding:64px 0}
 }
-function plaque(textA,textB,glowHue,x,y,z,w=.95,h=.47){
- const cv=document.createElement('canvas');cv.width=600;cv.height=320;
- const q=cv.getContext('2d');q.fillStyle='#172231';q.fillRect(0,0,600,320);
- const grad=q.createLinearGradient(30,0,520,320);grad.addColorStop(0,'#202e3c');grad.addColorStop(1,'#101b2a');q.fillStyle=grad;q.fillRect(13,13,574,294);
- q.strokeStyle='#657589';q.lineWidth=7;q.strokeRect(20,20,560,280);
- q.fillStyle=glowHue;q.font='bold 68px Arial';q.textAlign='center';q.fillText(textA,300,160);
- q.font='bold 29px Arial';q.fillStyle='#9cb3bd';q.fillText(textB,300,227);
- const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;const m=new T.MeshBasicMaterial({map:t,side:T.DoubleSide,toneMapped:false});
- const frame=new T.Mesh(new T.PlaneGeometry(w,h),m);frame.position.set(x,y,z);artGroup.add(frame);
- return frame
-}
-// Rear wall composition: two flanking equipment bays, warm arch, central stage identity.
-for(const x of [-4.15,4.15]){
- cube(artGroup,x,2.25,-4.65,1.60,4.3,.40,midnight);
- cube(artGroup,x,4.2,-4.37,1.76,.13,.17,copper);
- for(let y of [1.0,1.95,2.9]){
-  cube(artGroup,x,y,-4.39,1.42,.045,.09,steelSet);
-  for(let k=0;k<5;k++){
-   const z=-4.25,px=x-.49+k*.245;
-   cube(artGroup,px,y+.23,z,.12,.36,.16,k%3===0?copper:satin(k%2?0x697c89:0x375268,.5,.24));
-  }
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="wrap">
+  <a class="mark" href="#top" aria-label="FrameForge home"><i aria-hidden="true"></i>FrameForge</a>
+  <nav aria-label="Sections"><a href="#how">How it's made</a><a href="#cast">Cast</a><a href="#faq">FAQ</a></nav>
+  <a class="btn primary" href="studio.html">Open the studio</a>
+ </div>
+</header>
+
+<main id="top">
+ <section class="hero">
+  <div class="wrap">
+   <h1>Scripts in.<span>Episodes out.</span></h1>
+   <p class="lede">FrameForge turns a short comedy script into a finished 9:16 animated reel: three original 3D characters, a voice for every line, music, sound effects and captions, rendered at 1080&nbsp;×&nbsp;1920.</p>
+   <div class="ctas"><a class="btn primary" href="studio.html">Open the studio</a><a class="btn" href="#how">See how an episode is made</a></div>
+
+   <div class="screening">
+    <div class="phone">
+     <video id="reel" playsinline muted loop preload="metadata" aria-label="Episode playback"></video>
+     <div class="reelbar"><button class="btn" id="playPause" type="button">Play</button><button class="btn" id="sound" type="button" aria-pressed="false">Sound on</button></div>
+    </div>
+    <div class="sheet">
+     <div class="sheet-head">
+      <div class="tabs" role="group" aria-label="Episode">
+       <button type="button" id="tab-comedy" aria-pressed="true" data-ep="comedy">EP 01 · Zero Latency</button>
+       <button type="button" id="tab-darkmode" aria-pressed="false" data-ep="darkmode">EP 02 · Dark Mode</button>
+      </div>
+      <span class="sheet-meta mono" id="sheetMeta">Loading the shot sheet…</span>
+     </div>
+     <ol class="rows" id="rows" aria-label="Shot sheet"></ol>
+     <p class="sheet-note">Each row is one shot from the episode file: who speaks, the line, the title card, the camera move and the performance. Click a row to jump to that shot.</p>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="band" id="how">
+  <div class="wrap">
+   <h2>How an episode is made</h2>
+   <p class="intro">An episode is one file. You direct it in the studio, one command voices and scores it, and the renderer draws every frame.</p>
+   <ol class="steps">
+    <li><h3>Write the script</h3><p>Lines, speakers and title cards live in the episode file. Start from an episode or duplicate shots in the studio.</p><code>"dialogue": "Ship it."</code></li>
+    <li><h3>Direct every shot</h3><p>Pick each character's action and emotion, the camera move and a dutch angle. The monitor shows the exact frame you'll export.</p><code>"framing": { "move": "push", "roll": 7 }</code></li>
+    <li><h3>Voice and score</h3><p>Every line is voiced separately, and its length sets the shot's length. Music ducks under speech, and the mix lands at the reel loudness standard.</p><code>−14 LUFS · voices · music · effects</code></li>
+    <li><h3>Render the reel</h3><p>Every frame is drawn at its exact time and encoded with the mixed audio, ready for Reels, Shorts and TikTok.</p><code>1080 × 1920 · 30 fps · H.264</code></li>
+   </ol>
+  </div>
+ </section>
+
+ <section class="band" id="cast">
+  <div class="wrap">
+   <h2>The cast</h2>
+   <p class="intro">Three original characters with fixed looks and voices, so every episode feels like the same show.</p>
+   <div class="cast">
+    <figure class="card" style="--c:var(--slate)"><img src="media/v5/cast-dev.jpg" alt="DEV, a low-poly developer in a slate hoodie, looking worried" loading="lazy" width="480" height="600"><figcaption><h3>DEV</h3><p>The developer. Only ever wants one tiny change.</p><span class="mono">voice · am_michael</span></figcaption></figure>
+    <figure class="card" style="--c:var(--cyan)"><img src="media/v5/cast-blue.jpg" alt="BLUE, a blue robot with a glowing cyan visor face, smiling" loading="lazy" width="480" height="600"><figcaption><h3>BLUE</h3><p>The eager assistant. Says yes to everything.</p><span class="mono">voice · af_heart</span></figcaption></figure>
+    <figure class="card" style="--c:var(--orange)"><img src="media/v5/cast-orange.jpg" alt="ORANGE, an orange robot with a glowing amber visor face, smiling proudly" loading="lazy" width="480" height="600"><figcaption><h3>ORANGE</h3><p>The deadpan assistant. Technically correct, every time.</p><span class="mono">voice · bm_george</span></figcaption></figure>
+   </div>
+  </div>
+ </section>
+
+ <section class="band" id="faq">
+  <div class="wrap">
+   <h2>Questions</h2>
+   <div class="faq">
+    <details><summary>Do I need to write code?</summary><p>Not to direct. The studio edits titles, lines, performances and cameras in your browser. When you change a line, one command on your computer re-voices and re-times the episode, and the studio tells you when that's needed.</p></details>
+    <details><summary>Is this made with AI?</summary><p>The voices come from Kokoro, an open-source voice model that runs on your own computer. The animation, camera work, music and sound effects are generated by code. No cloud AI service is used.</p></details>
+    <details><summary>What do I get?</summary><p>An MP4 at 1080 × 1920 and 30 fps with voices, music, sound effects and burned-in captions, ready to post as a Reel, Short or TikTok.</p></details>
+    <details><summary>Can I make my own episode?</summary><p>Yes. Episode 02, Dark Mode, was written entirely as an episode file, with no changes to the studio's code.</p></details>
+    <details><summary>Which languages are supported?</summary><p>English today. Telugu and Hindi are planned.</p></details>
+   </div>
+  </div>
+ </section>
+
+ <section class="closing">
+  <div class="wrap">
+   <h2>Make episode 03</h2>
+   <p>The studio runs in Chrome or Edge on a laptop. No account needed.</p>
+   <a class="btn primary" href="studio.html">Open the studio</a>
+  </div>
+ </section>
+</main>
+
+<footer><div class="wrap"><span>FrameForge</span><span>Characters, music and sound effects are original to FrameForge.</span></div></footer>
+
+<script>
+const EPISODES={
+ comedy:{file:'projects/zero-latency.frameforge.json',video:'media/v5/ep01-zero-latency',poster:'media/v5/ep01-poster.jpg'},
+ darkmode:{file:'projects/dark-mode.frameforge.json',video:'media/v5/ep02-dark-mode',poster:'media/v5/ep02-poster.jpg'}
+};
+// H.264 for Safari and iOS, VP9 WebM where H.264 is unavailable (e.g. open-source Chromium, some Linux Firefox).
+const VIDEO_EXT=document.createElement('video').canPlayType('video/mp4; codecs="avc1.4d401f, mp4a.40.2"')?'.mp4':'.webm';
+const FPS=30,$=id=>document.getElementById(id);
+const reel=$('reel'),rowsEl=$('rows'),reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let shots=[],current=-1,userScrolledAt=0;
+
+const timecode=t=>{const f=Math.round(t*FPS),s=Math.floor(f/FPS);return[Math.floor(s/60),s%60,f%FPS].map(n=>String(n).padStart(2,'0')).join(':')};
+
+async function loadEpisode(key){
+ const ep=EPISODES[key];
+ for(const tab of document.querySelectorAll('.tabs button'))tab.setAttribute('aria-pressed',String(tab.dataset.ep===key));
+ reel.poster=ep.poster;reel.src=ep.video+VIDEO_EXT;current=-1;
+ try{
+  const response=await fetch(ep.file);
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const project=await response.json();
+  let start=0;
+  shots=project.shots.map(s=>{const shot={...s,start};start+=s.duration;return shot});
+  $('sheetMeta').textContent=`${shots.length} shots · ${start.toFixed(1)} s · ${FPS} fps`;
+  rowsEl.innerHTML='';
+  shots.forEach((s,i)=>{
+   const speaker=s.cast?.[s.speaker],f=s.framing||{};
+   const li=document.createElement('li'),row=document.createElement('button');
+   row.type='button';row.className='row';
+   row.innerHTML='<span class="tc mono"></span><span class="who"></span><span class="line"></span><span class="meta mono"></span><span class="fill" aria-hidden="true"></span>';
+   row.querySelector('.tc').textContent=timecode(s.start);
+   const who=row.querySelector('.who');who.classList.add(s.speaker);who.textContent=s.speaker.toUpperCase();
+   row.querySelector('.line').textContent='“'+s.dialogue+'”';
+   row.querySelector('.meta').textContent=[s.title,s.camera==='screen'?'screen insert':`${f.move||'push'}${f.roll?` · ${f.roll}° dutch`:''}`,speaker?`${speaker.action}, ${speaker.emotion}`:''].filter(Boolean).join(' · ');
+   row.setAttribute('aria-label',`Shot ${i+1} at ${timecode(s.start)}: ${s.speaker.toUpperCase()} says ${s.dialogue}`);
+   row.onclick=()=>{reel.currentTime=s.start+.02;play()};
+   li.appendChild(row);rowsEl.appendChild(li);
+  });
+ }catch(err){
+  $('sheetMeta').textContent='Shot sheet unavailable ('+err.message+'). The episode still plays.';
  }
- const p=new T.PointLight(0xffa96e,6,3.8);p.position.set(x,3.5,-3.8);artGroup.add(p);
- cube(artGroup,x,3.6,-4.25,.65,.10,.10,amberEmission);
-}
-// Recessed layered portal and arc surround behind the cast.
-cube(artGroup,0,3.2,-4.66,5.75,3.6,.13,satin(0x263440,.79,.13));
-cube(artGroup,0,3.2,-4.48,4.55,2.75,.09,satin(0x111b2b,.43,.19));
-const arch=new T.Mesh(new T.TorusGeometry(1.58,.063,12,80,Math.PI),bronzed);
-arch.position.set(0,4.1,-4.14);arch.rotation.z=0;artGroup.add(arch);
-for(const x of [-1.60,1.60]){
- tube(artGroup,[x,1.85,-4.14],[x,4.09,-4.14],.075,bronzed);
- cube(artGroup,x,2.9,-4.0,.065,1.75,.065,cyanEmission);
-}
-plaque("FRAMEFORGE","STORY SYSTEMS","#ffcf9c",0,4.30,-4.01,1.8,.79);
-// Practical architectural strips and baffles.
-for(let x of [-3.12,3.12]){
- cube(artGroup,x,3.0,-4.28,.10,4.35,.20,steelSet);
- cube(artGroup,x,3.0,-4.13,.048,2.7,.05,amberEmission);
-}
-for(let z of [-2.7,-1.3,.35]){
- tube(artGroup,[-5.2,.11,z],[5.2,.11,z],.017,steelSet,8);
-}
-// Foreground set dressing: restrained consoles with readable controls.
-for(const x of [-3.2,3.2]){
- const side=Math.sign(x);
- const stand=cube(artGroup,x,1.04,-2.6,.67,1.34,.78,steelSet);
- cube(artGroup,x,1.75,-2.48,.83,.14,.63,copper);
- const top=cube(artGroup,x,1.82,-2.39,.77,.065,.58,midnight);top.rotation.x=-.23;
- for(let i=0;i<4;i++){
-  const spot=new T.Mesh(new T.SphereGeometry(.044,12,8),i%2?cyanEmission:amberEmission);
-  spot.position.set(x-.21+i*.14,1.85,-2.09);artGroup.add(spot);
- }
- tube(artGroup,[x,1.32,-2.08],[x+side*.25,1.2,-1.68],.044,steelSet);
-}
-// Three elevated soft luminous panels: subtle depth behind human and robots.
-for(let i=0;i<3;i++){
- const x=-2.3+i*2.3;
- const panel=cube(artGroup,x,4.55,-3.6,1.42,.10,.40,steelSet);panel.rotation.x=.24;
- const light=cube(artGroup,x,4.51,-3.3,1.20,.035,.24,i===1?warmWhite:cyanEmission);light.rotation.x=.24;
-}
-// Physical shadow pools connect characters with the stage.
-const blobCv=document.createElement('canvas');blobCv.width=blobCv.height=128;
-const blobCx=blobCv.getContext('2d');const rg=blobCx.createRadialGradient(64,64,6,64,64,64);
-rg.addColorStop(0,'rgba(0,0,0,.54)');rg.addColorStop(.40,'rgba(0,0,0,.32)');rg.addColorStop(1,'rgba(0,0,0,0)');
-blobCx.fillStyle=rg;blobCx.fillRect(0,0,128,128);const blobTexture=new T.CanvasTexture(blobCv);
-for(const x of [-1.7,0,1.7]){
- const blob=new T.Mesh(new T.PlaneGeometry(1.55,.91),new T.MeshBasicMaterial({map:blobTexture,transparent:true,depthWrite:false,opacity:.82}));
- blob.rotation.x=-Math.PI/2;blob.position.set(x,.49,x===-1.7?-1:.5);artGroup.add(blob);
-}
-// A light dust layer adds depth cues without costly volumetric shaders.
-const scatter=new T.BufferGeometry(),dust=[];
-for(let i=0;i<55;i++){
- const x=((((i*37)%113)/113)-.5)*10;
- const y=.8+(((i*71)%113)/113)*4.6;
- const z=-4.10+(((i*17)%79)/79)*6.3;dust.push(x,y,z);
-}
-scatter.setAttribute('position',new T.Float32BufferAttribute(dust,3));
-const flecks=new T.Points(scatter,new T.PointsMaterial({color:0xd9c4ab,size:.025,transparent:true,opacity:.48,depthWrite:false}));
-artGroup.add(flecks);
-
-const dev=new T.Group();dev.position.set(-1.7,.33,-1);scene.add(dev);
-cube(dev,0,1.25,0,.95,1.3,.55,suit);cube(dev,0,2.28,0,.75,.9,.68,skin);cube(dev,0,2.78,-.02,.83,.25,.73,hair);cube(dev,-.55,1.36,0,.24,.99,.25,suit);cube(dev,.55,1.36,0,.24,.99,.25,suit);cube(dev,-.27,.4,0,.3,.45,.35,navy);cube(dev,.27,.4,0,.3,.45,.35,navy);
-const eyeA=ball(dev,-.18,2.35,.36,.065,dark),eyeB=ball(dev,.18,2.35,.36,.065,dark),mouth=cube(dev,0,2.06,.355,.23,.035,.025,dark);
-function robot(bodyCol,x){const root=new T.Group();root.position.set(x,.43,.5);scene.add(root);let hull=cube(root,0,1.4,0,1.06,1.07,.84,bodyCol);cube(root,0,1.44,.45,.82,.62,.035,dark);cube(root,-.23,1.55,.48,.19,.24,.04,glow);cube(root,.23,1.55,.48,.19,.24,.04,glow);let m=cube(root,0,1.24,.49,.32,.065,.04,glow);cube(root,-.67,1.3,0,.29,.55,.38,bodyCol);cube(root,.67,1.3,0,.29,.55,.38,bodyCol);ball(root,0,2.09,0,.13,white);let anten=cube(root,0,1.94,0,.08,.26,.08,bodyCol);ball(root,0,2.2,0,.13,glow);return {root,m,hull}};
-
-const b=robot(blue,0),o=robot(orange,1.72);dev.rotation.y=.17;
-// FRAMEFORGE PERFORMANCE RIG: consistent characters, authored 2D face masks on 3D models.
-const velvet=(color,roughness=.65,metalness=.12)=>new T.MeshStandardMaterial({color,roughness,metalness});
-function bevel(w,h,d,r,mat,parent,x,y,z){
- const s=new T.Shape(),a=-w/2,by=-h/2;
- s.moveTo(a+r,by);s.lineTo(a+w-r,by);s.quadraticCurveTo(a+w,by,a+w,by+r);s.lineTo(a+w,by+h-r);s.quadraticCurveTo(a+w,by+h,a+w-r,by+h);s.lineTo(a+r,by+h);s.quadraticCurveTo(a,by+h,a,by+h-r);s.lineTo(a,by+r);s.quadraticCurveTo(a,by,a+r,by);
- const g=new T.ExtrudeGeometry(s,{depth:Math.max(.01,d-2*r),steps:1,bevelEnabled:true,bevelSize:r*.55,bevelThickness:r,bevelSegments:3,curveSegments:4});
- g.translate(0,0,-Math.max(.01,d-2*r)/2);
- const m=new T.Mesh(g,mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
-}
-function buildActor(actor,kind){
- actor.root.children.forEach(c=>c.visible=false);
- const group=new T.Group();actor.root.add(group);const isBlue=kind==='blue';
- const shell=new T.MeshPhysicalMaterial({color:isBlue?0x6484b8:0xd38357,metalness:.22,roughness:.35,clearcoat:.64,clearcoatRoughness:.17});
- const darkMat=new T.MeshStandardMaterial({color:isBlue?0x1a324f:0x4b2a2c,metalness:.42,roughness:.42});
- const trim=new T.MeshStandardMaterial({color:isBlue?0x9ebdc5:0xdec195,metalness:.74,roughness:.32});
- const neon=new T.MeshStandardMaterial({color:isBlue?0x87ecfc:0xffc98e,emissive:isBlue?0x428eae:0xaf652d,emissiveIntensity:1.25});
- const glass=new T.MeshPhysicalMaterial({color:0x08111d,metalness:.22,roughness:.17,clearcoat:1,clearcoatRoughness:.07});
- const attach=(geo,mat,x,y,z,sx=1,sy=1,sz=1)=>{
-  const m=new T.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;group.add(m);return m;
- };
- // A continuous lathed torso, flowing into sculpted hips.
- const outline=[[.23,.07],[.43,.16],[.56,.31],[.58,.53],[.59,.76],[.54,.99],[.42,1.17],[.22,1.25]];
- attach(new T.LatheGeometry(outline.map(([r,y])=>new T.Vector2(r,y)),40),shell,0,0,0);
- attach(new T.SphereGeometry(.49,36,24),shell,0,.35,0,1.13,.80,.92);
- attach(new T.CylinderGeometry(.21,.30,.24,32),darkMat,0,1.24,0);
- const neckTrim=attach(new T.TorusGeometry(.27,.027,10,40),trim,0,1.26,0);neckTrim.rotation.x=Math.PI/2;
- // A single head hull with recessed curved dark face; no exposed cube corners.
- attach(new T.SphereGeometry(.71,48,36),shell,0,1.76,0,1.06,.89,.89);
- attach(new T.SphereGeometry(.59,48,36),glass,0,1.77,.42,1,.73,.39);
- attach(new T.TorusGeometry(.49,.035,10,56),trim,0,1.77,.685,1.07,.73,1);
- for(const sign of [-1,1]){
-  attach(new T.SphereGeometry(.23,24,16),darkMat,sign*.74,1.75,0,.82,1,1);
-  const cap=attach(new T.CylinderGeometry(.18,.18,.10,24),shell,sign*.80,1.75,0);cap.rotation.z=Math.PI/2;
-  const led=attach(new T.TorusGeometry(.126,.019,8,30),neon,sign*.845,1.75,0);led.rotation.y=Math.PI/2;
-  attach(new T.SphereGeometry(.27,24,16),darkMat,sign*.30,.20,.015,.9,.74,.95);
-  attach(new T.SphereGeometry(.23,24,16),shell,sign*.30,.11,.145,1.18,.54,1.30);
-  attach(new T.SphereGeometry(.205,20,16),darkMat,sign*.64,1.03,-.02);
- }
- const chest=attach(new T.TorusGeometry(.17,.027,8,40),neon,0,.70,.55);chest.scale.y=.83;
- const cv=document.createElement('canvas');cv.width=cv.height=512;
- const texture=new T.CanvasTexture(cv);texture.colorSpace=T.SRGBColorSpace;
- const face=new T.Mesh(new T.PlaneGeometry(.92,.68),new T.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,toneMapped:false,side:T.DoubleSide}));
- face.position.set(0,1.77,.74);group.add(face);
- // A single dynamic display enables the same eye and mouth animation on BOTH robots.
- return {ctx:cv.getContext('2d'),texture,group,head:group,blue:isBlue,orangeEyes:[],orangeBrows:[],orangeMouth:null};
-}
-const faces={blue:buildActor(b,'blue'),orange:buildActor(o,'orange')};
-
-// Character construction pass: joints, collar, torso trim, hand shells and foot pads
-// reduce the appearance of disconnected cube objects. No borrowed character assets.
-for(const [name,actor] of Object.entries({blue:faces.blue,orange:faces.orange})){
- const g=actor.group,isBlue=name==='blue';
- const shellX=satin(isBlue?0x526fb3:0xd66d42,.39,.32);
- const joint=satin(isBlue?0x253c65:0x6d3833,.46,.49);
- const lightMat=isBlue?cyanEmission:amberEmission;
- const collar=drum(g,0,.92,0,.29,.18,joint);
- collar.rotation.x=Math.PI/2;
- cube(g,0,.71,.26,.46,.055,.17,lightMat);
- const neck=drum(g,0,.98,0,.12,.34,steelSet);
- for(const sign of [-1,1]){
-  const cap=drum(g,sign*.67,1.07,-.03,.25,.23,shellX);cap.rotation.z=Math.PI/2;
-  const shoulder=new T.Group();shoulder.name=name+'_shoulder_'+sign;shoulder.position.set(sign*.66,1.02,-.03);g.add(shoulder);
-  bevel(.26,.38,.32,.10,shellX,shoulder,sign*.04,-.25,.03);
-  const elbow=drum(shoulder,sign*.06,-.48,.04,.17,.19,joint);elbow.rotation.z=Math.PI/2;
-  bevel(.21,.20,.29,.07,shellX,shoulder,sign*.08,-.59,.08);
-  const wrist=new T.Mesh(new T.SphereGeometry(.18,16,12),shellX);
-  wrist.position.set(sign*.08,-.74,.12);wrist.scale.set(.84,.78,.84);shoulder.add(wrist);
-  actor.armJoints??=[];actor.armJoints.push({pivot:shoulder,sign,wrist});
-  const knee=drum(g,sign*.31,.24,.12,.13,.11,joint);
-  const foot=new T.Mesh(new T.SphereGeometry(.23,16,10),shellX);
-  foot.position.set(sign*.32,.14,.23);foot.scale.set(1.17,.51,.98);g.add(foot);
-  cube(g,sign*.43,1.45,.47,.06,.30,.03,shellX);
- }
- const torus=new T.Mesh(new T.TorusGeometry(.145,.016,8,32),lightMat);
- torus.position.set(0,.65,.395);g.add(torus);
- // Four subtle screws visually register faceplates as engineered parts.
- for(const side of [-1,1])for(const cy of [1.18,1.79]){
-  const screw=new T.Mesh(new T.SphereGeometry(.023,8,8),bronzed);
-  screw.position.set(side*.51,cy,.67);g.add(screw);
- }
+ if(!reduceMotion)play();else syncButtons();
 }
 
-function drawActorFace(f,emotion,open,time,viseme='rest',gaze=0){
- const c=f.ctx;c.clearRect(0,0,512,512);c.save();
- const blue=f.blue,ink=blue?'#b9f6fa':'#ffd5a9',bright=blue?'#edffff':'#fff0cb';
- const energy=Math.max(0,Math.min(1,open)),look=Math.sin(time*.61)*2.2+Math.sin(time*1.9)*1.5+gaze*12;
- const blink=((time+.26)%3.68<.13||((time+1.93)%5.11)<.085);
- c.fillStyle=blue?'rgba(29,96,115,.055)':'rgba(101,47,28,.04)';
- c.beginPath();c.ellipse(256,240,212,177,0,0,Math.PI*2);c.fill();
- c.lineCap='round';c.lineJoin='round';
- for(const sign of [-1,1]){
-  const x=256+sign*108,y=184,eyeH=emotion==='surprised'?37:emotion==='worried'?31:27;
-  c.save();c.shadowBlur=blue?22:8;c.shadowColor=ink;c.strokeStyle=ink;c.lineWidth=blue?19:15;
-  if(blink){c.beginPath();c.moveTo(x-31,y+7);c.quadraticCurveTo(x,y+13,x+31,y+6);c.stroke();}
-  else{
-   c.beginPath();c.ellipse(x,y,31,eyeH,0,0,2*Math.PI);c.stroke();
-   c.fillStyle=bright;c.beginPath();c.ellipse(x+look,y+2,10,15,0,0,2*Math.PI);c.fill();
-   if(blue){c.fillStyle='#103744';c.beginPath();c.arc(x+look+3,y-2,3.5,0,2*Math.PI);c.fill();}
-  }
-  c.restore();
-  c.save();c.strokeStyle=ink;c.lineWidth=blue?17:15;c.shadowBlur=blue?12:4;c.shadowColor=ink;
-  const browY=112+(emotion==='happy'?-9:emotion==='angry'?20:emotion==='worried'?-17:0);
-  c.beginPath();c.moveTo(x-32,browY+(emotion==='angry'?sign*13:5));
-  c.quadraticCurveTo(x,browY-(emotion==='surprised'?17:emotion==='worried'?9:6),x+32,browY-(emotion==='angry'?sign*13:0));c.stroke();c.restore();
- }
- c.save();c.translate(256,331);c.strokeStyle=ink;c.fillStyle=ink;c.lineCap='round';c.lineJoin='round';c.lineWidth=blue?15:13;c.shadowBlur=blue?19:6;c.shadowColor=ink;
- if(energy>.13){const shape=viseme==='round'?.58:viseme==='wide'?1.45:viseme==='closed'?.12:viseme==='teeth'?.43:1;const h=15+energy*51*shape,w=(35+energy*8)*(viseme==='wide'?1.2:viseme==='round'?.72:1);c.beginPath();c.ellipse(0,8,w,h*.48,0,0,Math.PI*2);c.stroke();if(energy>.5){c.fillStyle=bright;c.globalAlpha=.63;c.beginPath();c.ellipse(0,26,w*.55,5,0,0,2*Math.PI);c.fill();}}
- else if(emotion==='happy'){c.beginPath();c.moveTo(-48,-11);c.bezierCurveTo(-23,40,23,40,48,-11);c.stroke();}
- else if(emotion==='worried'){c.beginPath();c.moveTo(-38,10);c.quadraticCurveTo(0,-8,38,10);c.stroke();}
- else if(emotion==='surprised'){c.beginPath();c.ellipse(0,11,20,24,0,0,2*Math.PI);c.stroke();}
- else if(emotion==='angry'){c.beginPath();c.moveTo(-42,19);c.lineTo(42,19);c.stroke();}
- else{c.beginPath();c.moveTo(-32,14);c.quadraticCurveTo(0,23,32,14);c.stroke();}
- c.restore();
- if(blue){c.strokeStyle='rgba(133,246,250,.25)';c.lineWidth=5;for(const sign of [-1,1]){c.beginPath();c.arc(256+sign*151,288,12,.1,Math.PI-.1);c.stroke();}}
- c.restore();f.texture.needsUpdate=true;
-}
-const brows=[];
-for(const side of [-1,1]){
- brows.push(bevel(.23,.055,.10,.017,hair,dev,side*.177,2.54,.38));
- ball(dev,side*.42,2.29,.02,.09,skin);
-}
-for(let i=0;i<7;i++){
- const h=bevel(.20,.21,.24,.045,hair,dev,(i-3)*.12,2.79+Math.sin(i*2.3)*.06,.015);
- h.rotation.z=(i-3)*.11;
-}
-bevel(.14,.14,.13,.025,skin,dev,0,2.25,.41);
-bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
+function play(){reel.play().then(syncButtons,syncButtons)}
+function syncButtons(){$('playPause').textContent=reel.paused?'Play':'Pause';$('sound').textContent=reel.muted?'Sound on':'Sound off';$('sound').setAttribute('aria-pressed',String(!reel.muted))}
 
-// HUMAN PERFORMANCE MODEL — faceted face, layered hair, hoodie tailoring and acting pivots.
-// Preserve original developer root for camera coordinates but replace its flat proxy geometry.
-dev.children.forEach(child=>child.visible=false);
-const humanRig=new T.Group();dev.add(humanRig);
-const personSkin=velvet(0x9f7869,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
- hoodie=velvet(0x263a51,.85,.02),hoodieLight=velvet(0x40556a,.78,.03),hoodieDark=velvet(0x182638,.94,0),
- trouser=velvet(0x20283c,.9,0),shoeMat=velvet(0x141b23,.86,0),
- eyeWhite=velvet(0xddd5cf,.55,0),eyeDark=velvet(0x15151c,.28,0),
- mouthDark=velvet(0x3a2125,.88,0);
-function poly(parent,r,material,x,y,z,subdivision=0){const o=new T.Mesh(new T.IcosahedronGeometry(r,subdivision),material);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
-const bodyGroup=new T.Group();humanRig.add(bodyGroup);
-const jacketProfile=[[.30,.59],[.47,.68],[.54,.88],[.56,1.22],[.52,1.52],[.40,1.70],[.28,1.74]];
-const jacket=new T.Mesh(new T.LatheGeometry(jacketProfile.map(([r,y])=>new T.Vector2(r,y)),40),hoodie);
-jacket.castShadow=true;jacket.receiveShadow=true;bodyGroup.add(jacket);
-bevel(.86,.29,.67,.09,hoodieLight,bodyGroup,0,1.72,-.06);
-bevel(.68,.36,.52,.13,hoodieDark,bodyGroup,0,1.79,-.12);
-bevel(.72,.24,.11,.07,hoodieDark,bodyGroup,0,.72,.35);
-bevel(.63,.055,.055,.016,hoodieLight,bodyGroup,0,.85,.395);
-for(const side of [-1,1]){
- bevel(.035,.39,.035,.012,velvet(0xca9a73),bodyGroup,side*.14,1.37,.381);
- poly(bodyGroup,.045,velvet(0xe1a985),side*.14,1.18,.39,1);
- const leg=new T.Mesh(new T.CapsuleGeometry(.205,.28,6,16),trouser);leg.position.set(side*.27,.30,0);leg.castShadow=true;bodyGroup.add(leg);
- bevel(.42,.19,.59,.065,shoeMat,bodyGroup,side*.27,-.07,.10);
-}
-const humanPivots=[];
-for(const side of [-1,1]){
- const shoulder=new T.Group();shoulder.position.set(side*.65,1.58,0);bodyGroup.add(shoulder);
- const sleeve=new T.Mesh(new T.CapsuleGeometry(.235,.44,8,20),hoodie);sleeve.position.set(side*.055,-.40,0);sleeve.castShadow=true;shoulder.add(sleeve);
- bevel(.32,.13,.40,.06,hoodieLight,shoulder,side*.065,-.70,.015);
- const fist=poly(shoulder,.165,personSkin,side*.055,-.88,.025,1);fist.scale.set(.83,1,.87);
- humanPivots.push({side,shoulder});
-}
-const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);const humanEyes=[],humanIrises=[];
-const artSkin=personSkin.clone();artSkin.flatShading=true;artSkin.needsUpdate=true;
-const artHair=blackHair.clone();artHair.flatShading=true;artHair.needsUpdate=true;
-// Purposeful, moderately faceted head silhouette instead of a perfectly round balloon.
-const skull=new T.Mesh(new T.SphereGeometry(.55,20,14),artSkin);skull.position.set(0,0,0);skull.scale.set(.88,1.06,.86);skull.castShadow=true;humanHead.add(skull);
-const chin=new T.Mesh(new T.SphereGeometry(.35,32,24),personSkin);chin.position.set(0,-.32,.09);chin.scale.set(.91,.52,.96);humanHead.add(chin);
-const beard=new T.Mesh(new T.SphereGeometry(.29,32,24),skinDark);beard.position.set(0,-.395,.13);beard.scale.set(.93,.26,.97);humanHead.add(beard);
-for(const side of [-1,1]){
- const ear=new T.Mesh(new T.SphereGeometry(.125,24,18),personSkin);ear.position.set(side*.47,-.08,-.04);ear.scale.set(.64,.96,.76);humanHead.add(ear);
- poly(humanHead,.061,skinDark,side*.48,-.09,.002,1);
- // Eye planes sit flush with the face; no protruding spheres or googly-eye anatomy.
- const socket=new T.Mesh(new T.CircleGeometry(.088,28),skinDark);
- socket.position.set(side*.184,.053,.501);socket.scale.set(1.13,1.16,1);humanHead.add(socket);
- const eye=new T.Mesh(new T.CircleGeometry(.082,28),eyeWhite);
- eye.position.set(side*.184,.053,.504);eye.scale.set(.96,.82,1);humanHead.add(eye);humanEyes.push(eye);
- const iris=new T.Mesh(new T.CircleGeometry(.037,28),eyeDark);
- iris.position.set(side*.184,.052,.509);iris.scale.set(.92,.96,1);humanHead.add(iris);humanIrises.push(iris);
- const catchlight=new T.Mesh(new T.CircleGeometry(.010,14),eyeWhite);
- catchlight.position.set(side*.184-.013,.068,.514);humanHead.add(catchlight);
-}
-const browsNew=[];
-for(const side of [-1,1]){const br=bevel(.22,.051,.046,.015,artHair,humanHead,side*.19,.235,.485);br.rotation.z=side*.11;browsNew.push(br)}
-const noseNew=new T.Mesh(new T.IcosahedronGeometry(.085,0),artSkin);
-noseNew.position.set(0,-.078,.501);noseNew.scale.set(.66,.96,.44);humanHead.add(noseNew);
-const moustache=bevel(.23,.046,.038,.013,skinDark,humanHead,0,-.225,.448);
-// A flat morphable mouth stays attached to the skin under every camera angle.
-const mouthNew=new T.Mesh(new T.CircleGeometry(.115,28),mouthDark);
-mouthNew.position.set(0,-.305,.514);
-mouthNew.scale.set(1.0,.12,1);humanHead.add(mouthNew);
-// Actual 3D mouth curves, not a screenshot or a flat overlay.
-function createExpressionMouth(smile){
- const points=[[-.135,smile?-.286:-.322],[-.068,smile?-.309:-.286],
-               [0,smile?-.313:-.278],[.068,smile?-.309:-.286],[.135,smile?-.286:-.322]];
- const curve=new T.CatmullRomCurve3(points.map(([x,y])=>new T.Vector3(x,y,.524)));
- const tube=new T.Mesh(new T.TubeGeometry(curve,24,.012,8,false),mouthDark);
- tube.visible=false;humanHead.add(tube);return tube;
-}
-const humanSmile=createExpressionMouth(true),humanFrown=createExpressionMouth(false);
-
-// A composited facial rig: eyelid meshes, cheeks and lip corners share one pose driver.
-const humanUpperLids=[],humanLowerLids=[],humanCheeks=[],humanLipCorners=[];
-const cheekMat=new T.MeshStandardMaterial({color:0xa97066,roughness:.92,metalness:0,transparent:true,opacity:.28,depthWrite:false,side:T.DoubleSide});
-for(const side of [-1,1]){
- const lid=new T.Mesh(new T.PlaneGeometry(.174,.074),artSkin);
- lid.position.set(side*.184,.101,.519);humanHead.add(lid);humanUpperLids.push(lid);
- const lower=new T.Mesh(new T.PlaneGeometry(.172,.041),artSkin);
- lower.position.set(side*.184,-.014,.518);humanHead.add(lower);humanLowerLids.push(lower);
- const cheek=new T.Mesh(new T.CircleGeometry(.064,20),cheekMat);
- cheek.position.set(side*.305,-.169,.450);cheek.scale.set(1,.34,1);humanHead.add(cheek);humanCheeks.push(cheek);
- const corner=new T.Mesh(new T.SphereGeometry(.014,12,9),mouthDark);
- corner.position.set(side*.112,-.304,.517);corner.scale.set(.88,.66,.35);
- humanHead.add(corner);humanLipCorners.push(corner);
-}
-function applyHumanFacePose(pose,speech=null){
- const lid=pose.lid,raise=pose.brow,tilt=pose.slope;
- browsNew.forEach((b,i)=>{
-  const side=i===0?-1:1;
-  b.position.y=.235+raise*.13;
-  b.rotation.z=side*(.04+tilt*.36);
- });
- humanEyes.forEach((eye,i)=>{
-  eye.scale.y=Math.max(.04,lid*.81);
-  const iris=humanIrises[i];
-  iris.scale.y=Math.max(.04,lid*.95);
-  iris.position.x=(i===0?-.184:.184)+pose.gazeX*.023;
-  iris.position.y=.052+pose.gazeY*.020;
-  const upper=humanUpperLids[i],lower=humanLowerLids[i];
-  upper.position.y=.128-(1-lid)*.071;upper.scale.y=.78+(1-lid)*.90;
-  lower.position.y=-.008+(1-lid)*.026;lower.scale.y=.87+(1-lid)*.24;
-  const cheek=humanCheeks[i];
-  cheek.material.opacity=.17+pose.cheek*.17;
-  cheek.position.y=-.169+pose.cheek*.018;
-  cheek.scale.y=.35+pose.cheek*.12;
-  const corner=humanLipCorners[i];
-  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019);
-  corner.position.y=-.304+pose.smile*.024;
- });
- const speaking=!!speech&&speech.viseme!=='rest';
- const smile=!speaking&&pose.smile>.30&&pose.mouthOpen<.34;
- const frown=!speaking&&pose.smile<-.25&&pose.mouthOpen<.35;
- humanSmile.visible=smile;humanFrown.visible=frown;
- mouthNew.visible=!smile&&!frown;
- const visemeWidth={rest:1,closed:.88,round:.62,wide:1.34,teeth:1.10,open:1}[speech?.viseme]??1;
- mouthNew.scale.x=pose.mouthWidth*visemeWidth;
- mouthNew.scale.y=speech?.viseme==='closed'?.045:
-  Math.max(speech?.viseme==='rest'?.075:.09,pose.mouthOpen*1.04+pose.round*.18);
- humanLipCorners.forEach((corner,i)=>{
-  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019)*visemeWidth;
- });
- mouthNew.position.y=-.305-pose.jaw*.013;
- chin.position.y=-.32-pose.mouthOpen*.022;
- beard.position.y=-.395-pose.mouthOpen*.019;
- humanHead.rotation.x+=pose.headPitch;
- humanHead.rotation.z+=pose.headRoll;
-}
-
-const hairCrown=new T.Mesh(new T.IcosahedronGeometry(.51,1),artHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
-for(let j=0;j<10;j++){
- const xx=(j-4.5)*.104,yy=.465+Math.sin(j*1.8)*.030;
- const tuft=new T.Mesh(new T.IcosahedronGeometry(.16+(j%3)*.012,0),artHair);tuft.position.set(xx,yy,.24+(j%2)*.063);humanHead.add(tuft);
- tuft.scale.set(.80,.61,.71);tuft.rotation.z=(j-4.5)*.11;
-}
-for(const side of [-1,1]){
- const sideHair=new T.Mesh(new T.IcosahedronGeometry(.24,0),artHair);sideHair.position.set(side*.37,.19,-.07);humanHead.add(sideHair);sideHair.scale.set(.7,1.1,.80);
-}
-// Angular swept fringe and temple locks from the same authored 3D hairstyle at any view.
-for(let i=0;i<7;i++){
- const x=(i-3)*.118;
- const lock=new T.Mesh(new T.IcosahedronGeometry(.195+(i%2)*.019,0),artHair);
- lock.position.set(x,.390+(.025*Math.sin(i*2.1)),.370);
- lock.scale.set(.76,.78,.74);lock.rotation.z=(i-3)*.115;
- lock.rotation.x=-.22;lock.castShadow=true;humanHead.add(lock);
-}
-for(const side of [-1,1]){
- const sideLock=new T.Mesh(new T.IcosahedronGeometry(.235,0),artHair);
- sideLock.position.set(side*.438,.145,.09);
- sideLock.scale.set(.57,1.1,.79);sideLock.rotation.z=side*.24;
- humanHead.add(sideLock);
-}
-// Secondary face/shirt highlights keep the sculpt readable under low-key studio lighting.
-const clothStripe=velvet(0x6f8493,.66,.07);
-for(const side of [-1,1])bevel(.045,.24,.031,.012,clothStripe,bodyGroup,side*.11,1.02,.353);
-
-
-const performanceCues=[
- ['typing','listen','listen'],
- ['react','announce','listen'],
- ['question','listen','listen'],
- ['react','shrug','listen'],
- ['listen','listen','announce'],
- ['plead','anticipate','listen'],
- ['listen','celebrate','listen'],
- ['surprise','listen','listen'],
- ['listen','listen','explain'],
- ['question','listen','listen'],
- ['listen','shrug','listen'],
- ['alarm','listen','listen'],
- ['listen','listen','celebrate'],
- ['defeat','listen','listen']
-];
-const smoothAction=x=>{const v=Math.max(0,Math.min(1,x));return v*v*(3-2*v)};
-function actPose(type,local,duration,t){
- const progress=Math.max(0,Math.min(1,local/duration));
- const inout=smoothAction(local/.22)*smoothAction((duration-local)/.32);
- const accent=Math.sin(Math.PI*progress),beat=Math.sin(local*4.6);
- const energetic=['announce','explain','question','plead','alarm','surprise','shrug','celebrate'].includes(type);
- let arms=0,lean=0,jump=0,head=0;
- if(type==='typing'){arms=.13*Math.sin(local*9);lean=-.03;}
- if(type==='react'){arms=.08*inout;head=-.09*accent;}
- if(type==='question'){arms=.32*inout;lean=-.07*accent;head=.11;}
- if(type==='plead'){arms=.25*inout;lean=-.05*accent;}
- if(type==='alarm'){arms=.57*inout;lean=-.12*accent;head=.18;}
- if(type==='surprise'){arms=.26*inout;jump=.075*accent;head=-.13;}
- if(type==='defeat'){arms=-.17*inout;lean=-.12*accent;jump=-.05*accent;}
- if(type==='announce'){arms=.26*inout;lean=.06*accent;jump=.045*accent;}
- if(type==='explain'){arms=.20*inout;lean=.03*accent;}
- if(type==='celebrate'){arms=.52*inout;jump=.11*accent;lean=.06*beat;}
- if(type==='shrug'){arms=.44*inout;jump=.045*accent;head=-.10;}
- if(type==='anticipate'){arms=.07*inout;lean=-.035;}
- if(type==='listen'){lean=.018*Math.sin(t*.95);jump=.008*Math.sin(t*1.5);}
- return {arms,lean,jump,head,energetic,accent};
-}
-
-function estimateViseme(text,local,duration){
- const words=text.toLowerCase().match(/[a-z']+/g)||[];
- if(!words.length||local<.10||local>duration*.91)return 'rest';
- const weights=words.map(w=>Math.max(2,w.length*.7+1.5));
- const total=weights.reduce((a,b)=>a+b,0);
- const cursor=Math.max(0,Math.min(.999,(local-.1)/(duration*.90-.1)))*total;
- let amount=0,word=words[0],within=0;
- for(let i=0;i<words.length;i++){
-  if(cursor<amount+weights[i]){word=words[i];within=(cursor-amount)/weights[i];break;}
-  amount+=weights[i];
- }
- const letter=word[Math.min(word.length-1,Math.floor(within*word.length))]||'a';
- return /[bmp]/.test(letter)?'closed':/[oouw]/.test(letter)?'round':/[iey]/.test(letter)?'wide':/[fv]/.test(letter)?'teeth':'open';
-}
-
-const oldUpdate=update;let lastFaceDraw=0;
-update=function(){
- const t=time;let elapsed=0,shot=shots.at(-1),local=0;
- for(const v of shots){if(time<elapsed+v.duration){shot=v;local=time-elapsed;break}elapsed+=v.duration}
- const speechEnd=Math.min(shot.duration*.82,Math.max(.6,shot.text.length/16));
- const beat=Math.floor(local*9);
- let open=0;if(envReady&&decodedEnvelope){open=decodedEnvelope[Math.min(decodedEnvelope.length-1,Math.max(0,Math.floor(time*20)))]||0}else if(running&&analyser&&audioSamples){analyser.getByteTimeDomainData(audioSamples);let sq=0;for(const v of audioSamples){const x=(v-128)/128;sq+=x*x}open=Math.max(0,Math.min(1,(Math.sqrt(sq/audioSamples.length)-.015)*14))}
- // Acoustic envelope maps graphemes into speaking regions and pauses.
- const speechCue=window.FrameForgeSpeechCore.evaluate({
-   text:shot.text,local,duration:shot.duration,shotStart:t-local,
-   samples:envReady?decodedEnvelope:null,rate:20,audioEnergy:open,speaker:shot.speaker
- });
- const viseme=speechCue.viseme;
- const speechPower=speechCue.mouthOpen;
- const index=shots.indexOf(shot);const emotionMap=[{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'worried',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'worried'},{blue:'neutral',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'neutral',orange:'neutral'},{blue:'neutral',orange:'angry'},{blue:'worried',orange:'neutral'},{blue:'happy',orange:'neutral'},{blue:'surprised',orange:'neutral'},{blue:'neutral',orange:'happy'},{blue:'worried',orange:'neutral'}];const expression=emotionMap[index]||emotionMap[0];
- const reaction=cinematicReaction(index,local,shot.duration);
- if(reaction){
-  // Listeners visibly notice something before the next speaker begins.
-  if(reaction.role==='blue')expression.blue='surprised';
-  if(reaction.role==='orange')expression.orange='worried';
- }
- const blueGaze=shot.speaker==='dev'?-0.55:shot.speaker==='orange'?0.45:0;
- const orangeGaze=shot.speaker==='dev'?-0.75:shot.speaker==='blue'?-0.48:0;
- if(offlineMode||Math.abs(t-lastFaceDraw)>.04){
-  drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?speechPower:0,t,viseme,blueGaze);
-  drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?speechPower:0,t,viseme,orangeGaze);
-  lastFaceDraw=t;
- }
- faces.blue.group.rotation.z=Math.sin(t*1.5)*.035+(shot.speaker==='blue'?.035:0);faces.orange.group.rotation.z=Math.sin(t*1.05)*.035+(shot.speaker==='orange'?.04:0);
- if(faces.orange.orangeMouth){
-   faces.orange.orangeMouth.scale.y=shot.speaker==='orange'?1+speechPower*1.9:1;
-   faces.orange.orangeBrows.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(shot.speaker==='orange'?.20:.10)});
-   faces.orange.group.rotation.y=shot.speaker==='orange'?Math.sin(t*1.25)*.045:0;
- }
- brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
- mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
- mouthNew.scale.y=.12*(shot.speaker==='dev'?1+open*3.3:1);mouthNew.scale.x=shot.speaker==='dev'?1+open*.25:1;
- browsNew.forEach((br,i)=>{const side=i?1:-1;br.rotation.z=shot.speaker==='dev'?side*(-.06+open*.09):side*.11;});
- humanHead.rotation.x=(shot.speaker==='dev' ?-.10: .035)+Math.sin(t*.78)*.025;
- humanHead.rotation.z=shot.speaker==='dev'?.035*Math.sin(t*1.2):.0;
- humanHead.rotation.y=(index%4===1?.11:index%4===3?-.09:0)+.018*Math.sin(t*.62);
- humanEyes.forEach(e=>{e.scale.y=index>=11?.37:index>=7?.50:.62});
- humanPivots.forEach(({side,shoulder})=>{const speaking=shot.speaker==='dev';shoulder.rotation.z=speaking?side*(.14+.18*Math.sin(t*1.85)):-side*.09;shoulder.rotation.x=speaking?.32*Math.sin(t*.95+(side<0?0:1.6)):0;});
-
-// Directed deterministic gestures: each shot has an action, not just one repeating movement.
- const [humanAction,blueAction,orangeAction]=performanceCues[index]||performanceCues[0];
- const devPose=actPose(humanAction,local,shot.duration,t);
- const bluePose=actPose(blueAction,local,shot.duration,t);
- const orangePose=actPose(orangeAction,local,shot.duration,t);
- for(const [actor,pose] of [[faces.blue,bluePose],[faces.orange,orangePose]]){
-   actor.group.rotation.z=pose.lean+Math.sin(t*1.1)*.009;
-   actor.group.position.y=pose.jump;
-   for(const arm of actor.armJoints||[]){
-     arm.pivot.rotation.z=arm.sign*(.13+pose.arms)+Math.abs(pose.arms)*.10*Math.sin(local*5.3+arm.sign);
-     arm.pivot.rotation.x=-.10-Math.max(0,pose.arms)*.50;
+function tick(){
+ const t=reel.currentTime;
+ let i=shots.findIndex(s=>t>=s.start&&t<s.start+s.duration);
+ if(i<0&&shots.length)i=shots.length-1;
+ const rows=rowsEl.querySelectorAll('.row');
+ if(i!==current){
+  rows[current]?.removeAttribute('aria-current');rows[current]?.style.setProperty('--p',0);
+  current=i;
+  const row=rows[i];
+  if(row){
+   row.setAttribute('aria-current','true');
+   // Keep the active shot in view inside the sheet, unless the reader is scrolling it themselves.
+   if(Date.now()-userScrolledAt>4000){
+    const top=row.offsetTop-rowsEl.clientHeight/3;
+    rowsEl.scrollTo({top,behavior:reduceMotion?'auto':'smooth'});
    }
- }
- humanHead.rotation.y=devPose.head+((shot.speaker==='orange')?.13:(shot.speaker==='blue')?-.12:0)+.018*Math.sin(t*.72);
- humanHead.rotation.x=-devPose.lean*.60+.018*Math.sin(t*1.1);
- bodyGroup.rotation.z=devPose.lean*.62;
- bodyGroup.position.y=devPose.jump*.64;
- humanHead.position.y=2.30+devPose.jump*.38;
- humanPivots.forEach(({side,shoulder})=>{
-   shoulder.rotation.z=side*(.07+devPose.arms)+Math.abs(devPose.arms)*Math.sin(local*5+side)*.08;
-   shoulder.rotation.x=-.08-Math.max(0,devPose.arms)*.52;
- });
- const blink=(Math.sin(t*2.25+1.2)>.987||Math.sin(t*.86+2.4)>.996);
- humanEyes.forEach(e=>{e.scale.y=blink?.12:(humanAction==='alarm'?.70:humanAction==='defeat'?.30:.61)});
- humanIrises.forEach((iris,i)=>{iris.scale.y=blink?.14:.81;iris.position.x=(i?1:-1)*.184+(devPose.head>0?.012:-.010)});
- faces.orange.orangeEyes?.forEach(e=>{e.scale.y=blink?.18:orangeAction==='surprise'?1.25:1});
- faces.orange.orangeBrows?.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(orangeAction==='celebrate'?-.13:orangeAction==='announce'?.20:.10)});
-
- oldUpdate();
- // Apply coordinated facial acting AFTER the legacy mouth, brow and head updates.
- const prior=shots[index-1];
- const fromEmotion=prior?.acting?.devEmotion||'neutral';
- const toEmotion=shot.acting?.devEmotion||'neutral';
- const facialPose=window.FrameForgePerformanceCore.evaluate({
-  time:t,local,duration:shot.duration,emotion:toEmotion,fromEmotion,
-  speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0,
-  gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
- });
- applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null);
-};
-// V5 projects are versioned documents, NOT hardcoded dialogue arrays.
-const projectCatalog=Object.create(null);
-const projectFiles={comedy:'./projects/zero-latency.frameforge.json',
-                    mystery:'./projects/mountain-mystery.frameforge.json'};
-const projectReady=Promise.all(Object.entries(projectFiles).map(async ([key,path])=>{
- const response=await fetch(path,{cache:'no-cache'});
- if(!response.ok)throw new Error('Missing project '+path+' (HTTP '+response.status+')');
- const document=await response.json();
- window.FrameForgeProjectCore.assertProject(document);
- projectCatalog[key]=document;
-})).then(()=>{window.FrameForgeProjectsLoaded=true;});
-let shots=[],duration=30,time=0,running=false,last=performance.now(),selected=0;
-function load(){const p=$('preset').value;const project=projectCatalog[p];if(!project){$('recordStatus').textContent='Project not yet loaded';return;}
- window.FrameForgeProjectCore.assertRendererCompatible(project);
- soundtrack.pause();
- if(project.audio.state==='mastered'){soundtrack.src=project.audio.masterUrl;soundtrack.load();$('recordStatus').textContent=project.shots.length+' scenes with mastered audio ready';}
- else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard only: no voice master attached';}shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();}
-function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});$('dialogue').value=shots[selected].text;$('speaker').value=shots[selected].speaker;$('camera').value=shots[selected].camera;}
-const reactionCutMap={
- 2:{role:'blue',seconds:.58},
- 3:{role:'dev',seconds:.50},
- 7:{role:'orange',seconds:.67},
- 9:{role:'blue',seconds:.64},
- 11:{role:'orange',seconds:.72},
- 13:{role:'blue',seconds:.92}
-};
-const performerCoordinates={
- blue:[0,2.14,.54],
- orange:[1.72,2.14,.54],
- dev:[-1.70,2.55,-1.0]
-};
-function cinematicReaction(shotIndex,local,duration){
- const cut=reactionCutMap[shotIndex];
- if(!cut)return null;
- if(local<duration-cut.seconds)return null;
- const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:3.05;
- return {role:cut.role,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14),subject[1]+.08,subject[2]+scale]};
-}
-
-function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=si===6?'0 ms':'0 users';$('screenDescription').textContent=si===6?'Page response time':'Active customer sessions';$('sceneTitle').textContent=["TWELVE SECONDS","THE OFFER","NO REGRETS?","THE DEFINITION","THE BACKUP","ONE CHANGE","ZERO LATENCY","INSTANT!","THE TRADE","WHAT ABOUT USERS?","NO MORE WAITING","YOU DID WHAT?","PERFECT RETENTION","THE PUNCHLINE"][si]||'DIRECTED SHOT';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(duration).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,2.13,.57]:s.camera==='orange'?[1.72,2.13,.57]:[0,2.00,0];const shotCamera=[
- [4.7,-.18,.09,36],[4.25,.20,.05,35],[3.95,-.16,.08,36],
- [3.75,.16,.07,34],[4.18,-.10,.04,34],[7.15,-.30,.15,40],
- [6.90,.0,.03,42],[3.84,.19,.06,36],[6.90,0,.03,42],
- [3.48,-.17,.05,34],[3.62,.15,.08,35],[3.85,.13,.09,36],
- [4.12,-.19,.03,36],[7.22,.26,.12,40]
- ];
- const [distance,offset,up,fov]=shotCamera[si]||shotCamera[0];
- const wide=s.camera==='duo'||s.camera==='wide'||s.camera==='screen';
- const ease=Math.max(0,Math.min(1,local/s.duration));
- const dolly=(ease*ease*(3-2*ease)-.5)*.33;
- const pos=wide?[offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance];
- cam.fov=fov;cam.updateProjectionMatrix();
- cam.position.set(pos[0]+dolly*.14+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
- cam.lookAt(tgt[0],tgt[1]+(si===11?.07:0),tgt[2]);
- // Listener reaction inserts are intentional editorial cuts, not camera jitter.
- const listenerCut=cinematicReaction(si,local,s.duration);
- if(listenerCut){
-  cam.position.set(...listenerCut.camera);
-  cam.lookAt(...listenerCut.subject);
-  cam.fov=listenerCut.role==='dev'?34:31;
-  cam.updateProjectionMatrix();
- }
- b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);renderer.render(scene,cam);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
-const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.src='https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
-function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
-$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{shots[selected].text=$('dialogue').value;shots[selected].speaker=$('speaker').value;shots[selected].camera=$('camera').value;refresh();update()};function snapshotProject(){
- const base=window.FrameForgeCurrentProject;
- if(!base)throw new Error('No episode loaded');
- const project=structuredClone(base);
- project.shots=shots.map((shot,i)=>({...project.shots[i],dialogue:shot.text,speaker:shot.speaker,camera:shot.camera,duration:shot.duration}));
- window.FrameForgeProjectCore.assertProject(project);
- return project;
-}
-$('download').onclick=()=>{
- try{
-  const project=snapshotProject();
-  const blob=new Blob([JSON.stringify(project,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=project.id+'.frameforge.json';a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
-  $('projectImportStatus').textContent='Exported '+project.title+' as a validated, reusable episode.';
- }catch(err){$('projectImportStatus').textContent='Export refused: '+err.message;}
-};
-$('projectImport').onchange=async event=>{
- const file=event.target.files?.[0];if(!file)return;
- try{
-  if(file.size>1048576)throw new Error('Maximum project file size is 1 MiB');
-  const project=JSON.parse(await file.text());
-  window.FrameForgeProjectCore.assertRendererCompatible(project);
-  projectCatalog.custom=project;
-  const select=$('preset');
-  let option=select.querySelector('option[value="custom"]');
-  if(!option){option=document.createElement('option');option.value='custom';select.add(option);}
-  option.textContent=project.title+' — Imported project';
-  select.value='custom';
-  load();
-  $('projectImportStatus').textContent='Loaded '+project.title+' ('+project.shots.length+' scenes). Save edits with Download episode JSON.';
- }catch(err){$('projectImportStatus').textContent='Import rejected: '+err.message;}
- finally{event.target.value='';}
-};$('narrate').onclick=()=>{if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
-let recorder=null,recordedChunks=[],recordingStream=null;
-function stopRecording(){if(!recorder||recorder.state==='inactive')return;recorder.stop();$('recordStatus').textContent='Finalizing the WebM recording…';}
-$('record').onclick=async()=>{
- if(recorder&&recorder.state==='recording'){stopRecording();return}if($('preset').value!=='comedy'){$('recordStatus').textContent='Recording requires a generated voice master; choose Zero Latency.';return}
- if(!window.MediaRecorder||!renderer.domElement.captureStream){$('recordStatus').textContent='Video capture not available in this browser';return}
- try{
-  audioInit();await audioContext.resume();running=false;soundtrack.pause();time=0;soundtrack.currentTime=0;update();
-  const videoStream=renderer.domElement.captureStream(30);
-  recordingStream=new MediaStream([...videoStream.getVideoTracks(),...audioDestination.stream.getAudioTracks()]);
-  const mime=['video/webm;codecs=vp8,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t));
-  if(!mime)throw new Error('WebM recording unavailable');
-  recorder=new MediaRecorder(recordingStream,{mimeType:mime,videoBitsPerSecond:4500000});
-  recordedChunks=[];
-  recorder.ondataavailable=e=>{if(e.data.size)recordedChunks.push(e.data)};
-  recorder.onerror=e=>{$('recordStatus').textContent='Recording failed: '+(e.error?.message||'unknown error')};
-  recorder.onstop=()=>{
-   const blob=new Blob(recordedChunks,{type:mime});
-   if(blob.size>1024){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='frameforge-recording.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);$('recordStatus').textContent='Recording completed: '+(blob.size/1024/1024).toFixed(1)+' MB';}
-   else $('recordStatus').textContent='Recording empty; no film generated.';
-   recordingStream?.getTracks().forEach(t=>t.stop());recorder=null;recordingStream=null;
-  };
-  recorder.start(1000);running=true;last=performance.now();soundtrack.currentTime=0;await soundtrack.play();$('record').textContent='■ Finish recording';$('recordStatus').textContent='Recording video and dialogue audio…';
- }catch(e){$('recordStatus').textContent='Recording error: '+e.message;running=false;recorder=null}
-};
-function frame(now){
- if(!offlineMode && running){
-  if(!soundtrack.paused&&soundtrack.readyState>1)time=soundtrack.currentTime;
-  else time+=(now-last)/1000;
-  if(time>=duration-.05||soundtrack.ended){time=duration;running=false;soundtrack.pause();stopRecording()}
- }
- last=now;if(!offlineMode)update();requestAnimationFrame(frame)
-}
-soundtrack.addEventListener('ended',()=>{running=false;time=duration;stopRecording();update();});
-
-let offlineMode=false,decodedEnvelope=null,envReady=false;
-const outCanvas=document.createElement('canvas');
-const outCtx=outCanvas.getContext('2d',{alpha:false});
-function roundRect(x,y,w,h,r){outCtx.beginPath();outCtx.roundRect(x,y,w,h,r)}
-const envPromise=(async()=>{
- const response=await fetch('./dialogue42.ogg');if(!response.ok)throw Error('Voice audio HTTP '+response.status);
- const buffer=await response.arrayBuffer();
- const ctx=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(1,1,24000);
- const audioBuffer=await ctx.decodeAudioData(buffer);
- const samples=audioBuffer.getChannelData(0),windowSamples=Math.max(1,Math.round(audioBuffer.sampleRate/20));
- const raw=[];
- for(let i=0;i<samples.length;i+=windowSamples){
-  let sum=0;const end=Math.min(samples.length,i+windowSamples);
-  for(let j=i;j<end;j++)sum+=samples[j]*samples[j];
-  raw.push(Math.sqrt(sum/Math.max(1,end-i)));
- }
- const sorted=raw.filter(x=>x>.002).sort((a,b)=>a-b);
- const p90=sorted[Math.floor(sorted.length*.9)]||.06;
- decodedEnvelope=raw.map((x,i)=>Math.max(0,Math.min(1,(.22*(raw[i-1]||x)+.56*x+.22*(raw[i+1]||x))/(p90*.93))));
- envReady=true;
-})().catch(e=>{console.error('Voice timing analysis error',e);});
-function wrapWords(c,text,maxWidth){
- const lines=[];let current='';
- for(const word of text.trim().split(/\s+/)){
-  const candidate=current?current+' '+word:word;
-  if(current&&c.measureText(candidate).width>maxWidth){lines.push(current);current=word;}else current=candidate;
- }if(current)lines.push(current);return lines;
-}
-function renderFilmFrame(t,w=360,hh=640,encode=true){
- offlineMode=true;running=false;soundtrack.pause();
- time=Math.max(0,Math.min(duration-.001,t));
- if(renderer.domElement.width!==w||renderer.domElement.height!==hh)renderer.setSize(w,hh,false);
- update();
- if(outCanvas.width!==w)outCanvas.width=w;if(outCanvas.height!==hh)outCanvas.height=hh;
- outCtx.drawImage(renderer.domElement,0,0,w,hh);
- const scale=w/360;
- outCtx.save();outCtx.scale(scale,scale);const H=hh/scale;
- let accumulated=0,activeIndex=shots.length-1;
- for(let i=0;i<shots.length;i++){if(time<accumulated+shots[i].duration){activeIndex=i;break}accumulated+=shots[i].duration}
- if(shots[activeIndex].camera==='screen'){
-  const revealUsers=activeIndex===8,shift=Math.max(0,Math.min(1,(time-accumulated)/Math.max(.1,shots[activeIndex].duration)));
-  const grd=outCtx.createLinearGradient(0,0,360,H);
-  grd.addColorStop(0,'#172340');grd.addColorStop(.7,'#0b1128');grd.addColorStop(1,'#060a18');
-  outCtx.fillStyle=grd;outCtx.fillRect(0,0,360,H);
-  const glass=outCtx.createLinearGradient(0,118,0,H*.79);
-  glass.addColorStop(0,'#192a42');glass.addColorStop(1,'#0b1428');
-  outCtx.fillStyle=glass;roundRect(16,112,328,H*.72,15);outCtx.fill();
-  outCtx.lineWidth=1.5;outCtx.strokeStyle='#48668c';outCtx.stroke();
-  outCtx.fillStyle='#0b1425';roundRect(26,124,308,H*.69,11);outCtx.fill();
-  outCtx.textAlign='left';
-  outCtx.fillStyle='#8d9fb4';outCtx.font='bold 11px Arial';
-  outCtx.fillText('FRAMEFORGE  /  LIVE TELEMETRY',39,154);
-  for(let j=0;j<3;j++){outCtx.fillStyle=['#e97e80','#edbc6c','#71d5ab'][j];outCtx.beginPath();outCtx.arc(281+j*16,148,4,0,Math.PI*2);outCtx.fill();}
-  outCtx.fillStyle='#8e9db3';outCtx.font='11px monospace';
-  outCtx.fillText('prod / deployment 7a4f',40,187);
-  outCtx.fillStyle=revealUsers?'#f2a3ad':'#82f0c8';outCtx.font='bold 17px Arial';
-  outCtx.fillText(revealUsers?'CUSTOMER SESSIONS':'PAGE LOAD TIME',40,235);
-  outCtx.textAlign='center';outCtx.font='900 83px Arial';
-  outCtx.fillText(revealUsers?'0':'0 ms',180,341);
-  outCtx.font='13px Arial';outCtx.fillStyle='#e4e9f5';
-  outCtx.fillText(revealUsers?'No one can use the app.':'Instant page delivery achieved.',180,376);
-  outCtx.textAlign='left';
-  outCtx.fillStyle='#172438';roundRect(40,404,280,53,7);outCtx.fill();
-  outCtx.fillStyle='#a9bdca';outCtx.font='13px monospace';
-  outCtx.fillText(revealUsers?'GET /customers  -> []':'GET /api       -> disabled',52,425);
-  outCtx.fillStyle=revealUsers?'#f4a1a8':'#a3f1cf';outCtx.font='bold 12px monospace';
-  outCtx.fillText(revealUsers?'0 ACTIVE USERS':'REQUESTS ELIMINATED',52,445);
-  const graphY=Math.min(H-60,505),barMax=240;
-  outCtx.strokeStyle='#344b67';outCtx.lineWidth=1;outCtx.beginPath();
-  outCtx.moveTo(45,graphY+80);outCtx.lineTo(315,graphY+80);outCtx.stroke();
-  outCtx.strokeStyle=revealUsers?'#f1a0aa':'#80e5bf';outCtx.lineWidth=3;outCtx.beginPath();
-  for(let i=0;i<10;i++){
-   let px=46+i*(barMax/9),v=revealUsers?72:75-23*Math.exp(-i*.6);
-   if(i===0)outCtx.moveTo(px,graphY+v);else outCtx.lineTo(px,graphY+v);
   }
-  outCtx.stroke();outCtx.font='11px Arial';outCtx.fillStyle='#8b9eb5';
-  outCtx.fillText(revealUsers?'NO CUSTOMERS DETECTED':'LOAD TIME: 0.000 SECONDS',45,graphY+106);
-  if(shift>.68){outCtx.fillStyle=revealUsers?'#ef7e87':'#64d4a3';outCtx.fillRect(40,H*.77,280,2);}
  }
- // Title treatment is part of the final frame rather than a separate HTML overlay.
- outCtx.fillStyle='rgba(7,10,22,.91)';roundRect(12,14,336,65,11);outCtx.fill();
- outCtx.strokeStyle='#3d4a70';outCtx.lineWidth=1.2;outCtx.stroke();
- outCtx.fillStyle='#c9b2a2';outCtx.font='700 10px Arial';outCtx.fillText('FRAMEFORGE STORIES  /  EPISODE 01',23,34);
- outCtx.fillStyle='#f9f9ff';outCtx.font='800 18px Arial';
- outCtx.fillText($('sceneTitle').textContent||'THE STORY',23,61);
- const lineText=$('subtitle').textContent;
- outCtx.font='bold 20px Arial, sans-serif';
- const lines=wrapWords(outCtx,lineText,305);
- const y=H-112-(lines.length-1)*14;
- outCtx.fillStyle='rgba(8,10,23,.88)';roundRect(10,y-28,340,Math.max(65,lines.length*25+18),10);outCtx.fill();
- outCtx.strokeStyle='rgba(83,105,163,.75)';outCtx.stroke();
- outCtx.textAlign='center';outCtx.textBaseline='middle';
- outCtx.fillStyle='#fff';outCtx.shadowColor='#050817';outCtx.shadowBlur=3;
- lines.forEach((line,i)=>outCtx.fillText(line,180,y+i*24));
- outCtx.restore();
- return encode?outCanvas.toDataURL('image/jpeg',.88):outCanvas;
+ const s=shots[i];
+ if(s&&rows[i])rows[i].style.setProperty('--p',Math.min(1,(t-s.start)/s.duration));
+ requestAnimationFrame(tick);
 }
 
-let offlineExportActive=false;
-async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,download=true,startTime=0}={}){
- if(offlineExportActive)throw new Error('Another export is already running');
- if($('preset').value!=='comedy')throw new Error('This story has no generated voice master. Use Zero Latency.');
- if(typeof VideoEncoder!=='function')throw new Error('This browser lacks WebCodecs video encoding.');
- const fps=30,frames=frameLimit??Math.round(duration*fps);
- if(!Number.isInteger(frames)||frames<=0||frames>18000)throw new Error('Invalid frame count');
- if(!Number.isFinite(startTime)||startTime<0||startTime+frames/fps>duration+.05)throw new Error('Export segment outside the film duration');
- if(width%2||height%2)throw new Error('MP4 requires even output dimensions');
- offlineExportActive=true;const started=performance.now();const status=$('mp4Status');
- let sourceVideo=null,sourceAudio=null;
- try{
-  status.textContent='Initializing the MP4 encoders…';
-  await envPromise;
-  if(!envReady)throw new Error('Voice timing analysis unavailable');
-  const media=await import('https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/+esm');
-  const {Output,BufferTarget,Mp4OutputFormat,CanvasSource,AudioBufferSource,Quality,canEncodeAudio}=media;
-  if(!(await canEncodeAudio('aac'))){
-    status.textContent='Loading free AAC audio encoder…';
-    const {registerAacEncoder}=await import('https://cdn.jsdelivr.net/npm/@mediabunny/aac-encoder@1.62.1/+esm');
-    registerAacEncoder();
-  }
-  const output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
-  sourceVideo=new CanvasSource(outCanvas,{codec:'avc',quality:new Quality({bitrate:width>=1080?6800000:width>=720?4200000:width>=480?2400000:1300000}),keyFrameInterval:2,hardwareAcceleration:'no-preference'});
-  sourceAudio=new AudioBufferSource({codec:'aac',quality:new Quality({bitrate:160000})});
-  output.addVideoTrack(sourceVideo);output.addAudioTrack(sourceAudio);
-  // Decode the actual voice master. The recorded MP4 must use the same clock for audio and video.
-  const voice=await fetch('https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-stereo-foley-v2.ogg');if(!voice.ok)throw new Error('Voice file failed to load: '+voice.status);
-  const audioContextForExport=new(window.AudioContext||window.webkitAudioContext)();
-  let decoded;
-  try{decoded=await audioContextForExport.decodeAudioData(await voice.arrayBuffer())}
-  finally{await audioContextForExport.close()}
-  const intendedLength=Math.round(frames/fps*decoded.sampleRate);
-  const startSample=Math.round(startTime*decoded.sampleRate);
-  if(decoded.length<startSample+intendedLength-100)throw new Error('Voice track is shorter than the chosen video segment');
-  const audioBuffer=new AudioBuffer({sampleRate:decoded.sampleRate,numberOfChannels:decoded.numberOfChannels,length:intendedLength});
-  for(let c=0;c<decoded.numberOfChannels;c++)audioBuffer.copyToChannel(decoded.getChannelData(c).subarray(startSample,startSample+intendedLength),c);
-  await output.start();
-  await sourceAudio.add(audioBuffer);
-  sourceAudio.close();sourceAudio=null;
-  for(let i=0;i<frames;i++){
-   renderFilmFrame(startTime+i/fps,width,height,false);
-   await sourceVideo.add(i/fps,1/fps);
-   if(i%15===0||i===frames-1){status.textContent='Rendering exact frames: '+(i+1)+' / '+frames+' ('+Math.floor((i+1)*100/frames)+'%)';await new Promise(r=>setTimeout(r,0))}
-  }
-  sourceVideo.close();sourceVideo=null;
-  status.textContent='Finalizing H.264 video and AAC audio…';
-  await output.finalize();
-  const raw=output.target.buffer;
-  if(!raw||raw.byteLength<1000)throw new Error('MP4 unexpectedly empty');
-  const blob=new Blob([raw],{type:'video/mp4'});
-  status.textContent='MP4 complete · '+(blob.size/1024/1024).toFixed(2)+' MB · '+(frames/fps).toFixed(2)+' seconds · '+(width+'×'+height);
-  if(download){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='frameforge-zero-latency-'+width+'x'+height+'.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
-  return {blob,bytes:blob.size,duration:frames/fps,frames,width,height,elapsed:Math.round((performance.now()-started)/1000)};
- }catch(e){status.textContent='Export failed: '+e.message;throw e}
- finally{
-  sourceVideo?.close();sourceAudio?.close();offlineMode=false;offlineExportActive=false;
-  renderer.setSize(720,1280,false);running=false;time=0;update();
- }
-}
-$('exportMP4').onclick=async()=>{const size=Number($('mp4Res').value);$('exportMP4').disabled=true;try{await exportFrameAccurateMP4({width:size,height:Math.round(size*16/9)})}catch(e){console.error('MP4 export',e)}finally{$('exportMP4').disabled=false}};
-window.FrameForgeMP4Test=exportFrameAccurateMP4;
-
-window.FrameForgeActing={pose:()=>({human:{head:humanHead.rotation.toArray(),body:bodyGroup.rotation.toArray()},blue:faces.blue.armJoints?.map(a=>a.pivot.rotation.toArray()),orange:faces.orange.armJoints?.map(a=>a.pivot.rotation.toArray())})};
-// V5 Phase 1C — render existing studio rig geometry for actual art QA.
-const ART_VIEWS=[
- {id:'front',radians:0,label:'Front'},
- {id:'three-quarter',radians:-Math.PI/4,label:'Three-quarter'},
- {id:'side',radians:-Math.PI/2,label:'Side'},
- {id:'back',radians:Math.PI,label:'Back'}
-];
-const ART_EXPRESSIONS=['neutral','happy','worried','surprised'];
-function artPose(actorId,emotion){
- if(actorId==='dev'){
-  const pose=window.FrameForgePerformanceCore.evaluate({
-    time:1.25,local:1,duration:2,emotion,
-    speaking:emotion==='surprised',energy:emotion==='surprised'?.42:0,
-    gazeX:0,gazeY:0
-  });
-  humanHead.rotation.set(0,0,0);
-  applyHumanFacePose(pose);
- }else{
-  const face=actorId==='blue'?faces.blue:faces.orange;
-  drawActorFace(face,emotion,emotion==='surprised'?.4:emotion==='worried'?.16:0,.5,emotion==='surprised'?'round':'rest',0);
- }
-}
-function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,height=460,portrait=false){
- const actors={dev,blue:b.root,orange:o.root};
- if(!Object.hasOwn(actors,actorId))throw new Error('Unknown character '+actorId);
- const view=ART_VIEWS.find(x=>x.id===angle);
- if(!view)throw new Error('Unknown view '+angle);
- if(!ART_EXPRESSIONS.includes(emotion))throw new Error('Unknown expression '+emotion);
- if(!Number.isInteger(width)||!Number.isInteger(height)||width<160||height<200||width>1024||height>1024)throw new Error('Invalid sheet resolution');
- const selected=actors[actorId];
- if(typeof portrait!=='boolean')throw new Error('portrait must be boolean');
- const show=scene.children.map(child=>[child,child.visible]);
- const camera={position:cam.position.clone(),quaternion:cam.quaternion.clone(),fov:cam.fov,aspect:cam.aspect,near:cam.near,far:cam.far};
- const size=renderer.getSize(new T.Vector2());
- const bg=scene.background,fog=scene.fog;
- const baseRotation=selected.rotation.y;
- const wasRunning=running;
- const faceData={
-  mouthScale:mouthNew.scale.clone(),mouthVisible:mouthNew.visible,smileVisible:humanSmile.visible,frownVisible:humanFrown.visible,headRotation:humanHead.rotation.clone(),
-  eyebrows:browsNew.map(x=>({position:x.position.clone(),rotation:x.rotation.clone()})),
-  eyes:humanEyes.map(x=>x.scale.clone())
- };
- try{
-  running=false;soundtrack.pause();
-  scene.children.forEach(child=>{
-   if(child.isLight)return;
-   child.visible=(child===selected);
-  });
-  selected.visible=true;
-  selected.rotation.y=view.radians;
-  artPose(actorId,emotion);
-  scene.background=new T.Color(0x111d30);
-  scene.fog=null;
-  renderer.setSize(width,height,false);
-  cam.aspect=width/height;cam.fov=portrait?31:34;cam.near=.1;cam.far=50;cam.updateProjectionMatrix();
-  const centerY=actorId==='dev'?1.84:1.54;
-  const faceY=actorId==='dev'?selected.position.y+2.30:selected.position.y+1.45;
-  const targetY=portrait?faceY:centerY;
-  cam.position.set(selected.position.x,targetY+(portrait?.04:.15),selected.position.z+(portrait?2.8:6.6));
-  cam.lookAt(selected.position.x,targetY,selected.position.z);
-  renderer.render(scene,cam);
-  return renderer.domElement.toDataURL('image/png');
- }finally{
-  selected.rotation.y=baseRotation;
-  for(const [child,visible]of show)child.visible=visible;
-  mouthNew.scale.copy(faceData.mouthScale);mouthNew.visible=faceData.mouthVisible;humanSmile.visible=faceData.smileVisible;humanFrown.visible=faceData.frownVisible;
-  humanHead.rotation.copy(faceData.headRotation);
-  browsNew.forEach((x,i)=>{x.position.copy(faceData.eyebrows[i].position);x.rotation.copy(faceData.eyebrows[i].rotation)});
-  humanEyes.forEach((x,i)=>x.scale.copy(faceData.eyes[i]));
-  scene.background=bg;scene.fog=fog;
-  renderer.setSize(size.x,size.y,false);
-  cam.position.copy(camera.position);cam.quaternion.copy(camera.quaternion);
-  cam.fov=camera.fov;cam.aspect=camera.aspect;cam.near=camera.near;cam.far=camera.far;cam.updateProjectionMatrix();
-  if(typeof update==='function'&&shots.length)update();
-  running=wasRunning;
-  renderer.render(scene,cam);
- }
-}
-function captureEnvironment(width=360,height=640){
- if(!Number.isInteger(width)||!Number.isInteger(height)||width<160||height<220||width>1024||height>1400)throw new Error('Invalid environment output size');
- const actors=[dev,b.root,o.root];
- const previous=actors.map(actor=>actor.visible);
- const oldSize=renderer.getSize(new T.Vector2()),position=cam.position.clone(),quat=cam.quaternion.clone();
- const oldFov=cam.fov,oldAspect=cam.aspect,oldTime=time,wasRunning=running;
- try{
-  running=false;soundtrack.pause();
-  actors.forEach(actor=>actor.visible=false);
-  renderer.setSize(width,height,false);
-  cam.aspect=width/height;cam.fov=40;cam.updateProjectionMatrix();
-  cam.position.set(0,3.1,8.6);cam.lookAt(0,1.45,0);
-  renderer.render(scene,cam);
-  return renderer.domElement.toDataURL('image/png');
- }finally{
-  actors.forEach((actor,i)=>actor.visible=previous[i]);
-  renderer.setSize(oldSize.x,oldSize.y,false);
-  cam.position.copy(position);cam.quaternion.copy(quat);cam.fov=oldFov;cam.aspect=oldAspect;cam.updateProjectionMatrix();
-  time=oldTime;running=wasRunning;
-  renderer.render(scene,cam);
- }
-}
-window.FrameForgeSpeechQA=Object.freeze({
- version:window.FrameForgeSpeechCore.version,
- types:window.FrameForgeSpeechCore.types,
- at:(seconds)=>{
-  const secondsSafe=Math.max(0,Number(seconds)||0);let cursor=0,shot=shots.at(-1);
-  for(const s of shots){if(secondsSafe<cursor+s.duration){shot=s;break}cursor+=s.duration}
-  return window.FrameForgeSpeechCore.evaluate({text:shot.text,local:secondsSafe-cursor,
-    duration:shot.duration,shotStart:cursor,samples:envReady?decodedEnvelope:null,
-    rate:20,audioEnergy:0,speaker:shot.speaker});
- }
-});
-window.FrameForgePerformanceQA=Object.freeze({
- poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
- facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
- humanRig:()=>({upperLids:humanUpperLids.length,lowerLids:humanLowerLids.length,cheeks:humanCheeks.length,lipCorners:humanLipCorners.length}),
- peek:()=>({mouthScale:mouthNew.scale.y,mouthWidth:mouthNew.scale.x,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
-});
-window.FrameForgeArtLab=Object.freeze({
- version:'v5-phase1c-actual-rigs',
- actors:()=>['dev','blue','orange'],
- views:()=>ART_VIEWS.map(x=>x.id),
- expressions:()=>[...ART_EXPRESSIONS],
- capture:captureCharacterView,
- captureEnvironment
-});
-
-window.FrameForgeQA={
- renderer,scene,cam,shots:()=>shots,time:()=>time,
- setPreviewSize:(w,h)=>renderer.setSize(w,h,false),
- setTime:(t)=>{running=false;soundtrack.pause();time=t;update();},
- envelopeReady:()=>envReady,envelope:()=>decodedEnvelope,
- setOffline:(enabled)=>{offlineMode=Boolean(enabled);running=false;soundtrack.pause();},
- renderFilmFrame:(t,w=360,h=640)=>renderFilmFrame(t,w,h)
-};
-
-projectReady.then(()=>{load();requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
-</script></body></html>
+$('playPause').onclick=()=>{reel.paused?play():(reel.pause(),syncButtons())};
+$('sound').onclick=()=>{reel.muted=!reel.muted;if(!reel.muted&&reel.paused)play();syncButtons()};
+rowsEl.addEventListener('wheel',()=>{userScrolledAt=Date.now()},{passive:true});
+rowsEl.addEventListener('touchmove',()=>{userScrolledAt=Date.now()},{passive:true});
+for(const tab of document.querySelectorAll('.tabs button'))tab.onclick=()=>loadEpisode(tab.dataset.ep);
+reel.addEventListener('pause',syncButtons);reel.addEventListener('play',syncButtons);
+loadEpisode('comedy');requestAnimationFrame(tick);
+</script>
+</body>
+</html>

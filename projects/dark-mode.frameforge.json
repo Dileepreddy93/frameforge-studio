@@ -1,0 +1,626 @@
+{
+  "schema": "frameforge.project/1",
+  "id": "dark-mode",
+  "title": "Dark Mode",
+  "logline": "A developer asks two AI assistants for dark mode. They deliver total darkness.",
+  "banner": "FRAMEFORGE STORIES  /  EPISODE 02",
+  "output": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "style": {
+    "styleLock": "Original cinematic stylized low-poly 3D. Unified characters, detailed moody studio, rich key/fill/rim lighting. No anime, no Pixar imitation, no photorealism. Stable proportions and identities."
+  },
+  "environment": {
+    "id": "developer-neon-lab",
+    "description": "Moody layered developer studio with desk, monitor, ambient fixtures and readable story-relevant interface props.",
+    "safeZone": {
+      "top": 220,
+      "bottom": 420
+    }
+  },
+  "characters": [
+    {
+      "id": "dev",
+      "name": "DEV",
+      "visualIdentity": "Original stylized low-poly adult developer, visible facial expressions, coherent hoodie and hair silhouette",
+      "voice": {
+        "profile": "developer",
+        "voiceLock": "Consistent expressive adult voice, clear words, measured comic timing; maintain this exact profile between shots",
+        "kokoro": {
+          "voice": "am_michael",
+          "speed": 1
+        }
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "worried",
+        "surprised",
+        "happy"
+      ]
+    },
+    {
+      "id": "blue",
+      "name": "BLUE",
+      "visualIdentity": "Original blue-grey expressive robot with a cohesive rounded metal body and contrasting digital face",
+      "voice": {
+        "profile": "blue-assistant",
+        "voiceLock": "Distinct playful high-mid synthetic English voice with precise pacing and consistent timbre",
+        "kokoro": {
+          "voice": "af_heart",
+          "speed": 1
+        }
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "happy",
+        "worried",
+        "surprised"
+      ]
+    },
+    {
+      "id": "orange",
+      "name": "ORANGE",
+      "visualIdentity": "Original warm orange robot with a cohesive rounded metal body and expressive contrasting digital face",
+      "voice": {
+        "profile": "orange-assistant",
+        "voiceLock": "Distinct warm synthetic English voice, emotionally controlled, deadpan comedic delivery",
+        "kokoro": {
+          "voice": "bm_george",
+          "speed": 1
+        }
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "happy",
+        "worried",
+        "surprised"
+      ]
+    }
+  ],
+  "shots": [
+    {
+      "id": "shot-01",
+      "title": "THE REQUEST",
+      "dialogue": "Users keep asking for dark mode.",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 2.7,
+      "intent": "setup",
+      "cast": {
+        "dev": {
+          "action": "typing",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "sfx": [
+        {
+          "cue": "typing",
+          "at": 0,
+          "gain": -4
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-01.wav",
+        "seconds": 2.201
+      }
+    },
+    {
+      "id": "shot-02",
+      "title": "FAVORITE MODE",
+      "dialogue": "Dark mode is my favorite mode.",
+      "speaker": "blue",
+      "camera": "blue",
+      "duration": 2.433333333333333,
+      "intent": "offer",
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "blue": {
+          "action": "announce",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "framing": {
+        "distance": 4.25,
+        "offset": 0.2,
+        "up": 0.05,
+        "fov": 35,
+        "move": "push",
+        "amount": 0.25
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-02.wav",
+        "seconds": 1.94
+      }
+    },
+    {
+      "id": "shot-03",
+      "title": "JUST DARKER",
+      "dialogue": "Great. Just make the app darker.",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 2.6666666666666665,
+      "intent": "request",
+      "cast": {
+        "dev": {
+          "action": "question",
+          "emotion": "happy"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.55
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-03.wav",
+        "seconds": 1.961
+      }
+    },
+    {
+      "id": "shot-04",
+      "title": "HOW DARK?",
+      "dialogue": "How dark?",
+      "speaker": "orange",
+      "camera": "orange",
+      "duration": 1.8333333333333333,
+      "intent": "deadpan",
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "anticipate",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.6
+      },
+      "framing": {
+        "distance": 3.75,
+        "offset": 0.16,
+        "up": 0.07,
+        "fov": 34,
+        "move": "static"
+      },
+      "reactionCut": {
+        "role": "dev",
+        "seconds": 0.5
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-04.wav",
+        "seconds": 1.079
+      }
+    },
+    {
+      "id": "shot-05",
+      "title": "NOTHING FANCY",
+      "dialogue": "Easy on the eyes. Nothing fancy.",
+      "speaker": "dev",
+      "camera": "duo",
+      "duration": 2.966666666666667,
+      "intent": "clarify",
+      "cast": {
+        "dev": {
+          "action": "explain",
+          "emotion": "neutral"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.35
+      },
+      "framing": {
+        "distance": 6.9,
+        "offset": 0,
+        "up": 0.03,
+        "fov": 42,
+        "move": "drift",
+        "amount": 0.4,
+        "aim": "dev"
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-05.wav",
+        "seconds": 2.46
+      }
+    },
+    {
+      "id": "shot-06",
+      "title": "MAXIMUM DARKNESS",
+      "dialogue": "Done. Maximum darkness achieved.",
+      "speaker": "blue",
+      "camera": "blue",
+      "duration": 2.933333333333333,
+      "intent": "payoff",
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "blue": {
+          "action": "celebrate",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.6
+      },
+      "sfx": [
+        {
+          "cue": "chime",
+          "at": 0.3
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-06.wav",
+        "seconds": 2.186
+      }
+    },
+    {
+      "id": "shot-07",
+      "title": "THE RESULT",
+      "dialogue": "The screen is now completely black.",
+      "speaker": "orange",
+      "camera": "screen",
+      "duration": 3.433333333333333,
+      "intent": "reveal",
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "surprised"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "explain",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.7
+      },
+      "insert": {
+        "window": "FRAMEFORGE  /  DISPLAY",
+        "context": "prod / theme dark-max",
+        "headline": "SCREEN BRIGHTNESS",
+        "value": "0%",
+        "caption": "Nothing to see here.",
+        "request": "GET /pixels     -> off",
+        "status": "ALL PIXELS DISABLED",
+        "footer": "DISPLAY: OFF",
+        "label": "Screen brightness",
+        "tone": "bad",
+        "graph": "flat"
+      },
+      "sfx": [
+        {
+          "cue": "whoosh",
+          "at": 0,
+          "gain": -6
+        },
+        {
+          "cue": "buzz",
+          "at": 0.4,
+          "gain": -6
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-07.wav",
+        "seconds": 2.581
+      }
+    },
+    {
+      "id": "shot-08",
+      "title": "TOTAL ECLIPSE",
+      "dialogue": "I can't see anything.",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 2.2,
+      "intent": "shock",
+      "cast": {
+        "dev": {
+          "action": "alarm",
+          "emotion": "surprised"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.65
+      },
+      "framing": {
+        "distance": 3.48,
+        "offset": -0.17,
+        "up": 0.05,
+        "fov": 34,
+        "move": "push",
+        "amount": 0.7,
+        "roll": 7
+      },
+      "reactionCut": {
+        "role": "blue",
+        "seconds": 0.6,
+        "emotion": "happy"
+      },
+      "sfx": [
+        {
+          "cue": "scratch",
+          "at": 0,
+          "gain": -4
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-08.wav",
+        "seconds": 1.385
+      }
+    },
+    {
+      "id": "shot-09",
+      "title": "FEATURE, NOT BUG",
+      "dialogue": "Exactly. No more eye strain.",
+      "speaker": "blue",
+      "camera": "blue",
+      "duration": 2.6,
+      "intent": "justify",
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "shrug",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.5
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-09.wav",
+        "seconds": 1.951
+      }
+    },
+    {
+      "id": "shot-10",
+      "title": "A LITTLE LIGHT",
+      "dialogue": "Can you add a little light?",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 2.2666666666666666,
+      "intent": "plead",
+      "cast": {
+        "dev": {
+          "action": "plead",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "neutral"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.5
+      },
+      "framing": {
+        "distance": 3.62,
+        "offset": 0.15,
+        "up": 0.08,
+        "fov": 35,
+        "move": "pull",
+        "amount": 0.3
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-10.wav",
+        "seconds": 1.608
+      }
+    },
+    {
+      "id": "shot-11",
+      "title": "ONE PIXEL",
+      "dialogue": "I added one pixel. It is very proud.",
+      "speaker": "orange",
+      "camera": "orange",
+      "duration": 3.8666666666666667,
+      "intent": "punch",
+      "cast": {
+        "dev": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "blue": {
+          "action": "listen",
+          "emotion": "neutral"
+        },
+        "orange": {
+          "action": "announce",
+          "emotion": "happy"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 0.75
+      },
+      "framing": {
+        "distance": 3.75,
+        "offset": 0.16,
+        "up": 0.07,
+        "fov": 34,
+        "move": "push",
+        "amount": 0.15
+      },
+      "reactionCut": {
+        "role": "dev",
+        "seconds": 0.7
+      },
+      "sfx": [
+        {
+          "cue": "pop",
+          "at": 0.9,
+          "gain": -6
+        }
+      ],
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-11.wav",
+        "seconds": 2.981
+      }
+    },
+    {
+      "id": "shot-12",
+      "title": "SHIP IT",
+      "dialogue": "Ship it.",
+      "speaker": "dev",
+      "camera": "duo",
+      "duration": 3.7666666666666666,
+      "intent": "button",
+      "cast": {
+        "dev": {
+          "action": "defeat",
+          "emotion": "worried"
+        },
+        "blue": {
+          "action": "celebrate",
+          "emotion": "happy"
+        },
+        "orange": {
+          "action": "listen",
+          "emotion": "happy"
+        }
+      },
+      "timing": {
+        "lead": 0.15,
+        "pauseAfter": 2.8
+      },
+      "framing": {
+        "distance": 7.22,
+        "offset": 0.26,
+        "up": 0.12,
+        "fov": 40,
+        "move": "pull",
+        "amount": 0.6,
+        "aim": "dev"
+      },
+      "firstFrameStatus": "not_created",
+      "voice": {
+        "file": "lines/shot-12.wav",
+        "seconds": 0.829
+      }
+    }
+  ],
+  "audio": {
+    "state": "mastered",
+    "masterUrl": "audio/dark-mode/mix.mp3",
+    "music": {
+      "bpm": 96,
+      "cues": [
+        {
+          "shot": "shot-01",
+          "style": "groove"
+        },
+        {
+          "shot": "shot-07",
+          "style": "stop"
+        },
+        {
+          "shot": "shot-08",
+          "style": "tension"
+        },
+        {
+          "shot": "shot-12",
+          "style": "stop"
+        },
+        {
+          "shot": "shot-12",
+          "style": "sting",
+          "at": "afterLine"
+        }
+      ]
+    },
+    "voiceUrl": "audio/dark-mode/voice.mp3",
+    "audioAlignment": "per_line_voice_clock"
+  }
+}

@@ -37,7 +37,8 @@
       return dist<1?Math.pow(1-dist,2):0;
     };
     const periodic=(period,phase,width)=>{
-      const center=Math.floor((t+phase)/period)*period-phase+.41;
+      // +2.41 puts the first blinks at 1.16 s and 1.96 s, so an episode never opens mid-blink.
+      const center=Math.floor((t+phase)/period)*period-phase+2.41;
       return Math.max(blinkPulse(center,width),blinkPulse(center+period,width));
     };
     const blink=Math.max(periodic(3.6,.45,.17),periodic(6.3,1.25,.13));
