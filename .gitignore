@@ -12,3 +12,4 @@ __pycache__/
 audio/*/lines/
 audio/*/.work/
 renders/
+models/

@@ -38,7 +38,7 @@ Examples:
 | `framing.move`, `framing.amount` | no | `push` `pull` `drift` `static`; travel 0–2 | `push`, 0.33 |
 | `framing.roll` | no | canted angle, −20..20 degrees | 0 |
 | `framing.aim` | no | `center` or a character id: which side a duo/wide shot favours | the speaker for `duo`, else `center` |
-| `timing` | no | `{lead, pauseAfter}` seconds before and after the spoken line | 0.15 / 0.35 (used by `tools/build-audio.mjs`) |
+| `timing` | no | `{lead, pauseAfter}` seconds before and after the spoken line | 0.15 / 0.35 (used by `tools/build-audio.mjs` and the studio's in-browser voices) |
 | `sfx` | no | up to 8 `{cue, at, gain?}`, cue: `typing` `chime` `buzz` `zap` `scratch` `whoosh` `pop` | none |
 | `voice` | generated | `{file, seconds}` written by `tools/build-audio.mjs` | |
 | `reactionCut` | no | `{role, seconds, emotion?}`: cut to `role` for the last `seconds` of the shot, optionally changing their emotion | none |

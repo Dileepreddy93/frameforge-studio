@@ -5,3 +5,4 @@ audio/*/lines
 audio/*/.work
 .env*
 renders
+models

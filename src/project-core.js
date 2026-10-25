@@ -116,7 +116,7 @@
     id:s.id,text:s.dialogue,speaker:s.speaker,camera:s.camera,duration:s.duration,intent:s.intent,
     title:s.title??'',cast,
     framing:{distance,offset,up,fov,lookUp:0,move:'push',amount:.33,roll:0,aim:s.camera==='duo'?s.speaker:'center',...s.framing},
-    timing:{lead:s.timing?.lead??0,pauseAfter:s.timing?.pauseAfter??0},voice:s.voice??null,
+    timing:{lead:s.timing?.lead??.15,pauseAfter:s.timing?.pauseAfter??.35},voice:s.voice??null,
     reactionCut:s.reactionCut??null,insert:s.insert??null,wall:s.wall??null
    };
   });

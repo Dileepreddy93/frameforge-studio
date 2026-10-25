@@ -49,7 +49,14 @@ Browser tests need Playwright (`npm install --no-save playwright@1.56.1 && npx p
 
 CI runs these in .github/workflows/project-contract.yml.
 
-## Making an episode
+## Voices in the browser (what buyers use)
+The studio voices every line in the browser with Kokoro-82M (Apache-2.0): `src/kokoro-worker.js` runs the model with
+ONNX Runtime Web (WebGPU, else WebAssembly), `src/kokoro-g2p.js` turns text into phonemes from misaki's dictionary
+(`assets/voice/`, see its NOTICE.md). The 326 MB model downloads once from Hugging Face (pinned revision) into the
+browser's cache; a `models/kokoro-82m-v1.0/` folder next to `studio.html` is used first. Voiced lines are cached, and
+`sw.js` keeps the studio working offline. No keys, no server.
+
+## Making an episode (our own renders)
 1. Write or edit `projects/<episode>.frameforge.json` (format: docs/PROJECT_FORMAT.md).
 2. Audio: `node tools/build-audio.mjs projects/<episode>.frameforge.json` generates voice lines with local Kokoro,
    times every shot from its line, synthesises music and sound effects, and masters to -14 LUFS.
