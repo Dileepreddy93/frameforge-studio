@@ -51,19 +51,20 @@ async function make(){
   }));
   if(!$('environment').src){$('environment').src=api.captureEnvironment(360,640);}
   status.textContent='Preparing contact sheet for reliable one-click export...';
-  preparedSheet=await composeSheet(shots);
-  save.disabled=false;status.textContent=who.toUpperCase()+' · 8 true 3D frames rendered; export ready; art approval pending';
+  preparedSheet=await composeSheet(shots,views.length);
+  save.disabled=false;status.textContent=who.toUpperCase()+' · '+shots.length+' true 3D frames rendered; export ready; art approval pending';
  }catch(error){status.textContent='Rendering error: '+error.message;console.error(error)}
  finally{btn.disabled=false}
 }
-async function composeSheet(frames){
- if(frames.length!==8)throw new Error('Expected four views and four expression frames');
- const cellW=360,cellH=500;
- const cvs=document.createElement('canvas');cvs.width=cellW*4;cvs.height=cellH*2;const ctx=cvs.getContext('2d');
+// Views on the first row, expressions on the second.
+async function composeSheet(frames,views){
+ if(!views||frames.length<=views)throw new Error('Expected the views and then the expression frames');
+ const cellW=360,cellH=500,cols=Math.max(views,frames.length-views);
+ const cvs=document.createElement('canvas');cvs.width=cellW*cols;cvs.height=cellH*2;const ctx=cvs.getContext('2d');
  ctx.fillStyle='#0c1523';ctx.fillRect(0,0,cvs.width,cvs.height);
  for(let i=0;i<frames.length;i++){
   const img=new Image();img.src=frames[i].png;await img.decode();
-  const x=(i%4)*cellW,y=Math.floor(i/4)*cellH;
+  const row=i<views?0:1,x=(row?i-views:i)*cellW,y=row*cellH;
   ctx.drawImage(img,x,y,cellW,460);ctx.fillStyle='#e0eafb';ctx.font='bold 19px sans-serif';ctx.fillText(frames[i].name.toUpperCase(),x+17,y+488);
  }
  return cvs.toDataURL('image/png');

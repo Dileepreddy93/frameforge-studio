@@ -10,7 +10,7 @@ const {chromium}=require('playwright');
  assert.equal(resp.status(),200);
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgePerformanceQA&&window.FrameForgeArtLab&&window.FrameForgeQA?.shots().length===14,null,{timeout:45000});
  const props=await page.evaluate(()=>FrameForgePerformanceQA.humanRig());
- assert.deepEqual(props,{pupils:2,brows:2,mouths:3});
+ assert.deepEqual(props,{pupils:2,brows:2,mouths:1});
  let faces=[];
  for(const emotion of ['neutral','happy','worried','surprised']){
   const png=await page.evaluate(emotion=>FrameForgeArtLab.capture('dev','front',emotion,360,460,true),emotion);

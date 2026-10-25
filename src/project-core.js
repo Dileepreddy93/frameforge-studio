@@ -11,7 +11,7 @@
  const isRecord=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
  const goodText=(s,max=2048)=>typeof s==='string'&&s.trim().length>0&&s.length<=max;
  const allowedStatuses=new Set(['not_created','draft','approved']);
- const EMOTIONS=new Set(['neutral','happy','worried','surprised','angry']);
+ const EMOTIONS=new Set(['neutral','happy','worried','surprised','angry','sad','thinking']);
  const ACTIONS=new Set(['listen','typing','react','question','plead','alarm','surprise','defeat','announce','explain','celebrate','shrug','anticipate']);
  const SFX=new Set(['typing','chime','buzz','zap','scratch','whoosh','pop']);
  const MUSIC=new Set(['groove','tension','stop','sting']);

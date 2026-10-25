@@ -26,6 +26,8 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <script src="./src/project-core.js"></script>
 <script src="./src/performance-core.js"></script>
 <script src="./src/speech-performance-core.js"></script>
+<script src="./design/dev-forms.js"></script>
+<script src="./design/dev-character.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
@@ -368,7 +370,7 @@ bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
 // hoodie with a hood ring and drawstrings. The root keeps the V5 coordinates the cameras aim at.
 dev.children.forEach(child=>child.visible=false);
 const humanRig=new T.Group();dev.add(humanRig);
-const personSkin=Object.assign(flat(0xa3552f),{name:'dev-skin'}),blackHair=Object.assign(flat(0x232842),{name:'dev-hair'}),
+const personSkin=Object.assign(flat(0xa3552f),{name:'dev-skin'}),blackHair=Object.assign(flat(0x2a1c22),{name:'dev-hair'}),
  hoodie=flat(0x43676f),hoodieLight=flat(0x587d83),hoodieDark=flat(0x2b454e),
  trouser=flat(0x1e1f38),shoeMat=flat(0x121019),stringMat=flat(0xe0c4dc),
  featureInk=new T.MeshBasicMaterial({color:0x04030a}),mouthDark=new T.MeshBasicMaterial({color:0x2a0911});
@@ -402,145 +404,114 @@ for(const side of [-1,1]){
  facet(shoulder,new T.IcosahedronGeometry(.13,0),personSkin,side*.04,-.98,.03);
  humanPivots.push({side,shoulder});
 }
-// DEV's head is designed, not a jittered sphere. The face is hand-placed points (right half; the left mirrors it):
-// brow ridge, eye sockets, cheekbones, jaw angle and a soft chin. The cranium, sides and back are points on a smooth
-// shell, staggered ring to ring like an icosphere so they never read as a lathe. Big cranium, narrower jaw; the jaw
-// line rises from the chin to the nape, and the eye line sits 58% down from the crown.
-const HEAD_TOP=.56,HEAD_CHIN=-.49;
-// Shell profile, top to bottom: [y, half width, front depth, back depth].
-const HEAD_SHELL=[[.56,0,-.07,-.07],[.49,.29,.17,-.27],[.37,.46,.31,-.43],[.21,.52,.42,-.49],[.07,.51,.46,-.48],
- [-.02,.495,.44,-.45],[-.14,.465,.45,-.39],[-.27,.4,.43,-.3],[-.36,.32,.37,-.23],[-.42,.26,.32,-.18]];
-// A ring: [y, rise toward the back, ...points]. A number is an angle in degrees on the shell (0 = front);
-// an [x,y,z] is a hand-placed face point.
-const HEAD_RINGS=[
- [.49,0,0,72,144],                                                                          // crown
- [.37,0,36,108,180],
- [.21,0,[0,.22,.42],[.22,.22,.395],[.43,.21,.245],95,125,155,180],                          // forehead, widest
- [.07,0,[0,.07,.475],[.19,.085,.465],[.39,.07,.33],88,112,140,168],                         // brow ridge
- [0,0,[0,0,.445],[.185,.005,.405],[.39,-.005,.3],76,100,126,154,180],                       // eye sockets
- [-.14,0,[0,-.14,.465],[.2,-.15,.44],[.395,-.13,.31],88,115,142,168],                       // cheekbones
- [-.28,.03,[0,-.28,.44],[.17,-.29,.415],[.325,-.27,.27],80,104,130,155,180],                // cheeks, mouth
- [-.41,.1,[0,-.41,.37],[.14,-.41,.345],[.26,-.39,.22],[.315,-.35,-.01],120,150,180],            // jaw angle
- [-.49,.12,[0,HEAD_CHIN,.28],[.1,-.485,.25],[.17,-.46,.13],[.2,-.42,-.04],[.11,-.38,-.15],[0,-.37,-.17]] // soft chin
-];
-function headShell(deg,y){
- const i=Math.max(1,HEAD_SHELL.findIndex(k=>k[0]<=y)),[y0,w0,f0,b0]=HEAD_SHELL[i-1],[y1,w1,f1,b1]=HEAD_SHELL[i];
- const k=(y0-y)/(y0-y1),t=deg*Math.PI/180,c=Math.cos(t),e=2/2.3;
- return new T.Vector3(deg%180?(w0+(w1-w0)*k)*Math.sin(t)**e:0,y,(c>=0?f0+(f1-f0)*k:b0+(b1-b0)*k)*Math.abs(c)**e);
-}
-function devHeadGeometry(){
- // Build the right half, front to back, then mirror it: the head is symmetric by construction.
- const halves=HEAD_RINGS.map(([y,rise,...spec])=>{
-  const half=spec.map(p=>Array.isArray(p)?new T.Vector3(...p):headShell(p,y+rise*(1-Math.cos(p*Math.PI/180))/2));
-  const zs=half.map(v=>v.z),centre=(Math.max(...zs)+Math.min(...zs))/2;
-  half.forEach(v=>v.angle=Math.atan2(v.x,v.z-centre));
-  return half.sort((a,b)=>a.angle-b.angle);
- });
- const mirror=v=>new T.Vector3(-v.x,v.y,v.z),right=[];
- const top=new T.Vector3(0,HEAD_TOP,-.07),bottom=new T.Vector3(0,-.46,.04);
- halves.forEach((ring,r)=>{
-  if(r===0)ring.slice(1).forEach((v,i)=>right.push([top,ring[i],v]));
-  if(r===halves.length-1){ring.slice(1).forEach((v,i)=>right.push([bottom,v,ring[i]]));return}
-  // Zip this ring to the next, always taking the shorter diagonal.
-  const lower=halves[r+1];
-  for(let i=0,j=0;i<ring.length-1||j<lower.length-1;){
-   const up=j>=lower.length-1||(i<ring.length-1&&ring[i+1].distanceTo(lower[j])<ring[i].distanceTo(lower[j+1]));
-   right.push(up?[ring[i],lower[j],ring[++i]]:[ring[i],lower[j],lower[++j]]);
-  }
- });
- const tris=[...right,...right.filter(t=>t.some(v=>v.x)).map(t=>t.map(mirror).reverse())];
- // Close the seams on the centre line where a ring has no point there (the crown, the top fan, the back).
- const seam=(a,b,front)=>{
-  const pa=front?a[0]:a.at(-1),pb=front?b[0]:b.at(-1);
-  const quad=front?[mirror(pa),mirror(pb),pb,pa]:[pa,pb,mirror(pb),mirror(pa)];
-  const pts=quad.filter((v,i,list)=>list.findIndex(w=>w.equals(v))===i);
-  for(let i=1;i<pts.length-1;i++)tris.push([pts[0],pts[i],pts[i+1]]);
- };
- halves.forEach((ring,r)=>{
-  if(r===0){if(ring[0].x)tris.push([top,mirror(ring[0]),ring[0]]);if(ring.at(-1).x)tris.push([top,ring.at(-1),mirror(ring.at(-1))])}
-  if(r===halves.length-1){if(ring[0].x)tris.push([bottom,ring[0],mirror(ring[0])]);if(ring.at(-1).x)tris.push([bottom,mirror(ring.at(-1)),ring.at(-1)]);return}
-  seam(ring,halves[r+1],true);seam(ring,halves[r+1],false);
- });
- const position=tris.flatMap(tri=>tri.flatMap(v=>[v.x,v.y,v.z]));
- const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(position,3));
- geometry.computeVertexNormals();return geometry;
-}
-// An ear: a D-shaped rim leaning back from the cheek, a shallow bowl inside, rooted under the skin.
-function devEarGeometry(){
- const rim=[[.035,.11],[-.04,.125],[-.095,.06],[-.1,-.035],[-.06,-.11],[.02,-.12]].map(([z,y])=>new T.Vector3(.05-z*.5,y,z).multiplyScalar(1.25));
- const root=rim.map(v=>new T.Vector3(-.05,v.y*.8,v.z*.8+.01)),bowl=new T.Vector3(.07,-.005,-.035),position=[];
- const add=(tri,out)=>{
-  const normal=new T.Vector3().subVectors(tri[1],tri[0]).cross(new T.Vector3().subVectors(tri[2],tri[0]));
-  if(normal.dot(out)<0)tri.reverse();for(const v of tri)position.push(v.x,v.y,v.z);
- };
- rim.forEach((v,i)=>{
-  const w=rim[(i+1)%rim.length],out=new T.Vector3(0,v.y+w.y,v.z+w.z+.04);
-  add([bowl,v,w],new T.Vector3(1,0,0));
-  add([v,root[i],root[(i+1)%rim.length]],out);add([v,root[(i+1)%rim.length],w],out);
- });
- const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(position,3));
+// DEV's head and face are the approved model sheet (design/dev-character.js, M1.2), built from the same forms that draw
+// the sheet, so the 3D matches it facet for facet. The sheet's head height 1 is DEV_S engine units.
+const DEV_SPEC=window.FrameForgeDev.DEV,DEV_S=1.05,devBuild=window.FrameForgeDesign.build(DEV_SPEC);
+function devGeometry(tris){
+ const geometry=new T.BufferGeometry();
+ geometry.setAttribute('position',new T.Float32BufferAttribute(tris.flatMap(t=>t.p.flat()),3));
  geometry.computeVertexNormals();return geometry;
 }
 // The neck rides with the body; its top reaches deep into the head, so nods and bobs never open a gap.
 facet(bodyGroup,new T.CylinderGeometry(.15,.17,.5,6),personSkin,0,1.86,-.05);
 const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);
-const skull=facet(humanHead,devHeadGeometry(),personSkin,0,0,0);
-// Features sit on the faceted skin: faceZ finds the skin's depth under a point of the face.
-const surfaceRay=new T.Raycaster(),surfaceProbe=new T.Mesh(skull.geometry);
-surfaceProbe.scale.copy(skull.scale);surfaceProbe.updateMatrixWorld();
-function faceZ(x,y){surfaceRay.set(new T.Vector3(x,y,2),new T.Vector3(0,0,-1));return surfaceRay.intersectObject(surfaceProbe)[0]?.point.z??.45}
-const EYE_Y=-.05,BROW_Y=.075,MOUTH_TOP=-.255,humanEyes=[],browsNew=[];
-for(const side of [-1,1]){
- facet(humanHead,devEarGeometry(),personSkin,side*.45,-.08,-.06,side,1,1);
- const eye=facet(humanHead,new T.CylinderGeometry(.048,.048,.03,8).rotateX(Math.PI/2),featureInk,side*.165,EYE_Y,faceZ(side*.165,EYE_Y)+.004,1,1.2,1);
- humanEyes.push(eye);
- browsNew.push(facet(humanHead,new T.BoxGeometry(.19,.045,.04),featureInk,side*.17,BROW_Y,faceZ(side*.17,BROW_Y)+.006));
+// Emotional tilts turn the head about the neck, as on the sheet, not about its centre.
+const DEV_PIVOT=devBuild.pivot[1]*DEV_S;
+const headTilt=new T.Group();headTilt.position.y=DEV_PIVOT;headTilt.rotation.order='YXZ';humanHead.add(headTilt);
+const devHead=new T.Group();devHead.position.y=-DEV_PIVOT;devHead.scale.setScalar(DEV_S);headTilt.add(devHead);
+const skull=facet(devHead,devGeometry(devBuild.head),personSkin,0,0,0);
+// Smiles lift the cheeks: a morph that pushes the cheek facets up and out, under the glasses.
+{
+ const p=skull.geometry.attributes.position,lift=new Float32Array(p.count*3);
+ for(let i=0;i<p.count;i++){
+  const x=p.getX(i),y=p.getY(i),z=p.getZ(i);if(z<=0)continue;
+  const k=.024*Math.exp(-(((Math.abs(x)-.25)/.09)**2)-(((y+.21)/.08)**2));
+  lift[i*3]=Math.sign(x)*k*.3;lift[i*3+1]=k;lift[i*3+2]=k*.6;
+ }
+ skull.geometry.morphAttributes.position=[new T.Float32BufferAttribute(lift,3)];skull.geometry.morphTargetsRelative=true;
+ skull.updateMorphTargets();
 }
-facet(humanHead,new T.OctahedronGeometry(.075,0),personSkin,0,-.17,faceZ(0,-.17)+.01,.8,1,.85);
-const mouthNew=facet(humanHead,new T.BoxGeometry(.16,.18,.04),mouthDark,0,MOUTH_TOP,faceZ(0,-.33)+.004);
-const mouthCurve=()=>new T.TorusGeometry(.075,.022,3,6,Math.PI);
-const humanSmile=facet(humanHead,mouthCurve(),mouthDark,0,-.3,faceZ(0,-.32)+.004);humanSmile.rotation.z=Math.PI;
-const humanFrown=facet(humanHead,mouthCurve(),mouthDark,0,-.38,faceZ(0,-.35)+.004);
-// Hair: a faceted cap tipped back over the crown, a quiff of chunky locks swept to one side, sideburns.
-facet(humanHead,jitter(new T.IcosahedronGeometry(.53,1),.04),blackHair,0,.22,-.09,1.07,.7,1.04).rotation.x=-.5;
-for(let i=0;i<5;i++){
- const lock=facet(humanHead,new T.ConeGeometry(.16-(i%2)*.03,.56-i*.03,4),blackHair,-.3+i*.13,.5+(i%2)*.04,.12-i*.04);
- lock.rotation.set(.3,0,-.9-i*.1);
+const devParts=mat=>devGeometry(devBuild.attach.filter(t=>t.mat===mat));
+// Ears and nose stand off the head, so their undersides face the dark ground fill. A faint warm floor keeps those
+// facets brown like the cheek beside them, instead of black slivers that read as extra mouths.
+const earSkin=Object.assign(flat(0xa3552f),{name:'dev-skin',emissive:new T.Color(0x2a0c04)});
+facet(devHead,devParts('skin'),earSkin,0,0,0);
+facet(devHead,devParts('hair'),blackHair,0,0,0);
+facet(devHead,devParts('ink'),new T.MeshBasicMaterial({color:0x04030a,side:T.DoubleSide}),0,0,0);
+// The face is crisp flat shapes on the head (STYLE.md), redrawn every frame from the face channels. Each shape is a
+// strip in face space, wrapped onto the head's smooth surface through a precomputed grid, lifted just off the facets.
+const FACE_COLOURS=Object.fromEntries(Object.entries({ink:0x04030a,mouth:0x2a0911,tongue:0x7c2c33,teeth:0xeadfd1,glint:0xfff7ee,white:0xe7dacb}).map(([k,v])=>[k,new T.Color(v)]));
+const FACE_GRID={x0:-.5,y0:-.56,step:1/64,nx:65,ny:59};
+const faceGrid=new Float32Array(FACE_GRID.nx*FACE_GRID.ny*6);
+for(let j=0;j<FACE_GRID.ny;j++)for(let i=0;i<FACE_GRID.nx;i++){
+ const f=devBuild.form.faceAt(FACE_GRID.x0+i*FACE_GRID.step,FACE_GRID.y0+j*FACE_GRID.step),o=(j*FACE_GRID.nx+i)*6;
+ faceGrid.set(f.p,o);faceGrid.set(f.n,o+3);
 }
-for(const side of [-1,1])facet(humanHead,new T.TetrahedronGeometry(.12),blackHair,side*.45,.14,.06,.7,1.2,.8);
-// The face is lit by its facets alone: soft shadows from hair, brows, nose or ears smudge it as the head moves.
+function onFace(x,y,lift,out,at){
+ const g=FACE_GRID,fx=Math.min(g.nx-1.001,Math.max(0,(x-g.x0)/g.step)),fy=Math.min(g.ny-1.001,Math.max(0,(y-g.y0)/g.step));
+ const i=Math.floor(fx),j=Math.floor(fy),u=fx-i,v=fy-j,w=[(1-u)*(1-v),u*(1-v),(1-u)*v,u*v],c=[j*g.nx+i,j*g.nx+i+1,(j+1)*g.nx+i,(j+1)*g.nx+i+1];
+ for(let k=0;k<3;k++){
+  let p=0,n=0;for(let q=0;q<4;q++){p+=faceGrid[c[q]*6+k]*w[q];n+=faceGrid[c[q]*6+3+k]*w[q];}
+  out[at+k]=p+n*lift;
+ }
+}
+const FACE_MAX=12000,faceMesh=new T.Mesh(new T.BufferGeometry(),new T.MeshBasicMaterial({vertexColors:true,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}));
+faceMesh.geometry.setAttribute('position',new T.BufferAttribute(new Float32Array(FACE_MAX*3),3));
+faceMesh.geometry.setAttribute('color',new T.BufferAttribute(new Float32Array(FACE_MAX*3),3));
+faceMesh.frustumCulled=false;devHead.add(faceMesh);
+function drawDevFace(f){
+ const pos=faceMesh.geometry.attributes.position.array,col=faceMesh.geometry.attributes.color.array,mapped=[];let v=0;
+ window.FrameForgeDesign.faceShapes(DEV_SPEC,f).forEach((s,k)=>{
+  // Later shapes (glints, lid lines, teeth) sit a hair above earlier ones, so layers never fight.
+  const n=s.pts.length>>1,lift=.012+k*.0005,c=FACE_COLOURS[s.fill],pt=new Float32Array(s.pts.length*3);
+  s.pts.forEach(([x,y],i)=>onFace(x,y,lift,pt,i*3));
+  const emit=i=>{if(v>=FACE_MAX)return;pos.set(pt.subarray(i*3,i*3+3),v*3);col[v*3]=c.r;col[v*3+1]=c.g;col[v*3+2]=c.b;v++;};
+  for(let i=0;i<n-1;i++){const t0=i,t1=i+1,b1=2*n-2-i,b0=2*n-1-i;emit(t0);emit(t1);emit(b1);emit(t0);emit(b1);emit(b0);}
+ });
+ faceMesh.geometry.setDrawRange(0,v);faceMesh.geometry.attributes.position.needsUpdate=true;faceMesh.geometry.attributes.color.needsUpdate=true;
+ faceMesh.geometry.computeBoundingSphere();
+}
+// The face is lit by its facets alone: soft shadows from hair, glasses, nose or ears smudge it as the head moves.
 // The skull still casts onto the body.
-humanHead.children.forEach(m=>{if(m!==skull)m.castShadow=false});skull.receiveShadow=false;
+devHead.children.forEach(m=>{if(m!==skull)m.castShadow=false});skull.receiveShadow=false;
 lookParts.dev.hoodie.push({material:hoodie,shade:0},{material:hoodieLight,shade:.16},{material:hoodieDark,shade:-.35});
 lookParts.dev.hair.push({material:blackHair,shade:0});
-function applyHumanFacePose(pose,speech=null,inLine=false){
- browsNew.forEach((brow,i)=>{
-  const side=i?1:-1;
-  brow.position.y=BROW_Y+pose.brow*.09;
-  brow.position.z=faceZ(brow.position.x,brow.position.y)+.006;
-  brow.rotation.z=side*(.04+pose.slope*.36);
- });
- // Pupils close to a bar when the lid drops (blinks, squints) and drift with the gaze.
- humanEyes.forEach((eye,i)=>{
-  eye.scale.y=1.2*Math.max(.12,pose.lid);
-  eye.position.x=(i?1:-1)*.165+pose.gazeX*.02;
-  eye.position.y=EYE_Y+pose.gazeY*.015;
- });
- const speaking=!!speech&&speech.viseme!=='rest';
- // Smile and frown shapes only outside DEV's own line, so word gaps never flip the mouth's shape.
- const smile=!inLine&&!speaking&&pose.smile>.30&&pose.mouthOpen<.34;
- const frown=!inLine&&!speaking&&pose.smile<-.25&&pose.mouthOpen<.35;
- humanSmile.visible=smile;humanFrown.visible=frown;
- mouthNew.visible=!smile&&!frown;
- const visemeWidth={rest:1,closed:.88,round:.62,wide:1.34,teeth:1.10,open:1}[speech?.viseme]??1;
- const open=speech?.viseme==='closed'?.045:Math.max(speech?.viseme==='rest'?.075:.09,pose.mouthOpen*1.04+pose.round*.18);
- // A closed mouth still reads as a dark bar; opening drops the jaw edge while the top lip stays put.
- mouthNew.scale.x=pose.mouthWidth*visemeWidth;
- mouthNew.scale.y=.24+Math.min(1,open)*.7;
- mouthNew.position.y=MOUTH_TOP-.09*mouthNew.scale.y-pose.jaw*.01;
- mouthNew.position.z=faceZ(0,mouthNew.position.y)+.004;
- humanHead.rotation.x+=pose.headPitch;
- humanHead.rotation.z+=pose.headRoll;
+// Face channels: the sheet's emotion presets, mixed by the performance core's blend, plus blinks, gaze and speech.
+const DEV_EMOTIONS=window.FrameForgeDev.EMOTIONS,DEV_MOUTHS=window.FrameForgeDev.MOUTH_CHART;
+const VISEME_MOUTH={closed:'M B P',round:'O',wide:'E',teeth:'F V',open:'A'},FACE_DEFAULT={eyeScale:1,w:1,th:1,teethH:.32};
+// The jaw also drops with the voice's loudness, on top of the mouth shape: fully on vowels, a little on F/V, never on M/B/P.
+const VISEME_JAW={open:1,wide:.9,round:.8,teeth:.35,closed:0};
+function mixFace(a,b,t){
+ const out={};
+ for(const k of new Set([...Object.keys(a),...Object.keys(b)])){
+  const x=a[k],y=b[k];
+  if(k==='mouth')out.mouth=mixFace(x||{},y||{},t);
+  else if(Array.isArray(x)||Array.isArray(y)){const xa=x||[0,0],ya=y||[0,0];out[k]=xa.map((q,i)=>q+(ya[i]-q)*t);}
+  else{const p=x??FACE_DEFAULT[k]??0,q=y??FACE_DEFAULT[k]??0;out[k]=p+(q-p)*t;}
+ }
+ return out;
+}
+function devFaceChannels(pose,speech,inLine,from,to){
+ const a=DEV_EMOTIONS[from]||DEV_EMOTIONS.neutral,b=DEV_EMOTIONS[to]||DEV_EMOTIONS.neutral,t=pose.blend??1;
+ const f=mixFace(a.face,b.face,t),head=mixFace(a.pose,b.pose,t);
+ // A blink closes whatever lid the emotion holds; the gaze adds to the emotion's own look.
+ f.lidU=(f.lidU||0)+(1-(f.lidU||0))*(pose.blink||0);
+ const g=f.gaze||[0,0];f.gaze=[g[0]+pose.gazeX*.03,g[1]+pose.gazeY*.03];
+ // Speech uses the sheet's mouth chart, opened by the voice. Between syllables of DEV's own line the mouth rests near
+ // closed, so word gaps never flip it to a smile or frown.
+ const m=f.mouth||{};
+ if(speech&&speech.viseme!=='rest'){
+  const shape=DEV_MOUTHS[VISEME_MOUTH[speech.viseme]]||DEV_MOUTHS.A,k=Math.min(1.15,.45+pose.mouthOpen*.9);
+  f.mouth={...mixFace(m,shape,.85),o:Math.max((shape.o||0)*k,(VISEME_JAW[speech.viseme]??1)*pose.mouthOpen*.055),s:(m.s||0)*.5+(shape.s||0)*.5};
+ }else if(inLine)f.mouth={...mixFace(m,DEV_MOUTHS.rest,.6),o:0};
+ return{f,head};
+}
+let devFace=null;
+function applyHumanFacePose(pose,speech=null,inLine=false,from='neutral',to='neutral'){
+ const{f,head}=devFaceChannels(pose,speech,inLine,from,to);
+ drawDevFace(f);devFace=f;
+ skull.morphTargetInfluences[0]=Math.max(0,Math.min(1,pose.cheek));
+ const rad=T.MathUtils.degToRad;headTilt.rotation.set(rad(head.pitch||0),rad(head.yaw||0),rad(head.roll||0));
 }
 
 
@@ -661,7 +632,7 @@ update=function(){
   gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
  });
  const devInLine=shot.speaker==='dev'&&local>=lineAt-.05&&local<=lineAt+lineLen+.2;
- applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null,devInLine);
+ applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null,devInLine,fromEmotion,toEmotion);
  renderer.render(scene,cam);
 };
 // V5 projects are versioned documents, NOT hardcoded dialogue arrays.
@@ -1054,7 +1025,7 @@ const ART_VIEWS=[
  {id:'side',radians:-Math.PI/2,label:'Side'},
  {id:'back',radians:Math.PI,label:'Back'}
 ];
-const ART_EXPRESSIONS=['neutral','happy','worried','surprised'];
+const ART_EXPRESSIONS=['neutral','happy','worried','surprised','angry','sad','thinking'];
 function artPose(actorId,emotion){
  if(actorId==='dev'){
   const pose=window.FrameForgePerformanceCore.evaluate({
@@ -1063,7 +1034,7 @@ function artPose(actorId,emotion){
     gazeX:0,gazeY:0
   });
   humanHead.rotation.set(0,0,0);
-  applyHumanFacePose(pose);
+  applyHumanFacePose(pose,null,false,emotion,emotion);
  }else{
   const face=actorId==='blue'?faces.blue:faces.orange;
   drawActorFace(face,emotion,emotion==='surprised'?.4:emotion==='worried'?.16:0,.5,emotion==='surprised'?'round':'rest',0);
@@ -1085,9 +1056,7 @@ function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,
  const baseRotation=selected.rotation.y;
  const wasRunning=running;
  const faceData={
-  mouthScale:mouthNew.scale.clone(),mouthVisible:mouthNew.visible,smileVisible:humanSmile.visible,frownVisible:humanFrown.visible,headRotation:humanHead.rotation.clone(),
-  eyebrows:browsNew.map(x=>({position:x.position.clone(),rotation:x.rotation.clone()})),
-  eyes:humanEyes.map(x=>x.scale.clone())
+  headRotation:humanHead.rotation.clone(),tilt:headTilt.rotation.clone()
  };
  try{
   running=false;soundtrack.pause();
@@ -1103,19 +1072,18 @@ function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,
   renderer.setSize(width,height,false);
   cam.aspect=width/height;cam.fov=portrait?31:34;cam.near=.1;cam.far=50;cam.updateProjectionMatrix();
   const centerY=actorId==='dev'?1.84:1.54;
-  const faceY=actorId==='dev'?selected.position.y+2.30:selected.position.y+1.45;
+  // DEV's portrait frames the whole head, quiff included.
+  const faceY=actorId==='dev'?selected.position.y+2.40:selected.position.y+1.45;
   const targetY=portrait?faceY:centerY;
-  cam.position.set(selected.position.x,targetY+(portrait?.04:.15),selected.position.z+(portrait?2.8:6.6));
+  cam.position.set(selected.position.x,targetY+(portrait?.04:.15),selected.position.z+(portrait?(actorId==='dev'?3.3:2.8):6.6));
   cam.lookAt(selected.position.x,targetY,selected.position.z);
   renderer.render(scene,cam);
   return renderer.domElement.toDataURL('image/png');
  }finally{
   selected.rotation.y=baseRotation;
   for(const [child,visible]of show)child.visible=visible;
-  mouthNew.scale.copy(faceData.mouthScale);mouthNew.visible=faceData.mouthVisible;humanSmile.visible=faceData.smileVisible;humanFrown.visible=faceData.frownVisible;
+  headTilt.rotation.copy(faceData.tilt);
   humanHead.rotation.copy(faceData.headRotation);
-  browsNew.forEach((x,i)=>{x.position.copy(faceData.eyebrows[i].position);x.rotation.copy(faceData.eyebrows[i].rotation)});
-  humanEyes.forEach((x,i)=>x.scale.copy(faceData.eyes[i]));
   scene.background=bg;scene.fog=fog;
   renderer.setSize(size.x,size.y,false);
   cam.position.copy(camera.position);cam.quaternion.copy(camera.quaternion);
@@ -1161,8 +1129,11 @@ window.FrameForgeSpeechQA=Object.freeze({
 window.FrameForgePerformanceQA=Object.freeze({
  poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
  facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
- humanRig:()=>({pupils:humanEyes.length,brows:browsNew.length,mouths:[mouthNew,humanSmile,humanFrown].length}),
- peek:()=>({mouthScale:mouthNew.scale.y,mouthWidth:mouthNew.scale.x,mouthY:mouthNew.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
+ // DEV's face is the sheet's shapes: per side one pupil and one brow, and one mouth.
+ humanRig:()=>({pupils:2,brows:2,mouths:1}),
+ // What the face shows now: mouth opening (.24 closed, ~.9 wide open) and width, brow inner-end heights, eye openness.
+ peek:()=>{const m=devFace.mouth,br=DEV_SPEC.face.brows,r=x=>Math.round(x*1e6)/1e6;return{mouthScale:r(.24+(m.o||0)/.065*.7),mouthWidth:r(m.w??1),mouthY:r(DEV_SPEC.face.mouth.y-(m.o||0)/2),
+  browHeights:[0,1].map(i=>r(br.y+(devFace.browLift||0)+(devFace.browUp?.[i]||0)+(devFace.browTilt||0)*.5)),eyeOpen:[0,1].map(()=>r(1-devFace.lidU))};}
 });
 window.FrameForgeArtLab=Object.freeze({
  version:'v5-phase1c-actual-rigs',

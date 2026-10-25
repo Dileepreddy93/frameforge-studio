@@ -227,7 +227,13 @@
   }
   const mid=add(lerp3(inner[-1],inner[1],.5),[0,g.bridgeLift??.012,.004]);
   tris.push(...tube([inner[-1],lerp3(inner[-1],mid,.6),lerp3(inner[1],mid,.6),inner[1]],[g.w*.32,g.w*.32,g.w*.32,g.w*.32],4,'ink').map(t=>({...t,two:1})));
-  for(const side of[-1,1]){const e=ear(side),m=lerp3(outer[side],e,.5);tris.push(...tube([outer[side],[m[0]+side*.012,m[1]+.006,m[2]],e],[g.w*.26,g.w*.26,g.w*.22],4,'ink').map(t=>({...t,two:1})));}
+  // Temples run over the side of the head to the ear, lifted just off the skin, never through it.
+  for(const side of[-1,1]){
+   const fa=form.faceAt(side*g.x,g.y),path=[outer[side]];
+   for(const k of[.55,.85,1.15]){const phi=side*k*PI/2*(k>1?.95:1),t=fa.t-.015,lift=g.gap*(.75-.35*k);path.push(add(form.surf(t,phi),mul(form.normalAt(t,phi),Math.max(.012,lift))));}
+   path.push(ear(side));
+   tris.push(...tube(path,path.map((_,i)=>g.w*(.26-.04*i/(path.length-1))),4,'ink').map(t=>({...t,two:1})));
+  }
   return tris;
  }
 
@@ -264,11 +270,11 @@
    const th=m.th*(f.th||1);out.push({pts:bar(u=>u*w,u=>cy+f.s*u*u+as(u*w),u=>th*Math.pow(Math.max(0,1-Math.abs(u)**4),.6)),fill:'ink'});
    return out;
   }
-  const bot=x=>cy+f.s*q(x)-f.o*Math.pow(Math.max(0,1-q(x)),f.round?.5:.75)+as(x);
+  const r=Math.min(1,+f.round||0),bot=x=>cy+f.s*q(x)-f.o*Math.pow(Math.max(0,1-q(x)),.75-.25*r)+as(x);
   const shape=band(-w,w,[top],[bot],40);if(!shape)return out;
   out.push({pts:shape,fill:'mouth'});
-  if(style.teeth&&f.teeth){const tb=band(-w*.8,w*.8,[top],[bot,x=>top(x)-f.o*(f.teethH||.32)],30);if(tb)out.push({pts:tb,fill:'teeth'});}
-  const tw=w*(f.round?.7:.62),tg=band(-tw,tw,[x=>bot(x)+f.o*.5*Math.max(0,1-(x/tw)**2),top],[bot],30);if(tg)out.push({pts:tg,fill:'tongue'});
+  if(style.teeth&&f.teeth>.5){const tb=band(-w*.8,w*.8,[top],[bot,x=>top(x)-f.o*(f.teethH||.32)],30);if(tb)out.push({pts:tb,fill:'teeth'});}
+  const tw=w*(.62+.08*r),tg=band(-tw,tw,[x=>bot(x)+f.o*.5*Math.max(0,1-(x/tw)**2),top],[bot],30);if(tg)out.push({pts:tg,fill:'tongue'});
   if(m.line){out.push({pts:bar(u=>u*w*1.02,u=>top(u*w),u=>m.line*Math.pow(Math.max(0,1-Math.abs(u)**6),.5)),fill:'ink'});}
   return out;
  }
@@ -386,7 +392,7 @@
   const form=headForm(spec.head),seed=spec.seed||7;
   const head=form.mesh(spec.head.detail??2,seed,spec.head.jitter||[.012,.05,.012]);
   const attach=[],F=spec.face;
-  const earAt=side=>{const fa=form.faceAt(0,F.ear.y),t=fa.t;return add(form.surf(t,side*PI/2),[-side*F.ear.size[0]*.25,0,F.ear.z||0]);};
+  const earAt=side=>{const fa=form.faceAt(0,F.ear.y),t=fa.t;return add(form.surf(t,side*PI/2),[-side*F.ear.size[0]*(F.ear.inset??.25),F.ear.lift||0,F.ear.z||0]);};
   for(const side of[-1,1])attach.push(...blob(1,earAt(side),F.ear.size,'skin',11+side,{rot:[-.12,-side*(F.ear.turn??.5),side*.1]}));
   const na=form.faceAt(0,F.nose.y);attach.push(...blob(F.nose.detail??1,add(na.p,mul(na.n,F.nose.size[2]*(F.nose.out??.35))),F.nose.size,'skin',21,{rot:[F.nose.tip||0,0,0],jitter:.04}));
   const earTop=side=>{const e=earAt(side);return[e[0]+side*F.ear.size[0]*.4,e[1]+F.ear.size[1]*.55,e[2]-F.ear.size[2]*.2];};
@@ -451,5 +457,8 @@
   const all=out.flatMap(t=>t.q);
   return{svg:out.map(t=>'<polygon points="'+ptsAttr(t.q)+'" fill="'+t.fill+'" stroke="'+t.fill+'"/>').join(''),bbox:[Math.min(...all.map(p=>p[0])),Math.min(...all.map(p=>-p[1])),Math.max(...all.map(p=>p[0])),Math.max(...all.map(p=>-p[1]))]};
  }
- return{build,render,renderParts,hand,place,tube,headForm,curve,shade,MAT,KEY,RIM};
+ // Face shapes for a spec and face channels, in face space ({pts:[[X,Y]...], fill}); each is a strip (top run, then
+ // the bottom run reversed), so a 3D build can triangulate it and wrap it onto the head with faceAt.
+ const faceShapes=(spec,f)=>faceFeatures({spec},f);
+ return{build,render,renderParts,faceShapes,hand,place,tube,headForm,curve,shade,MAT,KEY,RIM};
 });

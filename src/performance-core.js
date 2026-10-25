@@ -17,7 +17,9 @@
     happy:{lid:.76,brow:.12,slope:-.24,cheek:.74,smile:.82,round:0,jaw:.12,headPitch:.035,headRoll:.012},
     worried:{lid:.99,brow:.34,slope:.41,cheek:.10,smile:-.70,round:.04,jaw:.08,headPitch:-.08,headRoll:-.035},
     surprised:{lid:1,brow:.83,slope:.03,cheek:0,smile:0,round:.90,jaw:.85,headPitch:-.045,headRoll:.02},
-    angry:{lid:.53,brow:-.51,slope:-.45,cheek:.24,smile:-.5,round:0,jaw:.16,headPitch:.04,headRoll:-.02}
+    angry:{lid:.53,brow:-.51,slope:-.45,cheek:.24,smile:-.5,round:0,jaw:.16,headPitch:.04,headRoll:-.02},
+    sad:{lid:.55,brow:.12,slope:.45,cheek:.02,smile:-.62,round:0,jaw:.06,headPitch:.1,headRoll:.03},
+    thinking:{lid:.82,brow:.18,slope:-.08,cheek:.05,smile:.04,round:.08,jaw:.08,headPitch:-.04,headRoll:-.05}
   });
   const FIELDS=['lid','brow','slope','cheek','smile','round','jaw','headPitch','headRoll'];
   const EMOTION_NAMES=Object.freeze(Object.keys(EMOTIONS));
@@ -29,7 +31,8 @@
     if(!EMOTIONS[from]||!EMOTIONS[to])throw new Error('Unknown facial emotion');
     const energy=clamp(input.energy??0),speaking=!!input.speaking;
     const blend=smooth(local/.25);
-    const pose={};
+    // blend: how far this shot's emotion has replaced the previous one (rigs with designed presets mix by it).
+    const pose={blend};
     for(const key of FIELDS)pose[key]=mix(EMOTIONS[from][key],EMOTIONS[to][key],blend);
     // A pair of brief, deterministic blinks: no frame history and no random flicker.
     const blinkPulse=(center,width)=>{
@@ -57,5 +60,5 @@
     pose.shoulder=pose.breath+(.035*energy)*(speaking?1:0);
     return Object.freeze(pose);
   }
-  return Object.freeze({version:'v5.2-pose1',emotions:EMOTION_NAMES,evaluate});
+  return Object.freeze({version:'v5.2-pose2',emotions:EMOTION_NAMES,evaluate});
 });
