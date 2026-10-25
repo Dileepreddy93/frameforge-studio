@@ -1456,6 +1456,9 @@ window.FrameForgeQA={
 window.FrameForgeVoiceQA=Object.freeze({
  status:()=>({state:voiceEngine.state,device:voiceEngine.device,source:voiceEngine.source,model:voiceEngine.model,mode:audioMode,stale:audioStale,lines:browserVoice?.lines??null,
   mix:browserVoice?{lufs:browserVoice.mix.lufs,peakDb:browserVoice.mix.peakDb,music:browserVoice.mix.music,effects:browserVoice.mix.effects,ms:browserVoice.mix.ms}:null}),
+ // The audio element that plays the episode: what it plays and whether it is playing.
+ soundtrack:()=>({src:soundtrack.currentSrc,readyState:soundtrack.readyState,paused:soundtrack.paused,currentTime:soundtrack.currentTime,
+  duration:soundtrack.duration,error:soundtrack.error?.message??soundtrack.error?.code??null}),
  // RMS of the mixed soundtrack (both channels) between two times.
  mixRms:(from,to)=>{if(!browserVoice)return null;const {mix:{channels},rate}=browserVoice,a=Math.max(0,Math.round(from*rate)),b=Math.min(channels[0].length,Math.round(to*rate));
   let s=0;for(const c of channels)for(let i=a;i<b;i++)s+=c[i]*c[i];return Math.sqrt(s/Math.max(1,(b-a)*channels.length));},
