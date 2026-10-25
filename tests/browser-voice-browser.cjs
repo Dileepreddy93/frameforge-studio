@@ -9,6 +9,7 @@ const os=require('node:os');
 const path=require('node:path');
 const {spawnSync}=require('node:child_process');
 const {chromium}=require('playwright');
+const {useCdnMirror}=require('./cdn-mirror.cjs');
 
 const ROOT=path.resolve(__dirname,'..');
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.mp3':'audio/mpeg','.png':'image/png','.wasm':'application/wasm'};
@@ -71,8 +72,9 @@ function assertLine(r,text,label){
  const base=`http://127.0.0.1:${server.address().port}/`,profile=fs.mkdtempSync(path.join(os.tmpdir(),'frameforge-voice-'));
  // Google Chrome, not Playwright's Chromium: the in-browser MP4 export needs Chrome's H.264 encoder, as buyers have.
  // A real profile on disk, because an in-memory one is too small to keep the 326 MB model.
- const context=await chromium.launchPersistentContext(profile,{headless:true,channel:'chrome',viewport:{width:1100,height:850},
+ const context=await chromium.launchPersistentContext(profile,{headless:true,channel:process.env.FRAMEFORGE_CHANNEL||'chrome',viewport:{width:1100,height:850},
   args:['--no-sandbox','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+ await useCdnMirror(context);
  const errors=[];
  try{
   const page=context.pages()[0]||await context.newPage();

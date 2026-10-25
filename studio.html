@@ -15,7 +15,7 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <div class="wrap"><aside><h3>Quick Create</h3><label>Story idea</label><textarea id="idea">A developer asks two robot assistants to fix one tiny bug. They argue over a missing semicolon.</textarea><label>Language</label><select id="language"><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option></select><label>Episode template</label><select id="preset"><option value="comedy">ZERO LATENCY — Voiced episode (41.8s)</option><option value="mystery">Mystery storyboarding (no voice)</option></select><button id="build" class="primary full">✦ Build episode timeline</button>
 <label for="projectImport">Import a FrameForge JSON episode</label>
 <input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
-<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">Every episode is one JSON file: script, performances, cameras, music and sound cues. Edit shots on the right: changed lines are voiced in your browser (Voices, below), then export an MP4 here. Download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded.</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Preview selected dialogue speaks the line in its character's voice. Hindi/Telugu voices are not connected yet.</p></aside>
+<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">Every episode is one JSON file: script, performances, cameras, music and sound cues. Edit shots on the right: changed lines are voiced in your browser (Voices, below), then export an MP4 here. Download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Preview selected dialogue speaks the line in its character's voice, with the emotion set for the speaker in that shot. Hindi/Telugu voices are not connected yet.</p></aside>
 <main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div><details id="renderedFilm" style="max-width:550px;margin:16px auto;background:#1a2540;border:1px solid #53699d;border-radius:14px;padding:12px"><summary style="cursor:pointer;font-weight:750;color:#fff;font-size:14px">▶ Previous version · V3 film (41.8s)</summary><p class="fine" style="margin:9px 0 12px">New directed-acting cut: native 480×854, 30 FPS, 1,254 frames, three English voices, 43 Foley cues and synchronized stereo audio. Facial animation is still below the reference-quality target.</p><video controls playsinline preload="metadata" style="display:block;width:min(100%,320px);margin:8px auto;border-radius:12px" src="media/zero-latency-acting-v3-with-foley.mp4">Your browser cannot play MP4 video.</video><p style="font-size:12px;text-align:center;margin:12px auto 2px"><a style="color:#c5b4ff" href="media/zero-latency-acting-v3-with-foley.mp4" target="_blank" rel="noopener noreferrer">Open MP4 directly in a new tab</a></p></details>
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">Each line is voiced separately and sets its shot length; music ducks under speech and the mouth follows each line. Play, scrub or click a shot: the monitor shows the exact frame that exports.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><div class="shottools"><button id="shotUp" title="Move this shot earlier">↑ Earlier</button><button id="shotDown" title="Move this shot later">↓ Later</button><button id="shotDup">Duplicate</button><button id="shotDel">Delete</button></div>
@@ -24,7 +24,7 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <h4>Camera</h4><div class="controlrow"><div><label>Move</label><select id="move"><option value="push">Push in</option><option value="pull">Pull out</option><option value="drift">Drift</option><option value="static">Locked off</option></select></div><div><label>Amount</label><input id="moveAmount" type="range" min="0" max="1.2" step=".05"></div></div>
 <label>Dutch angle <span id="rollValue"></span></label><input id="roll" type="range" min="-12" max="12" step="1">
 <h4>Performance</h4><div class="castgrid" id="castGrid"></div>
-<p class="fine" id="audioState" role="status"></p><p class="fine">Click a shot to select it. Title, camera and performance update live; line, speaker and shot order changes are re-voiced in your browser.</p></aside></div>
+<p class="fine" id="audioState" role="status"></p><p class="fine">Click a shot to select it. Title, camera and performance update live; line, speaker, the speaker's emotion and shot order changes are re-voiced in your browser.</p></aside></div>
 <script src="./src/project-core.js"></script>
 <script src="./src/performance-core.js"></script>
 <script src="./src/speech-performance-core.js"></script>
@@ -804,6 +804,8 @@ function voiceOf(speaker){
  const c=window.FrameForgeCurrentProject?.characters.find(x=>x.id===speaker);
  return c?.voice?.kokoro??{voice:DEFAULT_VOICE[speaker]??'af_heart',speed:1};
 }
+// A line is spoken with its speaker's emotion in that shot (src/voice-emotion.js).
+const lineEmotion=s=>s.cast?.[s.speaker]?.emotion??'neutral';
 // Lines re-voice by themselves once the model is downloaded; only changed lines are synthesised.
 function autoVoice(){
  clearTimeout(voiceTimer);
@@ -817,13 +819,13 @@ function wavBlob(samples,rate){
  for(let i=0;i<samples.length;i++)data.setInt16(44+i*2,Math.max(-1,Math.min(1,samples[i]))*32767,true);
  return new Blob([data],{type:'audio/wav'});
 }
-async function audition(text,v){
+async function audition(text,v,emotion='neutral'){
  const status=$('voiceStatus');status.textContent='Voicing “'+text+'”…';
  try{
-  const r=await voiceCall({type:'speak',text,voice:v.voice,speed:v.speed??1});
+  const r=await voiceCall({type:'speak',text,voice:v.voice,speed:v.speed??1,emotion});
   auditionPlayer?.pause();if(auditionPlayer)URL.revokeObjectURL(auditionPlayer.src);
   auditionPlayer=new Audio(URL.createObjectURL(wavBlob(r.samples,r.rate)));auditionPlayer.play().catch(()=>{});
-  status.textContent=v.voice+' · '+r.seconds.toFixed(1)+' s'+(r.cached?' (cached)':' in '+(r.ms/1000).toFixed(1)+' s')+(r.guessed.length?' · guessed: '+r.guessed.join(', '):'');
+  status.textContent=v.voice+(emotion!=='neutral'?' · '+emotion:'')+' · '+r.seconds.toFixed(1)+' s'+(r.cached?' (cached)':' in '+(r.ms/1000).toFixed(1)+' s')+(r.guessed.length?' · guessed: '+r.guessed.join(', '):'');
  }catch(e){status.textContent='Voice preview failed: '+e.message;}
 }
 function fillVoices(project){
@@ -854,7 +856,7 @@ async function voiceAllLines(){
   for(let i=0;i<shots.length;i++){
    const s=shots[i],v=voiceOf(s.speaker);
    status.textContent='Voicing line '+(i+1)+' of '+shots.length+'…';
-   lines.push(await voiceCall({type:'speak',text:s.text,voice:v.voice,speed:v.speed??1}));
+   lines.push(await voiceCall({type:'speak',text:s.text,voice:v.voice,speed:v.speed??1,emotion:lineEmotion(s)}));
    if(run!==voiceRun)return false;
   }
   // The voice is the clock: each shot lasts lead + its line + pause, frame-rounded.
@@ -863,7 +865,7 @@ async function voiceAllLines(){
    starts.push(clock+s.timing.lead);clock=Math.round((clock+s.duration)*FPS)/FPS;});
   const rate=lines[0].rate,track=new Float32Array(Math.ceil(clock*rate));
   lines.forEach((l,i)=>{const at=Math.round(starts[i]*rate);for(let j=0;j<l.samples.length&&at+j<track.length;j++)track[at+j]+=l.samples[j];});
-  browserVoice={samples:track,rate,lines:lines.map((l,i)=>({shot:shots[i].id,start:starts[i],seconds:l.seconds,phonemes:l.phonemes,guessed:l.guessed,cached:l.cached,ms:l.ms}))};
+  browserVoice={samples:track,rate,lines:lines.map((l,i)=>({shot:shots[i].id,start:starts[i],seconds:l.seconds,emotion:l.emotion,phonemes:l.phonemes,guessed:l.guessed,cached:l.cached,ms:l.ms}))};
   audioMode='browser';audioStale=false;running=false;soundtrack.pause();
   if(trackUrl)URL.revokeObjectURL(trackUrl);trackUrl=URL.createObjectURL(wavBlob(track,rate));soundtrack.src=trackUrl;soundtrack.load();
   useEnvelope(track,rate);
@@ -907,7 +909,11 @@ function fillInspector(){
   for(const [kind,values] of [['act',core.actions],['emo',core.emotions]]){
    const select=document.createElement('select');select.id=kind+'-'+id;select.setAttribute('aria-label',names[id]+(kind==='act'?' action':' emotion'));
    for(const v of values){const o=document.createElement('option');o.value=v;o.textContent=v;select.appendChild(o)}
-   select.onchange=()=>{shots[selected].cast[id][kind==='act'?'action':'emotion']=select.value;update()};
+   select.onchange=()=>{
+    const s=shots[selected];s.cast[id][kind==='act'?'action':'emotion']=select.value;
+    // The speaker's emotion is also how the line is spoken.
+    if(kind==='emo'&&id===s.speaker){s.voice=null;markAudioStale();}
+    update()};
    grid.appendChild(select);
   }
  }
@@ -972,7 +978,7 @@ $('projectImport').onchange=async event=>{
   $('projectImportStatus').textContent='Loaded '+project.title+' ('+project.shots.length+' scenes). Save edits with Download episode JSON.';
  }catch(err){$('projectImportStatus').textContent='Import rejected: '+err.message;}
  finally{event.target.value='';}
-};$('narrate').onclick=()=>{if(['ready','downloaded'].includes(voiceEngine.state)){const s=shots[selected];audition(s.text,voiceOf(s.speaker));return}if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
+};$('narrate').onclick=()=>{if(['ready','downloaded'].includes(voiceEngine.state)){const s=shots[selected];audition(s.text,voiceOf(s.speaker),lineEmotion(s));return}if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
 let recorder=null,recordedChunks=[],recordingStream=null;
 function stopRecording(){if(!recorder||recorder.state==='inactive')return;recorder.stop();$('recordStatus').textContent='Finalizing the WebM recording…';}
 $('record').onclick=async()=>{
@@ -1377,7 +1383,9 @@ window.FrameForgeVoiceQA=Object.freeze({
  ensure:()=>ensureVoices().then(e=>({state:e.state,device:e.device,source:e.source,model:e.model,ms:e.ms})),
  voiceAll:()=>voiceAllLines(),
  phonemize:text=>voiceCall({type:'phonemize',text}),
- speak:(text,voice='am_michael',speed=1)=>voiceCall({type:'speak',text,voice,speed}).then(({samples,...r})=>({...r,length:samples.length})),
+ speak:(text,voice='am_michael',speed=1,emotion='neutral')=>voiceCall({type:'speak',text,voice,speed,emotion}).then(({samples,...r})=>({...r,length:samples.length})),
+ // The samples themselves, for measuring a delivery (pitch, loudness, length).
+ samples:(text,voice='am_michael',speed=1,emotion='neutral')=>voiceCall({type:'speak',text,voice,speed,emotion}).then(r=>({...r,samples:Array.from(r.samples)})),
  rms:(from,to)=>{if(!browserVoice)return null;const {samples,rate}=browserVoice,a=Math.max(0,Math.round(from*rate)),b=Math.min(samples.length,Math.round(to*rate));
   let s=0;for(let i=a;i<b;i++)s+=samples[i]*samples[i];return Math.sqrt(s/Math.max(1,b-a));}
 });

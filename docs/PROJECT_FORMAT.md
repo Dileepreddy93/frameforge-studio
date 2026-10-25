@@ -33,7 +33,7 @@ Examples:
 | `firstFrameStatus` | yes | `not_created` `draft` `approved` | |
 | `title` | no | ≤ 60 chars, shown in the title card | episode `title`, uppercased |
 | `cast.<id>.action` | no | `listen` `typing` `react` `question` `plead` `alarm` `surprise` `defeat` `announce` `explain` `celebrate` `shrug` `anticipate` | `explain` for the speaker, `listen` for everyone else |
-| `cast.<id>.emotion` | no | `neutral` `happy` `worried` `surprised` `angry` `sad` `thinking` | `neutral` (for `dev`: legacy `acting.devEmotion` if present) |
+| `cast.<id>.emotion` | no | `neutral` `happy` `worried` `surprised` `angry` `sad` `thinking` | `neutral` (for `dev`: legacy `acting.devEmotion` if present). The speaker's emotion is also how the line is spoken (pace, pitch, tone, loudness: `src/voice-emotion.js`) |
 | `framing` | no | `distance` 1–15, `offset` −2..2, `up` −1..1, `fov` 15–75, `lookUp` −1..1 | from the camera preset |
 | `framing.move`, `framing.amount` | no | `push` `pull` `drift` `static`; travel 0–2 | `push`, 0.33 |
 | `framing.roll` | no | canted angle, −20..20 degrees | 0 |

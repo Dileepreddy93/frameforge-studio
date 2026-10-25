@@ -1,11 +1,13 @@
 // In-browser voices: Kokoro-82M v1.0 (Apache-2.0) in a worker. Text -> phonemes (kokoro-g2p.js) ->
-// ONNX model (WebGPU when the browser has it, otherwise WebAssembly) -> a finished 48 kHz line.
-// The model downloads once into the Cache API, and every voiced line is cached by its text, voice and
-// speed, so the studio voices lines with no network, no keys and no server after the first download.
+// ONNX model (WebGPU when the browser has it, otherwise WebAssembly) -> delivered with the speaker's emotion
+// (voice-emotion.js) -> a finished 48 kHz line. The model downloads once into the Cache API, and every voiced
+// line is cached by its text, voice, speed and emotion, so the studio voices lines with no network, no keys
+// and no server after the first download.
 import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.bundle.min.mjs';
 import './kokoro-g2p.js';
+import './voice-emotion.js';
 
-const G2P=globalThis.FrameForgeG2P;
+const G2P=globalThis.FrameForgeG2P,EMOTION=globalThis.FrameForgeVoiceEmotion;
 const ORT_WASM='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort-wasm-simd-threaded.asyncify.wasm';
 const REVISION='1939ad2a8e416c0acfeecc08a694d14ef25f2231';
 // A models/ folder next to the studio (a downloadable kit, or our test server) wins; otherwise the
@@ -140,8 +142,8 @@ function limit(x,ceiling){
  }
  return x;
 }
-function finishLine(raw){
- const voice=upsample(trim(raw)),gain=10**((LUFS-loudness(voice))/20);
+function finishLine(raw,offset=0){
+ const voice=upsample(trim(raw)),gain=10**((LUFS+offset-loudness(voice))/20);
  for(let i=0;i<voice.length;i++)voice[i]*=gain;
  limit(voice,10**((TRUE_PEAK-.5)/20));
  const out=new Float32Array(Math.round(LEAD_IN*RATE)+voice.length+Math.round(TAIL*RATE));
@@ -150,14 +152,20 @@ function finishLine(raw){
 }
 
 // --- lines ------------------------------------------------------------------------------------------
-async function lineKey(text,voice,speed){
- const data=new TextEncoder().encode(JSON.stringify([MODEL_ID,G2P.version,voice,speed,text]));
+// Neutral lines keep the key they had before emotions, so lines already voiced stay cached.
+async function lineKey(text,voice,speed,emotion){
+ const parts=[MODEL_ID,G2P.version,voice,speed,text];
+ if(!EMOTION.isNeutral(emotion))parts.push(emotion,EMOTION.version);
+ const data=new TextEncoder().encode(JSON.stringify(parts));
  const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',data))].map(b=>b.toString(16).padStart(2,'0')).join('');
  return new URL('../__voice-lines/'+hash.slice(0,40)+'.f32',import.meta.url).href;
 }
-async function speak({text,voice,speed=1}){
+async function speak({text,voice,speed=1,emotion='neutral'}){
  if(!/^[a-z]{2}_[a-z]+$/.test(voice))throw new Error('Unknown voice '+voice);
- const started=performance.now(),key=await lineKey(text,voice,speed),cache=await caches.open(LINES),hit=await cache.match(key);
+ if(!EMOTION.emotions.includes(emotion))throw new Error('Unknown emotion '+emotion);
+ // The emotion sets the pace through Kokoro's own speed, then reshapes the melody and tone of the raw line.
+ const delivery=EMOTION.delivery(emotion),pace=speed*delivery.speed;
+ const started=performance.now(),key=await lineKey(text,voice,pace,emotion),cache=await caches.open(LINES),hit=await cache.match(key);
  let raw,phonemes,guessed=[];
  if(hit){
   raw=new Float32Array(await hit.arrayBuffer());
@@ -166,14 +174,15 @@ async function speak({text,voice,speed=1}){
   await init();
   ({phonemes,guessed}=g2p.phonemize(text));
   if(!phonemes)throw new Error('Nothing to say in "'+text+'"');
-  const parts=[];for(const ps of G2P.splitPhonemes(phonemes))parts.push(await run(ps,voice,speed));
+  const parts=[];for(const ps of G2P.splitPhonemes(phonemes))parts.push(await run(ps,voice,pace));
   raw=new Float32Array(parts.reduce((n,p)=>n+p.length,0));let at=0;for(const p of parts){raw.set(p,at);at+=p.length;}
   if(!raw.every(Number.isFinite))throw new Error('The voice model returned invalid audio');
+  raw=EMOTION.apply(raw,MODEL_RATE,emotion);
   try{await cache.put(key,new Response(raw.slice(),{headers:{'x-phonemes':encodeURIComponent(phonemes),'x-guessed':encodeURIComponent(JSON.stringify(guessed))}}));}
   catch(e){console.warn('Could not cache the voiced line',e);}
  }
- const samples=finishLine(raw);
- return {samples,rate:RATE,seconds:samples.length/RATE,voiceStart:LEAD_IN,phonemes,guessed,cached:Boolean(hit),ms:Math.round(performance.now()-started)};
+ const samples=finishLine(raw,delivery.gain);
+ return {samples,rate:RATE,seconds:samples.length/RATE,voiceStart:LEAD_IN,phonemes,guessed,emotion,cached:Boolean(hit),ms:Math.round(performance.now()-started)};
 }
 
 // One request at a time: a session must not run twice at once.

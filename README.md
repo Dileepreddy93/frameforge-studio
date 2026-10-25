@@ -56,6 +56,15 @@ ONNX Runtime Web (WebGPU, else WebAssembly), `src/kokoro-g2p.js` turns text into
 browser's cache; a `models/kokoro-82m-v1.0/` folder next to `studio.html` is used first. Voiced lines are cached, and
 `sw.js` keeps the studio working offline. No keys, no server.
 
+Each line is spoken with its speaker's emotion in that shot (`cast.<speaker>.emotion`, set in the Shot inspector).
+Kokoro has no emotion input, so `src/voice-emotion.js` shapes the delivery around it: Kokoro's speed sets the pace,
+then TD-PSOLA moves the pitch level, range and the end of the line (and adds a slight tremor when worried) without
+changing the voice's timbre, a high shelf makes it brighter or darker and the line's loudness moves up or down.
+Neutral lines are untouched. The offline path (`tools/voice_lines.py`) runs the same file through
+`tools/voice-emotion.mjs`. Tests: `node tests/voice-emotion.test.cjs` (no model) and `tests/voice-emotion-browser.cjs`
+(real model; set `FRAMEFORGE_EMOTION_OUT` to keep every take as a WAV). Browser tests run without jsDelivr access when
+`FRAMEFORGE_CDN_MIRROR` points at a folder with the pinned npm packages (`tests/cdn-mirror.cjs`).
+
 ## Making an episode (our own renders)
 1. Write or edit `projects/<episode>.frameforge.json` (format: docs/PROJECT_FORMAT.md).
 2. Audio: `node tools/build-audio.mjs projects/<episode>.frameforge.json` generates voice lines with local Kokoro,

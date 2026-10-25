@@ -1,11 +1,13 @@
 """Generate one clean voice file per dialogue line with local Kokoro TTS.
 
-Each line is synthesised, trimmed of leading/trailing silence, gained to -18 LUFS with a
-peak limiter (about -2 dBTP) and given a 60 ms lead-in and 100 ms tail, as a 48 kHz mono
-WAV, so the line's real length can drive the shot timing.
+Each line is synthesised, delivered with its speaker's emotion in that shot (src/voice-emotion.js,
+through tools/voice-emotion.mjs: the same code as the studio's browser voices), trimmed of
+leading/trailing silence, gained to -18 LUFS (plus the emotion's offset) with a peak limiter
+(about -2 dBTP) and given a 60 ms lead-in and 100 ms tail, as a 48 kHz mono WAV, so the line's
+real length can drive the shot timing.
 
   .venv/bin/python -I tools/voice_lines.py episode projects/zero-latency.frameforge.json audio/zero-latency
-  .venv/bin/python -I tools/voice_lines.py audition dev am_michael,am_adam "Line one." "Line two." --out DIR
+  .venv/bin/python -I tools/voice_lines.py audition dev am_michael,am_adam "Line one." "Line two." --out DIR [--emotion worried]
 
 Voices come from characters[].voice.kokoro = {"voice": "am_michael", "speed": 1.0}.
 """
@@ -25,6 +27,8 @@ VOICES = os.environ.get("KOKORO_VOICES", CACHE + "/voices/voices-v1.0.bin")
 TARGET_LUFS, TRUE_PEAK = -18.0, -2.0
 LEAD_IN, TAIL = 0.06, 0.10  # seconds of silence kept around each line; the voice starts at LEAD_IN
 TRIM = "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.02"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EMOTION_TOOL = os.path.join(ROOT, "tools", "voice-emotion.mjs")
 
 
 def run_ffmpeg(*args):
@@ -32,25 +36,46 @@ def run_ffmpeg(*args):
                           check=True, capture_output=True, text=True)
 
 
-def clean(raw_wav, out_wav):
+def deliveries():
+    """Every emotion's delivery settings, from src/voice-emotion.js."""
+    out = subprocess.run(["node", EMOTION_TOOL, "--delivery"], check=True, capture_output=True, text=True).stdout
+    return json.loads(out)["emotions"]
+
+
+DELIVERY = deliveries()
+
+
+def line_emotion(shot):
+    """The speaker's emotion in this shot (older files kept DEV's in acting.devEmotion)."""
+    cast = (shot.get("cast") or {}).get(shot["speaker"]) or {}
+    legacy = (shot.get("acting") or {}).get("devEmotion") if shot["speaker"] == "dev" else None
+    return cast.get("emotion") or legacy or "neutral"
+
+
+def clean(raw_wav, out_wav, gain=0.0):
     """Trim both ends, gain to a fixed speech level with a peak limiter, add a short lead-in and tail."""
     trim = f"{TRIM},areverse,{TRIM},areverse,afade=t=in:d=0.005"
     probe = run_ffmpeg("-i", raw_wav, "-af", f"{trim},loudnorm=print_format=json", "-f", "null", "-")
     measured = float(json.loads(probe.stderr[probe.stderr.rindex("{"):])["input_i"])
     limit = 10 ** ((TRUE_PEAK - 0.5) / 20)  # sample-peak ceiling leaves headroom for true peak
     run_ffmpeg("-i", raw_wav, "-af",
-               f"{trim},aresample=48000,volume={TARGET_LUFS - measured:.2f}dB,"
+               f"{trim},aresample=48000,volume={TARGET_LUFS + gain - measured:.2f}dB,"
                f"alimiter=limit={limit:.3f}:attack=3:release=40:level=disabled,"
                f"adelay={int(LEAD_IN * 1000)}:all=1,apad=pad_dur={TAIL}",
                "-ar", "48000", "-ac", "1", "-c:a", "pcm_s16le", out_wav)
     return soundfile.info(out_wav).duration
 
 
-def synth(kokoro, text, voice, speed, out_wav):
-    samples, rate = kokoro.create(text, voice=voice, speed=speed, lang="en-us")
+def synth(kokoro, text, voice, speed, out_wav, emotion="neutral"):
+    d = DELIVERY[emotion]
+    samples, rate = kokoro.create(text, voice=voice, speed=speed * d["speed"], lang="en-us")
     with tempfile.NamedTemporaryFile(suffix=".wav") as raw:
-        soundfile.write(raw.name, samples, rate)
-        return clean(raw.name, out_wav)
+        if emotion == "neutral":  # exactly as before emotions
+            soundfile.write(raw.name, samples, rate)
+        else:
+            soundfile.write(raw.name, samples, rate, subtype="FLOAT")
+            subprocess.run(["node", EMOTION_TOOL, raw.name, emotion], check=True)
+        return clean(raw.name, out_wav, d["gain"])
 
 
 def episode(args, kokoro):
@@ -62,13 +87,13 @@ def episode(args, kokoro):
     os.makedirs(args.out, exist_ok=True)
     manifest = {"project": project["id"], "lufs": TARGET_LUFS, "truePeak": TRUE_PEAK, "lines": []}
     for shot in project["shots"]:
-        v = voices[shot["speaker"]]
+        v, emotion = voices[shot["speaker"]], line_emotion(shot)
         path = os.path.join(args.out, shot["id"] + ".wav")
-        seconds = synth(kokoro, shot["dialogue"], v["voice"], v.get("speed", 1.0), path)
+        seconds = synth(kokoro, shot["dialogue"], v["voice"], v.get("speed", 1.0), path, emotion)
         manifest["lines"].append({"shot": shot["id"], "speaker": shot["speaker"], "voice": v["voice"],
-                                  "speed": v.get("speed", 1.0), "text": shot["dialogue"],
+                                  "speed": v.get("speed", 1.0), "emotion": emotion, "text": shot["dialogue"],
                                   "file": os.path.basename(path), "seconds": round(seconds, 3)})
-        print(f"{shot['id']}  {v['voice']:<11} {seconds:5.2f}s  {shot['dialogue']}")
+        print(f"{shot['id']}  {v['voice']:<11} {emotion:<9} {seconds:5.2f}s  {shot['dialogue']}")
     with open(os.path.join(args.out, "lines.json"), "w") as f:
         json.dump(manifest, f, indent=1)
 
@@ -79,7 +104,7 @@ def audition(args, kokoro):
         parts = []
         for i, text in enumerate(args.lines):
             part = os.path.join(args.out, f".{args.character}-{voice}-{i}.wav")
-            synth(kokoro, text, voice, args.speed, part)
+            synth(kokoro, text, voice, args.speed, part, args.emotion)
             parts.append(part)
         # Join the lines with a 0.6 s pause so one file shows the voice's range.
         inputs = sum((["-i", p] for p in parts), [])
@@ -104,6 +129,7 @@ def main():
     a.add_argument("lines", nargs="+")
     a.add_argument("--out", required=True)
     a.add_argument("--speed", type=float, default=1.0)
+    a.add_argument("--emotion", choices=sorted(DELIVERY), default="neutral")
     args = parser.parse_args()
     kokoro = Kokoro(MODEL, VOICES)
     (episode if args.mode == "episode" else audition)(args, kokoro)

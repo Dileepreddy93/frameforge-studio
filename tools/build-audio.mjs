@@ -1,6 +1,6 @@
 // Build an episode's audio from its JSON: the voice is the clock.
 //   node tools/build-audio.mjs projects/zero-latency.frameforge.json
-// 1. (Re)generates voice lines with tools/voice_lines.py when the text or voice changed.
+// 1. (Re)generates voice lines with tools/voice_lines.py when the text, voice or speaker's emotion changed.
 // 2. Sets each shot's duration = timing.lead + line length + timing.pauseAfter (frame-rounded).
 // 3. Places the lines on one voice track, synthesises music and sound effects from the cue lists,
 //    ducks the music under speech and masters to -14 LUFS / <= -1 dBTP.
@@ -22,9 +22,11 @@ const ffmpeg=(...args)=>execFileSync('ffmpeg',['-hide_banner','-nostats','-y',..
 
 // --- 1. voice lines ---------------------------------------------------------------------
 const voiceOf=Object.fromEntries(project.characters.map(c=>[c.id,c.voice.kokoro]));
+// The speaker's emotion, as tools/voice_lines.py reads it.
+const lineEmotion=s=>s.cast?.[s.speaker]?.emotion??(s.speaker==='dev'?s.acting?.devEmotion:null)??'neutral';
 const readManifest=()=>{try{return JSON.parse(fs.readFileSync(path.join(linesDir,'lines.json'),'utf8'))}catch{return null}};
 const stale=m=>!m||project.shots.some(s=>{const l=m.lines.find(x=>x.shot===s.id),v=voiceOf[s.speaker];
- return !l||l.text!==s.dialogue||l.voice!==v?.voice||l.speed!==(v?.speed??1)||!fs.existsSync(path.join(linesDir,l.file))});
+ return !l||l.text!==s.dialogue||l.voice!==v?.voice||l.speed!==(v?.speed??1)||(l.emotion??'neutral')!==lineEmotion(s)||!fs.existsSync(path.join(linesDir,l.file))});
 let manifest=readManifest();
 if(stale(manifest)){
  console.log('Generating voice lines…');
