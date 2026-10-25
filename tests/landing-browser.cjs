@@ -46,7 +46,7 @@ const episode=file=>JSON.parse(fs.readFileSync(path.join(ROOT,'projects',file),'
  // Clicking a row seeks the reel to that shot and marks it current.
  const ninth=ep1.shots.slice(0,8).reduce((a,s)=>a+s.duration,0);
  await page.locator('#rows .row').nth(8).click();
- await page.waitForFunction(()=>document.querySelector('#rows .row[aria-current="true"]'),null,{timeout:10000});
+ await page.waitForFunction(()=>document.querySelectorAll('#rows .row')[8]?.getAttribute('aria-current')==='true',null,{timeout:10000});
  const seek=await page.evaluate(()=>({t:document.getElementById('reel').currentTime,current:[...document.querySelectorAll('#rows .row')].findIndex(r=>r.getAttribute('aria-current')==='true')}));
  assert.ok(Math.abs(seek.t-ninth)<.6,`reel seeks to shot 9 (${seek.t} vs ${ninth})`);
  assert.equal(seek.current,8);
