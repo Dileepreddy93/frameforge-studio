@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEV Directions</title>
+<!-- M1.1: three original DEV design directions, drawn as SVG from design/dev-forms.js. Screenshot with
+     tools/design-shot.cjs. Reference images are read from ../../proof/v6/refs/ (outside this public repo) when present. -->
+<style>
+ :root{--bg:#0C0916;--panel:#120E1F;--line:#2A2340;--ink:#ECE8F6;--dim:#9C95B8;--coral:#FC5757;--blue:#79C5FF}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,'Ubuntu Sans',system-ui,sans-serif;width:2400px}
+ header{padding:44px 56px 8px}
+ h1{font-size:54px;margin:0 0 8px;letter-spacing:-.5px}
+ header p{font-size:23px;color:var(--dim);margin:0;max-width:1900px;line-height:1.45}
+ .refs{display:flex;gap:22px;padding:22px 56px 18px;align-items:stretch}
+ figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+ figure svg,figure img{display:block}
+ figcaption{font-size:19px;padding:10px 14px;color:var(--dim);line-height:1.3}
+ figcaption b{color:var(--ink);font-weight:700}
+ .keep{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 26px;font-size:21px;line-height:1.55}
+ .keep h3{margin:0 0 8px;font-size:24px}
+ .keep ul{margin:0;padding-left:22px}
+ .keep .k{color:#FFD9B8}.keep .r{color:#8FB0FF}
+ .dir{display:grid;grid-template-columns:270px 720px 870px 290px;gap:14px;align-items:start;margin:18px 56px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+ .label .letter{font-size:96px;font-weight:800;line-height:1}
+ .label h2{font-size:31px;margin:6px 0 12px;line-height:1.15}
+ .label ul{margin:0;padding-left:20px;font-size:19.5px;line-height:1.45;color:#D6D0E8}
+ .label li{margin-bottom:7px}
+ .label .tall{margin-top:12px;font-size:19px;color:var(--dim)}
+ .cells{display:grid;gap:10px}
+ .turn{grid-template-columns:repeat(3,1fr)}.expr{grid-template-columns:repeat(3,1fr)}.eyes{grid-template-columns:repeat(4,1fr);margin-top:10px}
+ .eyes .cell .tag{position:static;display:block;padding:0 10px 8px;font-size:16px}
+ .cell{background:#100C1B;border-radius:12px;overflow:hidden;position:relative}
+ .cell .tag{position:absolute;left:12px;bottom:9px;font-size:18px;color:var(--dim);letter-spacing:.3px}
+ .phone .cell .tag{position:static;padding:8px 2px 0;background:none}
+ .phone{display:flex;flex-direction:column;gap:8px}
+ .phone .note{font-size:17px;color:var(--dim);line-height:1.35}
+ .wide{display:flex;gap:6px;align-items:flex-end;background:#100C1B;border-radius:10px;padding:8px 10px}
+ svg polygon{stroke-width:.9px;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+ footer{padding:10px 56px 40px;font-size:19px;color:var(--dim)}
+</style>
+</head>
+<body>
+<header>
+ <h1>DEV · three design directions</h1>
+ <p>Original designs, drawn in 2D before any 3D work (M1.1). Same palette and light as the V6 set: flat matte facets, one warm key from camera-right, one blue rim from behind-left.
+ What changes between them is what matters most: head shape and proportions, the hair silhouette, and how eyes, lids and brows carry feeling. Pick one, or a mix (e.g. "A's head, C's eyes").</p>
+</header>
+<section class="refs" id="refs"></section>
+<main id="dirs"></main>
+<footer>Drawn from parametric forms in <code>design/dev-forms.js</code>, so the chosen direction's numbers carry straight into the three.js build (M1.3). The bottom-right frame in each row is shown at real phone size.</footer>
+<script src="dev-forms.js"></script>
+<script src="dev-directions.js"></script>
+<script>
+'use strict';
+const D=FrameForgeDesign;
+const{DIRS,EXPR,MOUTH_W}=FrameForgeDevDirections;
+const chars={};
+function character(d,expr){
+ const key=d.id+':'+expr;if(chars[key])return chars[key];
+ const s=JSON.parse(JSON.stringify(d));s.face.mouth.w*=MOUTH_W[expr];
+ return chars[key]=D.build(s);
+}
+const svgEl=(vb,w,h,inner,bg)=>'<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+vb.join(' ')+'" width="'+w+'" height="'+h+'">'+(bg||'')+inner+'</svg>';
+const TURN_SCALE=178,TURN_H=600,EXPR_SCALE=200,EXPR_H=410;
+function turnCell(d,yaw,label){
+ const ch=character(d,'neutral'),r=D.render(ch,{yaw,face:EXPR.neutral.face}),w=230,u=w/TURN_SCALE,h=TURN_H/TURN_SCALE,cx=(r.bbox[0]+r.bbox[2])/2,g=-d.body.ground;
+ const shadow='<ellipse cx="'+cx+'" cy="'+g+'" rx=".34" ry=".05" fill="#07050C"/>';
+ return '<div class="cell">'+svgEl([cx-u/2,g+.12-h,u,h],w,TURN_H,r.svg,shadow)+'<span class="tag">'+label+'</span></div>';
+}
+function exprCell(d,expr,yaw,size){
+ const ch=character(d,expr),r=D.render(ch,{yaw,face:EXPR[expr].face,pose:EXPR[expr].pose}),w=size?size[0]:283,hpx=size?size[1]:EXPR_H,sc=size?size[2]:EXPR_SCALE,u=w/sc,h=hpx/sc;
+ const hb=r.headBox,cx=(hb[0]+hb[2])/2,cy=(hb[1]+hb[3])/2+.03;
+ return svgEl([cx-u/2,cy-h/2,u,h],w,hpx,r.svg);
+}
+// Close-up in the V6 set at real phone size: in-world screen behind, caption at 31% height, head ~60% of frame width.
+function phoneFrame(d){
+ const ch=character(d,'worried'),r=D.render(ch,{yaw:14,face:EXPR.worried.face,pose:{roll:-3,pitch:3}});
+ const hb=r.skullBox,sc=640/(hb[2]-hb[0]),cx=(hb[0]+hb[2])/2,cy=(hb[1]+hb[3])/2;
+ const spark=[[140,560],[220,532],[262,560],[330,500],[380,550],[455,490],[520,536],[600,470],[650,510],[740,458],[800,500],[900,420],[960,450]].map(p=>p.join(',')).join(' ');
+ const set='<rect width="1080" height="1920" fill="#100C1B"/>'+
+  '<rect x="60" y="60" width="980" height="760" rx="10" fill="#0B0A12"/><rect x="84" y="84" width="932" height="712" fill="#151029"/>'+
+  '<circle cx="124" cy="126" r="11" fill="#E05553"/><circle cx="160" cy="126" r="11" fill="#DEA32F"/><circle cx="196" cy="126" r="11" fill="#23A93B"/>'+
+  '<text x="236" y="138" font-family="monospace" font-weight="700" font-size="34" fill="#A7A1C7">Dashboard · /reports</text><rect x="84" y="164" width="932" height="5" fill="#E05553"/>'+
+  '<text x="140" y="232" font-family="monospace" font-size="48" fill="#676284">p95 page load</text>'+
+  '<text x="130" y="400" font-family="monospace" font-weight="700" font-size="230" fill="#FC5757">12.0 s</text>'+
+  '<polyline points="'+spark+'" fill="none" stroke="#FC5757" stroke-width="7" stroke-linejoin="round"/>';
+
+ const cap='<g font-family="Inter,Ubuntu Sans,sans-serif" font-weight="700" font-size="50" fill="#fff" text-anchor="middle" style="paint-order:stroke" stroke="rgba(0,0,0,.35)" stroke-width="6"><text x="540" y="585">Our app takes twelve</text><text x="540" y="658">seconds to load.</text></g>';
+ const tx=540-cx*sc,ty=820-cy*sc,dy=Math.round(ty-d.body.pocket.top*sc);
+ // DEV sits at the desk: its front edge hides the hoodie from the pocket down.
+ const desk='<rect x="0" y="'+dy+'" width="1080" height="'+(1920-dy)+'" fill="#353790"/><rect x="0" y="'+dy+'" width="1080" height="16" fill="#5F418C"/>'+
+  Array.from({length:18},(_,i)=>'<rect x="'+(150+(i%9)*86)+'" y="'+(dy+60+Math.floor(i/9)*58)+'" width="70" height="44" rx="6" fill="#754DA6"/>').join('');
+ return svgEl([0,0,1080,1920],270,480,'<g transform="translate('+tx+' '+ty+') scale('+sc+')">'+r.svg+'</g>'+desk+cap,set);
+}
+// The eyes and brows alone, straight on, so the four states of each eye system compare directly.
+function eyeCell(d,expr){
+ const r=D.render(character(d,expr),{yaw:0,face:EXPR[expr].face}),y=-d.face.eyes.y;
+ return '<div class="cell">'+svgEl([-.37,y-.25,.74,.37],206,103,r.svg)+'<span class="tag">'+expr+'</span></div>';
+}
+function row(d){
+ const turn=[[0,'front'],[40,'three-quarter'],[90,'side']].map(([y,l])=>turnCell(d,y,l)).join('');
+ const expr=['happy','worried','surprised'].map(e=>'<div class="cell">'+exprCell(d,e,12)+'<span class="tag">'+e+'</span></div>').join('');
+ const wide=['happy','worried','surprised'].map(e=>exprCell(d,e,12,[70,64,62])).join('');
+ return '<section class="dir"><div class="label"><div class="letter">'+d.id+'</div><h2>'+d.name+'</h2><ul>'+d.notes.map(n=>'<li>'+n+'</li>').join('')+'</ul><div class="tall">'+d.heads+'</div></div>'+
+  '<div class="cells turn">'+turn+'</div><div><div class="cells expr">'+expr+'</div><div class="cells eyes">'+['neutral','happy','worried','surprised'].map(e=>eyeCell(d,e)).join('')+'</div></div>'+
+  '<div class="phone"><div class="cell">'+phoneFrame(d)+'</div><div class="note">Phone size: close-up, worried.</div><div class="wide">'+wide+'</div><div class="note">Wide-shot size: happy, worried, surprised.</div></div></section>';
+}
+// Reference panels: images live outside the repo; a missing image just leaves its panel empty.
+const REF='../../proof/v6/refs/';
+function refPanel(src,iw,ih,crop,w,cap){
+ const h=Math.round(w*crop[3]/crop[2]);
+ return '<figure><svg viewBox="'+crop.join(' ')+'" width="'+w+'" height="'+h+'"><rect x="'+crop[0]+'" y="'+crop[1]+'" width="'+crop[2]+'" height="'+crop[3]+'" fill="#07050c"/><image href="'+src+'" width="'+iw+'" height="'+ih+'"/></svg><figcaption>'+cap+'</figcaption></figure>';
+}
+document.getElementById('refs').innerHTML=
+ refPanel(REF+'agentpoly-human.jpg',432,540,[60,130,330,380],300,'<b>Agent Poly HUMAN</b><br>the appeal bar to beat')+
+ refPanel(REF+'ref-dev-closeup-t9.png',1080,1920,[100,240,900,1040],300,'<b>Reference DEV</b><br>the look to match (not copy)')+
+ refPanel('../../proof/v6/C1/shot-01-context.jpg',1620,1000,[600,240,420,470],300,'<b>Our DEV now (C1)</b><br>what this replaces')+
+ '<div class="keep"><h3>All three keep</h3><ul><li>Round glasses, warm brown skin, teal-slate hoodie with the hood behind the neck, front pocket and drawstrings</li><li>Near-black hair that catches the blue rim; a side-swept quiff</li><li>Mitten hands with a thumb; matte flat facets; no outlines, no gloss</li><li><span class="k">Warm key</span> from camera-right, <span class="r">blue rim</span> from behind-left; shadow sides fall to near-black</li></ul>'+
+ '<h3 style="margin-top:16px">How to answer</h3><ul><li>A letter, or a mix by part: head shape, hair, eyes and brows, body proportions (e.g. "A head and body, C eyes, B hair but lower")</li><li>Judge the phone-size frame on the right of each row first: that is how viewers meet DEV</li></ul></div>';
+document.getElementById('dirs').innerHTML=DIRS.map(row).join('');
+window.FF_READY=true;
+</script>
+</body>
+</html>
