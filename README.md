@@ -56,3 +56,5 @@ CI runs these in .github/workflows/project-contract.yml.
    This needs the Kokoro venv: `python3.12 -m venv .venv && .venv/bin/pip install kokoro-onnx soundfile`.
 3. Video: `node tools/render-episode.mjs projects/<episode>.frameforge.json` renders every frame at 1080x1920, 30 fps
    and writes `renders/<id>-1080x1920.mp4`. Use `--shots shot-01:shot-04` for a part.
+   Add `--gpu` to render on the GPU through the installed Chrome (several times faster; frames match the software
+   render to SSIM 0.995). The default software path is bit-exact and is what the tests use.

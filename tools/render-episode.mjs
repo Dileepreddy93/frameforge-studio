@@ -4,6 +4,8 @@
 //   node tools/render-episode.mjs projects/zero-latency.frameforge.json --shots shot-01:shot-04 --out renders/review.mp4
 // Options: --out FILE  --shots FIRST:LAST  --from S --to S  --width 1080 --height 1920  --quality 0.95
 //          --chrome PATH (default: Playwright's Chromium; software WebGL keeps frames deterministic)
+//          --gpu  render on the GPU through the installed Chrome (Vulkan): much faster, but pixels can
+//                 differ slightly from software rendering and between machines
 // Needs: npm install --no-save playwright@1.56.1 && npx playwright install chromium; ffmpeg on PATH.
 import fs from 'node:fs';
 import http from 'node:http';
@@ -49,8 +51,10 @@ const server=http.createServer((req,res)=>{
 });
 await new Promise(ok=>server.listen(0,'127.0.0.1',ok));
 
-const browser=await chromium.launch({headless:true,executablePath:opt('chrome'),
- args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+const gpu=argv.includes('--gpu');
+const browser=await chromium.launch({headless:true,executablePath:opt('chrome'),channel:gpu&&!opt('chrome')?'chrome':undefined,
+ args:gpu?['--no-sandbox','--use-angle=vulkan','--enable-features=Vulkan','--ignore-gpu-blocklist','--disable-dev-shm-usage']
+  :['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
 const ffmpeg=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y',
  '-f','image2pipe','-framerate',String(FPS),'-c:v','mjpeg','-i','-',
  '-ss',from.toFixed(4),'-t',(frames/FPS).toFixed(4),'-i',path.join(ROOT,project.audio.masterUrl),
