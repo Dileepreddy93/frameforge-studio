@@ -368,7 +368,7 @@ bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
 // hoodie with a hood ring and drawstrings. The root keeps the V5 coordinates the cameras aim at.
 dev.children.forEach(child=>child.visible=false);
 const humanRig=new T.Group();dev.add(humanRig);
-const personSkin=flat(0xc2432a),blackHair=flat(0x232842),
+const personSkin=Object.assign(flat(0xa3552f),{name:'dev-skin'}),blackHair=Object.assign(flat(0x232842),{name:'dev-hair'}),
  hoodie=flat(0x43676f),hoodieLight=flat(0x587d83),hoodieDark=flat(0x2b454e),
  trouser=flat(0x1e1f38),shoeMat=flat(0x121019),stringMat=flat(0xe0c4dc),
  featureInk=new T.MeshBasicMaterial({color:0x04030a}),mouthDark=new T.MeshBasicMaterial({color:0x2a0911});
@@ -388,7 +388,7 @@ function jitter(geometry,amount){
 }
 const bodyGroup=new T.Group();humanRig.add(bodyGroup);
 facet(bodyGroup,new T.CylinderGeometry(.5,.56,1.12,8).rotateY(Math.PI/8),hoodie,0,1.18,0,1,1,.64);
-facet(bodyGroup,jitter(new T.TorusGeometry(.43,.21,5,11).rotateX(Math.PI/2),.035),hoodie,0,1.78,-.02,1.08,.85,.95).rotation.x=.12;
+facet(bodyGroup,jitter(new T.TorusGeometry(.43,.21,5,11).rotateX(Math.PI/2),.035),hoodie,0,1.7,-.02,1.08,.62,.95).rotation.x=.12;
 for(const side of [-1,1]){
  facet(bodyGroup,new T.BoxGeometry(.035,.34,.035),stringMat,side*.13,1.47,.37);
  facet(bodyGroup,new T.BoxGeometry(.3,.62,.34),trouser,side*.25,.31,0);
@@ -402,33 +402,115 @@ for(const side of [-1,1]){
  facet(shoulder,new T.IcosahedronGeometry(.13,0),personSkin,side*.04,-.98,.03);
  humanPivots.push({side,shoulder});
 }
+// DEV's head is designed, not a jittered sphere. The face is hand-placed points (right half; the left mirrors it):
+// brow ridge, eye sockets, cheekbones, jaw angle and a soft chin. The cranium, sides and back are points on a smooth
+// shell, staggered ring to ring like an icosphere so they never read as a lathe. Big cranium, narrower jaw; the jaw
+// line rises from the chin to the nape, and the eye line sits 58% down from the crown.
+const HEAD_TOP=.56,HEAD_CHIN=-.49;
+// Shell profile, top to bottom: [y, half width, front depth, back depth].
+const HEAD_SHELL=[[.56,0,-.07,-.07],[.49,.29,.17,-.27],[.37,.46,.31,-.43],[.21,.52,.42,-.49],[.07,.51,.46,-.48],
+ [-.02,.495,.44,-.45],[-.14,.465,.45,-.39],[-.27,.4,.43,-.3],[-.36,.32,.37,-.23],[-.42,.26,.32,-.18]];
+// A ring: [y, rise toward the back, ...points]. A number is an angle in degrees on the shell (0 = front);
+// an [x,y,z] is a hand-placed face point.
+const HEAD_RINGS=[
+ [.49,0,0,72,144],                                                                          // crown
+ [.37,0,36,108,180],
+ [.21,0,[0,.22,.42],[.22,.22,.395],[.43,.21,.245],95,125,155,180],                          // forehead, widest
+ [.07,0,[0,.07,.475],[.19,.085,.465],[.39,.07,.33],88,112,140,168],                         // brow ridge
+ [0,0,[0,0,.445],[.185,.005,.405],[.39,-.005,.3],76,100,126,154,180],                       // eye sockets
+ [-.14,0,[0,-.14,.465],[.2,-.15,.44],[.395,-.13,.31],88,115,142,168],                       // cheekbones
+ [-.28,.03,[0,-.28,.44],[.17,-.29,.415],[.325,-.27,.27],80,104,130,155,180],                // cheeks, mouth
+ [-.41,.1,[0,-.41,.37],[.14,-.41,.345],[.26,-.39,.22],[.315,-.35,-.01],120,150,180],            // jaw angle
+ [-.49,.12,[0,HEAD_CHIN,.28],[.1,-.485,.25],[.17,-.46,.13],[.2,-.42,-.04],[.11,-.38,-.15],[0,-.37,-.17]] // soft chin
+];
+function headShell(deg,y){
+ const i=Math.max(1,HEAD_SHELL.findIndex(k=>k[0]<=y)),[y0,w0,f0,b0]=HEAD_SHELL[i-1],[y1,w1,f1,b1]=HEAD_SHELL[i];
+ const k=(y0-y)/(y0-y1),t=deg*Math.PI/180,c=Math.cos(t),e=2/2.3;
+ return new T.Vector3(deg%180?(w0+(w1-w0)*k)*Math.sin(t)**e:0,y,(c>=0?f0+(f1-f0)*k:b0+(b1-b0)*k)*Math.abs(c)**e);
+}
+function devHeadGeometry(){
+ // Build the right half, front to back, then mirror it: the head is symmetric by construction.
+ const halves=HEAD_RINGS.map(([y,rise,...spec])=>{
+  const half=spec.map(p=>Array.isArray(p)?new T.Vector3(...p):headShell(p,y+rise*(1-Math.cos(p*Math.PI/180))/2));
+  const zs=half.map(v=>v.z),centre=(Math.max(...zs)+Math.min(...zs))/2;
+  half.forEach(v=>v.angle=Math.atan2(v.x,v.z-centre));
+  return half.sort((a,b)=>a.angle-b.angle);
+ });
+ const mirror=v=>new T.Vector3(-v.x,v.y,v.z),right=[];
+ const top=new T.Vector3(0,HEAD_TOP,-.07),bottom=new T.Vector3(0,-.46,.04);
+ halves.forEach((ring,r)=>{
+  if(r===0)ring.slice(1).forEach((v,i)=>right.push([top,ring[i],v]));
+  if(r===halves.length-1){ring.slice(1).forEach((v,i)=>right.push([bottom,v,ring[i]]));return}
+  // Zip this ring to the next, always taking the shorter diagonal.
+  const lower=halves[r+1];
+  for(let i=0,j=0;i<ring.length-1||j<lower.length-1;){
+   const up=j>=lower.length-1||(i<ring.length-1&&ring[i+1].distanceTo(lower[j])<ring[i].distanceTo(lower[j+1]));
+   right.push(up?[ring[i],lower[j],ring[++i]]:[ring[i],lower[j],lower[++j]]);
+  }
+ });
+ const tris=[...right,...right.filter(t=>t.some(v=>v.x)).map(t=>t.map(mirror).reverse())];
+ // Close the seams on the centre line where a ring has no point there (the crown, the top fan, the back).
+ const seam=(a,b,front)=>{
+  const pa=front?a[0]:a.at(-1),pb=front?b[0]:b.at(-1);
+  const quad=front?[mirror(pa),mirror(pb),pb,pa]:[pa,pb,mirror(pb),mirror(pa)];
+  const pts=quad.filter((v,i,list)=>list.findIndex(w=>w.equals(v))===i);
+  for(let i=1;i<pts.length-1;i++)tris.push([pts[0],pts[i],pts[i+1]]);
+ };
+ halves.forEach((ring,r)=>{
+  if(r===0){if(ring[0].x)tris.push([top,mirror(ring[0]),ring[0]]);if(ring.at(-1).x)tris.push([top,ring.at(-1),mirror(ring.at(-1))])}
+  if(r===halves.length-1){if(ring[0].x)tris.push([bottom,ring[0],mirror(ring[0])]);if(ring.at(-1).x)tris.push([bottom,mirror(ring.at(-1)),ring.at(-1)]);return}
+  seam(ring,halves[r+1],true);seam(ring,halves[r+1],false);
+ });
+ const position=tris.flatMap(tri=>tri.flatMap(v=>[v.x,v.y,v.z]));
+ const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(position,3));
+ geometry.computeVertexNormals();return geometry;
+}
+// An ear: a D-shaped rim leaning back from the cheek, a shallow bowl inside, rooted under the skin.
+function devEarGeometry(){
+ const rim=[[.035,.11],[-.04,.125],[-.095,.06],[-.1,-.035],[-.06,-.11],[.02,-.12]].map(([z,y])=>new T.Vector3(.05-z*.5,y,z).multiplyScalar(1.25));
+ const root=rim.map(v=>new T.Vector3(-.05,v.y*.8,v.z*.8+.01)),bowl=new T.Vector3(.07,-.005,-.035),position=[];
+ const add=(tri,out)=>{
+  const normal=new T.Vector3().subVectors(tri[1],tri[0]).cross(new T.Vector3().subVectors(tri[2],tri[0]));
+  if(normal.dot(out)<0)tri.reverse();for(const v of tri)position.push(v.x,v.y,v.z);
+ };
+ rim.forEach((v,i)=>{
+  const w=rim[(i+1)%rim.length],out=new T.Vector3(0,v.y+w.y,v.z+w.z+.04);
+  add([bowl,v,w],new T.Vector3(1,0,0));
+  add([v,root[i],root[(i+1)%rim.length]],out);add([v,root[(i+1)%rim.length],w],out);
+ });
+ const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(position,3));
+ geometry.computeVertexNormals();return geometry;
+}
+// The neck rides with the body; its top reaches deep into the head, so nods and bobs never open a gap.
+facet(bodyGroup,new T.CylinderGeometry(.15,.17,.5,6),personSkin,0,1.86,-.05);
 const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);
-const skull=facet(humanHead,jitter(new T.IcosahedronGeometry(.5,1),.022),personSkin,0,0,0,.98,1.02,.93);
+const skull=facet(humanHead,devHeadGeometry(),personSkin,0,0,0);
 // Features sit on the faceted skin: faceZ finds the skin's depth under a point of the face.
 const surfaceRay=new T.Raycaster(),surfaceProbe=new T.Mesh(skull.geometry);
 surfaceProbe.scale.copy(skull.scale);surfaceProbe.updateMatrixWorld();
 function faceZ(x,y){surfaceRay.set(new T.Vector3(x,y,2),new T.Vector3(0,0,-1));return surfaceRay.intersectObject(surfaceProbe)[0]?.point.z??.45}
-const EYE_Y=.03,BROW_Y=.155,MOUTH_TOP=-.16,humanEyes=[],browsNew=[];
+const EYE_Y=-.05,BROW_Y=.075,MOUTH_TOP=-.255,humanEyes=[],browsNew=[];
 for(const side of [-1,1]){
- facet(humanHead,new T.IcosahedronGeometry(.11,0),personSkin,side*.49,-.03,-.02,.55,1,.85);
+ facet(humanHead,devEarGeometry(),personSkin,side*.45,-.08,-.06,side,1,1);
  const eye=facet(humanHead,new T.CylinderGeometry(.048,.048,.03,8).rotateX(Math.PI/2),featureInk,side*.165,EYE_Y,faceZ(side*.165,EYE_Y)+.004,1,1.2,1);
  humanEyes.push(eye);
  browsNew.push(facet(humanHead,new T.BoxGeometry(.19,.045,.04),featureInk,side*.17,BROW_Y,faceZ(side*.17,BROW_Y)+.006));
 }
-facet(humanHead,new T.OctahedronGeometry(.075,0),personSkin,0,-.07,faceZ(0,-.07)+.01,.8,1,.85);
-const mouthNew=facet(humanHead,new T.BoxGeometry(.16,.18,.04),mouthDark,0,MOUTH_TOP,faceZ(0,-.24)+.004);
+facet(humanHead,new T.OctahedronGeometry(.075,0),personSkin,0,-.17,faceZ(0,-.17)+.01,.8,1,.85);
+const mouthNew=facet(humanHead,new T.BoxGeometry(.16,.18,.04),mouthDark,0,MOUTH_TOP,faceZ(0,-.33)+.004);
 const mouthCurve=()=>new T.TorusGeometry(.075,.022,3,6,Math.PI);
-const humanSmile=facet(humanHead,mouthCurve(),mouthDark,0,-.2,faceZ(0,-.22)+.004);humanSmile.rotation.z=Math.PI;
-const humanFrown=facet(humanHead,mouthCurve(),mouthDark,0,-.29,faceZ(0,-.26)+.004);
+const humanSmile=facet(humanHead,mouthCurve(),mouthDark,0,-.3,faceZ(0,-.32)+.004);humanSmile.rotation.z=Math.PI;
+const humanFrown=facet(humanHead,mouthCurve(),mouthDark,0,-.38,faceZ(0,-.35)+.004);
 // Hair: a faceted cap tipped back over the crown, a quiff of chunky locks swept to one side, sideburns.
-facet(humanHead,jitter(new T.IcosahedronGeometry(.53,1),.04),blackHair,0,.18,-.06,1,.62,.95).rotation.x=-.5;
+facet(humanHead,jitter(new T.IcosahedronGeometry(.53,1),.04),blackHair,0,.22,-.09,1.07,.7,1.04).rotation.x=-.5;
 for(let i=0;i<5;i++){
  const lock=facet(humanHead,new T.ConeGeometry(.16-(i%2)*.03,.56-i*.03,4),blackHair,-.3+i*.13,.5+(i%2)*.04,.12-i*.04);
  lock.rotation.set(.3,0,-.9-i*.1);
 }
 for(const side of [-1,1])facet(humanHead,new T.TetrahedronGeometry(.12),blackHair,side*.45,.14,.06,.7,1.2,.8);
-// Hair shadows would darken the eyes as the head moves; the reference keeps faces clean.
-humanHead.children.forEach(m=>{if(m.material===blackHair)m.castShadow=false});
+// The face is lit by its facets alone: soft shadows from hair, brows, nose or ears smudge it as the head moves.
+// The skull still casts onto the body.
+humanHead.children.forEach(m=>{if(m!==skull)m.castShadow=false});skull.receiveShadow=false;
 lookParts.dev.hoodie.push({material:hoodie,shade:0},{material:hoodieLight,shade:.16},{material:hoodieDark,shade:-.35});
 lookParts.dev.hair.push({material:blackHair,shade:0});
 function applyHumanFacePose(pose,speech=null,inLine=false){

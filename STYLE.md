@@ -20,6 +20,7 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
 | Code / info | `#79C5FF` | `→ Index Scan …` lines |
 | Window lights | `#DEA32F` | dots: `#E05553` `#DEA32F` `#23A93B` |
 | Skin | lit `#C1361C` · mid `#8F2B19` · shadow `#260B06` | shadow side falls to near black |
+| DEV skin (warm brown) | lit `#B95D3D` · mid `#8B3F1D` · shadow `#3A1607` | base `#A3552F`; same lights |
 | Hoodie | lit `#667168` · base `#3D5D66` · top `#467498` | top faces turn blue from the rim |
 | Hair | `#120806`, rim edges `#4B87C0` | |
 | Ink (eyes, mouth, brows) | `#04030A`, mouth `#2A0911` | flat, unlit |
@@ -29,8 +30,10 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
 
 ## Shading and materials
 - Flat shading: one colour per triangle, hard facet edges. No smooth normals, textures, outlines or AO.
-- Few triangles: heads are icospheres (detail 1, about 80 faces), bodies are boxes or 6–8-sided cylinders,
-  hair is cones/chunks, noses are octahedra, hands are detail-0/1 icospheres.
+- Few triangles: bodies are boxes or 6–8-sided cylinders, hair is cones/chunks, noses are octahedra, hands are
+  detail-0/1 icospheres. DEV's head (about 200 faces) is designed, not jittered: hand-placed brow, socket, cheekbone,
+  jaw and chin points on the face, a smooth staggered shell for the cranium; eye line 58% down from the crown.
+- Nothing on a head casts a shadow onto the face; faces are lit by their facets alone.
 - Matte only: roughness 1, metalness 0, no clearcoat, no specular highlight, no emissive on characters.
 - Faces are flat black geometry: pupils only (no whites, irises or catchlights), a box mouth whose height is
   how open it is, thin box brows. No cheeks, lips, teeth or eyelid skin.
