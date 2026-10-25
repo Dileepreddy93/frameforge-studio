@@ -36,7 +36,7 @@ async function main(){
     assert.equal(response.status(),200);
     await page.waitForFunction(()=>window.FrameForgeQA?.envelopeReady() &&
       typeof window.FrameForgeQA.renderFilmFrame==='function' &&
-      window.FrameForgePerformanceQA?.humanRig().upperLids===2,null,{timeout:45000});
+      window.FrameForgePerformanceQA?.humanRig().pupils===2,null,{timeout:45000});
 
     // Batches keep IPC traffic and browser memory bounded.
     let count=0;

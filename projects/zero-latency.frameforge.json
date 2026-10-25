@@ -111,6 +111,13 @@
         "up": 0.09,
         "fov": 36
       },
+      "wall": {
+        "window": "Dashboard · /home",
+        "label": "p95 page load",
+        "value": "12.0 s",
+        "badge": "SLOW",
+        "tone": "bad"
+      },
       "timing": {
         "lead": 0.15,
         "pauseAfter": 0.35

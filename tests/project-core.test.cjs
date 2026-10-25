@@ -83,7 +83,10 @@ assert.equal(validateProject({...clone(comedy),characters:comedy.characters.map(
 invalid('unknown camera move',p=>p.shots[0].framing.move='orbit');
 invalid('roll too steep',p=>p.shots[0].framing.roll=45);
 invalid('aim at unknown character',p=>p.shots[0].framing.aim='nobody');
-assert.equal(plain.title,'');assert.equal(plain.insert,null);assert.equal(plain.reactionCut,null);
+assert.equal(plain.title,'');assert.equal(plain.insert,null);assert.equal(plain.reactionCut,null);assert.equal(plain.wall,null);
+assert.deepEqual(comedyShots[0].wall,{window:'Dashboard · /home',label:'p95 page load',value:'12.0 s',badge:'SLOW',tone:'bad'});
+invalid('wall screen without a value',p=>p.shots[0].wall={window:'w',label:'l',tone:'bad'});
+invalid('wall screen with unknown tone',p=>p.shots[0].wall={window:'w',label:'l',value:'1 s',tone:'meh'});
 // Older files that only set acting.devEmotion still open.
 const legacy=clone(mystery);delete legacy.shots[0].cast;legacy.shots[0].acting={devEmotion:'happy'};
 assert.equal(toTimelineShots(legacy)[0].cast.dev.emotion,'happy');
@@ -97,4 +100,4 @@ invalid('incomplete screen insert',p=>delete p.shots[8].insert.caption);
 invalid('bad insert tone',p=>p.shots[8].insert.tone='meh');
 invalid('empty title',p=>p.shots[0].title='');
 invalid('empty banner',p=>p.banner='');
-console.log('SHOT_DIRECTION_TESTS_PASS: order-independent shots, defaults, legacy acting, 10 invalid cases');
+console.log('SHOT_DIRECTION_TESTS_PASS: order-independent shots, defaults, legacy acting, 12 invalid cases');

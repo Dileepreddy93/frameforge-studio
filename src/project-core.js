@@ -81,6 +81,8 @@
    if(s.sfx!==undefined&&!(Array.isArray(s.sfx)&&s.sfx.length<=8&&s.sfx.every(x=>isRecord(x)&&SFX.has(x.cue)&&inRange(x.at,0,15)&&(x.gain===undefined||inRange(x.gain,-40,6)))))fail(at+'.sfx','Expected up to 8 {cue,at,gain?} with cue in '+[...SFX].join('/'));
    const ins=s.insert;
    if(ins!==undefined&&!(isRecord(ins)&&INSERT_TEXT.every(k=>goodText(ins[k],80))&&['good','bad'].includes(ins.tone)&&['drop','flat'].includes(ins.graph)))fail(at+'.insert','Screen insert needs '+INSERT_TEXT.join('/')+', tone good|bad and graph drop|flat');
+   const wl=s.wall;
+   if(wl!==undefined&&!(isRecord(wl)&&goodText(wl.window,40)&&goodText(wl.label,40)&&goodText(wl.value,12)&&(wl.badge===undefined||goodText(wl.badge,10))&&['good','bad'].includes(wl.tone)))fail(at+'.wall','Wall screen needs window/label (40 chars), value (12), optional badge (10) and tone good|bad');
    if(s.acting!==undefined&&(!isRecord(s.acting)||!['neutral','happy','worried','surprised','angry'].includes(s.acting.devEmotion)))fail(at+'.acting.devEmotion','Unsupported DEV emotional beat');
    if(!allowedStatuses.has(s.firstFrameStatus))fail(at+'.firstFrameStatus','Missing explicit first frame approval status');
    if(s.styleLock!==undefined&&s.styleLock!==p.style?.styleLock)fail(at+'.styleLock','Shot style lock drift');
@@ -115,7 +117,7 @@
     title:s.title??'',cast,
     framing:{distance,offset,up,fov,lookUp:0,move:'push',amount:.33,roll:0,aim:s.camera==='duo'?s.speaker:'center',...s.framing},
     timing:{lead:s.timing?.lead??0,pauseAfter:s.timing?.pauseAfter??0},voice:s.voice??null,
-    reactionCut:s.reactionCut??null,insert:s.insert??null
+    reactionCut:s.reactionCut??null,insert:s.insert??null,wall:s.wall??null
    };
   });
  }

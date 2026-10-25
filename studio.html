@@ -30,24 +30,27 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
 const stage=$('stage');
-const scene=new T.Scene();scene.background=new T.Color(0x140e28);scene.fog=new T.FogExp2(0x130e27,.035);
+const VOID=0x100c1b;
+const scene=new T.Scene();scene.background=new T.Color(VOID);
 const cam=new T.PerspectiveCamera(40,9/16,.1,110);
 const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true,alpha:false});
-renderer.setPixelRatio(1);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;renderer.setSize(720,1280,false);
+// No tone mapping: STYLE.md colours are hit directly, and ACES would wash the terracotta out.
+renderer.setPixelRatio(1);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.NoToneMapping;renderer.setSize(720,1280,false);
 stage.prepend(renderer.domElement);
-scene.add(new T.HemisphereLight(0x98a2ff,0x181123,1.25));
-let key=new T.PointLight(0xffc5a1,58,19,2);key.position.set(-3,6,5);key.castShadow=true;scene.add(key);
-let rim=new T.PointLight(0x6f42ff,55,18,2);rim.position.set(4,3,-2);scene.add(rim);
-let fill=new T.PointLight(0x3fb4ff,24,18,2);fill.position.set(-2,4,-2);scene.add(fill);
+// V6 light (STYLE.md): one warm key from the right side, one cool rim from above and behind, almost no ambient.
+const KEY_INTENSITY=4.4;
+scene.add(new T.HemisphereLight(0x3a3570,0x07060c,.3));
+const key=new T.DirectionalLight(0xffe6d0,KEY_INTENSITY);key.position.set(5,5,5);key.castShadow=true;scene.add(key);
+key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.0004;key.shadow.normalBias=.02;
+Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-3,near:.5,far:25});
+const rim=new T.DirectionalLight(0x7f9cff,9);rim.position.set(2,8,-3);scene.add(rim);
 const mat=(c,r=.72,m=.05)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 const dark=mat(0x101122),navy=mat(0x202443),white=mat(0xe3dbe0),blue=mat(0x4f83bb,.4,.45),orange=mat(0xf18427,.45,.24),skin=mat(0x9c6b4b),hair=mat(0x191524),suit=mat(0x3c4168),glow=new T.MeshStandardMaterial({color:0x6df6ff,emissive:0x43d7ff,emissiveIntensity:2});
 function cube(g,x,y,z,w,h,d,m){let o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;g.add(o);return o}
 function ball(g,x,y,z,r,m){let o=new T.Mesh(new T.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o}
-let floor=cube(scene,0,-.16,0,18,.24,15,mat(0x1b1530));let wall=cube(scene,0,3,-5,18,7,.2,mat(0x171026));for(let i=-5;i<=5;i+=2){cube(scene,i,3,-4.86,.035,5,.02,mat(0x4a256d));cube(scene,i,1.15,-4.78,1.4,.025,.04,glow)}
+let floor=cube(scene,0,-.16,0,18,.24,15,mat(0x1b1530));let wall=cube(scene,0,3,-5,18,7,.2,mat(0x171026));
 let stageBox=cube(scene,0,.24,-1.5,6,.46,3,mat(0x29203e));
 cube(scene,0,1.3,-2.75,5,.15,1.7,mat(0x5c3559,.38));for(let x of [-2.3,2.3])cube(scene,x,.72,-2.75,.18,1.13,.3,dark);
-let screen=cube(scene,0,2.18,-3.15,2.5,1.5,.15,mat(0x080e2a,.22));cube(scene,0,2.2,-3.05,2.2,1.17,.03,mat(0x1d2767,.27));for(let j=0;j<5;j++)cube(scene,-.53,2.55-j*.17,-2.99,1.05-j*.1,.045,.022,new T.MeshStandardMaterial({color: j%2?0x39c8ff:0xb074f7,emissive:j%2?0x0b3555:0x342063,emissiveIntensity:.7}));
-for(let k=0;k<9;k++){let x=(k*17%13)/2-3,y=1+(k*7%16)/4;ball(scene,x,y,-4.7,.015,glow)}
 
 // CINEMATIC SET V2 — built as an inhabited space, not a flat neon backdrop.
 // Stage architecture has a consistent industrial palette, practical light sources,
@@ -59,15 +62,8 @@ const copper=satin(0xb16d54,.39,.39), steelSet=satin(0x354958,.36,.57);
 const cyanEmission=new T.MeshStandardMaterial({color:0x83d9e3,emissive:0x3f9eaf,emissiveIntensity:1.3,roughness:.28});
 const amberEmission=new T.MeshStandardMaterial({color:0xffc18b,emissive:0xb66b3b,emissiveIntensity:1.6,roughness:.35});
 const shadowMat=new T.MeshBasicMaterial({color:0x090e1b,transparent:true,opacity:.37,depthWrite:false,side:T.DoubleSide});
-renderer.toneMappingExposure=1.43;
-scene.add(new T.AmbientLight(0xe2f3ff,.48));
-const keyAreaApprox=new T.DirectionalLight(0xffd9b9,2.5);keyAreaApprox.position.set(-3.2,7,5);scene.add(keyAreaApprox);
-const fillStudio=new T.DirectionalLight(0x8ac5ff,1.1);fillStudio.position.set(4,5,4);scene.add(fillStudio);
-const upperRim=new T.DirectionalLight(0xccb5ff,1.85);upperRim.position.set(2,5,-5);scene.add(upperRim);
-key.position.set(-4,5.5,4.4);key.intensity=85;rim.position.set(3.6,4,-2);rim.intensity=77;
-fill.position.set(2.4,3.2,2.8);fill.intensity=32;
-floor.material=satin(0x202a35,.72,.14);wall.material=satin(0x202638,.87,.04);
-stageBox.material=satin(0x2e333e,.61,.25);
+const flat=color=>new T.MeshLambertMaterial({color,flatShading:true});
+floor.material=flat(0x17132a);wall.material=flat(0x141026);stageBox.material=flat(0x1a1530);
 function tube(parent,a,b,r,m,detail=10){
  const va=new T.Vector3(...a),vb=new T.Vector3(...b);
  const diff=vb.clone().sub(va),shape=new T.Mesh(new T.CylinderGeometry(r,r,diff.length(),detail),m);
@@ -158,6 +154,62 @@ for(let i=0;i<55;i++){
 scatter.setAttribute('position',new T.Float32BufferAttribute(dust,3));
 const flecks=new T.Points(scatter,new T.PointsMaterial({color:0xd9c4ab,size:.025,transparent:true,opacity:.48,depthWrite:false}));
 artGroup.add(flecks);
+// V6 SET (STYLE.md): a near-black room whose story lives on real monitors, not on overlay cards.
+// The V5 neon set stays hidden until the set pass replaces the rest of it.
+artGroup.visible=false;
+const v6Set=new T.Group();scene.add(v6Set);
+const bezelMat=flat(0x0b0a12);
+const MONO='"Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace';
+const TONES={bad:{ink:'#fc5757',rule:'#e05553',tint:'#471c30'},good:{ink:'#44e082',rule:'#3a9a66',tint:'#1c3a2e'}};
+function monitor(w,h,x,y,z,ry){
+ const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*h/w);
+ const texture=new T.CanvasTexture(cv);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=8;
+ const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;v6Set.add(g);
+ cube(g,0,0,-.05,w+.14,h+.14,.08,bezelMat);
+ g.add(new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:texture,toneMapped:false})));
+ return {ctx:cv.getContext('2d'),texture,width:cv.width,height:cv.height,drawn:null};
+}
+function windowChrome(c,W,title,rule){
+ c.fillStyle='#151029';c.fillRect(0,0,W,c.canvas.height);
+ c.fillStyle='#1b1534';c.fillRect(0,0,W,84);
+ ['#e05553','#dea32f','#23a93b'].forEach((dot,i)=>{c.fillStyle=dot;c.beginPath();c.arc(40+i*32,42,11,0,Math.PI*2);c.fill()});
+ c.fillStyle='#a7a1c7';c.font='700 34px '+MONO;c.textAlign='left';c.textBaseline='middle';c.fillText(title,148,44);
+ c.fillStyle=rule;c.fillRect(0,84,W,5);
+}
+// Metric screen: window title, label, one huge number in the state colour, a jagged sparkline, a badge.
+function drawWallScreen(screen,wall){
+ const key=JSON.stringify(wall??null);if(screen.drawn===key)return;screen.drawn=key;
+ const c=screen.ctx,W=screen.width,H=screen.height;
+ if(!wall){c.fillStyle='#151029';c.fillRect(0,0,W,H);screen.texture.needsUpdate=true;return}
+ const tone=TONES[wall.tone];
+ windowChrome(c,W,wall.window,tone.rule);
+ c.fillStyle='#676284';c.font='400 44px '+MONO;c.fillText(wall.label,56,176);
+ if(wall.badge){
+  c.font='700 38px '+MONO;const bw=c.measureText(wall.badge).width+56;
+  c.fillStyle=tone.tint;c.beginPath();c.roundRect(W-bw-40,128,bw,70,10);c.fill();
+  c.fillStyle=tone.ink;c.textAlign='center';c.fillText(wall.badge,W-bw/2-40,165);c.textAlign='left';
+ }
+ c.fillStyle=tone.ink;c.font='700 230px '+MONO;c.textBaseline='alphabetic';c.fillText(wall.value,46,430);
+ c.strokeStyle=tone.ink;c.lineWidth=7;c.lineJoin='miter';c.beginPath();
+ for(let i=0;i<=30;i++){
+  const jag=((i*37+11)%17)/17,trend=wall.tone==='bad'?-i*1.6:i*.4;
+  const px=24+i*(W-48)/30,py=H-90+trend-jag*(wall.tone==='bad'?62:30);
+  i?c.lineTo(px,py):c.moveTo(px,py);
+ }
+ c.stroke();screen.texture.needsUpdate=true;
+}
+// Side screen: an abstract chat/log window that dresses the set without competing with the story screen.
+function drawSideScreen(screen){
+ const c=screen.ctx,W=screen.width;
+ windowChrome(c,W,'notes',TONES.bad.rule);
+ for(let i=0;i<6;i++){
+  const right=i%2===1,w=260+((i*97)%5)*70;
+  c.fillStyle=right?'#2b2455':'#3a2732';c.beginPath();c.roundRect(right?W-w-48:48,130+i*82,w,46,14);c.fill();
+ }
+ screen.texture.needsUpdate=true;
+}
+const wallScreen=monitor(3.0,1.88,-1.0,4.45,-3.75,-.3);
+const sideScreen=monitor(1.6,1.0,-3.55,2.75,-3.35,.42);drawSideScreen(sideScreen);
 
 const dev=new T.Group();dev.position.set(-1.7,.33,-1);scene.add(dev);
 cube(dev,0,1.25,0,.95,1.3,.55,suit);cube(dev,0,2.28,0,.75,.9,.68,skin);cube(dev,0,2.78,-.02,.83,.25,.73,hair);cube(dev,-.55,1.36,0,.24,.99,.25,suit);cube(dev,.55,1.36,0,.24,.99,.25,suit);cube(dev,-.27,.4,0,.3,.45,.35,navy);cube(dev,.27,.4,0,.3,.45,.35,navy);
@@ -263,6 +315,9 @@ for(const [name,actor] of Object.entries({blue:faces.blue,orange:faces.orange}))
  }
 }
 
+// The robots stand between the key light and DEV, so they must not shadow him in his close-ups.
+for(const robotRoot of [b.root,o.root])robotRoot.traverse(m=>{m.castShadow=false});
+
 function drawActorFace(f,emotion,open,time,viseme='rest',gaze=0){
  const c=f.ctx;c.clearRect(0,0,512,512);c.save();
  const blue=f.blue,ink=blue?'#b9f6fa':'#ffd5a9',bright=blue?'#edffff':'#fff0cb';
@@ -309,168 +364,102 @@ for(let i=0;i<7;i++){
 bevel(.14,.14,.13,.025,skin,dev,0,2.25,.41);
 bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
 
-// HUMAN PERFORMANCE MODEL — faceted face, layered hair, hoodie tailoring and acting pivots.
-// Preserve original developer root for camera coordinates but replace its flat proxy geometry.
+// V6 DEV (STYLE.md): flat-shaded low-poly, matte, a pupils-only face. Original design: a swept quiff and a
+// hoodie with a hood ring and drawstrings. The root keeps the V5 coordinates the cameras aim at.
 dev.children.forEach(child=>child.visible=false);
 const humanRig=new T.Group();dev.add(humanRig);
-const personSkin=velvet(0x9f7869,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
- hoodie=velvet(0x263a51,.85,.02),hoodieLight=velvet(0x40556a,.78,.03),hoodieDark=velvet(0x182638,.94,0),
- trouser=velvet(0x20283c,.9,0),shoeMat=velvet(0x141b23,.86,0),
- eyeWhite=velvet(0xddd5cf,.55,0),eyeDark=new T.MeshBasicMaterial({color:0x17161f}),
- mouthDark=velvet(0x4a1d26,.88,0);
-function poly(parent,r,material,x,y,z,subdivision=0){const o=new T.Mesh(new T.IcosahedronGeometry(r,subdivision),material);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
+const personSkin=flat(0xc2432a),blackHair=flat(0x232842),
+ hoodie=flat(0x43676f),hoodieLight=flat(0x587d83),hoodieDark=flat(0x2b454e),
+ trouser=flat(0x1e1f38),shoeMat=flat(0x121019),stringMat=flat(0xe0c4dc),
+ featureInk=new T.MeshBasicMaterial({color:0x04030a}),mouthDark=new T.MeshBasicMaterial({color:0x2a0911});
+function facet(parent,geometry,material,x,y,z,sx=1,sy=1,sz=1){
+ const m=new T.Mesh(geometry,material);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
+}
+// Hand-made low-poly is never perfectly regular: nudge every vertex by a hash of where it is, so
+// copies of a vertex on neighbouring faces move together and the faceted surface stays closed.
+function jitter(geometry,amount){
+ const p=geometry.attributes.position,v=new T.Vector3();
+ const hash=(x,y,z,k)=>{const h=Math.sin(x*127.1+y*311.7+z*74.7+k*19.3)*43758.5453;return (h-Math.floor(h))*2-1};
+ for(let i=0;i<p.count;i++){
+  v.fromBufferAttribute(p,i);const [x,y,z]=[v.x,v.y,v.z].map(n=>Math.round(n*1e4)/1e4);
+  p.setXYZ(i,x+hash(x,y,z,1)*amount,y+hash(x,y,z,2)*amount,z+hash(x,y,z,3)*amount);
+ }
+ geometry.computeVertexNormals();return geometry;
+}
 const bodyGroup=new T.Group();humanRig.add(bodyGroup);
-const jacketProfile=[[.30,.59],[.47,.68],[.54,.88],[.56,1.22],[.52,1.52],[.40,1.70],[.28,1.74]];
-const jacket=new T.Mesh(new T.LatheGeometry(jacketProfile.map(([r,y])=>new T.Vector2(r,y)),40),hoodie);
-jacket.castShadow=true;jacket.receiveShadow=true;bodyGroup.add(jacket);
-bevel(.86,.29,.67,.09,hoodieLight,bodyGroup,0,1.72,-.06);
-bevel(.68,.36,.52,.13,hoodieDark,bodyGroup,0,1.79,-.12);
-bevel(.72,.24,.11,.07,hoodieDark,bodyGroup,0,.72,.35);
-bevel(.63,.055,.055,.016,hoodieLight,bodyGroup,0,.85,.395);
+facet(bodyGroup,new T.CylinderGeometry(.5,.56,1.12,8).rotateY(Math.PI/8),hoodie,0,1.18,0,1,1,.64);
+facet(bodyGroup,jitter(new T.TorusGeometry(.43,.21,5,11).rotateX(Math.PI/2),.035),hoodie,0,1.78,-.02,1.08,.85,.95).rotation.x=.12;
 for(const side of [-1,1]){
- bevel(.035,.39,.035,.012,velvet(0xca9a73),bodyGroup,side*.14,1.37,.381);
- poly(bodyGroup,.045,velvet(0xe1a985),side*.14,1.18,.39,1);
- const leg=new T.Mesh(new T.CapsuleGeometry(.205,.28,6,16),trouser);leg.position.set(side*.27,.30,0);leg.castShadow=true;bodyGroup.add(leg);
- bevel(.42,.19,.59,.065,shoeMat,bodyGroup,side*.27,-.07,.10);
+ facet(bodyGroup,new T.BoxGeometry(.035,.34,.035),stringMat,side*.13,1.47,.37);
+ facet(bodyGroup,new T.BoxGeometry(.3,.62,.34),trouser,side*.25,.31,0);
+ facet(bodyGroup,new T.BoxGeometry(.34,.16,.5),shoeMat,side*.25,-.04,.07);
 }
 const humanPivots=[];
 for(const side of [-1,1]){
- const shoulder=new T.Group();shoulder.position.set(side*.65,1.58,0);bodyGroup.add(shoulder);
- const sleeve=new T.Mesh(new T.CapsuleGeometry(.235,.44,8,20),hoodie);sleeve.position.set(side*.055,-.40,0);sleeve.castShadow=true;shoulder.add(sleeve);
- bevel(.32,.13,.40,.06,hoodieLight,shoulder,side*.065,-.70,.015);
- const fist=poly(shoulder,.165,personSkin,side*.055,-.88,.025,1);fist.scale.set(.83,1,.87);
+ const shoulder=new T.Group();shoulder.position.set(side*.62,1.6,0);bodyGroup.add(shoulder);
+ facet(shoulder,new T.BoxGeometry(.27,.82,.32),hoodie,side*.04,-.4,0);
+ facet(shoulder,new T.BoxGeometry(.31,.13,.35),hoodieDark,side*.04,-.83,0);
+ facet(shoulder,new T.IcosahedronGeometry(.13,0),personSkin,side*.04,-.98,.03);
  humanPivots.push({side,shoulder});
 }
-const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);const humanEyes=[],humanIrises=[];
-const artSkin=personSkin.clone();artSkin.flatShading=true;artSkin.needsUpdate=true;
-const artHair=blackHair.clone();artHair.flatShading=true;artHair.needsUpdate=true;
+const humanHead=new T.Group();humanHead.position.set(0,2.30,0);humanRig.add(humanHead);
+const skull=facet(humanHead,jitter(new T.IcosahedronGeometry(.5,1),.022),personSkin,0,0,0,.98,1.02,.93);
+// Features sit on the faceted skin: faceZ finds the skin's depth under a point of the face.
+const surfaceRay=new T.Raycaster(),surfaceProbe=new T.Mesh(skull.geometry);
+surfaceProbe.scale.copy(skull.scale);surfaceProbe.updateMatrixWorld();
+function faceZ(x,y){surfaceRay.set(new T.Vector3(x,y,2),new T.Vector3(0,0,-1));return surfaceRay.intersectObject(surfaceProbe)[0]?.point.z??.45}
+const EYE_Y=.03,BROW_Y=.155,MOUTH_TOP=-.16,humanEyes=[],browsNew=[];
+for(const side of [-1,1]){
+ facet(humanHead,new T.IcosahedronGeometry(.11,0),personSkin,side*.49,-.03,-.02,.55,1,.85);
+ const eye=facet(humanHead,new T.CylinderGeometry(.048,.048,.03,8).rotateX(Math.PI/2),featureInk,side*.165,EYE_Y,faceZ(side*.165,EYE_Y)+.004,1,1.2,1);
+ humanEyes.push(eye);
+ browsNew.push(facet(humanHead,new T.BoxGeometry(.19,.045,.04),featureInk,side*.17,BROW_Y,faceZ(side*.17,BROW_Y)+.006));
+}
+facet(humanHead,new T.OctahedronGeometry(.075,0),personSkin,0,-.07,faceZ(0,-.07)+.01,.8,1,.85);
+const mouthNew=facet(humanHead,new T.BoxGeometry(.16,.18,.04),mouthDark,0,MOUTH_TOP,faceZ(0,-.24)+.004);
+const mouthCurve=()=>new T.TorusGeometry(.075,.022,3,6,Math.PI);
+const humanSmile=facet(humanHead,mouthCurve(),mouthDark,0,-.2,faceZ(0,-.22)+.004);humanSmile.rotation.z=Math.PI;
+const humanFrown=facet(humanHead,mouthCurve(),mouthDark,0,-.29,faceZ(0,-.26)+.004);
+// Hair: a faceted cap tipped back over the crown, a quiff of chunky locks swept to one side, sideburns.
+facet(humanHead,jitter(new T.IcosahedronGeometry(.53,1),.04),blackHair,0,.18,-.06,1,.62,.95).rotation.x=-.5;
+for(let i=0;i<5;i++){
+ const lock=facet(humanHead,new T.ConeGeometry(.16-(i%2)*.03,.56-i*.03,4),blackHair,-.3+i*.13,.5+(i%2)*.04,.12-i*.04);
+ lock.rotation.set(.3,0,-.9-i*.1);
+}
+for(const side of [-1,1])facet(humanHead,new T.TetrahedronGeometry(.12),blackHair,side*.45,.14,.06,.7,1.2,.8);
+// Hair shadows would darken the eyes as the head moves; the reference keeps faces clean.
+humanHead.children.forEach(m=>{if(m.material===blackHair)m.castShadow=false});
 lookParts.dev.hoodie.push({material:hoodie,shade:0},{material:hoodieLight,shade:.16},{material:hoodieDark,shade:-.35});
-lookParts.dev.hair.push({material:blackHair,shade:0},{material:artHair,shade:0});
-// Purposeful, moderately faceted head silhouette instead of a perfectly round balloon.
-const skull=new T.Mesh(new T.SphereGeometry(.55,20,14),artSkin);skull.position.set(0,0,0);skull.scale.set(.88,1.06,.86);skull.castShadow=true;humanHead.add(skull);
-const chin=new T.Mesh(new T.SphereGeometry(.35,32,24),personSkin);chin.position.set(0,-.34,.05);chin.scale.set(.88,.46,.9);humanHead.add(chin);
-for(const side of [-1,1]){
- const ear=new T.Mesh(new T.SphereGeometry(.125,24,18),personSkin);ear.position.set(side*.47,-.08,-.04);ear.scale.set(.64,.96,.76);humanHead.add(ear);
- poly(humanHead,.061,skinDark,side*.48,-.09,.002,1);
- // Eye planes sit flush with the face; no protruding spheres or googly-eye anatomy.
- const socket=new T.Mesh(new T.CircleGeometry(.088,28),skinDark);
- socket.position.set(side*.184,.053,.501);socket.scale.set(1.13,1.16,1);humanHead.add(socket);
- const eye=new T.Mesh(new T.CircleGeometry(.082,28),eyeWhite);
- eye.position.set(side*.184,.053,.504);eye.scale.set(.96,.82,1);humanHead.add(eye);humanEyes.push(eye);
- const iris=new T.Mesh(new T.CircleGeometry(.037,28),eyeDark);
- iris.position.set(side*.184,.052,.509);iris.scale.set(.92,.96,1);humanHead.add(iris);humanIrises.push(iris);
- const catchlight=new T.Mesh(new T.CircleGeometry(.010,14),eyeWhite);
- catchlight.position.set(side*.184-.013,.068,.514);humanHead.add(catchlight);
-}
-const browsNew=[];
-for(const side of [-1,1]){const br=bevel(.22,.051,.046,.015,artHair,humanHead,side*.19,.235,.485);br.rotation.z=side*.11;browsNew.push(br)}
-const noseNew=new T.Mesh(new T.IcosahedronGeometry(.085,0),artSkin);
-noseNew.position.set(0,-.078,.501);noseNew.scale.set(.66,.96,.44);humanHead.add(noseNew);
-// A flat morphable mouth stays attached to the skin under every camera angle.
-const mouthNew=new T.Mesh(new T.CircleGeometry(.115,28),mouthDark);
-mouthNew.position.set(0,-.305,.514);
-mouthNew.scale.set(1.0,.12,1);humanHead.add(mouthNew);
-function mouthCap(top,depth,material,z){
- const r=.115,a=Math.asin(depth),shape=new T.Shape();
- if(top){shape.moveTo(r*Math.cos(a),r*depth);shape.absarc(0,0,r,a,Math.PI-a,false)}
- else{shape.moveTo(-r*Math.cos(a),-r*depth);shape.absarc(0,0,r,Math.PI+a,2*Math.PI-a,false)}
- const mesh=new T.Mesh(new T.ShapeGeometry(shape,16),material);mesh.position.z=z;mesh.visible=false;mouthNew.add(mesh);return mesh;
-}
-const mouthTeeth=mouthCap(true,.68,velvet(0xe6ddd3,.55,0),.002),mouthTongue=mouthCap(false,.6,velvet(0xa9505a,.8,0),.001);
-// Actual 3D mouth curves, not a screenshot or a flat overlay.
-function createExpressionMouth(smile){
- const points=[[-.135,smile?-.286:-.322],[-.068,smile?-.309:-.286],
-               [0,smile?-.313:-.278],[.068,smile?-.309:-.286],[.135,smile?-.286:-.322]];
- const curve=new T.CatmullRomCurve3(points.map(([x,y])=>new T.Vector3(x,y,.524)));
- const tube=new T.Mesh(new T.TubeGeometry(curve,24,.012,8,false),mouthDark);
- tube.visible=false;humanHead.add(tube);return tube;
-}
-const humanSmile=createExpressionMouth(true),humanFrown=createExpressionMouth(false);
-
-// A composited facial rig: eyelid meshes, cheeks and lip corners share one pose driver.
-const humanUpperLids=[],humanLowerLids=[],humanCheeks=[],humanLipCorners=[];
-const cheekMat=new T.MeshStandardMaterial({color:0xa97066,roughness:.92,metalness:0,transparent:true,opacity:.28,depthWrite:false,side:T.DoubleSide});
-for(const side of [-1,1]){
- const lid=new T.Mesh(new T.CircleGeometry(.09,24,0,Math.PI),artSkin);
- lid.position.set(side*.184,.099,.519);humanHead.add(lid);humanUpperLids.push(lid);
- const lower=new T.Mesh(new T.CircleGeometry(.09,24,Math.PI,Math.PI),artSkin);
- lower.position.set(side*.184,.010,.518);lower.scale.y=.4;humanHead.add(lower);humanLowerLids.push(lower);
- const cheek=new T.Mesh(new T.CircleGeometry(.064,20),cheekMat);
- cheek.position.set(side*.305,-.169,.450);cheek.scale.set(1,.34,1);humanHead.add(cheek);humanCheeks.push(cheek);
- const corner=new T.Mesh(new T.SphereGeometry(.014,12,9),skinDark);
- corner.position.set(side*.112,-.304,.517);corner.scale.set(.62,.48,.3);
- humanHead.add(corner);humanLipCorners.push(corner);
-}
-function applyHumanFacePose(pose,speech=null){
- const lid=pose.lid,raise=pose.brow,tilt=pose.slope;
- browsNew.forEach((b,i)=>{
-  const side=i===0?-1:1;
-  b.position.y=.235+raise*.13;
-  b.rotation.z=side*(.04+tilt*.36);
+lookParts.dev.hair.push({material:blackHair,shade:0});
+function applyHumanFacePose(pose,speech=null,inLine=false){
+ browsNew.forEach((brow,i)=>{
+  const side=i?1:-1;
+  brow.position.y=BROW_Y+pose.brow*.09;
+  brow.position.z=faceZ(brow.position.x,brow.position.y)+.006;
+  brow.rotation.z=side*(.04+pose.slope*.36);
  });
+ // Pupils close to a bar when the lid drops (blinks, squints) and drift with the gaze.
  humanEyes.forEach((eye,i)=>{
-  eye.scale.y=Math.max(.04,lid*.81);
-  const iris=humanIrises[i];
-  iris.scale.y=Math.max(.04,lid*.95);
-  iris.position.x=(i===0?-.184:.184)+pose.gazeX*.023;
-  iris.position.y=.052+pose.gazeY*.020;
-  const upper=humanUpperLids[i],lower=humanLowerLids[i];
-  // Lid lines: the upper lid slides from a slight hood (.099) to fully closed and grows to keep the eye covered.
-  upper.position.y=.099-(1-lid)*.102;upper.scale.y=.65+(1-lid)*.75;
-  lower.position.y=.010+(1-lid)*.026;
-  const cheek=humanCheeks[i];
-  cheek.material.opacity=.17+pose.cheek*.17;
-  cheek.position.y=-.169+pose.cheek*.018;
-  cheek.scale.y=.35+pose.cheek*.12;
-  const corner=humanLipCorners[i];
-  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019);
-  corner.position.y=-.304+pose.smile*.024;
+  eye.scale.y=1.2*Math.max(.12,pose.lid);
+  eye.position.x=(i?1:-1)*.165+pose.gazeX*.02;
+  eye.position.y=EYE_Y+pose.gazeY*.015;
  });
  const speaking=!!speech&&speech.viseme!=='rest';
- const smile=!speaking&&pose.smile>.30&&pose.mouthOpen<.34;
- const frown=!speaking&&pose.smile<-.25&&pose.mouthOpen<.35;
+ // Smile and frown shapes only outside DEV's own line, so word gaps never flip the mouth's shape.
+ const smile=!inLine&&!speaking&&pose.smile>.30&&pose.mouthOpen<.34;
+ const frown=!inLine&&!speaking&&pose.smile<-.25&&pose.mouthOpen<.35;
  humanSmile.visible=smile;humanFrown.visible=frown;
  mouthNew.visible=!smile&&!frown;
  const visemeWidth={rest:1,closed:.88,round:.62,wide:1.34,teeth:1.10,open:1}[speech?.viseme]??1;
+ const open=speech?.viseme==='closed'?.045:Math.max(speech?.viseme==='rest'?.075:.09,pose.mouthOpen*1.04+pose.round*.18);
+ // A closed mouth still reads as a dark bar; opening drops the jaw edge while the top lip stays put.
  mouthNew.scale.x=pose.mouthWidth*visemeWidth;
- mouthNew.scale.y=speech?.viseme==='closed'?.045:
-  Math.max(speech?.viseme==='rest'?.075:.09,pose.mouthOpen*1.04+pose.round*.18);
- humanLipCorners.forEach((corner,i)=>{
-  corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019)*visemeWidth;
- });
- mouthNew.position.y=-.305-pose.jaw*.013;
- mouthTeeth.visible=mouthNew.scale.y>.22;mouthTongue.visible=mouthNew.scale.y>.45;
- chin.position.y=-.34-pose.mouthOpen*.022;
+ mouthNew.scale.y=.24+Math.min(1,open)*.7;
+ mouthNew.position.y=MOUTH_TOP-.09*mouthNew.scale.y-pose.jaw*.01;
+ mouthNew.position.z=faceZ(0,mouthNew.position.y)+.004;
  humanHead.rotation.x+=pose.headPitch;
  humanHead.rotation.z+=pose.headRoll;
 }
-
-const hairCrown=new T.Mesh(new T.IcosahedronGeometry(.51,1),artHair);hairCrown.position.set(0,.40,-.07);hairCrown.scale.set(.92,.39,.91);humanHead.add(hairCrown);
-for(let j=0;j<10;j++){
- const xx=(j-4.5)*.104,yy=.465+Math.sin(j*1.8)*.030;
- const tuft=new T.Mesh(new T.IcosahedronGeometry(.16+(j%3)*.012,0),artHair);tuft.position.set(xx,yy,.24+(j%2)*.063);humanHead.add(tuft);
- tuft.scale.set(.80,.61,.71);tuft.rotation.z=(j-4.5)*.11;
-}
-for(const side of [-1,1]){
- const sideHair=new T.Mesh(new T.IcosahedronGeometry(.24,0),artHair);sideHair.position.set(side*.37,.19,-.07);humanHead.add(sideHair);sideHair.scale.set(.7,1.1,.80);
-}
-// Angular swept fringe and temple locks from the same authored 3D hairstyle at any view.
-for(let i=0;i<7;i++){
- const x=(i-3)*.118;
- const lock=new T.Mesh(new T.IcosahedronGeometry(.195+(i%2)*.019,0),artHair);
- lock.position.set(x,.390+(.025*Math.sin(i*2.1)),.370);
- lock.scale.set(.76,.78,.74);lock.rotation.z=(i-3)*.115;
- lock.rotation.x=-.22;lock.castShadow=true;humanHead.add(lock);
-}
-for(const side of [-1,1]){
- const sideLock=new T.Mesh(new T.IcosahedronGeometry(.235,0),artHair);
- sideLock.position.set(side*.438,.145,.09);
- sideLock.scale.set(.57,1.1,.79);sideLock.rotation.z=side*.24;
- humanHead.add(sideLock);
-}
-// Secondary face/shirt highlights keep the sculpt readable under low-key studio lighting.
-const clothStripe=velvet(0x6f8493,.66,.07);
-for(const side of [-1,1])bevel(.045,.24,.031,.012,clothStripe,bodyGroup,side*.11,1.02,.353);
 
 
 const smoothAction=x=>{const v=Math.max(0,Math.min(1,x));return v*v*(3-2*v)};
@@ -526,6 +515,8 @@ update=function(){
  const viseme=speechCue.viseme;
  const speechPower=speechCue.mouthOpen;
  const index=shots.indexOf(shot);
+ // The wall screen keeps showing what it last showed until a shot gives it something new.
+ drawWallScreen(wallScreen,shots.slice(0,index+1).findLast(s=>s.wall)?.wall);
  const expression={blue:shot.cast.blue.emotion,orange:shot.cast.orange.emotion};
  // Listeners visibly notice something before the next speaker begins.
  const reaction=cinematicReaction(shot,local);
@@ -587,7 +578,8 @@ update=function(){
   speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0,
   gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devPose.head*.6
  });
- applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null);
+ const devInLine=shot.speaker==='dev'&&local>=lineAt-.05&&local<=lineAt+lineLen+.2;
+ applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null,devInLine);
  renderer.render(scene,cam);
 };
 // V5 projects are versioned documents, NOT hardcoded dialogue arrays.
@@ -644,7 +636,7 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
   cam.fov=listenerCut.role==='dev'?34:31;
   cam.updateProjectionMatrix();
  }
- b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=58*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(0x140e28);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
+ b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=KEY_INTENSITY*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(VOID);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
 $('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{
@@ -824,11 +816,21 @@ function loadEnvelope(url){
  return envPromise;
 }
 function wrapWords(c,text,maxWidth){
- const lines=[];let current='';
- for(const word of text.trim().split(/\s+/)){
+ const words=text.trim().split(/\s+/),lines=[];let current='';
+ for(const word of words){
   const candidate=current?current+' '+word:word;
   if(current&&c.measureText(candidate).width>maxWidth){lines.push(current);current=word;}else current=candidate;
- }if(current)lines.push(current);return lines;
+ }if(current)lines.push(current);
+ // Two lines split where they are most even, so a caption never ends on one lonely word.
+ if(lines.length===2){
+  let best=lines,widest=Infinity;
+  for(let i=1;i<words.length;i++){
+   const pair=[words.slice(0,i).join(' '),words.slice(i).join(' ')],w=Math.max(...pair.map(x=>c.measureText(x).width));
+   if(w<widest){widest=w;best=pair}
+  }
+  return best;
+ }
+ return lines;
 }
 function renderFilmFrame(t,w=360,hh=640,encode=true){
  offlineMode=true;running=false;soundtrack.pause();
@@ -886,21 +888,14 @@ function composeFilmFrame(w,hh){
   outCtx.fillText(insert.footer,45,graphY+106);
   if(shift>.68){outCtx.fillStyle=alarmTone?'#ef7e87':'#64d4a3';outCtx.fillRect(40,H*.77,280,2);}
  }
- // Title treatment is part of the final frame rather than a separate HTML overlay.
- outCtx.fillStyle='rgba(7,10,22,.91)';roundRect(12,14,336,65,11);outCtx.fill();
- outCtx.strokeStyle='#3d4a70';outCtx.lineWidth=1.2;outCtx.stroke();
- outCtx.fillStyle='#c9b2a2';outCtx.font='700 10px Arial';outCtx.fillText(window.FrameForgeCurrentProject?.banner||'FRAMEFORGE STORIES',23,34);
- outCtx.fillStyle='#f9f9ff';outCtx.font='800 18px Arial';
- outCtx.fillText($('sceneTitle').textContent||'THE STORY',23,61);
+ // Captions (STYLE.md): plain white type in the upper middle of the frame. No box, no header pill.
+ // Shadow sizes are in output pixels: the canvas transform does not scale them.
  const lineText=$('subtitle').textContent;
- outCtx.font='bold 20px Arial, sans-serif';
- const lines=wrapWords(outCtx,lineText,305);
- const y=H-112-(lines.length-1)*14;
- outCtx.fillStyle='rgba(8,10,23,.88)';roundRect(10,y-28,340,Math.max(65,lines.length*25+18),10);outCtx.fill();
- outCtx.strokeStyle='rgba(83,105,163,.75)';outCtx.stroke();
+ outCtx.font='800 16px "Inter","Ubuntu Sans","Hanken Grotesk",Arial,sans-serif';
+ const lines=wrapWords(outCtx,lineText,278),lineHeight=23,top=H*.31-(lines.length-1)*lineHeight/2;
  outCtx.textAlign='center';outCtx.textBaseline='middle';
- outCtx.fillStyle='#fff';outCtx.shadowColor='#050817';outCtx.shadowBlur=3;
- lines.forEach((line,i)=>outCtx.fillText(line,180,y+i*24));
+ outCtx.fillStyle='#fff';outCtx.shadowColor='rgba(0,0,0,.75)';outCtx.shadowBlur=5*scale;outCtx.shadowOffsetY=scale;
+ lines.forEach((line,i)=>outCtx.fillText(line,180,top+i*lineHeight));
  outCtx.restore();
 }
 
@@ -1084,8 +1079,8 @@ window.FrameForgeSpeechQA=Object.freeze({
 window.FrameForgePerformanceQA=Object.freeze({
  poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
  facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
- humanRig:()=>({upperLids:humanUpperLids.length,lowerLids:humanLowerLids.length,cheeks:humanCheeks.length,lipCorners:humanLipCorners.length}),
- peek:()=>({mouthScale:mouthNew.scale.y,mouthWidth:mouthNew.scale.x,chinY:chin.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
+ humanRig:()=>({pupils:humanEyes.length,brows:browsNew.length,mouths:[mouthNew,humanSmile,humanFrown].length}),
+ peek:()=>({mouthScale:mouthNew.scale.y,mouthWidth:mouthNew.scale.x,mouthY:mouthNew.position.y,browHeights:browsNew.map(b=>b.position.y),eyeOpen:humanEyes.map(x=>x.scale.y)})
 });
 window.FrameForgeArtLab=Object.freeze({
  version:'v5-phase1c-actual-rigs',

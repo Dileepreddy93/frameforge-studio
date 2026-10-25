@@ -1,0 +1,74 @@
+# FrameForge look (V6): matte faceted low-poly
+
+The judge is the reference video, not the tests. Every colour below was sampled from its frames.
+The reference frames stay outside this public repo (`~/Desktop/Animate/proof/v6/style-board.jpg`) because they
+show a third-party character.
+
+## Palette
+Three main colours on a near-black set: **terracotta** (characters), **teal-blue** (clothes, rim light) and
+**violet** (desk). Coral and green appear only on screens, where they carry the story.
+
+| Role | Hex | Notes |
+|---|---|---|
+| Void / walls | `#100C1B` | range `#0E0A19`–`#151029`; no gradients or fog glow |
+| Screen glass | `#151029` | bezel `#0B0A12` |
+| Screen label | `#676284` | mono, e.g. "p95 page load" |
+| Screen title | `#A7A1C7` | mono bold, title bar |
+| Bad / alert | `#FC5757` | big number, sparkline, title rule `#E05553` |
+| Bad tint | `#471C30` | badge pill, highlighted log row `#31182D` |
+| Good | `#44E082` | big number, sparkline, rule `#3A9A66` |
+| Code / info | `#79C5FF` | `→ Index Scan …` lines |
+| Window lights | `#DEA32F` | dots: `#E05553` `#DEA32F` `#23A93B` |
+| Skin | lit `#C1361C` · mid `#8F2B19` · shadow `#260B06` | shadow side falls to near black |
+| Hoodie | lit `#667168` · base `#3D5D66` · top `#467498` | top faces turn blue from the rim |
+| Hair | `#120806`, rim edges `#4B87C0` | |
+| Ink (eyes, mouth, brows) | `#04030A`, mouth `#2A0911` | flat, unlit |
+| Drawstrings | `#B098B1` | |
+| Desk | `#353790` → pool `#5F418C`; keys `#754DA6` | |
+| Caption | `#FFFFFF` | |
+
+## Shading and materials
+- Flat shading: one colour per triangle, hard facet edges. No smooth normals, textures, outlines or AO.
+- Few triangles: heads are icospheres (detail 1, about 80 faces), bodies are boxes or 6–8-sided cylinders,
+  hair is cones/chunks, noses are octahedra, hands are detail-0/1 icospheres.
+- Matte only: roughness 1, metalness 0, no clearcoat, no specular highlight, no emissive on characters.
+- Faces are flat black geometry: pupils only (no whites, irises or catchlights), a box mouth whose height is
+  how open it is, thin box brows. No cheeks, lips, teeth or eyelid skin.
+- Screens are the only self-lit things (unlit, not tone-mapped).
+
+## Light
+- **Key:** one strong warm-neutral light (`#FFE6D0`) from camera-right, above and in front. The far side of
+  every form falls to near black (ambient ≤ 5%).
+- **Rim / top:** one cool blue-lavender light (`#7F9CFF`) from behind-left and above. It paints hair edges,
+  hood tops and box tops blue/lilac.
+- A pink-violet pool on the desk top. Nothing else: no neon strips, no fill, no bloom, no fog glow.
+
+## Camera
+- 9:16, vertical fov 34–40°, eye level or slightly low.
+- Close-up: head and shoulders, head about 60% of frame width, the in-world screen's big number visible
+  above/behind the head. Wides: three-quarter view of the desk, screens behind.
+- Slow push-ins, small drifts, hard cuts on lines. Background stays sharp (no depth of field).
+
+## Captions
+- White, bold geometric sans (Inter-like), about 4.5% of frame width (48 px at 1080), centred, at most two
+  lines, line height 1.45.
+- Centred at about 31% of frame height: upper middle, over hair/forehead, never over eyes or mouth.
+- Soft dark shadow only. **No box, no outline, no header, no title pill, no logo bug.**
+
+## Screens
+Real monitors inside the set, seen in perspective and often cropped by the frame, never overlay cards.
+- Window: glass `#151029`, thick bezel, title bar with three dots and a mono bold title
+  ("Dashboard · /reports"), a 3 px rule under it in the state colour.
+- Metric screen: mono label, a huge mono bold number in the state colour (about 60% of screen width),
+  a jagged 3 px sparkline, a badge (SLOW / FAST) on a tinted pill.
+- Log screen: mono rows, timing column in coral, one highlighted row on a maroon band.
+- Set dressing: a dark city window with small amber dots.
+
+## Characters
+Simple, graphic and built from a few primitives, with a big head (about half the torso height).
+Our own designs. Never Claude's mascot or any other studio's character.
+
+## How we draw this in code
+three.js; `MeshLambertMaterial({flatShading:true})` on low-detail geometry; black facial features as
+`MeshBasicMaterial`; one `DirectionalLight` key and one `DirectionalLight` rim and almost no ambient light;
+screens as `CanvasTexture` on `MeshBasicMaterial({toneMapped:false})`; captions drawn in the film compositor.
