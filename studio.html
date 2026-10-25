@@ -316,8 +316,8 @@ const humanRig=new T.Group();dev.add(humanRig);
 const personSkin=velvet(0x9f7869,.87,0),skinDark=velvet(0x865b50,.93,0),blackHair=velvet(0x1e171e,.98,0),
  hoodie=velvet(0x263a51,.85,.02),hoodieLight=velvet(0x40556a,.78,.03),hoodieDark=velvet(0x182638,.94,0),
  trouser=velvet(0x20283c,.9,0),shoeMat=velvet(0x141b23,.86,0),
- eyeWhite=velvet(0xddd5cf,.55,0),eyeDark=velvet(0x15151c,.28,0),
- mouthDark=velvet(0x3a2125,.88,0);
+ eyeWhite=velvet(0xddd5cf,.55,0),eyeDark=new T.MeshBasicMaterial({color:0x17161f}),
+ mouthDark=velvet(0x4a1d26,.88,0);
 function poly(parent,r,material,x,y,z,subdivision=0){const o=new T.Mesh(new T.IcosahedronGeometry(r,subdivision),material);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
 const bodyGroup=new T.Group();humanRig.add(bodyGroup);
 const jacketProfile=[[.30,.59],[.47,.68],[.54,.88],[.56,1.22],[.52,1.52],[.40,1.70],[.28,1.74]];
@@ -370,6 +370,13 @@ noseNew.position.set(0,-.078,.501);noseNew.scale.set(.66,.96,.44);humanHead.add(
 const mouthNew=new T.Mesh(new T.CircleGeometry(.115,28),mouthDark);
 mouthNew.position.set(0,-.305,.514);
 mouthNew.scale.set(1.0,.12,1);humanHead.add(mouthNew);
+function mouthCap(top,depth,material,z){
+ const r=.115,a=Math.asin(depth),shape=new T.Shape();
+ if(top){shape.moveTo(r*Math.cos(a),r*depth);shape.absarc(0,0,r,a,Math.PI-a,false)}
+ else{shape.moveTo(-r*Math.cos(a),-r*depth);shape.absarc(0,0,r,Math.PI+a,2*Math.PI-a,false)}
+ const mesh=new T.Mesh(new T.ShapeGeometry(shape,16),material);mesh.position.z=z;mesh.visible=false;mouthNew.add(mesh);return mesh;
+}
+const mouthTeeth=mouthCap(true,.68,velvet(0xe6ddd3,.55,0),.002),mouthTongue=mouthCap(false,.6,velvet(0xa9505a,.8,0),.001);
 // Actual 3D mouth curves, not a screenshot or a flat overlay.
 function createExpressionMouth(smile){
  const points=[[-.135,smile?-.286:-.322],[-.068,smile?-.309:-.286],
@@ -384,14 +391,14 @@ const humanSmile=createExpressionMouth(true),humanFrown=createExpressionMouth(fa
 const humanUpperLids=[],humanLowerLids=[],humanCheeks=[],humanLipCorners=[];
 const cheekMat=new T.MeshStandardMaterial({color:0xa97066,roughness:.92,metalness:0,transparent:true,opacity:.28,depthWrite:false,side:T.DoubleSide});
 for(const side of [-1,1]){
- const lid=new T.Mesh(new T.PlaneGeometry(.174,.074),artSkin);
- lid.position.set(side*.184,.101,.519);humanHead.add(lid);humanUpperLids.push(lid);
- const lower=new T.Mesh(new T.PlaneGeometry(.172,.041),artSkin);
- lower.position.set(side*.184,-.014,.518);humanHead.add(lower);humanLowerLids.push(lower);
+ const lid=new T.Mesh(new T.CircleGeometry(.09,24,0,Math.PI),artSkin);
+ lid.position.set(side*.184,.099,.519);humanHead.add(lid);humanUpperLids.push(lid);
+ const lower=new T.Mesh(new T.CircleGeometry(.09,24,Math.PI,Math.PI),artSkin);
+ lower.position.set(side*.184,.010,.518);lower.scale.y=.4;humanHead.add(lower);humanLowerLids.push(lower);
  const cheek=new T.Mesh(new T.CircleGeometry(.064,20),cheekMat);
  cheek.position.set(side*.305,-.169,.450);cheek.scale.set(1,.34,1);humanHead.add(cheek);humanCheeks.push(cheek);
- const corner=new T.Mesh(new T.SphereGeometry(.014,12,9),mouthDark);
- corner.position.set(side*.112,-.304,.517);corner.scale.set(.88,.66,.35);
+ const corner=new T.Mesh(new T.SphereGeometry(.014,12,9),skinDark);
+ corner.position.set(side*.112,-.304,.517);corner.scale.set(.62,.48,.3);
  humanHead.add(corner);humanLipCorners.push(corner);
 }
 function applyHumanFacePose(pose,speech=null){
@@ -408,8 +415,9 @@ function applyHumanFacePose(pose,speech=null){
   iris.position.x=(i===0?-.184:.184)+pose.gazeX*.023;
   iris.position.y=.052+pose.gazeY*.020;
   const upper=humanUpperLids[i],lower=humanLowerLids[i];
-  upper.position.y=.128-(1-lid)*.071;upper.scale.y=.78+(1-lid)*.90;
-  lower.position.y=-.008+(1-lid)*.026;lower.scale.y=.87+(1-lid)*.24;
+  // Lid lines: the upper lid slides from a slight hood (.099) to fully closed and grows to keep the eye covered.
+  upper.position.y=.099-(1-lid)*.102;upper.scale.y=.65+(1-lid)*.75;
+  lower.position.y=.010+(1-lid)*.026;
   const cheek=humanCheeks[i];
   cheek.material.opacity=.17+pose.cheek*.17;
   cheek.position.y=-.169+pose.cheek*.018;
@@ -431,6 +439,7 @@ function applyHumanFacePose(pose,speech=null){
   corner.position.x=(i===0?-1:1)*(.112+pose.smile*.008-pose.round*.019)*visemeWidth;
  });
  mouthNew.position.y=-.305-pose.jaw*.013;
+ mouthTeeth.visible=mouthNew.scale.y>.22;mouthTongue.visible=mouthNew.scale.y>.45;
  chin.position.y=-.34-pose.mouthOpen*.022;
  humanHead.rotation.x+=pose.headPitch;
  humanHead.rotation.z+=pose.headRoll;
