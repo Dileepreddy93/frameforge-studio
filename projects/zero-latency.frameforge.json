@@ -89,7 +89,7 @@
       "dialogue": "Our app takes twelve seconds to load.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.6666666666666665,
+      "duration": 2.6333333333333333,
       "intent": "setup",
       "cast": {
         "dev": {
@@ -132,7 +132,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-01.wav",
-        "seconds": 2.167
+        "seconds": 2.12
       }
     },
     {
@@ -172,7 +172,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-02.wav",
-        "seconds": 1.448
+        "seconds": 1.427
       }
     },
     {
@@ -181,7 +181,7 @@
       "dialogue": "Without breaking anything?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.3333333333333335,
+      "duration": 2.2333333333333334,
       "intent": "setup",
       "cast": {
         "dev": {
@@ -217,7 +217,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-03.wav",
-        "seconds": 1.558
+        "seconds": 1.486
       }
     },
     {
@@ -278,7 +278,7 @@
       "dialogue": "Backup created. Emotionally.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 2.8333333333333335,
+      "duration": 2.7333333333333334,
       "intent": "contrast",
       "cast": {
         "dev": {
@@ -308,7 +308,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-05.wav",
-        "seconds": 2.344
+        "seconds": 2.248
       }
     },
     {
@@ -317,7 +317,7 @@
       "dialogue": "Okay. One tiny change.",
       "speaker": "dev",
       "camera": "duo",
-      "duration": 2.4,
+      "duration": 2.1,
       "intent": "escalation",
       "cast": {
         "dev": {
@@ -356,7 +356,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-06.wav",
-        "seconds": 1.888
+        "seconds": 1.611
       }
     },
     {
@@ -418,7 +418,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-07.wav",
-        "seconds": 1.679
+        "seconds": 1.669
       }
     },
     {
@@ -427,7 +427,7 @@
       "dialogue": "Wow! The screen opens immediately.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 3.1,
+      "duration": 2.8666666666666667,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -463,7 +463,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-08.wav",
-        "seconds": 2.234
+        "seconds": 2.007
       }
     },
     {
@@ -472,7 +472,7 @@
       "dialogue": "It no longer requests data.",
       "speaker": "orange",
       "camera": "screen",
-      "duration": 3.1666666666666665,
+      "duration": 3.1333333333333333,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -526,7 +526,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-09.wav",
-        "seconds": 2.306
+        "seconds": 2.274
       }
     },
     {
@@ -535,7 +535,7 @@
       "dialogue": "What about the customers?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.2666666666666666,
+      "duration": 2.2,
       "intent": "reaction",
       "cast": {
         "dev": {
@@ -571,7 +571,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-10.wav",
-        "seconds": 1.456
+        "seconds": 1.367
       }
     },
     {
@@ -580,7 +580,7 @@
       "dialogue": "Also removed. No more waiting.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.6333333333333333,
+      "duration": 2.533333333333333,
       "intent": "reveal",
       "cast": {
         "dev": {
@@ -618,7 +618,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-11.wav",
-        "seconds": 2.032
+        "seconds": 1.943
       }
     },
     {
@@ -672,7 +672,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-12.wav",
-        "seconds": 1.552
+        "seconds": 1.554
       }
     },
     {
@@ -681,7 +681,7 @@
       "dialogue": "Technically, retention is perfect.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 3.4,
+      "duration": 3.2666666666666666,
       "intent": "punchline",
       "cast": {
         "dev": {
@@ -712,7 +712,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-13.wav",
-        "seconds": 2.597
+        "seconds": 2.465
       }
     },
     {
@@ -721,7 +721,7 @@
       "dialogue": "Because nobody can leave.",
       "speaker": "dev",
       "camera": "duo",
-      "duration": 4.666666666666667,
+      "duration": 4.633333333333334,
       "intent": "punchline",
       "cast": {
         "dev": {
@@ -758,7 +758,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-14.wav",
-        "seconds": 1.702
+        "seconds": 1.696
       }
     }
   ],
