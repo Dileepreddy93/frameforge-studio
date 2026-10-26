@@ -60,6 +60,7 @@ jobs:
           node tests/episode-data-browser.cjs
           node tests/studio-editor-browser.cjs
           node tests/landing-browser.cjs
+          node tests/export-codec-browser.cjs
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

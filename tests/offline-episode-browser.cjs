@@ -45,7 +45,7 @@ async function open(page,url){
   // One visit online: the service worker installs and keeps the shell and every finished episode's audio.
   await open(page,base+'studio.html');
   await page.evaluate(()=>navigator.serviceWorker.ready);
-  const kept=await page.waitForFunction(async()=>{const c=await caches.open('frameforge-shell-v2'),keys=(await c.keys()).map(r=>new URL(r.url).pathname);
+  const kept=await page.waitForFunction(async()=>{const c=await caches.open('frameforge-shell-v3'),keys=(await c.keys()).map(r=>new URL(r.url).pathname);
    const need=['/audio/zero-latency/mix.mp3','/audio/zero-latency/voice.mp3','/audio/dark-mode/mix.mp3','/audio/dark-mode/voice.mp3'];
    return need.every(n=>keys.includes(n))&&keys.length;},null,{timeout:120000,polling:500}).then(h=>h.jsonValue());
   console.log('offline cache entries',kept);

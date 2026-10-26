@@ -6,3 +6,23 @@ audio/*/.work
 .env*
 renders
 models
+# Not for buyers (M4.4 licence audit): internal labs and review pages, research rigs (AraAthleticMan's motion clips
+# carry a no-resale restriction; CesiumMan is CC BY with a trademark), V3/V4/V5 evidence media whose sound isn't
+# documented, and the repo's docs, tests and tools.
+asset-lab.html
+character-lab.html
+review.html
+assets/rigged-samples
+assets/v5-art-evidence
+media/v4-review
+media/v5-evidence
+media/zero-latency-acting-v3-with-foley.mp4
+media/zero-latency-stereo-foley-v2.ogg
+dialogue.ogg
+dialogue42.ogg
+master42.ogg
+docs
+tests
+tools
+spec
+.github

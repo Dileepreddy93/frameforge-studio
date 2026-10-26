@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameForge credits</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
+<style>
+ :root{--bg:#100C1B;--panel:#151029;--line:#2A2442;--text:#E8E4F6;--muted:#A7A1C7;--dim:#8C86AC;--link:#79C5FF;--accent:#F49A5E}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Ubuntu Sans",sans-serif}
+ main{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+ a{color:var(--link)}
+ header a{color:var(--muted);text-decoration:none;font-size:14px}
+ h1{font-size:30px;line-height:1.2;margin:18px 0 8px}
+ h2{font-size:19px;margin:36px 0 10px;color:var(--accent)}
+ p{margin:8px 0;color:var(--text)}
+ .lead{color:var(--muted)}
+ .table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+ table{border-collapse:collapse;width:100%;font-size:14px}
+ th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+ tr:last-child td{border-bottom:0}
+ th{color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap}
+ td:first-child{font-weight:600}
+ code{font:13px "Ubuntu Sans Mono","JetBrains Mono",ui-monospace,monospace;color:var(--muted)}
+ .note{color:var(--dim);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<header><a href="studio.html">← Back to the studio</a></header>
+<h1>Credits and licences</h1>
+<p class="lead">FrameForge's characters, sets, music, sound effects and code are our own. The open-source parts it is
+built on are listed below with their licences. Videos you make with FrameForge are yours.</p>
+
+<h2>Runs in your browser</h2>
+<div class="table"><table>
+<thead><tr><th>What</th><th>Used for</th><th>Licence</th></tr></thead>
+<tbody>
+<tr><td>Kokoro-82M v1.0</td><td>The voices. Your browser downloads the model once from Hugging Face
+ (<a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX">onnx-community/Kokoro-82M-v1.0-ONNX</a>, revision
+ <code>1939ad2a</code>), from the original by <a href="https://huggingface.co/hexgrad/Kokoro-82M">hexgrad</a>.</td>
+ <td><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a></td></tr>
+<tr><td>misaki dictionaries and rules</td><td>How words are pronounced (American and British English).
+ <a href="https://github.com/hexgrad/misaki">hexgrad/misaki</a>, merged into two dictionaries and ported to JavaScript.
+ <a href="assets/voice/NOTICE.md">Notice</a> · <a href="assets/voice/LICENSE-misaki.txt">licence text</a>.</td>
+ <td>Apache-2.0</td></tr>
+<tr><td>ONNX Runtime Web 1.30.0</td><td>Runs the voice model (WebGPU or WebAssembly).
+ <a href="https://github.com/microsoft/onnxruntime">microsoft/onnxruntime</a></td><td><a href="https://github.com/microsoft/onnxruntime/blob/main/LICENSE">MIT</a></td></tr>
+<tr><td>three.js 0.180.0</td><td>3D rendering. <a href="https://github.com/mrdoob/three.js">mrdoob/three.js</a></td>
+ <td><a href="https://github.com/mrdoob/three.js/blob/dev/LICENSE">MIT</a></td></tr>
+<tr><td>Mediabunny 1.62.1</td><td>Writes the MP4 file. Loaded unmodified from jsDelivr; its source is at
+ <a href="https://github.com/Vanilagy/mediabunny">Vanilagy/mediabunny</a>.</td>
+ <td><a href="https://www.mozilla.org/en-US/MPL/2.0/">MPL-2.0</a></td></tr>
+<tr><td>Your browser's encoders</td><td>MP4 video is H.264 and audio is AAC, both encoded by your browser (WebCodecs).
+ Where the browser has no AAC encoder (for example Chrome on Linux), the audio is Opus instead.
+ FrameForge doesn't ship an encoder of its own.</td><td>—</td></tr>
+</tbody></table></div>
+
+<h2>Fonts (landing page)</h2>
+<div class="table"><table>
+<thead><tr><th>Font</th><th>Source</th><th>Licence</th></tr></thead>
+<tbody>
+<tr><td>Archivo</td><td>Omnibus-Type, via Google Fonts</td><td><a href="https://openfontlicense.org">SIL OFL 1.1</a></td></tr>
+<tr><td>Hanken Grotesk</td><td>Hanken Design Co., via Google Fonts</td><td>SIL OFL 1.1</td></tr>
+<tr><td>Martian Mono</td><td>Evil Martians, via Google Fonts</td><td>SIL OFL 1.1</td></tr>
+</tbody></table></div>
+<p class="note">The studio's captions use your system's sans-serif font; no font file is shipped.</p>
+
+<h2>Our own</h2>
+<p>DEV, BLUE and ORANGE, their model sheets, the sets and screens, the episodes, and every piece of music and sound
+effect (synthesised in code by <code>src/sound-kit.mjs</code>, with no samples) are original FrameForge work.</p>
+</main>
+</body>
+</html>
