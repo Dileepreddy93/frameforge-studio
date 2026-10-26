@@ -1130,50 +1130,49 @@ function composeFilmFrame(w,hh){
  for(let i=0;i<shots.length;i++){if(time<accumulated+shots[i].duration){activeIndex=i;break}accumulated+=shots[i].duration}
  const insert=shots[activeIndex].insert;
  if(shots[activeIndex].camera==='screen'&&insert){
+  // STYLE.md screens: void set, #151029 glass in a dark bezel, mono title and number, the state colour carries the story.
   const alarmTone=insert.tone==='bad',shift=Math.max(0,Math.min(1,(time-accumulated)/Math.max(.1,shots[activeIndex].duration)));
-  const grd=outCtx.createLinearGradient(0,0,360,H);
-  grd.addColorStop(0,'#172340');grd.addColorStop(.7,'#0b1128');grd.addColorStop(1,'#060a18');
-  outCtx.fillStyle=grd;outCtx.fillRect(0,0,360,H);
-  const glass=outCtx.createLinearGradient(0,118,0,H*.79);
-  glass.addColorStop(0,'#192a42');glass.addColorStop(1,'#0b1428');
-  outCtx.fillStyle=glass;roundRect(16,112,328,H*.72,15);outCtx.fill();
-  outCtx.lineWidth=1.5;outCtx.strokeStyle='#48668c';outCtx.stroke();
-  outCtx.fillStyle='#0b1425';roundRect(26,124,308,H*.69,11);outCtx.fill();
+  const state=alarmTone?'#FC5757':'#44E082',rule=alarmTone?'#E05553':'#3A9A66',tint=alarmTone?'#31182D':'#13261F';
+  outCtx.fillStyle='#100C1B';outCtx.fillRect(0,0,360,H);
+  outCtx.fillStyle='#0B0A12';roundRect(16,112,328,H*.72,15);outCtx.fill();
+  outCtx.fillStyle='#151029';roundRect(26,124,308,H*.69,11);outCtx.fill();
+  outCtx.fillStyle=rule;outCtx.fillRect(26,164,308,3);
   outCtx.textAlign='left';
-  outCtx.fillStyle='#8d9fb4';outCtx.font='bold 11px Arial';
-  outCtx.fillText(insert.window,39,154);
-  for(let j=0;j<3;j++){outCtx.fillStyle=['#e97e80','#edbc6c','#71d5ab'][j];outCtx.beginPath();outCtx.arc(281+j*16,148,4,0,Math.PI*2);outCtx.fill();}
-  outCtx.fillStyle='#8e9db3';outCtx.font='11px monospace';
-  outCtx.fillText(insert.context,40,187);
-  outCtx.fillStyle=alarmTone?'#f2a3ad':'#82f0c8';outCtx.font='bold 17px Arial';
+  outCtx.fillStyle='#A7A1C7';outCtx.font='bold 11px '+MONO;
+  outCtx.fillText(insert.window,39,150);
+  for(let j=0;j<3;j++){outCtx.fillStyle=['#E05553','#DEA32F','#23A93B'][j];outCtx.beginPath();outCtx.arc(281+j*16,146,4,0,Math.PI*2);outCtx.fill();}
+  outCtx.fillStyle='#676284';outCtx.font='11px '+MONO;
+  outCtx.fillText(insert.context,40,192);
+  outCtx.fillStyle=state;outCtx.font='bold 17px '+MONO;
   outCtx.fillText(insert.headline,40,235);
-  outCtx.textAlign='center';outCtx.font='900 83px Arial';
+  outCtx.textAlign='center';outCtx.font='bold 83px '+MONO;
   outCtx.fillText(insert.value,180,341);
-  outCtx.font='13px Arial';outCtx.fillStyle='#e4e9f5';
+  outCtx.font='13px '+MONO;outCtx.fillStyle='#A7A1C7';
   outCtx.fillText(insert.caption,180,376);
   outCtx.textAlign='left';
-  outCtx.fillStyle='#172438';roundRect(40,404,280,53,7);outCtx.fill();
-  outCtx.fillStyle='#a9bdca';outCtx.font='13px monospace';
+  outCtx.fillStyle=tint;roundRect(40,404,280,53,7);outCtx.fill();
+  outCtx.fillStyle='#79C5FF';outCtx.font='13px '+MONO;
   outCtx.fillText(insert.request,52,425);
-  outCtx.fillStyle=alarmTone?'#f4a1a8':'#a3f1cf';outCtx.font='bold 12px monospace';
+  outCtx.fillStyle=state;outCtx.font='bold 12px '+MONO;
   outCtx.fillText(insert.status,52,445);
   const graphY=Math.min(H-60,505),barMax=240;
   // A filled rect, not a 1px stroke: Chrome anti-aliases stroke ends differently on its first draw.
-  outCtx.fillStyle='#344b67';outCtx.fillRect(45,graphY+79.5,270,1);
-  outCtx.strokeStyle=alarmTone?'#f1a0aa':'#80e5bf';outCtx.lineWidth=3;outCtx.beginPath();
+  outCtx.fillStyle='#2A2442';outCtx.fillRect(45,graphY+79.5,270,1);
+  outCtx.strokeStyle=state;outCtx.lineWidth=3;outCtx.beginPath();
   for(let i=0;i<10;i++){
    let px=46+i*(barMax/9),v=insert.graph==='flat'?72:75-23*Math.exp(-i*.6);
    if(i===0)outCtx.moveTo(px,graphY+v);else outCtx.lineTo(px,graphY+v);
   }
-  outCtx.stroke();outCtx.font='11px Arial';outCtx.fillStyle='#8b9eb5';
+  outCtx.stroke();outCtx.font='11px '+MONO;outCtx.fillStyle='#676284';
   outCtx.fillText(insert.footer,45,graphY+106);
-  if(shift>.68){outCtx.fillStyle=alarmTone?'#ef7e87':'#64d4a3';outCtx.fillRect(40,H*.77,280,2);}
+  if(shift>.68){outCtx.fillStyle=state;outCtx.fillRect(40,H*.77,280,2);}
  }
  // Captions (STYLE.md): plain white type in the upper middle of the frame. No box, no header pill.
  // Shadow sizes are in output pixels: the canvas transform does not scale them.
  const lineText=$('subtitle').textContent;
  outCtx.font='800 16px "Inter","Ubuntu Sans","Hanken Grotesk",Arial,sans-serif';
- const lines=wrapWords(outCtx,lineText,278),lineHeight=23,top=H*.31-(lines.length-1)*lineHeight/2;
+ // On a screen insert the card fills the middle, so the caption sits above it.
+ const lines=wrapWords(outCtx,lineText,278),lineHeight=23,top=H*(shots[activeIndex].camera==='screen'?.115:.31)-(lines.length-1)*lineHeight/2;
  outCtx.textAlign='center';outCtx.textBaseline='middle';
  outCtx.fillStyle='#fff';outCtx.shadowColor='rgba(0,0,0,.75)';outCtx.shadowBlur=5*scale;outCtx.shadowOffsetY=scale;
  lines.forEach((line,i)=>outCtx.fillText(line,180,top+i*lineHeight));

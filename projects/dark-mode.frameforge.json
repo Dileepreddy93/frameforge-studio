@@ -150,7 +150,7 @@
       },
       "framing": {
         "distance": 4.25,
-        "offset": 0.2,
+        "offset": -0.8,
         "up": 0.05,
         "fov": 35,
         "move": "push",

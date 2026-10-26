@@ -20,7 +20,7 @@
  const LOOK_SLOTS={dev:['hoodie','hair'],blue:['shell'],orange:['shell']};
  const INSERT_TEXT=['window','context','headline','value','caption','request','status','footer','label'];
  // Camera framing used when a shot does not author its own: [distance, offset, up, fov].
- const DEFAULT_FRAMING={dev:[4.2,0,.06,35],blue:[3.9,0,.06,35],orange:[3.9,0,.06,35],duo:[7,0,.08,41],wide:[7,0,.08,41],screen:[7,0,.08,41]};
+ const DEFAULT_FRAMING={dev:[4.2,0,.06,35],blue:[3.9,-.8,.06,35],orange:[3.9,0,.06,35],duo:[7,0,.08,41],wide:[7,0,.08,41],screen:[7,0,.08,41]};
  const inRange=(x,lo,hi)=>Number.isFinite(x)&&x>=lo&&x<=hi;
  function validateProject(p){
   const errors=[];
