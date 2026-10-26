@@ -2,6 +2,8 @@
 // its shot, drives the mouth and lands in the exported MP4. Then the server goes away and the network
 // is cut: the studio reloads from its offline cache and voices a new line with no connection at all.
 // Uses models/kokoro-82m-v1.0/ when present (fast); otherwise the page downloads the model (326 MB).
+// FRAMEFORGE_DEPLOYED_URL=https://… runs it against a deployed site instead of a local server (going offline
+// replaces stopping the server).
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const http=require('node:http');
@@ -68,8 +70,9 @@ function assertLine(r,text,label){
 }
 
 (async()=>{
- let server=await serve();
- const base=`http://127.0.0.1:${server.address().port}/`,profile=fs.mkdtempSync(path.join(os.tmpdir(),'frameforge-voice-'));
+ const DEPLOYED=process.env.FRAMEFORGE_DEPLOYED_URL;
+ let server=DEPLOYED?null:await serve();
+ const base=DEPLOYED?DEPLOYED.replace(/\/?$/,'/'):`http://127.0.0.1:${server.address().port}/`,profile=fs.mkdtempSync(path.join(os.tmpdir(),'frameforge-voice-'));
  // Google Chrome, not Playwright's Chromium: the in-browser MP4 export needs Chrome's H.264 encoder, as buyers have.
  // A real profile on disk, because an in-memory one is too small to keep the 326 MB model.
  const context=await chromium.launchPersistentContext(profile,{headless:true,channel:process.env.FRAMEFORGE_CHANNEL||'chrome',viewport:{width:1100,height:850},
@@ -121,7 +124,7 @@ function assertLine(r,text,label){
   }else console.log('ffprobe not found: MP4 audio not inspected');
 
   // 5. Offline: no server, no network. The shell, the model and the lines come from the browser's caches.
-  await new Promise(ok=>server.close(ok));server=null;
+  if(server)await new Promise(ok=>server.close(ok));server=null;
   await context.setOffline(true);
   await openStudio(page,base+'studio.html');
   await page.waitForFunction(()=>['ready','error'].includes(FrameForgeVoiceQA.status().state),null,{timeout:180000});
