@@ -1,6 +1,7 @@
 // BLUE and ORANGE in 3D (M3.3): the studio's robots are their model sheet (design/robot-character.js), built at DEV's
 // scale. Each robot draws a different face for every emotion, opens its mouth with speech, blinks and looks around;
-// emotions tilt its head; both arms hang on shoulder pivots; and in the film, a robot's close-up centres its head.
+// emotions tilt its head; both arms hang on shoulder pivots; in the film, a robot's close-up centres its head, and the
+// robots act (M3.4): body and arms move through their shots, the same time always gives the same pose.
 // Needs FRAMEFORGE_URL (a server for the repo).
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
@@ -39,7 +40,27 @@ const {chromium}=require('playwright');
   const st=await page.evaluate(([t,who])=>{FrameForgeQA.setTime(t);return FrameForgeRobotQA.state(who);},[s.mid,s.camera]);
   assert.ok(Math.abs(st.screen[0])<.34&&Math.abs(st.screen[1])<.45&&st.screen[2]<1,s.camera+' close-up at '+s.mid.toFixed(2)+'s centres the head: '+st.screen.map(v=>v.toFixed(2)));
  }
+ // Acting: through ORANGE's "Backup created" shot and BLUE's "I can make it instant", body and arms move; seeking back
+ // to a time gives exactly the pose it gave before.
+ const acting=await page.evaluate(()=>{
+  const out={};let t0=0;
+  for(const s of FrameForgeQA.shots()){
+   if((s.speaker==='blue'||s.speaker==='orange')&&!out[s.speaker]){
+    const poses=[];for(let k=0;k<=12;k++){FrameForgeQA.setTime(t0+s.duration*k/12);poses.push(FrameForgeRobotQA.state(s.speaker));}
+    FrameForgeQA.setTime(t0+s.duration*.5);const again=FrameForgeRobotQA.state(s.speaker);
+    const range=f=>Math.max(...poses.map(f))-Math.min(...poses.map(f));
+    out[s.speaker]={body:range(p=>p.body[0])+range(p=>p.body[3]),arms:range(p=>p.armPose[0][0])+range(p=>p.armPose[0][2]),
+     head:range(p=>p.head[0])+range(p=>p.head[1]),same:JSON.stringify(again)===JSON.stringify(poses[6])};
+   }
+   t0+=s.duration;
+  }
+  return out;
+ });
+ for(const who of ['blue','orange']){
+  assert.ok(acting[who].body>.01&&acting[who].arms>.05&&acting[who].head>.02,who+' acts through its line: '+JSON.stringify(acting[who]));
+  assert.ok(acting[who].same,who+': seeking gives the same pose');
+ }
  assert.deepEqual(errors,[]);
- console.log('ROBOT_BUILD_BROWSER_PASS',JSON.stringify({...report,closeUps:shots.length}));
+ console.log('ROBOT_BUILD_BROWSER_PASS',JSON.stringify({...report,closeUps:shots.length,acting}));
  await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

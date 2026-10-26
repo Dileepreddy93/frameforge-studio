@@ -35,6 +35,7 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <script src="./design/robot-forms.js"></script>
 <script src="./design/robot-character.js"></script>
 <script src="./src/dev-acting-core.js"></script>
+<script src="./src/robot-acting-core.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $ = x=>document.getElementById(x);
@@ -495,10 +496,17 @@ function drawRobotFace(actor,emotion,{viseme=null,open=0,blink=false,look=0}={})
  const pos=actor.faceMesh.geometry.attributes.position.array,col=actor.faceMesh.geometry.attributes.color.array;
  const v=faceTriangles(window.FrameForgeRobot.faceShapes(actor.spec,f),actor.headAt,.006,pos,col,0);
  actor.faceMesh.geometry.setDrawRange(0,v);actor.faceMesh.geometry.attributes.position.needsUpdate=true;actor.faceMesh.geometry.attributes.color.needsUpdate=true;
- // The emotion's head pose (the sheet's roll, pitch and yaw, in its rotation order).
- const p=ROBOT_SHEET.pose(emotion);
- actor.headTilt.rotation.set((p.pitch||0)*Math.PI/180,(p.yaw||0)*Math.PI/180,(p.roll||0)*Math.PI/180);
  actor.faceState={emotion,viseme,open,blink,look};
+ applyRobotPose(actor,emotion,actor.act||null);
+}
+// The body, head and arms: the emotion's head pose (the sheet's roll, pitch and yaw) plus the acting channels
+// (src/robot-acting-core.js), in sheet units and radians.
+function applyRobotPose(actor,emotion,ch){
+ const p=ROBOT_SHEET.pose(emotion),d=Math.PI/180,c=ch||{};
+ actor.headTilt.rotation.set((p.pitch||0)*d+(c.headP||0),(p.yaw||0)*d+(c.headY||0),(p.roll||0)*d-(c.headR||0));
+ actor.group.position.y=(c.hover||0)*ROBOT_S;
+ actor.group.rotation.set(c.tilt||0,c.turn||0,c.lean||0);
+ for(const arm of actor.armJoints){const s=arm.sign>0?'L':'R';arm.pivot.rotation.set(-(c[s+'.swing']||0),0,arm.sign*(c[s+'.out']||0));}
 }
 buildRobot(faces.blue,'blue');buildRobot(faces.orange,'orange');
 // Where the cameras aim: each robot's head centre, standing on its root (which hovers at y .43).
@@ -559,29 +567,6 @@ function applyDevBody({channels:c,hands},look=0,talk=0,t=0){
  }
 }
 
-const smoothAction=x=>{const v=Math.max(0,Math.min(1,x));return v*v*(3-2*v)};
-function actPose(type,local,duration,t,accentAt=.5){
- const progress=Math.max(0,Math.min(1,local/duration));
- const inout=smoothAction(local/.22)*smoothAction((duration-local)/.32);
- const accent=Math.exp(-(((progress-accentAt)/.26)**2)),beat=Math.sin(local*4.6);
- const energetic=['announce','explain','question','plead','alarm','surprise','shrug','celebrate'].includes(type);
- let arms=0,lean=0,jump=0,head=0;
- if(type==='typing'){arms=.13*Math.sin(local*9);lean=-.03;}
- if(type==='react'){arms=.08*inout;head=-.09*accent;}
- if(type==='question'){arms=.32*inout;lean=-.07*accent;head=.11;}
- if(type==='plead'){arms=.25*inout;lean=-.05*accent;}
- if(type==='alarm'){arms=.57*inout;lean=-.12*accent;head=.18;}
- if(type==='surprise'){arms=.26*inout;jump=.075*accent;head=-.13;}
- if(type==='defeat'){arms=-.17*inout;lean=-.12*accent;jump=-.05*accent;}
- if(type==='announce'){arms=.26*inout;lean=.06*accent;jump=.045*accent;}
- if(type==='explain'){arms=.20*inout;lean=.03*accent;}
- if(type==='celebrate'){arms=.52*inout;jump=.11*accent;lean=.06*beat;}
- if(type==='shrug'){arms=.44*inout;jump=.045*accent;head=-.10;}
- if(type==='anticipate'){arms=.07*inout;lean=-.035;}
- if(type==='listen'){lean=.018*Math.sin(t*.95);jump=.008*Math.sin(t*1.5);}
- return {arms,lean,jump,head,energetic,accent};
-}
-
 function estimateViseme(text,local,duration){
  const words=text.toLowerCase().match(/[a-z']+/g)||[];
  if(!words.length||local<.10||local>duration*.91)return 'rest';
@@ -627,12 +612,6 @@ update=function(){
   drawRobotFace(faces.orange,expression.orange,{viseme:talking('orange')?viseme:null,open:talking('orange')?speechPower:0,blink:Math.sin(t*1.6+2.1)>.988,look:orangeGaze});
   lastFaceDraw=t;
  }
- faces.blue.group.rotation.z=Math.sin(t*1.5)*.035+(shot.speaker==='blue'?.035:0);faces.orange.group.rotation.z=Math.sin(t*1.05)*.035+(shot.speaker==='orange'?.04:0);
- if(faces.orange.orangeMouth){
-   faces.orange.orangeMouth.scale.y=shot.speaker==='orange'?1+speechPower*1.9:1;
-   faces.orange.orangeBrows.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(shot.speaker==='orange'?.20:.10)});
-   faces.orange.group.rotation.y=shot.speaker==='orange'?Math.sin(t*1.25)*.045:0;
- }
  brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
  mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
 
@@ -644,21 +623,14 @@ update=function(){
  // DEV acts with his whole body (src/dev-acting-core.js): key poses around the accent, each joint on its own spring.
  const devAct=window.FrameForgeDevActing.evaluate({action:humanAction,local,duration:shot.duration,time:t,accentAt:accentAt('dev'),
   speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0});
-const bluePose=actPose(blueAction,local,shot.duration,t,accentAt('blue'));
- const orangePose=actPose(orangeAction,local,shot.duration,t,accentAt('orange'));
- for(const [actor,pose] of [[faces.blue,bluePose],[faces.orange,orangePose]]){
-   actor.group.rotation.z=pose.lean+Math.sin(t*1.1)*.009;
-   actor.group.position.y=pose.jump;
-   for(const arm of actor.armJoints||[]){
-     arm.pivot.rotation.z=arm.sign*(.13+pose.arms)+Math.abs(pose.arms)*.10*Math.sin(local*5.3+arm.sign);
-     arm.pivot.rotation.x=-.10-Math.max(0,pose.arms)*.50;
-   }
+ // BLUE and ORANGE act with their bodies too (src/robot-acting-core.js), each in character.
+ for(const [who,action,look] of [['blue',blueAction,blueGaze],['orange',orangeAction,orangeGaze]]){
+  faces[who].act=window.FrameForgeRobotActing.evaluate({robot:who,action,local,duration:shot.duration,time:t,accentAt:accentAt(who),
+   speaking:shot.speaker===who&&speechCue.voiced,energy:shot.speaker===who?speechPower:0,look}).channels;
+  applyRobotPose(faces[who],expression[who],faces[who].act);
  }
  // He looks toward whoever speaks and sways a little while he talks.
  applyDevBody(devAct,(shot.speaker==='orange'?.13:shot.speaker==='blue'?-.12:0)+.018*Math.sin(t*.72),shot.speaker==='dev'?.035*Math.sin(t*1.2):0,t);
-const blink=(Math.sin(t*2.25+1.2)>.987||Math.sin(t*.86+2.4)>.996);
- faces.orange.orangeEyes?.forEach(e=>{e.scale.y=blink?.18:orangeAction==='surprise'?1.25:1});
- faces.orange.orangeBrows?.forEach((b,i)=>{b.rotation.z=(i?1:-1)*(orangeAction==='celebrate'?-.13:orangeAction==='announce'?.20:.10)});
 
  oldUpdate();
  // Apply coordinated facial acting AFTER the legacy mouth, brow and head updates.
@@ -704,7 +676,8 @@ const performerCoordinates={
 function cinematicReaction(shot,local){
  const cut=shot.reactionCut;
  if(!cut||local<shot.duration-cut.seconds)return null;
- const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:3.05,k=cut.role==='dev'?DEV_FRAME:ROBOT_FRAME;
+ // Robot reaction cuts (31° lens) stand far enough back for the sheet head to fill about 60% of the frame width.
+ const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:4.7,k=cut.role==='dev'?DEV_FRAME:ROBOT_FRAME;
  return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14)*k,subject[1]+.08*k,subject[2]+scale*k]};
 }
 
@@ -731,7 +704,7 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
   cam.fov=listenerCut.role==='dev'?34:31;
   cam.updateProjectionMatrix();
  }
- b.root.position.y=.43+Math.sin(t*2.2)*.06;o.root.position.y=.43+Math.sin(t*1.7)*.07;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=KEY_INTENSITY*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(VOID);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
+ b.root.position.y=.43;o.root.position.y=.43;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=KEY_INTENSITY*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(VOID);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
 $('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{
@@ -1446,6 +1419,7 @@ window.FrameForgeRobotQA=Object.freeze({
  state:who=>{const a=faces[who],head=new T.Vector3();a.headTilt.getWorldPosition(head);
   const c=a.robot.head.c,p=a.robot.pivot,centre=a.headTilt.localToWorld(new T.Vector3(c[0]-p[0],c[1]-p[1],c[2]-p[2])),ndc=centre.clone().project(cam);
   return{face:a.faceState,faceVertices:a.faceMesh.geometry.drawRange.count,head:a.headTilt.rotation.toArray().slice(0,3),arms:a.armJoints.length,
+   body:[a.group.position.y,...a.group.rotation.toArray().slice(0,3)],armPose:a.armJoints.map(j=>j.pivot.rotation.toArray().slice(0,3)),
    headCentre:centre.toArray(),screen:[ndc.x,ndc.y,ndc.z]};},
  faceHash:who=>{const g=faces[who].faceMesh.geometry,n=g.drawRange.count*3,a=g.attributes.position.array;let h=0;for(let i=0;i<n;i+=7)h=(h*31+Math.round(a[i]*1e4))|0;return h+':'+g.drawRange.count;},
  draw:(who,emotion,o={})=>{drawRobotFace(faces[who],emotion,o);return window.FrameForgeRobotQA.faceHash(who);}

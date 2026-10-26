@@ -4,7 +4,7 @@
 // element's range requests for it are answered from the cache when offline.
 // The voice model is not cached here: the voice worker keeps it (src/kokoro-worker.js).
 const CACHE='frameforge-shell-v2';
-const SHELL=['studio.html','src/project-core.js','src/performance-core.js','src/speech-performance-core.js','src/dev-acting-core.js',
+const SHELL=['studio.html','src/project-core.js','src/performance-core.js','src/speech-performance-core.js','src/dev-acting-core.js','src/robot-acting-core.js','design/robot-forms.js','design/robot-character.js',
  'src/kokoro-g2p.js','src/voice-emotion.js','src/kokoro-worker.js','src/sound-kit.mjs','src/episode-mix.mjs','src/mix-worker.js','design/dev-forms.js','design/dev-character.js','assets/voice/en-us-lexicon.json','assets/voice/en-gb-lexicon.json',
  'projects/index.json','projects/zero-latency.frameforge.json','projects/dark-mode.frameforge.json','projects/mountain-mystery.frameforge.json',
  'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js',
