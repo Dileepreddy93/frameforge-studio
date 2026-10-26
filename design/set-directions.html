@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Set Directions</title>
+<!-- M5.1: three set directions drawn in 2D (design/set-forms.js + set-directions.js) with the approved cast at true
+     scale, before any three.js work. Each 9:16 panel is drawn at phone size (405 x 720 px).
+     Screenshot with: node tools/design-shot.cjs design/set-directions.html out.png 2400 -->
+<style>
+ :root{--bg:#0C0916;--panel:#120E1F;--line:#2A2340;--ink:#ECE8F6;--dim:#9C95B8}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,'Ubuntu Sans',system-ui,sans-serif;width:2400px}
+ header{padding:44px 56px 8px}
+ h1{font-size:54px;margin:0 0 8px;letter-spacing:-.5px}
+ header p{font-size:23px;color:var(--dim);margin:0;max-width:2200px;line-height:1.45}
+ .dir{display:grid;grid-template-columns:300px repeat(3,405px) 405px;gap:16px;align-items:start;margin:18px 56px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+ .label .letter{font-size:96px;font-weight:800;line-height:1}
+ .label h2{font-size:31px;margin:6px 0 12px;line-height:1.15}
+ .label ul{margin:0;padding-left:20px;font-size:19.5px;line-height:1.45;color:#D6D0E8}
+ .label li{margin-bottom:7px}
+ .cell{border-radius:12px;overflow:hidden;position:relative;background:#100C1B}
+ .tag{font-size:17px;color:var(--dim);margin:8px 2px 0;letter-spacing:.2px}
+ .tag b{color:var(--ink);font-weight:600}
+ .plan .tag{margin-top:10px}
+ svg polygon{stroke-width:.9px;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+ footer{padding:10px 56px 40px;font-size:19px;color:var(--dim)}
+</style>
+</head>
+<body>
+<header>
+ <h1>The set · three directions</h1>
+ <p>Drawn in 2D before any three.js work (M5.1), in STYLE.md's light and colours, with DEV, BLUE and ORANGE drawn by their approved model-sheet code at true scale. Every 9:16 panel is phone size. Target from the reference wides: the cast stand 9–21% of the frame height (ours today: 58%), a key is about 0.3 of a character's height, and the background is a wall of app windows. Pick one, or a mix (e.g. "A's laptop with C's reverse-angle screens").</p>
+</header>
+<main id="dirs"></main>
+<footer>Forms: <code>design/set-forms.js</code>; layouts and cameras: <code>design/set-directions.js</code>. The app windows are element lists, so the chosen layout's numbers and screens carry into the three.js build.</footer>
+<script src="dev-forms.js"></script>
+<script src="dev-character.js"></script>
+<script src="robot-forms.js"></script>
+<script src="robot-character.js"></script>
+<script src="set-forms.js"></script>
+<script src="set-directions.js"></script>
+<script>
+'use strict';
+const D=FrameForgeDesign,R=FrameForgeRobot,C=FrameForgeRobots,E=FrameForgeDev.EMOTIONS,F=FrameForgeSet,{DIRS}=FrameForgeSetDirections;
+const dev=D.build(FrameForgeDev.DEV),blue=R.build(C.ROBOTS.blue),orange=R.build(C.ROBOTS.orange);
+// The cast: model-space centre and soles (DEV's head centre is 0, his soles -1.5; robots stand on 0).
+const kit={
+ dev:{render:v=>D.render(dev,{yaw:v.yaw,pitch:v.pitch,face:E[v.emotion].face,pose:E[v.emotion].pose}),centre:-.5,feet:-1.5,shadow:.42},
+ blue:{render:v=>R.render(blue,{yaw:v.yaw,pitch:v.pitch,face:C.face('blue',v.emotion),pose:C.pose(v.emotion)}),centre:.74,feet:0,shadow:.3},
+ orange:{render:v=>R.render(orange,{yaw:v.yaw,pitch:v.pitch,face:C.face('orange',v.emotion),pose:C.pose(v.emotion)}),centre:.79,feet:0,shadow:.34}
+};
+const W=405,H=720;
+const SHOTS=[['wide','wide',{}],['two','two-shot',{dev:'happy',blue:'happy'}],['close','close-up',{dev:'worried'}]];
+const pct=v=>Math.round(v*100)+'%';
+// A direction's row: its three shots and the plan. soft = background focus and glow (the open STYLE.md question).
+function row(d,soft){
+ const scene=d.build(),cells=[],stats={};
+ for(const[key,name,emo]of SHOTS){
+  const cast=scene.cast.filter(a=>key!=='close'||a.who==='dev').filter(a=>key!=='two'||a.who!=='orange').map(a=>({...a,emotion:emo[a.who]||'neutral'}));
+  const blur=soft?{wide:1.2,two:2.6,close:4}[key]:0;
+  const r=F.render({...scene,cast},d.cams[key],W,H,{kit,soft:soft?{blur,glow:blur*3+3}:null});
+  stats[key]=r.stats;
+  const m=key==='close'?'DEV\'s head <b>'+pct(r.stats.headW)+'</b> of frame width':'DEV <b>'+pct(r.stats.devH)+'</b> of frame height';
+  cells.push('<div><div class="cell">'+r.svg+'</div><div class="tag">'+name+' · '+m+'</div></div>');
+ }
+ const planCell=soft?'<div class="plan"><div class="tag" style="font-size:20px;line-height:1.5;color:#D6D0E8">Same set as A. The room and the screens are blurred (more in close-ups) and the screens glow, like the reference. STYLE.md says "background sharp, no bloom" today: this row is there so you can decide.</div></div>':
+  '<div class="plan"><div class="cell">'+F.plan(scene,d.cams,W)+'</div><div class="tag">plan from above · wedges are the three cameras · blue bars are screens</div></div>';
+ const label=soft?'<div class="label"><div class="letter">A′</div><h2>'+d.name+', soft focus + glow</h2></div>':
+  '<div class="label"><div class="letter">'+d.id+'</div><h2>'+d.name+'</h2><ul>'+d.notes.map(n=>'<li>'+n+'</li>').join('')+'</ul></div>';
+ return{html:'<section class="dir">'+label+cells.join('')+planCell+'</section>',stats};
+}
+const out=[],STATS={};
+for(const d of DIRS){const r=row(d,false);out.push(r.html);STATS[d.id]=r.stats;}
+out.push(row(DIRS[0],true).html);
+document.getElementById('dirs').innerHTML=out.join('');
+window.FF_STATS=STATS;
+window.FF_READY=true;
+</script>
+</body>
+</html>
