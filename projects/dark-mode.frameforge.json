@@ -242,7 +242,7 @@
       "title": "NOTHING FANCY",
       "dialogue": "Easy on the eyes. Nothing fancy.",
       "speaker": "dev",
-      "camera": "duo",
+      "camera": "wide",
       "duration": 2.9,
       "intent": "clarify",
       "cast": {
@@ -264,13 +264,14 @@
         "pauseAfter": 0.35
       },
       "framing": {
-        "distance": 6.9,
-        "offset": 0,
-        "up": 0.03,
-        "fov": 42,
+        "distance": 21,
+        "offset": 0.3,
+        "up": 4.34,
+        "fov": 40,
         "move": "drift",
         "amount": 0.4,
-        "aim": "dev"
+        "aim": "dev",
+        "lookUp": 3.5
       },
       "firstFrameStatus": "not_created",
       "voice": {
@@ -576,13 +577,14 @@
         "pauseAfter": 2.8
       },
       "framing": {
-        "distance": 7.22,
+        "distance": 9.4,
         "offset": 0.26,
-        "up": 0.12,
+        "up": 1.5,
         "fov": 40,
         "move": "pull",
         "amount": 0.6,
-        "aim": "dev"
+        "aim": "dev",
+        "lookUp": 0.6
       },
       "firstFrameStatus": "not_created",
       "voice": {

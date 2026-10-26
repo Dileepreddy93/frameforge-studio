@@ -34,6 +34,9 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <script src="./design/dev-character.js"></script>
 <script src="./design/robot-forms.js"></script>
 <script src="./design/robot-character.js"></script>
+<script src="./design/set-forms.js"></script>
+<script src="./design/set-arena.js"></script>
+<script src="./src/arena-set.js"></script>
 <script src="./src/dev-acting-core.js"></script>
 <script src="./src/robot-acting-core.js"></script>
 <script type="module">
@@ -58,168 +61,9 @@ const mat=(c,r=.72,m=.05)=>new T.MeshStandardMaterial({color:c,roughness:r,metal
 const dark=mat(0x101122),navy=mat(0x202443),white=mat(0xe3dbe0),blue=mat(0x4f83bb,.4,.45),orange=mat(0xf18427,.45,.24),skin=mat(0x9c6b4b),hair=mat(0x191524),suit=mat(0x3c4168),glow=new T.MeshStandardMaterial({color:0x6df6ff,emissive:0x43d7ff,emissiveIntensity:2});
 function cube(g,x,y,z,w,h,d,m){let o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;g.add(o);return o}
 function ball(g,x,y,z,r,m){let o=new T.Mesh(new T.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o}
-let floor=cube(scene,0,-.16,0,18,.24,15,mat(0x1b1530));let wall=cube(scene,0,3,-5,18,7,.2,mat(0x171026));
-let stageBox=cube(scene,0,.24,-1.5,6,.46,3,mat(0x29203e));
-cube(scene,0,1.3,-2.75,5,.15,1.7,mat(0x5c3559,.38));for(let x of [-2.3,2.3])cube(scene,x,.72,-2.75,.18,1.13,.3,dark);
-
-// CINEMATIC SET V2 — built as an inhabited space, not a flat neon backdrop.
-// Stage architecture has a consistent industrial palette, practical light sources,
-// depth layers, textured signs, and contact shadows. All assets are original.
-const artGroup=new T.Group();scene.add(artGroup);
-const satin=(hex,r=.52,metal=.1)=>new T.MeshStandardMaterial({color:hex,roughness:r,metalness:metal});
-const bronzed=satin(0x635258,.36,.55), warmWhite=satin(0xe3c5a4,.55,.06), midnight=satin(0x1a2432,.71,.08);
-const copper=satin(0xb16d54,.39,.39), steelSet=satin(0x354958,.36,.57);
-const cyanEmission=new T.MeshStandardMaterial({color:0x83d9e3,emissive:0x3f9eaf,emissiveIntensity:1.3,roughness:.28});
-const amberEmission=new T.MeshStandardMaterial({color:0xffc18b,emissive:0xb66b3b,emissiveIntensity:1.6,roughness:.35});
-const shadowMat=new T.MeshBasicMaterial({color:0x090e1b,transparent:true,opacity:.37,depthWrite:false,side:T.DoubleSide});
+// The set (M5.1, direction C): the screen arena is built in src/arena-set.js once DEV's scale is known (see DEV_S).
 const flat=color=>new T.MeshLambertMaterial({color,flatShading:true});
-floor.material=flat(0x17132a);wall.material=flat(0x141026);stageBox.material=flat(0x1a1530);
-function tube(parent,a,b,r,m,detail=10){
- const va=new T.Vector3(...a),vb=new T.Vector3(...b);
- const diff=vb.clone().sub(va),shape=new T.Mesh(new T.CylinderGeometry(r,r,diff.length(),detail),m);
- shape.position.copy(va.add(vb).multiplyScalar(.5));shape.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),diff.normalize());
- parent.add(shape);shape.castShadow=true;return shape
-}
-function drum(parent,x,y,z,r,h,m){
- const mesh=new T.Mesh(new T.CylinderGeometry(r,r,h,28),m);
- mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh
-}
-function plaque(textA,textB,glowHue,x,y,z,w=.95,h=.47){
- const cv=document.createElement('canvas');cv.width=600;cv.height=320;
- const q=cv.getContext('2d');q.fillStyle='#172231';q.fillRect(0,0,600,320);
- const grad=q.createLinearGradient(30,0,520,320);grad.addColorStop(0,'#202e3c');grad.addColorStop(1,'#101b2a');q.fillStyle=grad;q.fillRect(13,13,574,294);
- q.strokeStyle='#657589';q.lineWidth=7;q.strokeRect(20,20,560,280);
- q.fillStyle=glowHue;q.font='bold 68px Arial';q.textAlign='center';q.fillText(textA,300,160);
- q.font='bold 29px Arial';q.fillStyle='#9cb3bd';q.fillText(textB,300,227);
- const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;const m=new T.MeshBasicMaterial({map:t,side:T.DoubleSide,toneMapped:false});
- const frame=new T.Mesh(new T.PlaneGeometry(w,h),m);frame.position.set(x,y,z);artGroup.add(frame);
- return frame
-}
-// Rear wall composition: two flanking equipment bays, warm arch, central stage identity.
-for(const x of [-4.15,4.15]){
- cube(artGroup,x,2.25,-4.65,1.60,4.3,.40,midnight);
- cube(artGroup,x,4.2,-4.37,1.76,.13,.17,copper);
- for(let y of [1.0,1.95,2.9]){
-  cube(artGroup,x,y,-4.39,1.42,.045,.09,steelSet);
-  for(let k=0;k<5;k++){
-   const z=-4.25,px=x-.49+k*.245;
-   cube(artGroup,px,y+.23,z,.12,.36,.16,k%3===0?copper:satin(k%2?0x697c89:0x375268,.5,.24));
-  }
- }
- const p=new T.PointLight(0xffa96e,6,3.8);p.position.set(x,3.5,-3.8);artGroup.add(p);
- cube(artGroup,x,3.6,-4.25,.65,.10,.10,amberEmission);
-}
-// Recessed layered portal and arc surround behind the cast.
-cube(artGroup,0,3.2,-4.66,5.75,3.6,.13,satin(0x263440,.79,.13));
-cube(artGroup,0,3.2,-4.48,4.55,2.75,.09,satin(0x111b2b,.43,.19));
-const arch=new T.Mesh(new T.TorusGeometry(1.58,.063,12,80,Math.PI),bronzed);
-arch.position.set(0,4.1,-4.14);arch.rotation.z=0;artGroup.add(arch);
-for(const x of [-1.60,1.60]){
- tube(artGroup,[x,1.85,-4.14],[x,4.09,-4.14],.075,bronzed);
- cube(artGroup,x,2.9,-4.0,.065,1.75,.065,cyanEmission);
-}
-plaque("FRAMEFORGE","STORY SYSTEMS","#ffcf9c",0,4.30,-4.01,1.8,.79);
-// Practical architectural strips and baffles.
-for(let x of [-3.12,3.12]){
- cube(artGroup,x,3.0,-4.28,.10,4.35,.20,steelSet);
- cube(artGroup,x,3.0,-4.13,.048,2.7,.05,amberEmission);
-}
-for(let z of [-2.7,-1.3,.35]){
- tube(artGroup,[-5.2,.11,z],[5.2,.11,z],.017,steelSet,8);
-}
-// Foreground set dressing: restrained consoles with readable controls.
-for(const x of [-3.2,3.2]){
- const side=Math.sign(x);
- const stand=cube(artGroup,x,1.04,-2.6,.67,1.34,.78,steelSet);
- cube(artGroup,x,1.75,-2.48,.83,.14,.63,copper);
- const top=cube(artGroup,x,1.82,-2.39,.77,.065,.58,midnight);top.rotation.x=-.23;
- for(let i=0;i<4;i++){
-  const spot=new T.Mesh(new T.SphereGeometry(.044,12,8),i%2?cyanEmission:amberEmission);
-  spot.position.set(x-.21+i*.14,1.85,-2.09);artGroup.add(spot);
- }
- tube(artGroup,[x,1.32,-2.08],[x+side*.25,1.2,-1.68],.044,steelSet);
-}
-// Three elevated soft luminous panels: subtle depth behind human and robots.
-for(let i=0;i<3;i++){
- const x=-2.3+i*2.3;
- const panel=cube(artGroup,x,4.55,-3.6,1.42,.10,.40,steelSet);panel.rotation.x=.24;
- const light=cube(artGroup,x,4.51,-3.3,1.20,.035,.24,i===1?warmWhite:cyanEmission);light.rotation.x=.24;
-}
-// Physical shadow pools connect characters with the stage.
-const blobCv=document.createElement('canvas');blobCv.width=blobCv.height=128;
-const blobCx=blobCv.getContext('2d');const rg=blobCx.createRadialGradient(64,64,6,64,64,64);
-rg.addColorStop(0,'rgba(0,0,0,.54)');rg.addColorStop(.40,'rgba(0,0,0,.32)');rg.addColorStop(1,'rgba(0,0,0,0)');
-blobCx.fillStyle=rg;blobCx.fillRect(0,0,128,128);const blobTexture=new T.CanvasTexture(blobCv);
-for(const x of [-1.7,0,1.7]){
- const blob=new T.Mesh(new T.PlaneGeometry(1.55,.91),new T.MeshBasicMaterial({map:blobTexture,transparent:true,depthWrite:false,opacity:.82}));
- blob.rotation.x=-Math.PI/2;blob.position.set(x,.49,x===-1.7?-1:.5);artGroup.add(blob);
-}
-// A light dust layer adds depth cues without costly volumetric shaders.
-const scatter=new T.BufferGeometry(),dust=[];
-for(let i=0;i<55;i++){
- const x=((((i*37)%113)/113)-.5)*10;
- const y=.8+(((i*71)%113)/113)*4.6;
- const z=-4.10+(((i*17)%79)/79)*6.3;dust.push(x,y,z);
-}
-scatter.setAttribute('position',new T.Float32BufferAttribute(dust,3));
-const flecks=new T.Points(scatter,new T.PointsMaterial({color:0xd9c4ab,size:.025,transparent:true,opacity:.48,depthWrite:false}));
-artGroup.add(flecks);
-// V6 SET (STYLE.md): a near-black room whose story lives on real monitors, not on overlay cards.
-// The V5 neon set stays hidden until the set pass replaces the rest of it.
-artGroup.visible=false;
-const v6Set=new T.Group();scene.add(v6Set);
-const bezelMat=flat(0x0b0a12);
 const MONO='"Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace';
-const TONES={bad:{ink:'#fc5757',rule:'#e05553',tint:'#471c30'},good:{ink:'#44e082',rule:'#3a9a66',tint:'#1c3a2e'}};
-function monitor(w,h,x,y,z,ry){
- const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*h/w);
- const texture=new T.CanvasTexture(cv);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=8;
- const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;v6Set.add(g);
- cube(g,0,0,-.05,w+.14,h+.14,.08,bezelMat);
- g.add(new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:texture,toneMapped:false})));
- return {ctx:cv.getContext('2d'),texture,width:cv.width,height:cv.height,drawn:null};
-}
-function windowChrome(c,W,title,rule){
- c.fillStyle='#151029';c.fillRect(0,0,W,c.canvas.height);
- c.fillStyle='#1b1534';c.fillRect(0,0,W,84);
- ['#e05553','#dea32f','#23a93b'].forEach((dot,i)=>{c.fillStyle=dot;c.beginPath();c.arc(40+i*32,42,11,0,Math.PI*2);c.fill()});
- c.fillStyle='#a7a1c7';c.font='700 34px '+MONO;c.textAlign='left';c.textBaseline='middle';c.fillText(title,148,44);
- c.fillStyle=rule;c.fillRect(0,84,W,5);
-}
-// Metric screen: window title, label, one huge number in the state colour, a jagged sparkline, a badge.
-function drawWallScreen(screen,wall){
- const key=JSON.stringify(wall??null);if(screen.drawn===key)return;screen.drawn=key;
- const c=screen.ctx,W=screen.width,H=screen.height;
- if(!wall){c.fillStyle='#151029';c.fillRect(0,0,W,H);screen.texture.needsUpdate=true;return}
- const tone=TONES[wall.tone];
- windowChrome(c,W,wall.window,tone.rule);
- c.fillStyle='#676284';c.font='400 44px '+MONO;c.fillText(wall.label,56,176);
- if(wall.badge){
-  c.font='700 38px '+MONO;const bw=c.measureText(wall.badge).width+56;
-  c.fillStyle=tone.tint;c.beginPath();c.roundRect(W-bw-40,128,bw,70,10);c.fill();
-  c.fillStyle=tone.ink;c.textAlign='center';c.fillText(wall.badge,W-bw/2-40,165);c.textAlign='left';
- }
- c.fillStyle=tone.ink;c.font='700 230px '+MONO;c.textBaseline='alphabetic';c.fillText(wall.value,46,430);
- c.strokeStyle=tone.ink;c.lineWidth=7;c.lineJoin='miter';c.beginPath();
- for(let i=0;i<=30;i++){
-  const jag=((i*37+11)%17)/17,trend=wall.tone==='bad'?-i*1.6:i*.4;
-  const px=24+i*(W-48)/30,py=H-90+trend-jag*(wall.tone==='bad'?62:30);
-  i?c.lineTo(px,py):c.moveTo(px,py);
- }
- c.stroke();screen.texture.needsUpdate=true;
-}
-// Side screen: an abstract chat/log window that dresses the set without competing with the story screen.
-function drawSideScreen(screen){
- const c=screen.ctx,W=screen.width;
- windowChrome(c,W,'notes',TONES.bad.rule);
- for(let i=0;i<6;i++){
-  const right=i%2===1,w=260+((i*97)%5)*70;
-  c.fillStyle=right?'#2b2455':'#3a2732';c.beginPath();c.roundRect(right?W-w-48:48,130+i*82,w,46,14);c.fill();
- }
- screen.texture.needsUpdate=true;
-}
-const wallScreen=monitor(3.0,1.88,-1.0,4.45,-3.75,-.3);
-const sideScreen=monitor(1.6,1.0,-3.55,2.75,-3.35,.42);drawSideScreen(sideScreen);
 
 const dev=new T.Group();dev.position.set(-1.7,.33,-1);scene.add(dev);
 cube(dev,0,1.25,0,.95,1.3,.55,suit);cube(dev,0,2.28,0,.75,.9,.68,skin);cube(dev,0,2.78,-.02,.83,.25,.73,hair);cube(dev,-.55,1.36,0,.24,.99,.25,suit);cube(dev,.55,1.36,0,.24,.99,.25,suit);cube(dev,-.27,.4,0,.3,.45,.35,navy);cube(dev,.27,.4,0,.3,.45,.35,navy);
@@ -303,6 +147,11 @@ const DEV_SPEC=window.FrameForgeDev.DEV,devBuild=window.FrameForgeDesign.build(D
 const DEV_HEAD_Y=2.30,DEV_FEET_Y=.14,DEV_S=(DEV_HEAD_Y-DEV_FEET_Y)/-devRigSpec.ground;
 // Close-ups were framed for the M1.3 head (1.05 units tall); they stand back by this much to frame the new head the same.
 const DEV_FRAME=DEV_S/1.05;
+// The set: the screen arena (design/set-arena.js), in DEV units scaled by DEV_S. Its plaza top meets DEV's feet
+// (the dev group's height plus DEV_FEET_Y), centred between the cast. The plaza is the stage the art lab keeps.
+const arena=window.FrameForgeArenaSet.build(T,{scale:DEV_S,origin:[0,.33+DEV_FEET_Y-window.FrameForgeArena.ARENA.plaza.h*DEV_S,-.25]});
+scene.add(arena.group,arena.plaza);
+const stageBox=arena.plaza;
 function devGeometry(tris){
  const geometry=new T.BufferGeometry();
  geometry.setAttribute('position',new T.Float32BufferAttribute(tris.flatMap(t=>t.p.flat()),3));
@@ -597,8 +446,8 @@ update=function(){
  const viseme=speechCue.viseme;
  const speechPower=speechCue.mouthOpen;
  const index=shots.indexOf(shot);
- // The wall screen keeps showing what it last showed until a shot gives it something new.
- drawWallScreen(wallScreen,shots.slice(0,index+1).findLast(s=>s.wall)?.wall);
+ // The story window keeps showing what it last showed until a shot gives it something new.
+ arena.drawStory(shots.slice(0,index+1).findLast(s=>s.wall)?.wall);
  const expression={blue:shot.cast.blue.emotion,orange:shot.cast.orange.emotion};
  // Listeners visibly notice something before the next speaker begins.
  const reaction=cinematicReaction(shot,local);

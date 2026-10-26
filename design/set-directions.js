@@ -4,10 +4,11 @@
    Measured in the reference wides: the cast stand 9-21% of the frame height, and a key is about 0.3 of a character's
    height. Units: DEV's (he stands 2 tall), ground y = 0, z toward the front of the set. */
 (function(root,factory){
- const lib=factory(root.FrameForgeSet||(typeof require==='function'?require('./set-forms.js'):null));
+ const req=f=>typeof require==='function'?require(f):null;
+ const lib=factory(root.FrameForgeSet||req('./set-forms.js'),root.FrameForgeArena||req('./set-arena.js'));
  if(typeof module==='object'&&module.exports)module.exports=lib;
  else root.FrameForgeSetDirections=lib;
-})(typeof globalThis!=='undefined'?globalThis:this,function(F){
+})(typeof globalThis!=='undefined'?globalThis:this,function(F,AR){
  'use strict';
  const rad=d=>d*Math.PI/180;
  // Key rows in key units (each row is 15 units wide), back row first.
@@ -67,25 +68,21 @@
  }
  // C · Screen arena: a half-ring of app windows in three tiers around a field of keycaps, with a few more windows
  // behind the camera, so every angle (reverse shots and reaction cuts too) has screens behind it.
+ // The approved numbers live in design/set-arena.js (shared with the three.js build).
  function arena(){
-  const objs=[];
+  const A=AR.ARENA,objs=[];
   objs.push({...F.box([-15,-.5,-14],[15,0,9],'deck',{tile:1.5}),layer:'ground'});
-  objs.push({...F.prism([0,0,0],3.2,.16,16,'case',{top:'desk'}),layer:'ground'});
-  for(let i=-14;i<=14;i++)for(let j=-14;j<=10;j++){
-   const x=i*.8,z=j*.8,r=Math.hypot(x,z),n=(i+20)*40+j+20;
-   if(r<3.5||r>9.2||F.hash(n,4)<.06)continue;
-   objs.push(F.key(x,0,z,[.68,.68],[.58,.58],.12,'keycap',{topMat:F.hash(n,5)<.08?'keyViolet':'keycap'}));
+  objs.push({...F.prism([0,0,0],A.plaza.r,A.plaza.h,A.plaza.sides,'case',{top:'desk'}),layer:'ground'});
+  const k=A.keys;
+  for(const[x,z,violet]of AR.keys())objs.push(F.key(x,0,z,[k.base,k.base],[k.top,k.top],k.h,'keycap',{topMat:violet?'keyViolet':'keycap'}));
+  for(const w of AR.windows()){
+   const app=w.story?'dashboard':w.app;
+   // Windows behind the camera can stand between it and the cast: sort those with the cast, not behind everything.
+   const layer=Math.abs(w.ry)>90?'mid':'bg';
+   objs.push(...F.monitor(w.c,w.w,w.h,F.APPS[app](Math.round(1000*w.h/w.w)),{ry:w.ry,tilt:w.tilt,bezel:A.bezel,depth:A.depth,backMat:'frame',label:w.story?'story':w.app}).map(o=>({...o,layer})));
+   const p=w.post.c;objs.push({...F.box([p[0]-.25,0,p[2]-.25],[p[0]+.25,w.post.top,p[2]+.25],'frame',{ry:w.ry}),layer});
   }
-  const tiers=[{R:10.5,y:2.5,w:5.2,h:3.4,tilt:0,at:[-75,-45,-15,15,45,75],apps:['chat','inbox','review','changelog','terminal','metrics']},
-   {R:12,y:6.6,w:6,h:3.8,tilt:-8,at:[-60,-30,0,30,60],apps:['calendar','metrics','dashboard','inbox','review']},
-   {R:13.5,y:11,w:6.4,h:4,tilt:-14,at:[-45,-15,15,45],apps:['terminal','changelog','chat','calendar']},
-   {R:10.5,y:2.5,w:5.2,h:3.4,tilt:0,at:[150,180,210],apps:['review','inbox','terminal']}];
-  for(const t of tiers)t.at.forEach((a,i)=>{
-   const app=t.apps[i],big=app==='dashboard',w=big?8:t.w,h=big?4.6:t.h,s=Math.sin(rad(a)),c=Math.cos(rad(a));
-   objs.push(...F.monitor([t.R*s,t.y+(big?.3:0),-t.R*c],w,h,F.APPS[app](Math.round(1000*h/w)),{ry:-a,tilt:t.tilt,bezel:.2,depth:.3,backMat:'frame',label:app}).map(o=>({...o,layer:'bg'})));
-   const pr=t.R+.5;objs.push({...F.box([pr*s-.25,0,-pr*c-.25],[pr*s+.25,t.y-h/2,-pr*c+.25],'frame',{ry:-a}),layer:'bg'});
-  });
-  return{objects:objs,groundY:.16,pool:{c:[0,.16,0],r:3,color:'#5F418C',k:.55},
+  return{objects:objs,groundY:A.plaza.h,pool:{c:[0,A.plaza.h,0],r:A.pool.r,color:'#5F418C',k:A.pool.k},
    cast:[{who:'dev',at:[-1.3,.16,.3],yaw:18},{who:'blue',at:[.5,.16,.7],yaw:-15},{who:'orange',at:[2,.16,-.5],yaw:-25}]};
  }
  const DIRS=[
@@ -101,7 +98,7 @@
    cams:{wide:{pos:[2.5,9.5,20.5],target:[0,5.4,-3]},two:{pos:[-.5,2.3,7.6],target:[-.6,1.6,-.6]},close:closeOn([-1.5,0,-.7])}},
   {id:'C',name:'Screen arena',build:arena,
    notes:['A half-ring of 15 app windows in three tiers around a field of keycaps; the cast stand on a violet plaza in the middle',
-    'Three more windows behind the camera: every angle, reverse shots and reaction cuts included, has screens behind it',
+    'Four more windows far behind the camera: every angle, reverse shots and reaction cuts included, has screens behind it',
     'The densest wall of screens, no device metaphor; the most abstract and the most "world of software"'],
    cams:{wide:{pos:[.5,7.5,15],target:[0,3.8,-4]},two:{pos:[-.4,2.4,7.6],target:[-.5,1.5,-.8]},close:closeOn([-1.3,.16,.3])}}
  ];

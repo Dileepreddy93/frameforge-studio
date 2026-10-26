@@ -316,7 +316,7 @@
       "title": "ONE CHANGE",
       "dialogue": "Okay. One tiny change.",
       "speaker": "dev",
-      "camera": "duo",
+      "camera": "wide",
       "duration": 2.1,
       "intent": "escalation",
       "cast": {
@@ -334,13 +334,14 @@
         }
       },
       "framing": {
-        "distance": 7.15,
-        "offset": -0.3,
-        "up": 0.15,
+        "distance": 21,
+        "offset": 0.3,
+        "up": 4.34,
         "fov": 40,
         "move": "drift",
         "amount": 0.5,
-        "aim": "dev"
+        "aim": "dev",
+        "lookUp": 3.5
       },
       "timing": {
         "lead": 0.15,
@@ -738,13 +739,14 @@
         }
       },
       "framing": {
-        "distance": 7.22,
+        "distance": 9.4,
         "offset": 0.26,
-        "up": 0.12,
+        "up": 1.5,
         "fov": 40,
         "move": "pull",
         "amount": 0.6,
-        "aim": "dev"
+        "aim": "dev",
+        "lookUp": 0.6
       },
       "reactionCut": {
         "role": "blue",

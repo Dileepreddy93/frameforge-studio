@@ -26,7 +26,7 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
 | Ink (eyes, mouth, brows, glasses) | `#04030A`, mouth `#2A0911`, tongue `#7C2C33` | flat, unlit |
 | Glints, teeth | `#FFF7EE`, `#EADFD1` | flat, unlit |
 | Drawstrings | `#B098B1` | |
-| Desk | `#353790` → pool `#5F418C`; keys `#754DA6` | |
+| Desk / plaza | `#353790` → pool `#5F418C`; keys `#754DA6` | the arena's plaza and violet keys (M5.1) |
 | Caption | `#FFFFFF` | |
 
 ## Shading and materials
@@ -46,12 +46,13 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
   every form falls to near black (ambient ≤ 5%).
 - **Rim / top:** one cool blue-lavender light (`#7F9CFF`) from behind-left and above. It paints hair edges,
   hood tops and box tops blue/lilac.
-- A pink-violet pool on the desk top. Nothing else: no neon strips, no fill, no bloom, no fog glow.
+- A pink-violet pool on the plaza (or desk) top. Nothing else: no neon strips, no fill, no bloom, no fog glow.
 
 ## Camera
 - 9:16, vertical fov 34–40°, eye level or slightly low.
 - Close-up: head and shoulders, head about 60% of frame width, the in-world screen's big number visible
-  above/behind the head. Wides: three-quarter view of the desk, screens behind.
+  above/behind the head. Wides: the cast about a fifth of the frame high on the plaza, keys around them and the
+  windows' tiers above them (the reference's wides: 9–21%). Two-shots: the pair about 40% high, windows behind.
 - Slow push-ins, small drifts, hard cuts on lines. Background stays sharp (no depth of field).
 
 ## Captions
@@ -67,7 +68,10 @@ Real monitors inside the set, seen in perspective and often cropped by the frame
 - Metric screen: mono label, a huge mono bold number in the state colour (about 60% of screen width),
   a jagged 3 px sparkline, a badge (SLOW / FAST) on a tinted pill.
 - Log screen: mono rows, timing column in coral, one highlighted row on a maroon band.
-- Set dressing: a dark city window with small amber dots.
+- The set is the screen arena (`design/set-arena.js`, approved 2026-10-26): app windows (inbox, review, changelog,
+  terminal, chat, metrics, calendar) in three tiers on a half-ring around a violet plaza and a field of keycaps, a few
+  more behind the camera for reverse angles. The big centre window is the story screen (the shot's wall).
+  The cast stand on the plaza: one scale in every shot, like the reference.
 
 ## Characters
 Simple, graphic and built from a few primitives, with a big head (about half the torso height).
@@ -88,4 +92,5 @@ thruster. BLUE is 1.48 tall and eager; ORANGE is 1.58 and deadpan (resting lids 
 ## How we draw this in code
 three.js; `MeshLambertMaterial({flatShading:true})` on low-detail geometry; black facial features as
 `MeshBasicMaterial`; one `DirectionalLight` key and one `DirectionalLight` rim and almost no ambient light;
-screens as `CanvasTexture` on `MeshBasicMaterial({toneMapped:false})`; captions drawn in the film compositor.
+screens as `CanvasTexture` on `MeshBasicMaterial({toneMapped:false})`, drawn from the app layouts in
+`design/set-forms.js`; the set in `src/arena-set.js` (instanced keycaps); captions drawn in the film compositor.

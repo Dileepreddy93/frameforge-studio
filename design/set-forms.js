@@ -101,8 +101,9 @@
   // The story screen: a metric that is bad (or good) right now.
   dashboard(H,o={}){
    const t=o.tone==='good'?{ink:SCREEN.good,rule:SCREEN.goodRule,tint:SCREEN.goodTint}:{ink:SCREEN.bad,rule:SCREEN.badRule,tint:SCREEN.badTint};
-   return[...chrome(o.title||'Dashboard · /home',t.rule,H),tx(o.label||'p95 page load',56,170,46,SCREEN.label),rr(760,118,190,72,12,t.tint),
-    tx(o.badge||'SLOW',855,168,40,t.ink,{bold:1,anchor:'middle'}),tx(o.value||'12.0 s',46,Math.min(H-150,430),Math.min(230,H*.42),t.ink,{bold:1}),
+   const badge=o.badge??'SLOW',bw=badge.length*24+70;
+   return[...chrome(o.title||'Dashboard · /home',t.rule,H),tx(o.label||'p95 page load',56,170,46,SCREEN.label),
+    ...(badge?[rr(950-bw,118,bw,72,12,t.tint),tx(badge,950-bw/2,168,40,t.ink,{bold:1,anchor:'middle'})]:[]),tx(o.value||'12.0 s',46,Math.min(H-150,430),Math.min(230,H*.42),t.ink,{bold:1}),
     {line:spark(30,H-40,940,Math.min(150,H*.22),26,o.tone!=='good',3),stroke:t.ink,w:7}];
   },
   inbox(H){
@@ -162,6 +163,20 @@
   return out;
  }
 
+ // Draw an element list onto a 2D canvas whose width stands for the 1000-px frame (the studio's in-world screens).
+ function drawCanvas(ctx,elements,scale=ctx.canvas.width/1000){
+  const walk=(els,ox,oy,k)=>{for(const e of els){
+   if(e.group){walk(e.group,ox+e.x*k,oy+e.y*k,k*e.k);continue;}
+   const X=x=>(ox+x*k)*scale,Y=y=>(oy+y*k)*scale,L=v=>v*k*scale;
+   ctx.fillStyle=e.fill;
+   if(e.r){ctx.fillRect(X(e.r[0]),Y(e.r[1]),L(e.r[2]),L(e.r[3]));continue;}
+   if(e.rr){const[x,y,w,h,r]=e.rr;ctx.beginPath();ctx.roundRect(X(x),Y(y),L(w),L(h),L(r));ctx.fill();continue;}
+   if(e.c){ctx.beginPath();ctx.arc(X(e.c[0]),Y(e.c[1]),L(e.c[2]),0,2*PI);ctx.fill();continue;}
+   if(e.line){ctx.strokeStyle=e.stroke;ctx.lineWidth=L(e.w);ctx.lineJoin='miter';ctx.beginPath();e.line.forEach(([x,y],i)=>i?ctx.lineTo(X(x),Y(y)):ctx.moveTo(X(x),Y(y)));ctx.stroke();continue;}
+   if(e.t!==undefined){ctx.font=(e.bold?'700 ':'400 ')+L(e.size)+'px '+MONO;ctx.textAlign=e.anchor==='middle'?'center':e.anchor==='end'?'right':'left';ctx.textBaseline='alphabetic';ctx.fillText(e.t,X(e.x),Y(e.y));}
+  }};
+  walk(elements,0,0,1);
+ }
  // A monitor: a screen of w x h at centre c, facing +z turned by ry, tilted back by tilt; a bezel box behind it and
  // optional stand. content: an element list in a 1000-wide frame (APPS / desktop).
  function monitor(c,w,h,content,o={}){
@@ -312,5 +327,5 @@
   }
   return'<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" style="background:#0C0916;display:block">'+s+'</svg>';
  }
- return{box,key,prism,monitor,cityWindow,desktop,APPS,SCREEN,render,plan,camera,hash};
+ return{box,key,prism,monitor,cityWindow,desktop,drawCanvas,APPS,SCREEN,render,plan,camera,hash};
 });
