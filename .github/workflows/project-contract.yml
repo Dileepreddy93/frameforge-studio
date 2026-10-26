@@ -52,6 +52,7 @@ jobs:
           node tests/character-art-browser.cjs dev
           node tests/character-art-browser.cjs blue
           node tests/character-art-browser.cjs orange
+          node tests/robot-build-browser.cjs
           node tests/performance-browser.cjs
           node tests/speech-performance-browser.cjs
           node tests/determinism-browser.cjs

@@ -11,10 +11,10 @@ assert.ok(['dev','blue','orange'].includes(actor));
  await page.waitForFunction(()=>document.querySelectorAll('#turnaround img').length===4 && document.querySelector('#environment').src.startsWith('data:image/png') && document.querySelector('#save').disabled===false && document.querySelector('#status').textContent.includes('export ready'),null,{timeout:95000});
  if(actor!=='dev'){await page.locator('#actor').selectOption(actor);await page.waitForFunction(a=>document.getElementById('status').textContent.includes(a.toUpperCase()+' · 11 true 3D'),actor,{timeout:20000});}
  const samples=await page.evaluate(()=>[...document.querySelectorAll('#turnaround img,#emotions img')].map(x=>x.src));
- // Four views and seven expressions. DEV has a face for each; the robots draw sad and thinking as neutral until M3.1.
+ // Four views and seven expressions, each a different frame (the robots' faces come from their M3.2 model sheet).
  assert.equal(samples.length,11);
  const unique=new Set(samples.map(x=>crypto.createHash('sha256').update(x).digest('hex')));
- assert.ok(unique.size>=(actor==='dev'?11:9),'poses must differ across views and expressions');
+ assert.ok(unique.size>=11,'poses must differ across views and expressions');
  await page.waitForFunction(()=>!document.querySelector('#save').disabled&&document.querySelector('#status').textContent.includes('export ready'),null,{timeout:50000});
  const saved=page.waitForEvent('download',{timeout:30000});await page.locator('#save').click();
  const result=await saved;assert.match(result.suggestedFilename(),/turnaround-expression-unapproved.png$/);

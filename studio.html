@@ -32,6 +32,8 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <script src="./src/speech-performance-core.js"></script>
 <script src="./design/dev-forms.js"></script>
 <script src="./design/dev-character.js"></script>
+<script src="./design/robot-forms.js"></script>
+<script src="./design/robot-character.js"></script>
 <script src="./src/dev-acting-core.js"></script>
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
@@ -247,118 +249,17 @@ function applyLooks(project){
   }
  }
 }
+// The robots are built from their model sheet (design/robot-character.js) once DEV's scale is known: see buildRobot.
 function buildActor(actor,kind){
  actor.root.children.forEach(c=>c.visible=false);
- const group=new T.Group();actor.root.add(group);const isBlue=kind==='blue';
- const shell=new T.MeshPhysicalMaterial({color:isBlue?0x6484b8:0xd38357,metalness:.22,roughness:.35,clearcoat:.64,clearcoatRoughness:.17});
- lookParts[kind].shell.push({material:shell,shade:0});
- const darkMat=new T.MeshStandardMaterial({color:isBlue?0x1a324f:0x4b2a2c,metalness:.42,roughness:.42});
- const trim=new T.MeshStandardMaterial({color:isBlue?0x9ebdc5:0xdec195,metalness:.74,roughness:.32});
- const neon=new T.MeshStandardMaterial({color:isBlue?0x87ecfc:0xffc98e,emissive:isBlue?0x428eae:0xaf652d,emissiveIntensity:1.25});
- const glass=new T.MeshPhysicalMaterial({color:0x08111d,metalness:.22,roughness:.17,clearcoat:1,clearcoatRoughness:.07});
- const attach=(geo,mat,x,y,z,sx=1,sy=1,sz=1)=>{
-  const m=new T.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;group.add(m);return m;
- };
- // A continuous lathed torso, flowing into sculpted hips.
- const outline=[[.23,.07],[.43,.16],[.56,.31],[.58,.53],[.59,.76],[.54,.99],[.42,1.17],[.22,1.25]];
- attach(new T.LatheGeometry(outline.map(([r,y])=>new T.Vector2(r,y)),40),shell,0,0,0);
- attach(new T.SphereGeometry(.49,36,24),shell,0,.35,0,1.13,.80,.92);
- attach(new T.CylinderGeometry(.21,.30,.24,32),darkMat,0,1.24,0);
- const neckTrim=attach(new T.TorusGeometry(.27,.027,10,40),trim,0,1.26,0);neckTrim.rotation.x=Math.PI/2;
- // A single head hull with recessed curved dark face; no exposed cube corners.
- attach(new T.SphereGeometry(.71,48,36),shell,0,1.76,0,1.06,.89,.89);
- attach(new T.SphereGeometry(.59,48,36),glass,0,1.77,.42,1,.73,.39);
- attach(new T.TorusGeometry(.49,.035,10,56),trim,0,1.77,.685,1.07,.73,1);
- for(const sign of [-1,1]){
-  attach(new T.SphereGeometry(.23,24,16),darkMat,sign*.74,1.75,0,.82,1,1);
-  const cap=attach(new T.CylinderGeometry(.18,.18,.10,24),shell,sign*.80,1.75,0);cap.rotation.z=Math.PI/2;
-  const led=attach(new T.TorusGeometry(.126,.019,8,30),neon,sign*.845,1.75,0);led.rotation.y=Math.PI/2;
-  attach(new T.SphereGeometry(.27,24,16),darkMat,sign*.30,.20,.015,.9,.74,.95);
-  attach(new T.SphereGeometry(.23,24,16),shell,sign*.30,.11,.145,1.18,.54,1.30);
-  attach(new T.SphereGeometry(.205,20,16),darkMat,sign*.64,1.03,-.02);
- }
- const chest=attach(new T.TorusGeometry(.17,.027,8,40),neon,0,.70,.55);chest.scale.y=.83;
- const cv=document.createElement('canvas');cv.width=cv.height=512;
- const texture=new T.CanvasTexture(cv);texture.colorSpace=T.SRGBColorSpace;
- const face=new T.Mesh(new T.PlaneGeometry(.92,.68),new T.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,toneMapped:false,side:T.DoubleSide}));
- face.position.set(0,1.77,.74);group.add(face);
- // A single dynamic display enables the same eye and mouth animation on BOTH robots.
- return {ctx:cv.getContext('2d'),texture,group,head:group,blue:isBlue,orangeEyes:[],orangeBrows:[],orangeMouth:null};
+ const group=new T.Group();actor.root.add(group);
+ return {group,head:group,blue:kind==='blue',armJoints:[],orangeEyes:[],orangeBrows:[],orangeMouth:null};
 }
 const faces={blue:buildActor(b,'blue'),orange:buildActor(o,'orange')};
-
-// Character construction pass: joints, collar, torso trim, hand shells and foot pads
-// reduce the appearance of disconnected cube objects. No borrowed character assets.
-for(const [name,actor] of Object.entries({blue:faces.blue,orange:faces.orange})){
- const g=actor.group,isBlue=name==='blue';
- const shellX=satin(isBlue?0x526fb3:0xd66d42,.39,.32);
- lookParts[name].shell.push({material:shellX,shade:-.12});
- const joint=satin(isBlue?0x253c65:0x6d3833,.46,.49);
- const lightMat=isBlue?cyanEmission:amberEmission;
- const collar=drum(g,0,.92,0,.29,.18,joint);
- collar.rotation.x=Math.PI/2;
- cube(g,0,.71,.26,.46,.055,.17,lightMat);
- const neck=drum(g,0,.98,0,.12,.34,steelSet);
- for(const sign of [-1,1]){
-  const cap=drum(g,sign*.67,1.07,-.03,.25,.23,shellX);cap.rotation.z=Math.PI/2;
-  const shoulder=new T.Group();shoulder.name=name+'_shoulder_'+sign;shoulder.position.set(sign*.66,1.02,-.03);g.add(shoulder);
-  bevel(.26,.38,.32,.10,shellX,shoulder,sign*.04,-.25,.03);
-  const elbow=drum(shoulder,sign*.06,-.48,.04,.17,.19,joint);elbow.rotation.z=Math.PI/2;
-  bevel(.21,.20,.29,.07,shellX,shoulder,sign*.08,-.59,.08);
-  const wrist=new T.Mesh(new T.SphereGeometry(.18,16,12),shellX);
-  wrist.position.set(sign*.08,-.74,.12);wrist.scale.set(.84,.78,.84);shoulder.add(wrist);
-  actor.armJoints??=[];actor.armJoints.push({pivot:shoulder,sign,wrist});
-  const knee=drum(g,sign*.31,.24,.12,.13,.11,joint);
-  const foot=new T.Mesh(new T.SphereGeometry(.23,16,10),shellX);
-  foot.position.set(sign*.32,.14,.23);foot.scale.set(1.17,.51,.98);g.add(foot);
-  cube(g,sign*.43,1.45,.47,.06,.30,.03,shellX);
- }
- const torus=new T.Mesh(new T.TorusGeometry(.145,.016,8,32),lightMat);
- torus.position.set(0,.65,.395);g.add(torus);
- // Four subtle screws visually register faceplates as engineered parts.
- for(const side of [-1,1])for(const cy of [1.18,1.79]){
-  const screw=new T.Mesh(new T.SphereGeometry(.023,8,8),bronzed);
-  screw.position.set(side*.51,cy,.67);g.add(screw);
- }
-}
 
 // The robots stand between the key light and DEV, so they must not shadow him in his close-ups.
 for(const robotRoot of [b.root,o.root])robotRoot.traverse(m=>{m.castShadow=false});
 
-function drawActorFace(f,emotion,open,time,viseme='rest',gaze=0){
- const c=f.ctx;c.clearRect(0,0,512,512);c.save();
- const blue=f.blue,ink=blue?'#b9f6fa':'#ffd5a9',bright=blue?'#edffff':'#fff0cb';
- const energy=Math.max(0,Math.min(1,open)),look=Math.sin(time*.61)*2.2+Math.sin(time*1.9)*1.5+gaze*12;
- const blink=((time+.26)%3.68<.13||((time+1.93)%5.11)<.085);
- c.fillStyle=blue?'rgba(29,96,115,.055)':'rgba(101,47,28,.04)';
- c.beginPath();c.ellipse(256,240,212,177,0,0,Math.PI*2);c.fill();
- c.lineCap='round';c.lineJoin='round';
- for(const sign of [-1,1]){
-  const x=256+sign*108,y=184,eyeH=emotion==='surprised'?37:emotion==='worried'?31:27;
-  c.save();c.shadowBlur=blue?22:8;c.shadowColor=ink;c.strokeStyle=ink;c.lineWidth=blue?19:15;
-  if(blink){c.beginPath();c.moveTo(x-31,y+7);c.quadraticCurveTo(x,y+13,x+31,y+6);c.stroke();}
-  else{
-   c.beginPath();c.ellipse(x,y,31,eyeH,0,0,2*Math.PI);c.stroke();
-   c.fillStyle=bright;c.beginPath();c.ellipse(x+look,y+2,10,15,0,0,2*Math.PI);c.fill();
-   if(blue){c.fillStyle='#103744';c.beginPath();c.arc(x+look+3,y-2,3.5,0,2*Math.PI);c.fill();}
-  }
-  c.restore();
-  c.save();c.strokeStyle=ink;c.lineWidth=blue?17:15;c.shadowBlur=blue?12:4;c.shadowColor=ink;
-  const browY=112+(emotion==='happy'?-9:emotion==='angry'?20:emotion==='worried'?-17:0);
-  c.beginPath();c.moveTo(x-32,browY+(emotion==='angry'?sign*13:5));
-  c.quadraticCurveTo(x,browY-(emotion==='surprised'?17:emotion==='worried'?9:6),x+32,browY-(emotion==='angry'?sign*13:0));c.stroke();c.restore();
- }
- c.save();c.translate(256,331);c.strokeStyle=ink;c.fillStyle=ink;c.lineCap='round';c.lineJoin='round';c.lineWidth=blue?15:13;c.shadowBlur=blue?19:6;c.shadowColor=ink;
- if(energy>.13){const shape=viseme==='round'?.58:viseme==='wide'?1.45:viseme==='closed'?.12:viseme==='teeth'?.43:1;const h=15+energy*51*shape,w=(35+energy*8)*(viseme==='wide'?1.2:viseme==='round'?.72:1);c.beginPath();c.ellipse(0,8,w,h*.48,0,0,Math.PI*2);c.stroke();if(energy>.5){c.fillStyle=bright;c.globalAlpha=.63;c.beginPath();c.ellipse(0,26,w*.55,5,0,0,2*Math.PI);c.fill();}}
- else if(emotion==='happy'){c.beginPath();c.moveTo(-48,-11);c.bezierCurveTo(-23,40,23,40,48,-11);c.stroke();}
- else if(emotion==='worried'){c.beginPath();c.moveTo(-38,10);c.quadraticCurveTo(0,-8,38,10);c.stroke();}
- else if(emotion==='surprised'){c.beginPath();c.ellipse(0,11,20,24,0,0,2*Math.PI);c.stroke();}
- else if(emotion==='angry'){c.beginPath();c.moveTo(-42,19);c.lineTo(42,19);c.stroke();}
- else{c.beginPath();c.moveTo(-32,14);c.quadraticCurveTo(0,23,32,14);c.stroke();}
- c.restore();
- if(blue){c.strokeStyle='rgba(133,246,250,.25)';c.lineWidth=5;for(const sign of [-1,1]){c.beginPath();c.arc(256+sign*151,288,12,.1,Math.PI-.1);c.stroke();}}
- c.restore();f.texture.needsUpdate=true;
-}
 const brows=[];
 for(const side of [-1,1]){
  brows.push(bevel(.23,.055,.10,.017,hair,dev,side*.177,2.54,.38));
@@ -509,6 +410,101 @@ function drawDevFace(f){
 devHead.children.forEach(m=>{if(m!==skull)m.castShadow=false});skull.receiveShadow=false;
 lookParts.dev.hoodie.push({material:hoodie,shade:0},{material:hoodieLight,shade:.16},{material:hoodieDark,shade:-.35},{material:pocketMat,shade:-.35},{material:pocketRim,shade:-.58});
 lookParts.dev.hair.push({material:blackHair,shade:0});
+// BLUE and ORANGE are their model sheet (design/robot-character.js, M3.2), built from the same forms that draw it and
+// at DEV's scale, so the three stand in the proportions the sheet shows. Each robot: matte faceted parts, a head on a
+// pivot (emotions tilt it), arms on shoulder pivots (the acting swings them), and a face of flat light on the visor,
+// redrawn every frame from the sheet's face channels, like DEV's.
+const ROBOT_SHEET=window.FrameForgeRobots,ROBOT_S=DEV_S;
+// Matte colours: about 40% from the middle to the lit end of each sheet ramp, as DEV's skin is.
+const ROBOT_MATS={blueShell:flat(0x53779b),blueDeep:flat(0x345274),orangeShell:flat(0xca6e35),orangeDeep:flat(0x974a21),trim:flat(0x282742),violet:flat(0x4b43a0)};
+const ROBOT_FACE_COLOURS=Object.fromEntries(Object.entries({visor:0x151029,visorDeep:0x0d0a18,bezelFlat:0x0b0a12,blueFace:0x79c5ff,orangeFace:0xffc15a,
+ blueFaceDim:0x2f5f8f,orangeFaceDim:0x8a5a1e,violetFlat:0x7a62c8,ink:0x04030a,mouth:0x2a0911,glint:0xfff7ee}).map(([k,v])=>[k,new T.Color(v)]));
+lookParts.blue.shell.push({material:ROBOT_MATS.blueShell,shade:0},{material:ROBOT_MATS.blueDeep,shade:-.35});
+lookParts.orange.shell.push({material:ROBOT_MATS.orangeShell,shade:0},{material:ROBOT_MATS.orangeDeep,shade:-.35});
+const robotMesh=(tris,parent,offset)=>{
+ for(const mat of new Set(tris.map(t=>t.mat))){
+  const m=new T.Mesh(devGeometry(tris.filter(t=>t.mat===mat)),ROBOT_MATS[mat]);
+  if(offset)m.position.set(...offset.map(v=>-v));m.castShadow=false;m.receiveShadow=true;parent.add(m);
+ }
+};
+// Flat face shapes as triangles on a surface: strips (top run, bottom run reversed) or convex fans. Triangles are cut
+// small in face space before they are wrapped, so a big shape (the visor) follows the head's curve instead of cutting
+// under its facets.
+function faceTriangles(shapes,faceAt,lift,pos,col,at){
+ const MAX=.02;
+ shapes.forEach((sh,k)=>{
+  const c=ROBOT_FACE_COLOURS[sh.fill],up=lift+k*.0015;
+  const put=([x,y])=>{if(at>=pos.length/3)return;const f=faceAt(x,y);pos[at*3]=f.p[0]+f.n[0]*up;pos[at*3+1]=f.p[1]+f.n[1]*up;pos[at*3+2]=f.p[2]+f.n[2]*up;
+   col[at*3]=c.r;col[at*3+1]=c.g;col[at*3+2]=c.b;at++;};
+  const tri=(a,b,d)=>{
+   const n=Math.max(1,Math.ceil(Math.max(Math.hypot(a[0]-b[0],a[1]-b[1]),Math.hypot(b[0]-d[0],b[1]-d[1]),Math.hypot(d[0]-a[0],d[1]-a[1]))/MAX));
+   const P=(i,j)=>[a[0]+(b[0]-a[0])*i/n+(d[0]-a[0])*j/n,a[1]+(b[1]-a[1])*i/n+(d[1]-a[1])*j/n];
+   for(let j=0;j<n;j++)for(let i=0;i<n-j;i++){put(P(i,j));put(P(i+1,j));put(P(i,j+1));if(i+j<n-1){put(P(i+1,j));put(P(i+1,j+1));put(P(i,j+1));}}
+  };
+  const p=sh.pts;
+  if(sh.strip){const n=p.length>>1;for(let i=0;i<n-1;i++){tri(p[i],p[i+1],p[2*n-2-i]);tri(p[i],p[2*n-2-i],p[2*n-1-i]);}}
+  else{const mid=p.reduce((a,q)=>[a[0]+q[0]/p.length,a[1]+q[1]/p.length],[0,0]);for(let i=0;i<p.length;i++)tri(mid,p[i],p[(i+1)%p.length]);}
+ });
+ return at;
+}
+// A head's front surface sampled once on a grid (point and normal), then read by bilinear interpolation: the faces
+// are redrawn every frame, and the exact surface costs five evaluations per vertex.
+function surfaceGrid(form){
+ const [rx,ry]=form.r,nx=65,ny=49,x0=-rx,y0=-ry,dx=2*rx/(nx-1),dy=2*ry/(ny-1),g=new Float32Array(nx*ny*6);
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const f=form.faceAt(x0+i*dx,y0+j*dy);g.set(f.p,(j*nx+i)*6);g.set(f.n,(j*nx+i)*6+3);}
+ const p=[0,0,0],n=[0,0,0],out={p,n};
+ return(x,y)=>{
+  const fx=Math.min(nx-1.001,Math.max(0,(x-x0)/dx)),fy=Math.min(ny-1.001,Math.max(0,(y-y0)/dy)),i=fx|0,j=fy|0,u=fx-i,v=fy-j;
+  const a=(j*nx+i)*6,b=a+6,c=a+nx*6,d=c+6,w0=(1-u)*(1-v),w1=u*(1-v),w2=(1-u)*v,w3=u*v;
+  for(let k=0;k<3;k++){p[k]=g[a+k]*w0+g[b+k]*w1+g[c+k]*w2+g[d+k]*w3;n[k]=g[a+3+k]*w0+g[b+3+k]*w1+g[c+3+k]*w2+g[d+3+k]*w3;}
+  return out;
+ };
+}
+const robotFaceMaterial=()=>new T.MeshBasicMaterial({vertexColors:true,side:T.DoubleSide,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
+function buildRobot(actor,who){
+ const spec=ROBOT_SHEET.ROBOTS[who],robot=window.FrameForgeRobot.build(spec),g=actor.group;
+ const rig=new T.Group();rig.scale.setScalar(ROBOT_S);g.add(rig);
+ // Body, neck and base stay put; the head turns about its pivot; each arm swings about its shoulder.
+ robotMesh(robot.parts.filter(p=>!p.head&&!p.arm).flatMap(p=>p.tris),rig);
+ const headTilt=new T.Group();headTilt.position.set(...robot.pivot);headTilt.rotation.order='YXZ';rig.add(headTilt);
+ robotMesh(robot.parts.filter(p=>p.head).flatMap(p=>p.tris),headTilt,robot.pivot);
+ for(const side of [1,-1]){
+  const at=robot.shoulders[side],pivot=new T.Group();pivot.name=who+'_shoulder_'+side;pivot.position.set(...at);rig.add(pivot);
+  robotMesh(robot.parts.filter(p=>p.arm===side).flatMap(p=>p.tris),pivot,at);
+  actor.armJoints.push({pivot,sign:side,wrist:null});
+ }
+ // The chest light is fixed: drawn once onto the body.
+ if(spec.chest){
+  const shapes=spec.chest.map(d=>({fill:d.fill,pts:d.shape==='circle'?Array.from({length:16},(_,i)=>[d.x+d.r*Math.cos(i*Math.PI/8),d.y+d.r*Math.sin(i*Math.PI/8)]):
+   [[d.x-d.w/2,d.y-d.h/2],[d.x+d.w/2,d.y-d.h/2],[d.x+d.w/2,d.y+d.h/2],[d.x-d.w/2,d.y+d.h/2]]}));
+  const pos=new Float32Array(20000*3),col=new Float32Array(20000*3),n=faceTriangles(shapes,robot.body.faceAt,.004,pos,col,0);
+  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(pos.slice(0,n*3),3));geo.setAttribute('color',new T.BufferAttribute(col.slice(0,n*3),3));
+  rig.add(new T.Mesh(geo,robotFaceMaterial()));
+ }
+ // The face mesh lives in the head's frame (relative to the pivot), refilled from the face channels every frame.
+ const faceMesh=new T.Mesh(new T.BufferGeometry(),robotFaceMaterial());
+ faceMesh.geometry.setAttribute('position',new T.BufferAttribute(new Float32Array(40000*3),3));
+ faceMesh.geometry.setAttribute('color',new T.BufferAttribute(new Float32Array(40000*3),3));
+ faceMesh.frustumCulled=false;faceMesh.position.set(...robot.pivot.map(v=>-v));headTilt.add(faceMesh);
+ Object.assign(actor,{who,spec,robot,rig,headTilt,faceMesh,headAt:surfaceGrid(robot.head)});
+ return actor;
+}
+// One moment of a robot's face: emotion, the sound being spoken and how loud, a blink, and where it looks (-1..1).
+function drawRobotFace(actor,emotion,{viseme=null,open=0,blink=false,look=0}={}){
+ const f=ROBOT_SHEET.face(actor.who,emotion,{viseme,open,blink,look});
+ const pos=actor.faceMesh.geometry.attributes.position.array,col=actor.faceMesh.geometry.attributes.color.array;
+ const v=faceTriangles(window.FrameForgeRobot.faceShapes(actor.spec,f),actor.headAt,.006,pos,col,0);
+ actor.faceMesh.geometry.setDrawRange(0,v);actor.faceMesh.geometry.attributes.position.needsUpdate=true;actor.faceMesh.geometry.attributes.color.needsUpdate=true;
+ // The emotion's head pose (the sheet's roll, pitch and yaw, in its rotation order).
+ const p=ROBOT_SHEET.pose(emotion);
+ actor.headTilt.rotation.set((p.pitch||0)*Math.PI/180,(p.yaw||0)*Math.PI/180,(p.roll||0)*Math.PI/180);
+ actor.faceState={emotion,viseme,open,blink,look};
+}
+buildRobot(faces.blue,'blue');buildRobot(faces.orange,'orange');
+// Where the cameras aim: each robot's head centre, standing on its root (which hovers at y .43).
+const ROBOT_HEAD_Y={blue:.43+ROBOT_S*ROBOT_SHEET.ROBOTS.blue.head.c[1],orange:.43+ROBOT_S*ROBOT_SHEET.ROBOTS.orange.head.c[1]};
+// Robot close-ups stand back so the sheet head is about 60% of the frame width with its shoulders in (STYLE.md).
+const ROBOT_FRAME=1.15;
 // Face channels: the sheet's emotion presets, mixed by the performance core's blend, plus blinks, gaze and speech.
 const DEV_EMOTIONS=window.FrameForgeDev.EMOTIONS,DEV_MOUTHS=window.FrameForgeDev.MOUTH_CHART;
 const VISEME_MOUTH={closed:'M B P',round:'O',wide:'E',teeth:'F V',open:'A'},FACE_DEFAULT={eyeScale:1,w:1,th:1,teethH:.32};
@@ -625,8 +621,10 @@ update=function(){
  const blueGaze=shot.speaker==='dev'?-0.55:shot.speaker==='orange'?0.45:0;
  const orangeGaze=shot.speaker==='dev'?-0.75:shot.speaker==='blue'?-0.48:0;
  if(offlineMode||Math.abs(t-lastFaceDraw)>.04){
-  drawActorFace(faces.blue,expression.blue,shot.speaker==='blue'?speechPower:0,t,viseme,blueGaze);
-  drawActorFace(faces.orange,expression.orange,shot.speaker==='orange'?speechPower:0,t,viseme,orangeGaze);
+  // Each robot blinks on its own rhythm; the speaker's mouth takes the sound's shape, opened by its loudness.
+  const talking=id=>shot.speaker===id&&speechCue.voiced;
+  drawRobotFace(faces.blue,expression.blue,{viseme:talking('blue')?viseme:null,open:talking('blue')?speechPower:0,blink:Math.sin(t*2.05+.3)>.985,look:blueGaze});
+  drawRobotFace(faces.orange,expression.orange,{viseme:talking('orange')?viseme:null,open:talking('orange')?speechPower:0,blink:Math.sin(t*1.6+2.1)>.988,look:orangeGaze});
   lastFaceDraw=t;
  }
  faces.blue.group.rotation.z=Math.sin(t*1.5)*.035+(shot.speaker==='blue'?.035:0);faces.orange.group.rotation.z=Math.sin(t*1.05)*.035+(shot.speaker==='orange'?.04:0);
@@ -699,18 +697,18 @@ function load(){const p=$('preset').value;const project=projectCatalog[p];if(!pr
  else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard: no voices yet';}audioStale=false;audioMode=project.audio.state==='mastered'?'master':'none';browserVoice=null;voiceRun++;applyLooks(project);fillLooks(project);fillVoices(project);fillPronunciations(project);lastGuessed=[];loadEnvelope(project.audio.voiceUrl);shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();if(audioMode==='none')autoVoice();}
 function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration.toFixed(1)+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration.toFixed(1)+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});fillInspector();}
 const performerCoordinates={
- blue:[0,2.14,.54],
- orange:[1.72,2.14,.54],
+ blue:[0,ROBOT_HEAD_Y.blue,.54],
+ orange:[1.72,ROBOT_HEAD_Y.orange,.54],
  dev:[-1.70,2.55,-1.0]
 };
 function cinematicReaction(shot,local){
  const cut=shot.reactionCut;
  if(!cut||local<shot.duration-cut.seconds)return null;
- const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:3.05,k=cut.role==='dev'?DEV_FRAME:1;
+ const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:3.05,k=cut.role==='dev'?DEV_FRAME:ROBOT_FRAME;
  return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14)*k,subject[1]+.08*k,subject[2]+scale*k]};
 }
 
-function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,2.13,.57]:s.camera==='orange'?[1.72,2.13,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
+function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,ROBOT_HEAD_Y.blue,.57]:s.camera==='orange'?[1.72,ROBOT_HEAD_Y.orange,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
  const wide=s.camera==='duo'||s.camera==='wide'||s.camera==='screen';
  // Two-shots lean toward the aimed character (by default the speaker) so they stay in frame.
  if(s.camera==='duo'||s.camera==='wide')tgt=[aim==='center'?0:performerCoordinates[aim][0]*(s.camera==='duo'?.5:.35),tgt[1],tgt[2]];
@@ -721,6 +719,8 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
  cam.fov=fov;cam.updateProjectionMatrix();
  cam.position.set(pos[0]+drift+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
  if(s.camera==='dev'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.sub(look).multiplyScalar(DEV_FRAME).add(look);}
+ // Robot close-ups: at the robot's eye level (its head sits lower or higher than DEV's), framed for the sheet head.
+ if(s.camera==='blue'||s.camera==='orange'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.y=tgt[1]+.04+up;cam.position.sub(look).multiplyScalar(ROBOT_FRAME).add(look);}
  cam.lookAt(tgt[0],tgt[1]+lookUp,tgt[2]);
  if(roll)cam.rotateZ(roll*Math.PI/180);
  // Listener reaction inserts are intentional editorial cuts, not camera jitter.
@@ -1298,8 +1298,7 @@ function artPose(actorId,emotion,act=null){
   applyDevBody(act?window.FrameForgeDevActing.evaluate({...act,time:act.local}):DEV_REST);
   applyHumanFacePose(pose,null,false,emotion,emotion);
  }else{
-  const face=actorId==='blue'?faces.blue:faces.orange;
-  drawActorFace(face,emotion,emotion==='surprised'?.4:emotion==='worried'?.16:0,.5,emotion==='surprised'?'round':'rest',0);
+  drawRobotFace(actorId==='blue'?faces.blue:faces.orange,emotion);
  }
 }
 function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,height=460,portrait=false,act=null){
@@ -1440,6 +1439,17 @@ window.FrameForgeArtLab=Object.freeze({
  captureEnvironment
 });
 
+// The robots as built from their sheet, for tests: face state and size, head pose, arms, and where the head lands on
+// screen (normalised device coordinates) at the current time.
+window.FrameForgeRobotQA=Object.freeze({
+ sheet:()=>({status:ROBOT_SHEET.STATUS,scale:ROBOT_S,headY:{...ROBOT_HEAD_Y}}),
+ state:who=>{const a=faces[who],head=new T.Vector3();a.headTilt.getWorldPosition(head);
+  const c=a.robot.head.c,p=a.robot.pivot,centre=a.headTilt.localToWorld(new T.Vector3(c[0]-p[0],c[1]-p[1],c[2]-p[2])),ndc=centre.clone().project(cam);
+  return{face:a.faceState,faceVertices:a.faceMesh.geometry.drawRange.count,head:a.headTilt.rotation.toArray().slice(0,3),arms:a.armJoints.length,
+   headCentre:centre.toArray(),screen:[ndc.x,ndc.y,ndc.z]};},
+ faceHash:who=>{const g=faces[who].faceMesh.geometry,n=g.drawRange.count*3,a=g.attributes.position.array;let h=0;for(let i=0;i<n;i+=7)h=(h*31+Math.round(a[i]*1e4))|0;return h+':'+g.drawRange.count;},
+ draw:(who,emotion,o={})=>{drawRobotFace(faces[who],emotion,o);return window.FrameForgeRobotQA.faceHash(who);}
+});
 window.FrameForgeQA={
  renderer,scene,cam,shots:()=>shots,time:()=>time,
  setPreviewSize:(w,h)=>renderer.setSize(w,h,false),
