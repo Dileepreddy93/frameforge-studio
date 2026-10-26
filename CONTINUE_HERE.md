@@ -1,3 +1,13 @@
+# FrameForge: continue here (updated 2026-10-26)
+
+**Current state:** V6 work through M3.4 is on branch `claude/youthful-ride-l03e6o`: M2 (voices, emotion,
+pronunciation, timing, music, offline) and M3 (robot directions, approved model sheet A, robots in 3D, robot acting).
+Release notes are in `docs/releases/M2_*.md` and `docs/releases/M3_*.md`. To continue with M4, use
+**`docs/HANDOFF_M4_PROMPT.md`**: it holds the full prompt, the cloud test setup and the M4 plan.
+Everything below this point is the older V5 handoff (2026-10-24), kept for history.
+
+---
+
 # FrameForge — continue here (updated 2026-10-24)
 Existing PRIVATE GitHub repo: https://github.com/Dileepreddy93/frameforge-studio. **Do not recreate or rewrite.**
 

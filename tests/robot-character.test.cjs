@@ -7,7 +7,7 @@ const C=require('../design/robot-character.js');
 const core=require('../src/project-core.js');
 
 assert.deepEqual([...C.ORDER].sort(),[...core.emotions].sort());
-assert.match(C.STATUS,/provisional/,'the sheet says it is not approved yet');
+assert.match(C.STATUS,/^approved/,'the sheet records its approval');
 const robots={blue:R.build(C.ROBOTS.blue),orange:R.build(C.ROBOTS.orange)};
 const top=who=>-R.render(robots[who],{}).bbox[1];
 assert.ok(top('orange')>top('blue')+.05,'ORANGE is taller: '+top('orange').toFixed(2)+' vs '+top('blue').toFixed(2));

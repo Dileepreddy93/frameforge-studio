@@ -80,7 +80,7 @@ DEV's sheet is `design/dev-model-sheet.html`, and its numbers are in `design/dev
 - a hoodie with a collar roll, a hood lying on the back, a pocket and drawstrings;
 - mitten hands with a thumb.
 
-BLUE and ORANGE's sheet is `design/robot-model-sheet.html` (direction A, provisional until approved), numbers in
+BLUE and ORANGE's sheet is `design/robot-model-sheet.html` (direction A, approved 2026-10-26), numbers in
 `design/robot-character.js`: matte faceted superellipsoid shells (BLUE a soft capsule, ORANGE a flat-topped box),
 a dark visor (`#151029`) with a face of flat light (BLUE `#79C5FF`, ORANGE `#FFC15A`), violet joints, hovering on a
 thruster. BLUE is 1.48 tall and eager; ORANGE is 1.58 and deadpan (resting lids a third down). DEV is 2.0.

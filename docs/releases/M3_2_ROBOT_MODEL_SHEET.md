@@ -1,4 +1,6 @@
-# M3.2 · BLUE and ORANGE model sheet (direction A, provisional)
+# M3.2 · BLUE and ORANGE model sheet (direction A)
+
+**Approved by the user on 2026-10-26.** The text below is what was written before the approval.
 
 You said "continue" without naming a direction, so I picked **A (capsule & visor)** to keep M3 moving. The episodes
 describe the robots as "rounded metal body and contrasting digital face", which is A: a light-on-glass face that

@@ -13,7 +13,7 @@ const {chromium}=require('playwright');
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgeQA?.shots().length>0&&window.FrameForgeRobotQA);
  await page.evaluate(()=>FrameForgeQA.setOffline(true));
  const sheet=await page.evaluate(()=>FrameForgeRobotQA.sheet());
- assert.match(sheet.status,/provisional/);
+ assert.match(sheet.status,/^approved/);
  assert.ok(sheet.headY.orange>sheet.headY.blue,'ORANGE\'s head sits higher');
  const report={};
  for(const who of ['blue','orange']){

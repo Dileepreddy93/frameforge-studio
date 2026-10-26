@@ -1,13 +1,12 @@
 /* FrameForge BLUE and ORANGE, the design for the model sheet (M3.2) and the three.js build (M3.3). Direction A
-   (capsule & visor) from design/robot-directions.js, picked provisionally to keep M3 moving: the user has not
-   approved it yet, so the sheet says so. Units: DEV's (his head is 1 tall); ground at y = 0. Forms: design/robot-forms.js. */
+   (capsule & visor) from design/robot-directions.js, approved by the user on 2026-10-26. Units: DEV's (his head is 1 tall); ground at y = 0. Forms: design/robot-forms.js. */
 (function(root,factory){
  const lib=factory();
  if(typeof module==='object'&&module.exports)module.exports=lib;
  else root.FrameForgeRobots=lib;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
- const STATUS='provisional: direction A picked to continue M3, awaiting the user\'s approval';
+ const STATUS='approved: direction A, by the user on 2026-10-26';
  const ROBOTS={
   // BLUE: eager and quick. Round capsule head, pill eyes and a line mouth on a big visor, ball antenna, floating hands.
   blue:{id:'blue',name:'BLUE',mat:'blueShell',deep:'blueDeep',accent:'violet',
