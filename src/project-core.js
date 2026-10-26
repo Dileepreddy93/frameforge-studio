@@ -22,7 +22,10 @@
  // Camera framing used when a shot does not author its own: [distance, offset, up, fov, lookUp]. In the screen arena
  // (M5.1) a two-shot stands back to show the keys and windows around the pair, and a wide cranes up and back until
  // the cast stand about a fifth of the frame high, the windows' tiers above them.
- const DEFAULT_FRAMING={dev:[4.2,0,.06,35,0],blue:[3.9,-.8,.06,35,0],orange:[3.9,0,.06,35,0],duo:[9.4,0,1.5,40,.6],wide:[21,.3,4.34,40,3.5],screen:[7,0,.08,41,0]};
+ const DEFAULT_FRAMING={dev:[4.2,0,.06,35,0],blue:[3.9,-.8,.06,35,0],orange:[3.9,0,.06,35,0],duo:[9.4,0,1.5,40,.6],wide:[21,.3,4.34,40,3.5],
+  // A screen shot (M5.2) frames the story window from 18 in front and 5 to its left, aimed above its centre, so the
+  // window sits under the caption and runs off the frame's right edge.
+  screen:[18,-5,2.3,40,2.3]};
  const inRange=(x,lo,hi)=>Number.isFinite(x)&&x>=lo&&x<=hi;
  function validateProject(p){
   const errors=[];
@@ -72,7 +75,7 @@
     }
    }
    const f=s.framing;
-   if(f!==undefined&&!(isRecord(f)&&inRange(f.distance,1,30)&&inRange(f.offset,-2,2)&&inRange(f.up,-1,10)&&inRange(f.fov,15,75)&&(f.lookUp===undefined||inRange(f.lookUp,-1,6))))fail(at+'.framing','Expected distance 1-30, offset -2..2, up -1..10, fov 15-75, lookUp -1..6');
+   if(f!==undefined&&!(isRecord(f)&&inRange(f.distance,1,30)&&inRange(f.offset,-8,8)&&inRange(f.up,-1,10)&&inRange(f.fov,15,75)&&(f.lookUp===undefined||inRange(f.lookUp,-1,6))))fail(at+'.framing','Expected distance 1-30, offset -8..8, up -1..10, fov 15-75, lookUp -1..6');
    else if(f!==undefined&&!((f.move===undefined||MOVES.has(f.move))&&(f.amount===undefined||inRange(f.amount,0,2))&&(f.roll===undefined||inRange(f.roll,-20,20))&&(f.aim===undefined||f.aim==='center'||characterIds.has(f.aim))))fail(at+'.framing','Expected move push|pull|drift|static, amount 0-2, roll -20..20 degrees, aim center or a character id');
    const r=s.reactionCut;
    if(r!==undefined&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');

@@ -19,14 +19,15 @@
   // Windows: tiers on rings of radius R, centre height y, size w x h, tilted back by tilt (negative leans in).
   tiers:[
    {R:10.5,y:2.5,w:5.2,h:3.4,tilt:0,at:[-75,-45,-15,15,45,75],apps:['chat','inbox','review','changelog','terminal','metrics']},
-   {R:12,y:6.6,w:6,h:3.8,tilt:-8,at:[-60,-30,0,30,60],apps:['calendar','metrics','story','inbox','review']},
+   {R:12,y:6.6,w:6,h:3.8,tilt:-8,at:[-68,-36,0,36,68],apps:['calendar','metrics','story','inbox','review']},
    {R:13.5,y:11,w:6.4,h:4,tilt:-14,at:[-45,-15,15,45],apps:['terminal','changelog','chat','calendar']},
    // Behind the camera, for reverse angles: far enough out that a wide (camera up to ~15 in front of the plaza) stands
    // inside the ring, with a gap straight behind it.
    {R:17,y:3,w:6,h:3.8,tilt:0,at:[145,165,195,215],apps:['review','inbox','terminal','chat']}
   ],
-  // The story window is bigger and a little higher than its tier.
-  story:{w:8,h:4.6,lift:.3},
+  // The story window is bigger and a little higher than its tier; screen shots look at it (M5.2), so it is tall
+  // enough for a whole insert (title, context, headline, value, description, request and status, footer).
+  story:{w:8,h:5.4,lift:.3},
   bezel:.2,depth:.3,post:.5,
   pool:{r:3,k:.55}
  };

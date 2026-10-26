@@ -24,10 +24,9 @@ a 1080×1920 MP4. Buyers use it alone: no keys, no server, nothing paid per vide
 | Licences | no GPL or LGPL in what buyers run; credits page; research rigs and undocumented V3 audio aren't deployed | `docs/releases/M4_4_*`, `credits.html` |
 
 ## Known gaps (honest)
-- **Below the reference** (`git-blame.mp4`) in in-world screen shots, key light, cutting pace and camera life.
-  Ranked in `docs/releases/M4_3_REFERENCE_COMPARISON.md`. Not parity. The set (density and scale) was rebuilt as
-  the screen arena in M5.1 (`docs/releases/M5_1_SET.md`); its screens are still brighter and sharper than the
-  reference's.
+- **Below the reference** (`git-blame.mp4`) in key light, cutting pace and camera life. Ranked in
+  `docs/releases/M4_3_REFERENCE_COMPARISON.md`. Not parity. The set was rebuilt as the screen arena (M5.1) and the
+  screen shots moved onto its story window (M5.2); its screens are still brighter and sharper than the reference's.
 - The user still has to judge the M4.1 voices by ear (DEV's "worried" may sound neutral).
 - The Opus fallback (no AAC encoder, e.g. Chrome on Linux) narrows the music's faint stereo.
 - Tested only in Chrome on Linux and phone emulation; Safari, Firefox and real phones are untested.

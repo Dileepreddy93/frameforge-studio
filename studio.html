@@ -3,7 +3,7 @@
 <title>FrameForge Studio — Director Preview</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
 <style>
 :root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:block}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;min-height:400px}.shots{grid-template-columns:1fr 1fr}}
-#stage>.frame-meta,#sceneTitle,#subtitle,#screenInsert{display:none!important}
+#stage>.frame-meta,#sceneTitle,#subtitle{display:none!important}
 .shottools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 2px}.shottools button{padding:7px 4px}
 .castgrid{display:grid;grid-template-columns:62px 1fr 1fr;gap:6px;align-items:center;margin-top:6px}.castgrid b{font-size:12px}
 h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{color:#ffcf7a}
@@ -16,7 +16,7 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <label for="projectImport">Import a FrameForge JSON episode</label>
 <input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
 <div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">Every episode is one JSON file: script, performances, cameras, music and sound cues. Edit shots on the right: changed lines are voiced in your browser (Voices, below), then export an MP4 here. Download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><label>Pronunciations</label><p class="fine">For names the voices get wrong: write how the word sounds, the stressed syllable in capitals (koh-KOR-oh).</p><div class="prongrid" id="pronGrid"></div><button id="pronAdd" class="full">+ Add a pronunciation</button><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Preview selected dialogue speaks the line in its character's voice, with the emotion set for the speaker in that shot. Hindi/Telugu voices are not connected yet.</p></aside>
-<main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div>
+<main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div>
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">Each line is voiced separately and sets its shot length; music ducks under speech and the mouth follows each line. Play, scrub or click a shot: the monitor shows the exact frame that exports.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><div class="shottools"><button id="shotUp" title="Move this shot earlier">↑ Earlier</button><button id="shotDown" title="Move this shot later">↓ Later</button><button id="shotDup">Duplicate</button><button id="shotDel">Delete</button></div>
 <label>Title card</label><input id="shotTitle" maxlength="60">
@@ -446,8 +446,9 @@ update=function(){
  const viseme=speechCue.viseme;
  const speechPower=speechCue.mouthOpen;
  const index=shots.indexOf(shot);
- // The story window keeps showing what it last showed until a shot gives it something new.
- arena.drawStory(shots.slice(0,index+1).findLast(s=>s.wall)?.wall);
+ // The story window keeps showing what it last showed (a shot's wall, or a screen shot's insert) until a newer one.
+ const told=shots.slice(0,index+1).findLast(s=>s.wall||(s.camera==='screen'&&s.insert));
+ arena.drawStory(!told?null:told.camera==='screen'&&told.insert?{insert:told.insert}:{wall:told.wall});
  const expression={blue:shot.cast.blue.emotion,orange:shot.cast.orange.emotion};
  // Listeners visibly notice something before the next speaker begins.
  const reaction=cinematicReaction(shot,local);
@@ -530,20 +531,26 @@ function cinematicReaction(shot,local){
  return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14)*k,subject[1]+.08*k,subject[2]+scale*k]};
 }
 
-function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,ROBOT_HEAD_Y.blue,.57]:s.camera==='orange'?[1.72,ROBOT_HEAD_Y.orange,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
+function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,ROBOT_HEAD_Y.blue,.57]:s.camera==='orange'?[1.72,ROBOT_HEAD_Y.orange,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
  const wide=s.camera==='duo'||s.camera==='wide'||s.camera==='screen';
  // Two-shots lean toward the aimed character (by default the speaker) so they stay in frame.
  if(s.camera==='duo'||s.camera==='wide')tgt=[aim==='center'?0:performerCoordinates[aim][0]*(s.camera==='duo'?.5:.35),tgt[1],tgt[2]];
  const ease=Math.max(0,Math.min(1,local/s.duration));
  const travel=move==='static'?0:(ease*ease*(3-2*ease)-.5)*amount*(move==='pull'?-1:1);
  const dolly=move==='drift'?0:travel,drift=move==='drift'?travel*.8:dolly*.14;
- const pos=wide?[tgt[0]+offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance];
+ let pos=wide?[tgt[0]+offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance],aimAt=[tgt[0],tgt[1]+lookUp,tgt[2]];
+ // Screen shots look at the story window in the set (M5.2), from in front of it and off to one side, so it is seen in
+ // perspective and cropped by the frame: distance along its normal, offset sideways, up and lookUp along its height;
+ // the aim sits a little under half way toward the camera's side. Their sway runs on shot time, so a screen shot looks
+ // the same wherever it sits in the episode.
+ if(s.camera==='screen'){const f=arena.storyFrame,at=(a,b,c)=>f.c.map((v,i)=>v+f.n[i]*a+f.u[i]*b+f.v[i]*c);pos=at(distance,offset,up);aimAt=at(0,offset*.45,lookUp);}
+ const swayT=s.camera==='screen'?local:t;
  cam.fov=fov;cam.updateProjectionMatrix();
- cam.position.set(pos[0]+drift+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
+ cam.position.set(pos[0]+drift+Math.sin(swayT*.38)*sway*.14,pos[1]+Math.sin(swayT*.32)*sway*.08,pos[2]-dolly);
  if(s.camera==='dev'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.sub(look).multiplyScalar(DEV_FRAME).add(look);}
  // Robot close-ups: at the robot's eye level (its head sits lower or higher than DEV's), framed for the sheet head.
  if(s.camera==='blue'||s.camera==='orange'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.y=tgt[1]+.04+up;cam.position.sub(look).multiplyScalar(ROBOT_FRAME).add(look);}
- cam.lookAt(tgt[0],tgt[1]+lookUp,tgt[2]);
+ cam.lookAt(...aimAt);
  if(roll)cam.rotateZ(roll*Math.PI/180);
  // Listener reaction inserts are intentional editorial cuts, not camera jitter.
  const listenerCut=cinematicReaction(s,local);
@@ -914,7 +921,6 @@ const outCanvas=document.createElement('canvas');
 const outCtx=outCanvas.getContext('2d',{alpha:false});
 // The monitor shows the composited film frame (title card, subtitles, inserts), so the preview matches the export.
 outCanvas.className='film';stage.prepend(outCanvas);renderer.domElement.remove();
-function roundRect(x,y,w,h,r){outCtx.beginPath();outCtx.roundRect(x,y,w,h,r)}
 let envPromise=Promise.resolve(),envToken=0;
 function loadEnvelope(url){
  const token=++envToken;envReady=false;decodedEnvelope=null;
@@ -975,53 +981,12 @@ function composeFilmFrame(w,hh){
  outCtx.drawImage(renderer.domElement,0,0,w,hh);
  const scale=w/360;
  outCtx.save();outCtx.scale(scale,scale);const H=hh/scale;
- let accumulated=0,activeIndex=shots.length-1;
- for(let i=0;i<shots.length;i++){if(time<accumulated+shots[i].duration){activeIndex=i;break}accumulated+=shots[i].duration}
- const insert=shots[activeIndex].insert;
- if(shots[activeIndex].camera==='screen'&&insert){
-  // STYLE.md screens: void set, #151029 glass in a dark bezel, mono title and number, the state colour carries the story.
-  const alarmTone=insert.tone==='bad',shift=Math.max(0,Math.min(1,(time-accumulated)/Math.max(.1,shots[activeIndex].duration)));
-  const state=alarmTone?'#FC5757':'#44E082',rule=alarmTone?'#E05553':'#3A9A66',tint=alarmTone?'#31182D':'#13261F';
-  outCtx.fillStyle='#100C1B';outCtx.fillRect(0,0,360,H);
-  outCtx.fillStyle='#0B0A12';roundRect(16,112,328,H*.72,15);outCtx.fill();
-  outCtx.fillStyle='#151029';roundRect(26,124,308,H*.69,11);outCtx.fill();
-  outCtx.fillStyle=rule;outCtx.fillRect(26,164,308,3);
-  outCtx.textAlign='left';
-  outCtx.fillStyle='#A7A1C7';outCtx.font='bold 11px '+MONO;
-  outCtx.fillText(insert.window,39,150);
-  for(let j=0;j<3;j++){outCtx.fillStyle=['#E05553','#DEA32F','#23A93B'][j];outCtx.beginPath();outCtx.arc(281+j*16,146,4,0,Math.PI*2);outCtx.fill();}
-  outCtx.fillStyle='#676284';outCtx.font='11px '+MONO;
-  outCtx.fillText(insert.context,40,192);
-  outCtx.fillStyle=state;outCtx.font='bold 17px '+MONO;
-  outCtx.fillText(insert.headline,40,235);
-  outCtx.textAlign='center';outCtx.font='bold 83px '+MONO;
-  outCtx.fillText(insert.value,180,341);
-  outCtx.font='13px '+MONO;outCtx.fillStyle='#A7A1C7';
-  outCtx.fillText(insert.caption,180,376);
-  outCtx.textAlign='left';
-  outCtx.fillStyle=tint;roundRect(40,404,280,53,7);outCtx.fill();
-  outCtx.fillStyle='#79C5FF';outCtx.font='13px '+MONO;
-  outCtx.fillText(insert.request,52,425);
-  outCtx.fillStyle=state;outCtx.font='bold 12px '+MONO;
-  outCtx.fillText(insert.status,52,445);
-  const graphY=Math.min(H-60,505),barMax=240;
-  // A filled rect, not a 1px stroke: Chrome anti-aliases stroke ends differently on its first draw.
-  outCtx.fillStyle='#2A2442';outCtx.fillRect(45,graphY+79.5,270,1);
-  outCtx.strokeStyle=state;outCtx.lineWidth=3;outCtx.beginPath();
-  for(let i=0;i<10;i++){
-   let px=46+i*(barMax/9),v=insert.graph==='flat'?72:75-23*Math.exp(-i*.6);
-   if(i===0)outCtx.moveTo(px,graphY+v);else outCtx.lineTo(px,graphY+v);
-  }
-  outCtx.stroke();outCtx.font='11px '+MONO;outCtx.fillStyle='#676284';
-  outCtx.fillText(insert.footer,45,graphY+106);
-  if(shift>.68){outCtx.fillStyle=state;outCtx.fillRect(40,H*.77,280,2);}
- }
  // Captions (STYLE.md): plain white type in the upper middle of the frame. No box, no header pill.
  // Shadow sizes are in output pixels: the canvas transform does not scale them.
  const lineText=$('subtitle').textContent;
  outCtx.font='800 16px "Inter","Ubuntu Sans","Hanken Grotesk",Arial,sans-serif';
- // On a screen insert the card fills the middle, so the caption sits above it.
- const lines=wrapWords(outCtx,lineText,278),lineHeight=23,top=H*(shots[activeIndex].camera==='screen'?.115:.31)-(lines.length-1)*lineHeight/2;
+ // Screen shots too (M5.2): their story window sits below the caption, as in the reference.
+ const lines=wrapWords(outCtx,lineText,278),lineHeight=23,top=H*.31-(lines.length-1)*lineHeight/2;
  outCtx.textAlign='center';outCtx.textBaseline='middle';
  outCtx.fillStyle='#fff';outCtx.shadowColor='rgba(0,0,0,.75)';outCtx.shadowBlur=5*scale;outCtx.shadowOffsetY=scale;
  lines.forEach((line,i)=>outCtx.fillText(line,180,top+i*lineHeight));

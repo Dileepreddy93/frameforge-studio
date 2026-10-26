@@ -150,6 +150,16 @@
    return[...chrome('errors · 24 h',SCREEN.goodRule,H),tx('error rate',56,170,44,SCREEN.label),tx('0.4 %',46,Math.min(H-120,380),Math.min(190,H*.36),SCREEN.good,{bold:1}),
     {line:spark(30,H-40,940,Math.min(120,H*.2),24,false,9),stroke:SCREEN.good,w:6}];
   },
+  // A screen shot's insert (projects: shot.insert), laid out for the story window (675 high at 1000 wide): everything
+  // that must read sits in the left two thirds, which a screen shot keeps in frame; the graph trails off to the right.
+  insert(H,o={}){
+   const bad=o.tone==='bad',ink=bad?SCREEN.bad:SCREEN.good,rule=bad?SCREEN.badRule:SCREEN.goodRule,tint=bad?SCREEN.badRow:SCREEN.goodTint;
+   const y=v=>v*H/675,graph=Array.from({length:10},(_,i)=>[690+i*30,y(o.graph==='flat'?580:582-50*Math.exp(-i*.6))]);
+   return[...chrome(o.window||'',rule,H),tx(o.context||'',56,y(128),28,SCREEN.label),tx(o.headline||'',56,y(200),40,ink,{bold:1}),
+    tx(o.value||'',46,y(420),190,ink,{bold:1}),tx(o.caption||'',56,y(480),32,SCREEN.title),
+    rr(40,y(510),600,100,12,tint),tx(o.request||'',66,y(552),28,SCREEN.code),tx(o.status||'',66,y(592),26,ink,{bold:1}),
+    {r:[690,y(600),270,2],fill:'#2A2442'},{line:graph,stroke:ink,w:6},tx(o.footer||'',56,y(652),24,SCREEN.label)];
+  },
   calendar(H){
    const out=chrome('today',SCREEN.dim,H),E=[['10:00','standup',SCREEN.code],['11:30','fix /home',SCREEN.bad],['14:00','demo to Jo',SCREEN.good],['16:00','release 0.9',SCREEN.amber]];
    E.forEach(([t,e,c],i)=>{const y=140+i*120;if(y>H-60)return;out.push(tx(t,56,y+48,32,SCREEN.label),{r:[200,y,10,80],fill:c},rr(230,y,720,80,10,'#1E1838'),tx(e,260,y+52,34,SCREEN.title));});

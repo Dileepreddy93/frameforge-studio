@@ -2,9 +2,10 @@
    STYLE.md: flat-shaded Lambert facets lit by the studio's key and rim, screens as unlit canvas textures drawn from the
    same app layouts as the design sheet (design/set-forms.js), keycaps instanced. The design is in DEV units; the
    studio passes its scale (DEV_S) and the world point under the plaza centre, so the plaza top meets DEV's feet.
-   build(T, {scale, origin}) -> {group, plaza, drawStory(wall)}: the caller adds the group and the plaza (separately, so
-   the art lab can keep the plaza under a posed character); drawStory redraws the story window only when the wall
-   changes (window title, label, value, badge, tone). */
+   build(T, {scale, origin}) -> {group, plaza, drawStory(state), storyFrame}: the caller adds the group and the plaza
+   (separately, so the art lab can keep the plaza under a posed character). drawStory({wall}) or drawStory({insert})
+   redraws the story window only when what it shows changes; storyFrame is that window's centre and its normal,
+   right and up axes in the world, for the camera of screen shots. */
 (function(root){
  'use strict';
  // Albedos: up-facing faces take the rim (9) as well as the key (4.4), so the tops are dark here to land near STYLE.md's
@@ -40,7 +41,7 @@
   }
   // Windows: a bezel box, an unlit canvas screen and a post down to the floor.
   const bezelMats=[...Array(4).fill(flat(COLOURS.bezel)),flat(COLOURS.bezel),flat(COLOURS.frame)];
-  let story=null;
+  let story=null,storyFrame=null;
   for(const w of root.FrameForgeArena.windows()){
    const win=new T.Group();win.position.copy(W(...w.c));win.rotation.set(-w.tilt*Math.PI/180,w.ry*Math.PI/180,0,'YXZ');group.add(win);
    const bezel=new T.Mesh(new T.BoxGeometry((w.w+2*A.bezel)*S,(w.h+2*A.bezel)*S,A.depth*S),bezelMats);bezel.position.z=-A.depth*S/2-.01;win.add(bezel);
@@ -48,18 +49,20 @@
    const tex=new T.CanvasTexture(cv);tex.colorSpace=T.SRGBColorSpace;tex.anisotropy=8;
    win.add(new T.Mesh(new T.PlaneGeometry(w.w*S,w.h*S),new T.MeshBasicMaterial({map:tex,toneMapped:false})));
    const H=1000*w.h/w.w,ctx=cv.getContext('2d');
-   if(w.story)story={ctx,tex,H,drawn:undefined};
+   if(w.story){story={ctx,tex,H,drawn:undefined};win.updateMatrixWorld(true);const e=win.matrixWorld.elements;
+    storyFrame={c:win.position.toArray(),u:[e[0],e[1],e[2]],v:[e[4],e[5],e[6]],n:[e[8],e[9],e[10]]};}
    else{F.drawCanvas(ctx,F.APPS[w.app](H));tex.needsUpdate=true;}
    const post=new T.Mesh(new T.BoxGeometry(A.post*S,w.post.top*S,A.post*S),flat(COLOURS.frame));
    post.position.copy(W(w.post.c[0],w.post.top/2,w.post.c[2]));post.rotation.y=w.ry*Math.PI/180;group.add(post);
   }
-  // The story window shows the shot's wall; with no wall yet it is dark glass.
-  function drawStory(wall){
-   const key=JSON.stringify(wall??null);if(!story||story.drawn===key)return;story.drawn=key;
-   const els=wall?F.APPS.dashboard(story.H,{title:wall.window,label:wall.label,value:wall.value,badge:wall.badge??'',tone:wall.tone}):[{r:[0,0,1000,story.H],fill:F.SCREEN.glass}];
+  // The story window shows a shot's wall (a dashboard) or a screen shot's insert; with neither yet it is dark glass.
+  function drawStory(state){
+   const key=JSON.stringify(state??null);if(!story||story.drawn===key)return;story.drawn=key;
+   const wall=state?.wall,els=state?.insert?F.APPS.insert(story.H,state.insert)
+    :wall?F.APPS.dashboard(story.H,{title:wall.window,label:wall.label,value:wall.value,badge:wall.badge??'',tone:wall.tone}):[{r:[0,0,1000,story.H],fill:F.SCREEN.glass}];
    story.ctx.clearRect(0,0,story.ctx.canvas.width,story.ctx.canvas.height);F.drawCanvas(story.ctx,els);story.tex.needsUpdate=true;
   }
-  return{group,plaza,drawStory};
+  return{group,plaza,drawStory,storyFrame};
  }
  root.FrameForgeArenaSet={build,COLOURS};
 })(typeof globalThis!=='undefined'?globalThis:this);

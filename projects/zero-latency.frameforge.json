@@ -382,12 +382,6 @@
           "emotion": "neutral"
         }
       },
-      "framing": {
-        "distance": 6.9,
-        "offset": 0,
-        "up": 0.03,
-        "fov": 42
-      },
       "insert": {
         "window": "FRAMEFORGE  /  LIVE TELEMETRY",
         "context": "prod / deployment 7a4f",
@@ -488,12 +482,6 @@
           "action": "explain",
           "emotion": "angry"
         }
-      },
-      "framing": {
-        "distance": 6.9,
-        "offset": 0,
-        "up": 0.03,
-        "fov": 42
       },
       "insert": {
         "window": "FRAMEFORGE  /  LIVE TELEMETRY",

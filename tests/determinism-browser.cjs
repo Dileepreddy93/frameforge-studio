@@ -7,7 +7,7 @@ const path=require('node:path');
 const {chromium}=require('playwright');
 
 const ROOT=path.resolve(__dirname,'..');
-// Covers DEV/robot close-ups, duo wides and both screen inserts (before and after their bar reveal).
+// Covers DEV/robot close-ups, the wide, two-shots and both screen shots (early and late in each).
 const TIMES=[0.5,1.5,4.2,7.9,11.3,15.0,18.4,21.0,24.6,25.9,32.5,38.7];
 const JUMP_FROM=t=>t<20?t+17.3:t-17.3;
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.ogg':'audio/ogg','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.css':'text/css'};
