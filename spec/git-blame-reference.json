@@ -1,0 +1,188 @@
+{
+  "schema": "frameforge.exact-reference/1",
+  "measured_utc_date": "2026-10-24",
+  "source": {
+    "name": "git-blame.mp4",
+    "origin": "user-provided in ChatGPT; checked at /mnt/data/git-blame.mp4",
+    "sha256": "560ca0dd7fc3b8f0e762dd818423a15e2192029f40383765a5db52b49029247e",
+    "bytes": 3365415,
+    "publisher_provenance": "not_authenticated",
+    "rights": "user supplied for comparative research; reference binary not committed"
+  },
+  "technical": {
+    "duration_s": 52.181,
+    "frames": 1564,
+    "width": 720,
+    "height": 1280,
+    "fps": "30/1",
+    "codec_video": "h264",
+    "codec_audio": "aac",
+    "audio_sample_rate_hz": 48000,
+    "audio_channels": 2,
+    "integrated_lufs": -14.38,
+    "true_peak_dbtp": -0.79,
+    "lra_lu": 4.6,
+    "full_ffmpeg_decode": "PASS"
+  },
+  "scene_detection": {
+    "method": "FFmpeg select=gt(scene,0.22),showinfo",
+    "cut_candidates": 26,
+    "approximate_shot_intervals": 27,
+    "confidence": "automated candidates visually sampled, not artist-verified edit decision list",
+    "matrix": "docs/GIT_BLAME_SHOT_MATRIX.csv"
+  },
+  "extracted_stills": {
+    "count": 24,
+    "method": "tools/capture_reference.py; native 720x1280 PNG, original media locally mounted; output folder not committed",
+    "timestamps_s": [
+      0.5,
+      2,
+      3.2,
+      4.2,
+      5.1,
+      6.9,
+      9.5,
+      11.8,
+      14.2,
+      17.5,
+      20.1,
+      22.3,
+      24.1,
+      26.3,
+      28.4,
+      30.1,
+      32.1,
+      35.1,
+      37.8,
+      40.8,
+      43.6,
+      46.9,
+      49.1,
+      51.8
+    ],
+    "frames": [
+      {
+        "time_s": 0.5,
+        "sha256": "6c016cefd65e2a00f7bb225d18e85d8ebb6d6fd30a2d4a2c01df67d8165a96ff",
+        "bytes": 621257
+      },
+      {
+        "time_s": 2,
+        "sha256": "ea8824815aae31d2ea996d01d4ac5f54faf6eace98b700baca4fc1f7a7b1bb52",
+        "bytes": 674940
+      },
+      {
+        "time_s": 3.2,
+        "sha256": "19fd27c77570e7d3068cdd7e093662c8fea136f75832f0a1725cfd0f152b37c5",
+        "bytes": 231776
+      },
+      {
+        "time_s": 4.2,
+        "sha256": "b9c213caf8f7392dbb957d72a5458e5eddd62876c89eef61ba9e4855101b7f8c",
+        "bytes": 518049
+      },
+      {
+        "time_s": 5.1,
+        "sha256": "e46ae943be54ee4e8e91749db4db1282bf0016350bd709ceb250d7e476dd711b",
+        "bytes": 538060
+      },
+      {
+        "time_s": 6.9,
+        "sha256": "31b4f0a18fb92dd2b19875b2a33086e6e3473e22a5031b923350df7a409d5c69",
+        "bytes": 264812
+      },
+      {
+        "time_s": 9.5,
+        "sha256": "55ed7bec9892527b65b5fbf4c45cd3d47e13dfe4038756e9fd492a9e483784ba",
+        "bytes": 631998
+      },
+      {
+        "time_s": 11.8,
+        "sha256": "76373ccd8f979175a6bb284a8df25a75691264c57285e098e4e5128ffc0b6735",
+        "bytes": 396619
+      },
+      {
+        "time_s": 14.2,
+        "sha256": "06dd9742baf869ed859040445ddf987a10074955910a364761efeec9310d9510",
+        "bytes": 456339
+      },
+      {
+        "time_s": 17.5,
+        "sha256": "e69c8cf6e619cc0fd1c832472442f1e956f2ec4dc9d913a645845bd4245b062d",
+        "bytes": 473364
+      },
+      {
+        "time_s": 20.1,
+        "sha256": "2e55fc891465262cf1cc802ca62c4ae726d48be58a057c4c195b72756067c67c",
+        "bytes": 337542
+      },
+      {
+        "time_s": 22.3,
+        "sha256": "91c6f9492a821936be06b2e553e9173a9b0e2a08c39a1687cf1c7e7dc2089db3",
+        "bytes": 485762
+      },
+      {
+        "time_s": 24.1,
+        "sha256": "2e151033d8b810e22db19d5436cf81d11bfdb30acf704371ac18a8e8adafb358",
+        "bytes": 305279
+      },
+      {
+        "time_s": 26.3,
+        "sha256": "5980f1003f765da55e0c0218ae25363204deb511534b65b0d6a02f6d40eede15",
+        "bytes": 682292
+      },
+      {
+        "time_s": 28.4,
+        "sha256": "73ce8d64ec475805ba1cdb01c54d7d89e2f76cd27d9a8a4248515a2b79875c82",
+        "bytes": 267026
+      },
+      {
+        "time_s": 30.1,
+        "sha256": "5af5bb593372e2345d4db557dabae929c686902351f71094ec21fafa6f5093c8",
+        "bytes": 569464
+      },
+      {
+        "time_s": 32.1,
+        "sha256": "3735ade4d8bd5bbd4b2b1f7283d3627d3e6b5365315c6912210978e2473ce5f9",
+        "bytes": 424768
+      },
+      {
+        "time_s": 35.1,
+        "sha256": "ddb50d6f70ec77031d446946561a9515907b2a6d82c9e5de34b887575913f708",
+        "bytes": 551371
+      },
+      {
+        "time_s": 37.8,
+        "sha256": "668784216a164623086b84e2a6a465efc0bc000f060f564bc71a2abe6198d224",
+        "bytes": 462624
+      },
+      {
+        "time_s": 40.8,
+        "sha256": "9a64cc0414b5daf7a1bcdfc03281735b52e0fde54bc29a360dca5819ad1f10e8",
+        "bytes": 597093
+      },
+      {
+        "time_s": 43.6,
+        "sha256": "782eaa0dc5eaf251b9b1224f635c07effd3205a9342f90ce1c8aaf0103ecb9ec",
+        "bytes": 527089
+      },
+      {
+        "time_s": 46.9,
+        "sha256": "87919cfdb60f7dd575fdfbb5a029a472514c3e306abde0359d0436887b3af474",
+        "bytes": 582627
+      },
+      {
+        "time_s": 49.1,
+        "sha256": "1be9c4db8f5f8aaa2bd22dcbc66f0a271ad4a5ec3b30794c4bd18aeae7144bca",
+        "bytes": 299728
+      },
+      {
+        "time_s": 51.8,
+        "sha256": "b302eff8a6c773238cdb3b3ba67d85d0cb7e8c94d0d71520b64653ccd1016dfb",
+        "bytes": 441941
+      }
+    ]
+  },
+  "still_review": "24 frames extracted and 27 shot midpoint thumbnails visually inspected; voice performance, word alignment and whole-film artistic parity NOT certified",
+  "comparison_status": "independent target measurement complete; matched FrameForge output contact sheet and listener review pending"
+}

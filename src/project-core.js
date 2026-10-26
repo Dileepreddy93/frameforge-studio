@@ -1,0 +1,139 @@
+/* FrameForge V5 project-core contract. Runs unchanged in Node and in a browser. */
+(function(root,factory){
+ const core=factory();
+ if(typeof module==='object'&&module.exports)module.exports=core;
+ else root.FrameForgeProjectCore=core;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ const format='frameforge.project/1';
+ const CAMERAS=new Set(['dev','blue','orange','duo','wide','screen']);
+ const ACTOR_ID=/^[a-z][a-z0-9-]{0,39}$/;
+ const isRecord=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
+ const goodText=(s,max=2048)=>typeof s==='string'&&s.trim().length>0&&s.length<=max;
+ const allowedStatuses=new Set(['not_created','draft','approved']);
+ const EMOTIONS=new Set(['neutral','happy','worried','surprised','angry','sad','thinking']);
+ const ACTIONS=new Set(['listen','typing','react','question','plead','alarm','surprise','defeat','announce','explain','celebrate','shrug','anticipate']);
+ const SFX=new Set(['typing','chime','buzz','zap','scratch','whoosh','pop']);
+ const MUSIC=new Set(['groove','tension','stop','sting']);
+ const MOVES=new Set(['push','pull','drift','static']);
+ // Recolourable parts per rig; values are #rrggbb.
+ const LOOK_SLOTS={dev:['hoodie','hair'],blue:['shell'],orange:['shell']};
+ const INSERT_TEXT=['window','context','headline','value','caption','request','status','footer','label'];
+ // Camera framing used when a shot does not author its own: [distance, offset, up, fov].
+ const DEFAULT_FRAMING={dev:[4.2,0,.06,35],blue:[3.9,0,.06,35],orange:[3.9,0,.06,35],duo:[7,0,.08,41],wide:[7,0,.08,41],screen:[7,0,.08,41]};
+ const inRange=(x,lo,hi)=>Number.isFinite(x)&&x>=lo&&x<=hi;
+ function validateProject(p){
+  const errors=[];
+  const fail=(path,message)=>errors.push({path,message});
+  if(!isRecord(p))return{valid:false,errors:[{path:'$',message:'Expected object'}]};
+  if(p.schema!==format)fail('schema','Unsupported project schema');
+  for(const field of ['id','title','logline'])if(!goodText(p[field],field==='logline'?1024:120))fail(field,'Required nonempty short text');
+  if(!ACTOR_ID.test(String(p.id||'')))fail('id','Expected safe slug');
+  if(!isRecord(p.output)||p.output.width!==1080||p.output.height!==1920||p.output.fps!==30)fail('output','Expected native 1080x1920 30 FPS project target');
+  if(!isRecord(p.style)||!goodText(p.style.styleLock,1500))fail('style.styleLock','Missing immutable visual style');
+  if(!isRecord(p.environment)||!ACTOR_ID.test(String(p.environment.id||''))||!goodText(p.environment.description))fail('environment','Missing environment specification');
+  const safe=p.environment?.safeZone;
+  if(!isRecord(safe)||!Number.isInteger(safe.top)||!Number.isInteger(safe.bottom)||safe.top<0||safe.bottom<0||safe.top+safe.bottom>950)fail('environment.safeZone','Invalid platform overlay safe zones');
+  if(!Array.isArray(p.characters)||p.characters.length<1||p.characters.length>12)fail('characters','Expected 1-12 character identities');
+  const characterIds=new Set();
+  if(Array.isArray(p.characters))p.characters.forEach((c,i)=>{
+   const at='characters['+i+']';
+   if(!isRecord(c)){fail(at,'Expected object');return;}
+   if(!ACTOR_ID.test(String(c.id||''))||characterIds.has(c.id))fail(at+'.id','Duplicate/invalid character id');
+   characterIds.add(c.id);
+   if(!goodText(c.name,80)||!goodText(c.visualIdentity,1500))fail(at,'Missing fixed character visual identity');
+   if(!isRecord(c.voice)||!goodText(c.voice.voiceLock,600)||!goodText(c.voice.profile,120))fail(at+'.voice','Missing reusable voice identity');
+   if(c.look!==undefined&&!(isRecord(c.look)&&Object.entries(c.look).every(([slot,v])=>(LOOK_SLOTS[c.id]||[]).includes(slot)&&/^#[0-9a-f]{6}$/i.test(String(v)))))fail(at+'.look','Expected #rrggbb colours for '+((LOOK_SLOTS[c.id]||[]).join('/')||'no recolourable parts'));
+   const k=c.voice?.kokoro;
+   if(k!==undefined&&!(isRecord(k)&&/^[a-z]{2}_[a-z]+$/.test(String(k.voice))&&(k.speed===undefined||inRange(k.speed,.5,2))))fail(at+'.voice.kokoro','Expected {voice:"am_michael",speed:0.5-2}');
+   if(!allowedStatuses.has(c.sheetStatus))fail(at+'.sheetStatus','Must declare unapproved/draft/approved art');
+   if(!Array.isArray(c.expressions)||c.expressions.length<4||new Set(c.expressions).size!==c.expressions.length)fail(at+'.expressions','Four distinct expressions required');
+  });
+  if(!Array.isArray(p.shots)||p.shots.length<1||p.shots.length>120)fail('shots','Expected 1-120 scenes');
+  const ids=new Set();let total=0;
+  if(Array.isArray(p.shots))p.shots.forEach((s,i)=>{
+   const at='shots['+i+']';if(!isRecord(s)){fail(at,'Expected object');return;}
+   if(!ACTOR_ID.test(String(s.id||''))||ids.has(s.id))fail(at+'.id','Duplicate/invalid shot id');
+   ids.add(s.id);
+   if(!goodText(s.dialogue,500))fail(at+'.dialogue','Missing spoken line');
+   if(!characterIds.has(s.speaker))fail(at+'.speaker','Speaker is not a registered character');
+   if(!CAMERAS.has(s.camera))fail(at+'.camera','Unknown camera preset');
+   if(!Number.isFinite(s.duration)||s.duration<.4||s.duration>15)fail(at+'.duration','Duration outside 0.4 to 15 seconds');
+   else total+=s.duration;
+   if(!goodText(s.intent,200))fail(at+'.intent','Director intent required');
+   if(s.title!==undefined&&!goodText(s.title,60))fail(at+'.title','Title must be short text');
+   if(s.cast!==undefined){
+    if(!isRecord(s.cast))fail(at+'.cast','Expected object keyed by character id');
+    else for(const [id,c] of Object.entries(s.cast)){
+     if(!characterIds.has(id))fail(at+'.cast.'+id,'Not a registered character');
+     else if(!isRecord(c)||(c.action!==undefined&&!ACTIONS.has(c.action))||(c.emotion!==undefined&&!EMOTIONS.has(c.emotion)))fail(at+'.cast.'+id,'Unknown action or emotion');
+    }
+   }
+   const f=s.framing;
+   if(f!==undefined&&!(isRecord(f)&&inRange(f.distance,1,15)&&inRange(f.offset,-2,2)&&inRange(f.up,-1,1)&&inRange(f.fov,15,75)&&(f.lookUp===undefined||inRange(f.lookUp,-1,1))))fail(at+'.framing','Expected distance 1-15, offset -2..2, up -1..1, fov 15-75');
+   else if(f!==undefined&&!((f.move===undefined||MOVES.has(f.move))&&(f.amount===undefined||inRange(f.amount,0,2))&&(f.roll===undefined||inRange(f.roll,-20,20))&&(f.aim===undefined||f.aim==='center'||characterIds.has(f.aim))))fail(at+'.framing','Expected move push|pull|drift|static, amount 0-2, roll -20..20 degrees, aim center or a character id');
+   const r=s.reactionCut;
+   if(r!==undefined&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');
+   const tm=s.timing;
+   if(tm!==undefined&&!(isRecord(tm)&&(tm.lead===undefined||inRange(tm.lead,0,2))&&(tm.pauseAfter===undefined||inRange(tm.pauseAfter,0,4))&&(tm.pace===undefined||inRange(tm.pace,.7,1.4))))fail(at+'.timing','Expected lead 0-2 s, pauseAfter 0-4 s and pace 0.7-1.4');
+   const vo=s.voice;
+   if(vo!==undefined&&!(isRecord(vo)&&goodText(vo.file,200)&&inRange(vo.seconds,.1,15)&&Number.isFinite(s.duration)&&vo.seconds<=s.duration+.001))fail(at+'.voice','Generated voice needs a file and seconds that fit the shot');
+   if(s.sfx!==undefined&&!(Array.isArray(s.sfx)&&s.sfx.length<=8&&s.sfx.every(x=>isRecord(x)&&SFX.has(x.cue)&&inRange(x.at,0,15)&&(x.gain===undefined||inRange(x.gain,-40,6)))))fail(at+'.sfx','Expected up to 8 {cue,at,gain?} with cue in '+[...SFX].join('/'));
+   const ins=s.insert;
+   if(ins!==undefined&&!(isRecord(ins)&&INSERT_TEXT.every(k=>goodText(ins[k],80))&&['good','bad'].includes(ins.tone)&&['drop','flat'].includes(ins.graph)))fail(at+'.insert','Screen insert needs '+INSERT_TEXT.join('/')+', tone good|bad and graph drop|flat');
+   const wl=s.wall;
+   if(wl!==undefined&&!(isRecord(wl)&&goodText(wl.window,40)&&goodText(wl.label,40)&&goodText(wl.value,12)&&(wl.badge===undefined||goodText(wl.badge,10))&&['good','bad'].includes(wl.tone)))fail(at+'.wall','Wall screen needs window/label (40 chars), value (12), optional badge (10) and tone good|bad');
+   if(s.acting!==undefined&&(!isRecord(s.acting)||!['neutral','happy','worried','surprised','angry'].includes(s.acting.devEmotion)))fail(at+'.acting.devEmotion','Unsupported DEV emotional beat');
+   if(!allowedStatuses.has(s.firstFrameStatus))fail(at+'.firstFrameStatus','Missing explicit first frame approval status');
+   if(s.styleLock!==undefined&&s.styleLock!==p.style?.styleLock)fail(at+'.styleLock','Shot style lock drift');
+  });
+  if(total>180)fail('shots','Film exceeds 180-second limit');
+  if(p.banner!==undefined&&!goodText(p.banner,80))fail('banner','Banner must be short text');
+  if(!isRecord(p.audio)||!['mastered','storyboard_only'].includes(p.audio.state))fail('audio.state','Mastered/storyboard_only state required');
+  if(p.audio?.state==='mastered'&&!goodText(p.audio.masterUrl))fail('audio.masterUrl','Mastered episodes need a real media URL');
+  const mu=p.audio?.music,shotIds=new Set((p.shots||[]).map(s=>s?.id));
+  if(mu!==undefined&&!(isRecord(mu)&&(mu.bpm===undefined||inRange(mu.bpm,60,180))&&Array.isArray(mu.cues)&&mu.cues.every(c=>isRecord(c)&&shotIds.has(c.shot)&&MUSIC.has(c.style)&&(c.at===undefined||c.at==='start'||c.at==='afterLine'))))fail('audio.music','Expected {bpm?,cues:[{shot,style,at?}]} with style in '+[...MUSIC].join('/'));
+  if(p.audio?.voiceUrl!==undefined&&!goodText(p.audio.voiceUrl))fail('audio.voiceUrl','Voice stem URL must be text');
+  if(p.audio?.state==='storyboard_only'&&p.audio.masterUrl)fail('audio.masterUrl','Storyboard-only episodes must not claim a master');
+  // How the voices say words the dictionary does not know: [{word, sayAs}], sayAs as "koh-KOR-oh" or /phonemes/.
+  const pr=p.pronunciations,prWords=new Set();
+  if(pr!==undefined&&!(Array.isArray(pr)&&pr.length<=200&&pr.every(x=>isRecord(x)&&typeof x.word==='string'&&/^[\p{L}\d][\p{L}\d'-]{0,39}$/u.test(x.word)&&
+   goodText(x.sayAs,120)&&!prWords.has(x.word.toLowerCase())&&prWords.add(x.word.toLowerCase()))))fail('pronunciations','Expected up to 200 [{word, sayAs}] with distinct single words');
+  return{valid:errors.length===0,errors,duration:+total.toFixed(3),shotCount:Array.isArray(p.shots)?p.shots.length:0};
+ }
+ function assertProject(p){
+  const r=validateProject(p);
+  if(!r.valid)throw new Error('Invalid FrameForge project: '+r.errors.map(e=>e.path+' '+e.message).join('; '));
+  return p;
+ }
+ function toTimelineShots(p){
+  assertProject(p);
+  // Every shot carries its own complete direction, so nothing downstream depends on shot order.
+  return p.shots.map(s=>{
+   const cast={};
+   for(const {id} of p.characters)cast[id]={
+    action:s.cast?.[id]?.action??(id===s.speaker?'explain':'listen'),
+    emotion:s.cast?.[id]?.emotion??(id==='dev'?s.acting?.devEmotion:undefined)??'neutral'
+   };
+   const [distance,offset,up,fov]=DEFAULT_FRAMING[s.camera];
+   return{
+    id:s.id,text:s.dialogue,speaker:s.speaker,camera:s.camera,duration:s.duration,intent:s.intent,
+    title:s.title??'',cast,
+    framing:{distance,offset,up,fov,lookUp:0,move:'push',amount:.33,roll:0,aim:s.camera==='duo'?s.speaker:'center',...s.framing},
+    timing:{lead:s.timing?.lead??.15,pauseAfter:s.timing?.pauseAfter??.35,pace:s.timing?.pace??1},voice:s.voice??null,
+    reactionCut:s.reactionCut??null,insert:s.insert??null,wall:s.wall??null
+   };
+  });
+ }
+ function defaultFraming(camera){const [distance,offset,up,fov]=DEFAULT_FRAMING[camera];return{distance,offset,up,fov,lookUp:0}}
+ function assertRendererCompatible(p){
+  assertProject(p);
+  const rigs=new Set(['dev','blue','orange']);
+  const unsupported=p.characters.filter(c=>!rigs.has(c.id)).map(c=>c.id);
+  if(unsupported.length)throw new Error('This renderer cannot animate custom rigs yet: '+unsupported.join(', '));
+  return p;
+ }
+ function summary(p){const v=validateProject(p);return{id:p?.id||null,valid:v.valid,shotCount:v.shotCount,duration:v.duration,errors:v.errors};}
+ return Object.freeze({schema:format,validateProject,assertProject,toTimelineShots,assertRendererCompatible,summary,defaultFraming,
+  actions:[...ACTIONS],emotions:[...EMOTIONS],moves:[...MOVES],lookSlots:LOOK_SLOTS});
+});

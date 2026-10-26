@@ -1,0 +1,65 @@
+{
+  "schema": "frameforge.phases/2",
+  "version": 2,
+  "acceptedOn": "2026-10-24",
+  "referenceStatus": "user_supplied_bytes_sha256_verified_publisher_provenance_unknown",
+  "promotionPolicy": "Do not promote to main or production until cinematic art AND entire film engineering quality, along with exact reference comparison, are independently passed.",
+  "phases": [
+    {
+      "id": "P0",
+      "name": "Evidence preservation & specifications",
+      "status": "in_progress",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P1",
+      "name": "Art direction & character identity",
+      "status": "in_progress",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P2",
+      "name": "Character acting engine",
+      "status": "in_progress",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P3",
+      "name": "Film direction & continuity",
+      "status": "planned",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P4",
+      "name": "Voice, audio and Foley production",
+      "status": "planned",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P5",
+      "name": "Captions & social finishing",
+      "status": "planned",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P6",
+      "name": "Native film rendering & performance",
+      "status": "in_progress",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P7",
+      "name": "Reusable creator studio",
+      "status": "in_progress",
+      "exitGateApproved": false
+    },
+    {
+      "id": "P8",
+      "name": "Final film quality certification & release",
+      "status": "planned",
+      "exitGateApproved": false
+    }
+  ],
+  "source": "docs/IMPLEMENTATION_PLAN_P0_P8.md",
+  "ledger": "docs/EXECUTION_LEDGER.md"
+}

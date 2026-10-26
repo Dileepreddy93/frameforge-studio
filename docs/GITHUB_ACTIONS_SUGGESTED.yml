@@ -1,0 +1,27 @@
+name: FrameForge code quality
+on:
+  push:
+    branches: [develop, "feature/**"]
+  pull_request:
+    branches: [develop, main]
+jobs:
+  source-and-project-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile and validate the project contract
+        run: |
+          node tests/phase0-contract.test.mjs
+          node tests/project-core.test.cjs
+          node tests/project-integration.test.mjs
+      - name: Verify existing film source remains valid
+        run: |
+          node tests/check-source.mjs
+          node tests/check-v4.mjs
+          node tests/check-cinematic-v4.mjs

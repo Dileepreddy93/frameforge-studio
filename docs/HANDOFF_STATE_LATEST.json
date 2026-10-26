@@ -1,0 +1,334 @@
+{
+  "schema": "frameforge.handoff.latest/1",
+  "snapshot_date": "2026-10-24",
+  "scope": "Documentation/archive handoff only; no application edits or production deployment in this handoff commit",
+  "repo": "Dileepreddy93/frameforge-studio",
+  "private": true,
+  "active_branch": "feature/v5-expressive-character-portraits",
+  "last_verified_pre_handoff_code_head": "8ae00022391ba175f3a23b35f33bf1ab80ab0910",
+  "app_code_commit": "8ae00022391ba175f3a23b35f33bf1ab80ab0910",
+  "protected_refs_at_audit": {
+    "main": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
+    "origin/develop": "06ec0d77dc3011edf71530295e8c62ad717e1a55",
+    "v3.0-stable": "f7b20bd20ebd4bc37db5f2f6dd6f0085a544f04b",
+    "v4.0-rc1": "86eef99400d1ba7a97534bbe683fcd8f35bb9572",
+    "v5.0-phase0": "a4108067281e3a0157ce0f5da6525c1d221d69f3",
+    "v5.1-phase1b": "f807ab021028408445a677e8f29f78d3bfeb6f00",
+    "v5.1-phase1c-artstudies": "00fb971a72a230d455a6307b6bac086193a9aad7",
+    "v5-handoff-2026-10-24": "c0b8b8e5c7ad916cbf5958b36c2c1741534d116e"
+  },
+  "production_url": "https://frameforge-3d-director-preview.vercel.app/",
+  "production_code_status": "V3; no V5 deployment authorized",
+  "source_of_truth": [
+    "CONTINUE_HERE.md",
+    "docs/HANDOFF_CURRENT.md",
+    "docs/HANDOFF_2026-10-24.md",
+    "docs/MASTER_IMPLEMENTATION_CHECKLIST.md",
+    "spec/quality-gates.json"
+  ],
+  "reference_materials": {
+    "pdf_text_extracted": "docs/history/NMXWZ-1-PDF_EXTRACTED_TEXT.md",
+    "engineering_report_text": "docs/history/Studio_Reverse_Engineering_Report_SOURCE.md",
+    "exact_git_blame_mp4": "NOT_PRESENT_AS_VERIFIED_FILE",
+    "original_pdf_binary": "NOT_ARCHIVED_AS_ORIGINAL_BINARY",
+    "reference_identity": "65469.mp4 has NOT been proven identical to Git Blame"
+  },
+  "phase_status": {
+    "P0": "research/contracts preserved; exact reference still missing",
+    "P1": "technical art lab and project editor working; aesthetic approval NOT PASSED",
+    "P2": "incomplete",
+    "P3": "incomplete",
+    "P4": "incomplete",
+    "P5": "incomplete (V4 was 480x854)",
+    "P6": "incomplete",
+    "P7": "reference parity NOT PROVEN"
+  },
+  "art_evidence_status": "Archived 24 actor frames and three sheets+environment predate latest face code at 8ae0002; no new visual approval",
+  "historical_patches": "docs/history/* patches are archival and possibly superseded; compare before reuse",
+  "root_untracked_media_at_audit": "media/frameforge-v4-complete-director-41s.mp4 duplicate of tracked media/v4-review master; intentionally not committed",
+  "known_milestones": [
+    "V3 stable film",
+    "V4 full 41.842358s movie and film QA",
+    "V5 phase0 specs",
+    "V5 Phase1A/B JSON import/export and QA",
+    "V5 Phase1C 3D views/expressions rendered; artistic gate open",
+    "post-Phase1C 8ae0002 portrait refinement; new frames not yet checked"
+  ],
+  "files": [
+    {
+      "path": "CONTINUE_HERE.md",
+      "bytes": 3064,
+      "sha256": "a55b4f6b63ccd4b6d4be5a177a723d0a85a7982b46d746c771625da76f379d06"
+    },
+    {
+      "path": "docs/HANDOFF_CURRENT.md",
+      "bytes": 14052,
+      "sha256": "9bfdfa93e64931cedd18ed1b1e957a86e87586f763400b0e0dbc1574bb1e7379"
+    },
+    {
+      "path": "docs/HANDOFF_2026-10-24.md",
+      "bytes": 17954,
+      "sha256": "902b5ddcd45aa3d08e3e9b333213813d9213068bf53c1da6510b8cdda60c72b5"
+    },
+    {
+      "path": "docs/MASTER_IMPLEMENTATION_CHECKLIST.md",
+      "bytes": 9120,
+      "sha256": "ab1dd6de8af3e23f746f5040eeec7df2d1a294db1c7b0fb0bae849e20306e022"
+    },
+    {
+      "path": "docs/DEVELOPMENT_RUNBOOK.md",
+      "bytes": 5515,
+      "sha256": "8f9bee8b68a7f73e4a977873c77f2f102a0450f9e6685b1ae5d6526a1327efa1"
+    },
+    {
+      "path": "docs/DECISIONS_AND_FAILURES.md",
+      "bytes": 4168,
+      "sha256": "de89f688ee1c9a8deaa774bc7a6eb1398fb9a1f37603942b573aeaf73acb54cf"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_CONTRACT.md",
+      "bytes": 2810,
+      "sha256": "08e41face40c90acb2a3eaa98a4b0a78246e281e0f4aec5159100ad3a8736bbe"
+    },
+    {
+      "path": "docs/PROJECT_FORMAT.md",
+      "bytes": 3012,
+      "sha256": "b7ca2960ce747453cf3d8c1d05799b8bcdf6311ef120645dfac029b964dee28b"
+    },
+    {
+      "path": "docs/RENDER_ASSET_CATALOG.json",
+      "bytes": 4396,
+      "sha256": "36c5263d29dd3d85f70be17680e38136cde6989bea673d1134810675edca62f9"
+    },
+    {
+      "path": "docs/RENDER_FRAME_SHA256SUMS.txt",
+      "bytes": 2793,
+      "sha256": "ca0bf4975dbbb6397a90034f91b20b418cb246be66e4e57e2d66da0f1e460233"
+    },
+    {
+      "path": "docs/history/NMXWZ-1-PDF_EXTRACTED_TEXT.md",
+      "bytes": 11266,
+      "sha256": "d8d7e73f003ca5fc9d303e51720b41420ac97d95a74a64c864a12ccf92bc5468"
+    },
+    {
+      "path": "docs/history/Studio_Reverse_Engineering_Report_SOURCE.md",
+      "bytes": 28123,
+      "sha256": "44c71778caac2aad6fb7659daea0c09f5578ccc3c79ef093330a56fd4eb3350e"
+    },
+    {
+      "path": "docs/history/USER_TAKEOVER_2026-10-23.md",
+      "bytes": 17034,
+      "sha256": "6c76e342f410d9ab23a5fdfd9ab0a2e8c9c9a2e191c40117e3a9b85564c0a899"
+    },
+    {
+      "path": "docs/history/HANDOFF_ARCHIVE_INDEX_ORIGINAL_2026-10-24.json",
+      "bytes": 9019,
+      "sha256": "e042eabe09c9116806ac8a139046bddafef8f0be2e4901226c0f045ea761608d"
+    },
+    {
+      "path": "docs/history/wip-expressive-character-portraits/UNCOMMITTED_SOURCE.patch",
+      "bytes": 10505,
+      "sha256": "f1c35321536adc0a5e7b03ad60c7bd0e17d6518732e4fd98655c610dbaed4868"
+    },
+    {
+      "path": "index.html",
+      "bytes": 73856,
+      "sha256": "4c08b472fd68452018466fc2b4af4bcebc5c3b968fea1a0fb47c978ba4c74808"
+    },
+    {
+      "path": "character-lab.html",
+      "bytes": 6794,
+      "sha256": "268327e167c007d109f55a88a74b64b366bc6ca63eeee0f7fc5151401004ed06"
+    },
+    {
+      "path": "src/project-core.js",
+      "bytes": 5595,
+      "sha256": "958a684a979c02930b79a55865cfad931150801254b2eee922370047c9d3ecca"
+    },
+    {
+      "path": "spec/reference-register.json",
+      "bytes": 2606,
+      "sha256": "5fa905bc04be8a89b5d397aee4596533a7403d4a0e3d79261f5c537b03b219e4"
+    },
+    {
+      "path": "spec/quality-gates.json",
+      "bytes": 3358,
+      "sha256": "d1cea86c768243b74b0e3957f1e49927d4fc7f4d5e46ec9639d97ebc9b260017"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-00-front.png",
+      "bytes": 47920,
+      "sha256": "346f11f0f4ad541848787af086490598e31a7ef13c296870b311310260065c8e"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-01-three-quarter.png",
+      "bytes": 41694,
+      "sha256": "0fddedbc58553bb75cd1aa9a03fa7b4819b7f30ab365de1a87969bdd8908e27a"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-02-side.png",
+      "bytes": 33140,
+      "sha256": "d012402de79e9012ba28899daab86be35f406124ba1659203eefb0389fca4ca8"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-03-back.png",
+      "bytes": 39536,
+      "sha256": "77da1e9f907787be0dc8e8e022e164ab2fb663e7ca55c3026187bfe5f1bb78a1"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-04-neutral.png",
+      "bytes": 47920,
+      "sha256": "346f11f0f4ad541848787af086490598e31a7ef13c296870b311310260065c8e"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-05-happy.png",
+      "bytes": 48132,
+      "sha256": "e96c8af65745b902eaf1fabbfc8324c870d3c226b0b1063c1f04b76c23f0ef67"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-06-worried.png",
+      "bytes": 48098,
+      "sha256": "6cc89b1b245839beba5c26e726436ef9d53ab60e329cf68ecce7f31f90840548"
+    },
+    {
+      "path": "assets/v5-art-evidence/blue-07-surprised.png",
+      "bytes": 48037,
+      "sha256": "487f44ff97256e4f95148201a9f6680569e293fe6ff4e1db8c9640818836d72a"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-00-front.png",
+      "bytes": 38536,
+      "sha256": "4c435a6174191fabc50ffd20597ac190f750eadee6dbc97fd603704ad494c695"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-01-three-quarter.png",
+      "bytes": 35048,
+      "sha256": "363fc851be26f5f9e1469ec09c1331c0d8c0763254f34dd4f7dd78066d2852e5"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-02-side.png",
+      "bytes": 26945,
+      "sha256": "c5f947ace4af64314222de4e3380984c2915ef8aea20bfee489ae7cdabda1363"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-03-back.png",
+      "bytes": 34346,
+      "sha256": "85d843e2982d90652a8dbedfe12b85cd22ad54d61d39a23c11ebd4c740eb73e0"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-04-neutral.png",
+      "bytes": 38536,
+      "sha256": "4c435a6174191fabc50ffd20597ac190f750eadee6dbc97fd603704ad494c695"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-05-happy.png",
+      "bytes": 38386,
+      "sha256": "b891ae9099c3a498d802ce7dca43f0e89b3b9e0f6b5469e44f88fece4da0e136"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-06-worried.png",
+      "bytes": 38790,
+      "sha256": "d57cd6ae7b15ac2b25ba3ce65edfc7b3197e46f0c658501ae833992d9c665b5a"
+    },
+    {
+      "path": "assets/v5-art-evidence/dev-07-surprised.png",
+      "bytes": 38166,
+      "sha256": "341b5474ca773b6b81ee81b9c1246ac3540e6d308e0505368c315493f12baa3f"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-00-front.png",
+      "bytes": 47682,
+      "sha256": "40591c8acd2a4b348c0174515a7d634dad35354e45802f39a597c3d2ecc67a46"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-01-three-quarter.png",
+      "bytes": 42349,
+      "sha256": "368c1772f468f0eed5976945422f757e512e2a4cba8a023e15886fa654e797c9"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-02-side.png",
+      "bytes": 33353,
+      "sha256": "c5392b3e65fad6ae16965a738e028866daab6f3d2a06e95af26e9cde1b588be3"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-03-back.png",
+      "bytes": 39103,
+      "sha256": "cb87f72f3beeede3251ec47caeb110a54410382b29f18704a21bc2244ef2bd9c"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-04-neutral.png",
+      "bytes": 47682,
+      "sha256": "40591c8acd2a4b348c0174515a7d634dad35354e45802f39a597c3d2ecc67a46"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-05-happy.png",
+      "bytes": 47919,
+      "sha256": "21a2eafb83410800da72f49fb4651def332b7248b1d1821bfaf4acf40cae83df"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-06-worried.png",
+      "bytes": 47882,
+      "sha256": "b5710ce79b56fa2ce14df963fa7a49e67fd72c6db63138182046a06ae23e0b27"
+    },
+    {
+      "path": "assets/v5-art-evidence/orange-07-surprised.png",
+      "bytes": 47819,
+      "sha256": "7b6d615ae10f09f2aec4424ec2d917a21c0092d5470825adde4f38ad1f0dbf49"
+    },
+    {
+      "path": "assets/v5-art-evidence/v5-expression-sheet.jpg",
+      "bytes": 58171,
+      "sha256": "ca4059422fda8e41191a65c748a0ce52e16bbdb3e475ef6a58f5f427c55fa9ac"
+    },
+    {
+      "path": "media/v4-review/frameforge-v4-complete-director-41s.mp4",
+      "bytes": 11682636,
+      "sha256": "7aa90314e91208ad14254b70f2e5b8738c3333544789a46ea167b9e41daf4590"
+    },
+    {
+      "path": "media/v4-review/v4-cinematic-story-reaction-test-15s.mp4",
+      "bytes": 1881008,
+      "sha256": "641e5414efa6ec9e7b900a0fed7f6127cd685b957367f358e568d0f3a9d703a0"
+    },
+    {
+      "path": "media/v4-review/v4-first-15sec-preview.mp4",
+      "bytes": 2738477,
+      "sha256": "4861d97b79a76c25cb68440ddc090dc34c77b8583857181a9fdb86f1a197bf66"
+    },
+    {
+      "path": "media/v4-review/v4-preview-stills.jpg",
+      "bytes": 45629,
+      "sha256": "941223fa19de5613aabb8ce58b96b1b3789ee9d1a37d0ae7a2168d3143d34f1f"
+    },
+    {
+      "path": "media/v5-evidence/blue-character-sheet.png",
+      "bytes": 462368,
+      "sha256": "f73d9a0f2be9e774617e8a6ac64e5e7b3027735e7c6edc7834059e60af8ccc2e"
+    },
+    {
+      "path": "media/v5-evidence/dev-character-sheet.png",
+      "bytes": 470601,
+      "sha256": "53debfbb618014b3906cca0d33ea7e71433286745a3cb1da0b9f93051d3b725e"
+    },
+    {
+      "path": "media/v5-evidence/environment-first-frame.png",
+      "bytes": 131204,
+      "sha256": "04ea0bb3fa4c91685f75b2b062b5b28467356a2c432acbcf0ce3008a5830ed47"
+    },
+    {
+      "path": "media/v5-evidence/orange-character-sheet.png",
+      "bytes": 457209,
+      "sha256": "84a448df6dc75692c97ed2006b93e2100a2cb479daa25299e98b30f51493e978"
+    },
+    {
+      "path": "media/zero-latency-acting-v3-with-foley.mp4",
+      "bytes": 11581250,
+      "sha256": "876a8989735b33452d6f631a3aa04ce2f2c8626a8abec3c2315bb854531bf676"
+    },
+    {
+      "path": "media/zero-latency-stereo-foley-v2.ogg",
+      "bytes": 399406,
+      "sha256": "c2245fe10c4fec48d8189e6dfb6052a92764396757f9311028b90f43bb7790de"
+    }
+  ]
+}

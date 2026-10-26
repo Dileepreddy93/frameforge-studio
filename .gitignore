@@ -6,3 +6,10 @@ node_modules/
 __pycache__/
 .DS_Store
 *.log
+.vercel
+.env*.local
+.venv/
+audio/*/lines/
+audio/*/.work/
+renders/
+models/

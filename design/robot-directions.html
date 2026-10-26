@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Robot Directions</title>
+<!-- M3.1: three original design directions for BLUE and ORANGE, drawn as SVG from design/robot-forms.js in the V6 light
+     and palette. Screenshot with: node tools/design-shot.cjs design/robot-directions.html out.png -->
+<style>
+ :root{--bg:#0C0916;--panel:#120E1F;--line:#2A2340;--ink:#ECE8F6;--dim:#9C95B8;--set:#100C1B}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,'Ubuntu Sans',system-ui,sans-serif;width:2400px}
+ header{padding:44px 56px 8px}
+ h1{font-size:54px;margin:0 0 8px;letter-spacing:-.5px}
+ header p{font-size:23px;color:var(--dim);margin:0;max-width:2000px;line-height:1.45}
+ .dir{display:grid;grid-template-columns:300px 980px 920px;gap:16px;align-items:start;margin:18px 56px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+ .label .letter{font-size:96px;font-weight:800;line-height:1}
+ .label h2{font-size:31px;margin:6px 0 12px;line-height:1.15}
+ .label ul{margin:0;padding-left:20px;font-size:19.5px;line-height:1.45;color:#D6D0E8}
+ .label li{margin-bottom:7px}
+ .cells{display:grid;gap:10px}
+ .turn{grid-template-columns:repeat(3,1fr)}
+ .expr{grid-template-columns:repeat(7,1fr)}
+ .cell{background:var(--set);border-radius:12px;overflow:hidden;position:relative}
+ .cell .tag{position:absolute;left:10px;bottom:7px;font-size:16px;color:var(--dim);letter-spacing:.3px}
+ .who{font-size:18px;color:var(--dim);margin:12px 0 6px}
+ .small{display:flex;gap:14px;align-items:flex-end;margin-top:12px;background:var(--set);border-radius:12px;padding:10px 14px}
+ .small span{font-size:16px;color:var(--dim);margin-right:8px}
+ .lineup{margin:18px 56px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+ .lineup h2{margin:0 0 10px;font-size:31px}
+ svg polygon{stroke-width:.9px;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+ footer{padding:10px 56px 40px;font-size:19px;color:var(--dim)}
+</style>
+</head>
+<body>
+<header>
+ <h1>BLUE &amp; ORANGE · three design directions</h1>
+ <p>Original robots, drawn in 2D before any 3D work (M3.1), in DEV's light and palette: flat matte facets, one warm key from camera-right, one blue rim from behind-left. BLUE is the eager one (small, round, one antenna); ORANGE is the deadpan one (taller, squarer, heavy lids, ears).
+ Each direction changes what matters most: the shell shapes, how they move (hover, walk, roll) and how the face carries feeling (light on a screen, or ink on the shell). Pick one, or a mix (e.g. "A's bodies, C's faces").</p>
+</header>
+<main id="dirs"></main>
+<section class="lineup"><h2>Next to DEV (same scale)</h2><div id="lineup"></div></section>
+<footer>Drawn from parametric forms in <code>design/robot-forms.js</code> (specs in <code>design/robot-directions.js</code>), so the chosen direction's numbers carry into the three.js build. The small heads in each row are about the size of a face in a phone-sized wide shot.</footer>
+<script src="dev-forms.js"></script>
+<script src="dev-character.js"></script>
+<script src="robot-forms.js"></script>
+<script src="robot-directions.js"></script>
+<script>
+'use strict';
+const R=FrameForgeRobot,{DIRS,expression,ORDER}=FrameForgeRobotDirections;
+const PAD=.06;
+// One or more rendered figures side by side, standing on one ground line, scaled to fit w x h pixels.
+// A figure may carry a label, written under its feet.
+function scene(figs,w,h,o={}){
+ let x=0;const placed=[];
+ for(const f of figs){const b=f.out.bbox,dx=x-b[0];placed.push({svg:f.out.svg,dx,b,label:f.label});x+=b[2]-b[0]+(o.gap??.12);}
+ const labelled=placed.some(p=>p.label),minY=Math.min(...placed.map(p=>p.b[1])),maxY=Math.max(...placed.map(p=>p.b[3]))+(labelled?.16:0),width=x-(o.gap??.12);
+ const vb=[-PAD,minY-PAD,width+2*PAD,maxY-minY+2*PAD];
+ return '<svg width="'+w+'" height="'+h+'" viewBox="'+vb.join(' ')+'" preserveAspectRatio="xMidYMax meet">'+
+  placed.map(p=>'<g transform="translate('+p.dx+' 0)">'+p.svg+'</g>'+(p.label?'<text x="'+(p.dx+(p.b[0]+p.b[2])/2)+'" y="'+(p.b[3]+.12)+'" font-size=".075" fill="#9C95B8" text-anchor="middle">'+p.label+'</text>':'')).join('')+'</svg>';
+}
+// Just the head, cropped.
+function headCell(robot,emotion,size){
+ const x=expression(robot.who,emotion),out=R.render(robot,{face:x.face,pose:x.pose});
+ const b=out.headBox,pad=(b[2]-b[0])*.12,vb=[b[0]-pad,b[1]-pad,b[2]-b[0]+2*pad,b[3]-b[1]+2*pad];
+ return '<svg width="'+size+'" height="'+Math.round(size*vb[3]/vb[2])+'" viewBox="'+vb.join(' ')+'">'+out.svg+'</svg>';
+}
+const VIEWS=[['front',0],['three-quarter',-32],['side',-78]];
+const robots={};
+const html=[];
+for(const d of DIRS){
+ const blue=R.build(d.blue),orange=R.build(d.orange);blue.who='blue';orange.who='orange';robots[d.id]={blue,orange};
+ const turn=VIEWS.map(([tag,yaw])=>{
+  const xb=expression('blue','neutral'),xo=expression('orange','neutral');
+  return '<div class="cell">'+scene([{out:R.render(blue,{yaw,face:xb.face})},{out:R.render(orange,{yaw,face:xo.face})}],324,360)+'<div class="tag">'+tag+'</div></div>';
+ }).join('');
+ const row=who=>ORDER.map(e=>'<div class="cell">'+headCell(robots[d.id][who],e,118)+'<div class="tag">'+e+'</div></div>').join('');
+ const small=['blue','orange'].map(who=>['neutral','happy','worried','surprised'].map(e=>headCell(robots[d.id][who],e,34)).join('')).join('<span></span>');
+ html.push('<section class="dir"><div class="label"><div class="letter">'+d.id+'</div><h2>'+d.name+'</h2><ul>'+d.notes.map(n=>'<li>'+n+'</li>').join('')+'</ul></div>'+
+  '<div><div class="cells turn">'+turn+'</div><div class="small"><span>phone size</span>'+small+'</div></div>'+
+  '<div><div class="who">BLUE</div><div class="cells expr">'+row('blue')+'</div><div class="who">ORANGE</div><div class="cells expr">'+row('orange')+'</div></div></section>');
+}
+document.getElementById('dirs').innerHTML=html.join('');
+// The lineup: DEV (the approved build) with each direction's pair, feet on one ground line.
+const dev=FrameForgeDesign.build(FrameForgeDev.DEV),devOut=FrameForgeDesign.render(dev,{yaw:-12});
+// DEV's model has its head centre at 0 and his feet at -1.5; robots stand on 0: lift DEV onto the same ground.
+const devFig={label:'DEV',out:{svg:'<g transform="translate(0 -1.5)">'+devOut.svg+'</g>',bbox:[devOut.bbox[0],devOut.bbox[1]-1.5,devOut.bbox[2],devOut.bbox[3]-1.5]}};
+const figs=[devFig];
+for(const d of DIRS)for(const who of ['blue','orange']){const x=expression(who,'neutral');figs.push({label:d.id+' · '+who.toUpperCase(),out:R.render(robots[d.id][who],{yaw:-12,face:x.face})});}
+document.getElementById('lineup').innerHTML=scene(figs,2250,460,{gap:.22});
+window.FF_READY=true;
+</script>
+</body>
+</html>

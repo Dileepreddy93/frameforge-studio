@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameForge Studio — Director Preview</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:block}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;min-height:400px}.shots{grid-template-columns:1fr 1fr}}
+#stage>.frame-meta,#sceneTitle,#subtitle,#screenInsert{display:none!important}
+.shottools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 2px}.shottools button{padding:7px 4px}
+.castgrid{display:grid;grid-template-columns:62px 1fr 1fr;gap:6px;align-items:center;margin-top:6px}.castgrid b{font-size:12px}
+h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{color:#ffcf7a}
+.looks{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;margin:6px 0 10px}.looks input[type=color]{width:44px;height:30px;padding:0;border:1px solid #36446d;border-radius:6px;background:none;cursor:pointer}
+.voicegrid{display:grid;grid-template-columns:58px 1fr 34px;gap:8px 6px;align-items:center;margin-top:10px}.prongrid{display:grid;grid-template-columns:1fr 1fr 30px 30px;gap:6px;align-items:center;margin-top:8px}.prongrid input{width:100%;margin:0;padding:7px}.prongrid button{padding:6px 0}.voicegrid b{font-size:12px}.voicegrid select{padding:7px}.voicegrid input{width:100%;margin:4px 0 0}
+.meter{height:6px;border-radius:3px;background:#1c2540;overflow:hidden;margin-top:8px}.meter>span{display:block;height:100%;width:0;background:#9b50ee}
+</style></head>
+<body><header><div><a class="brand" href="./" title="FrameForge home">◈ Frame<em>Forge</em> <span style="font-size:12px;color:#a7b3d6">STUDIO</span></a><div class="hint">LIVE DIRECTOR PREVIEW · Original 3D characters · <a href="./asset-lab.html" style="color:#9de6df;font-weight:750" title="Inspect real rigged GLB imports">Rigged character lab ↗</a></div></div><div class="tag">STUDIO · What you see is what you export</div></header>
+<div class="wrap"><aside><h3>Quick Create</h3><label>Story idea</label><textarea id="idea">A developer asks two robot assistants to fix one tiny bug. They argue over a missing semicolon.</textarea><label>Language</label><select id="language"><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option></select><label>Episode template</label><select id="preset"><option value="comedy">ZERO LATENCY — Voiced episode (41.8s)</option><option value="mystery">Mystery storyboarding (no voice)</option></select><button id="build" class="primary full">✦ Build episode timeline</button>
+<label for="projectImport">Import a FrameForge JSON episode</label>
+<input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
+<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">Every episode is one JSON file: script, performances, cameras, music and sound cues. Edit shots on the right: changed lines are voiced in your browser (Voices, below), then export an MP4 here. Download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><label>Pronunciations</label><p class="fine">For names the voices get wrong: write how the word sounds, the stressed syllable in capitals (koh-KOR-oh).</p><div class="prongrid" id="pronGrid"></div><button id="pronAdd" class="full">+ Add a pronunciation</button><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Preview selected dialogue speaks the line in its character's voice, with the emotion set for the speaker in that shot. Hindi/Telugu voices are not connected yet.</p></aside>
+<main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div><details id="renderedFilm" style="max-width:550px;margin:16px auto;background:#1a2540;border:1px solid #53699d;border-radius:14px;padding:12px"><summary style="cursor:pointer;font-weight:750;color:#fff;font-size:14px">▶ Previous version · V3 film (41.8s)</summary><p class="fine" style="margin:9px 0 12px">New directed-acting cut: native 480×854, 30 FPS, 1,254 frames, three English voices, 43 Foley cues and synchronized stereo audio. Facial animation is still below the reference-quality target.</p><video controls playsinline preload="metadata" style="display:block;width:min(100%,320px);margin:8px auto;border-radius:12px" src="media/zero-latency-acting-v3-with-foley.mp4">Your browser cannot play MP4 video.</video><p style="font-size:12px;text-align:center;margin:12px auto 2px"><a style="color:#c5b4ff" href="media/zero-latency-acting-v3-with-foley.mp4" target="_blank" rel="noopener noreferrer">Open MP4 directly in a new tab</a></p></details>
+<div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">Each line is voiced separately and sets its shot length; music ducks under speech and the mouth follows each line. Play, scrub or click a shot: the monitor shows the exact frame that exports.</p></main>
+<aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><div class="shottools"><button id="shotUp" title="Move this shot earlier">↑ Earlier</button><button id="shotDown" title="Move this shot later">↓ Later</button><button id="shotDup">Duplicate</button><button id="shotDel">Delete</button></div>
+<label>Title card</label><input id="shotTitle" maxlength="60">
+<label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply line changes</button>
+<h4>Camera</h4><div class="controlrow"><div><label>Move</label><select id="move"><option value="push">Push in</option><option value="pull">Pull out</option><option value="drift">Drift</option><option value="static">Locked off</option></select></div><div><label>Amount</label><input id="moveAmount" type="range" min="0" max="1.2" step=".05"></div></div>
+<label>Dutch angle <span id="rollValue"></span></label><input id="roll" type="range" min="-12" max="12" step="1">
+<h4>Timing</h4><div class="controlrow"><div><label>Before the line <span id="leadValue"></span></label><input id="lead" type="range" min="0" max="1.5" step=".05"></div><div><label>Pause after <span id="pauseValue"></span></label><input id="pauseAfter" type="range" min="0" max="2" step=".05"></div></div>
+<label>Line pace <span id="paceValue"></span></label><input id="pace" type="range" min=".8" max="1.25" step=".05">
+<h4>Performance</h4><div class="castgrid" id="castGrid"></div>
+<p class="fine" id="audioState" role="status"></p><p class="fine">Click a shot to select it. Title, camera and performance update live; line, speaker, the speaker's emotion, timing and shot order changes are re-voiced in your browser.</p></aside></div>
+<script src="./src/project-core.js"></script>
+<script src="./src/performance-core.js"></script>
+<script src="./src/speech-performance-core.js"></script>
+<script src="./design/dev-forms.js"></script>
+<script src="./design/dev-character.js"></script>
+<script src="./design/robot-forms.js"></script>
+<script src="./design/robot-character.js"></script>
+<script src="./src/dev-acting-core.js"></script>
+<script src="./src/robot-acting-core.js"></script>
+<script type="module">
+import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+const $ = x=>document.getElementById(x);
+const stage=$('stage');
+const VOID=0x100c1b;
+const scene=new T.Scene();scene.background=new T.Color(VOID);
+const cam=new T.PerspectiveCamera(40,9/16,.1,110);
+const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true,alpha:false});
+// No tone mapping: STYLE.md colours are hit directly, and ACES would wash the terracotta out.
+renderer.setPixelRatio(1);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.NoToneMapping;renderer.setSize(720,1280,false);
+stage.prepend(renderer.domElement);
+// V6 light (STYLE.md): one warm key from the right side, one cool rim from above and behind, almost no ambient.
+const KEY_INTENSITY=4.4;
+scene.add(new T.HemisphereLight(0x3a3570,0x07060c,.3));
+const key=new T.DirectionalLight(0xffe6d0,KEY_INTENSITY);key.position.set(5,5,5);key.castShadow=true;scene.add(key);
+key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.0004;key.shadow.normalBias=.02;
+Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-3,near:.5,far:25});
+const rim=new T.DirectionalLight(0x7f9cff,9);rim.position.set(2,8,-3);scene.add(rim);
+const mat=(c,r=.72,m=.05)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+const dark=mat(0x101122),navy=mat(0x202443),white=mat(0xe3dbe0),blue=mat(0x4f83bb,.4,.45),orange=mat(0xf18427,.45,.24),skin=mat(0x9c6b4b),hair=mat(0x191524),suit=mat(0x3c4168),glow=new T.MeshStandardMaterial({color:0x6df6ff,emissive:0x43d7ff,emissiveIntensity:2});
+function cube(g,x,y,z,w,h,d,m){let o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;g.add(o);return o}
+function ball(g,x,y,z,r,m){let o=new T.Mesh(new T.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o}
+let floor=cube(scene,0,-.16,0,18,.24,15,mat(0x1b1530));let wall=cube(scene,0,3,-5,18,7,.2,mat(0x171026));
+let stageBox=cube(scene,0,.24,-1.5,6,.46,3,mat(0x29203e));
+cube(scene,0,1.3,-2.75,5,.15,1.7,mat(0x5c3559,.38));for(let x of [-2.3,2.3])cube(scene,x,.72,-2.75,.18,1.13,.3,dark);
+
+// CINEMATIC SET V2 — built as an inhabited space, not a flat neon backdrop.
+// Stage architecture has a consistent industrial palette, practical light sources,
+// depth layers, textured signs, and contact shadows. All assets are original.
+const artGroup=new T.Group();scene.add(artGroup);
+const satin=(hex,r=.52,metal=.1)=>new T.MeshStandardMaterial({color:hex,roughness:r,metalness:metal});
+const bronzed=satin(0x635258,.36,.55), warmWhite=satin(0xe3c5a4,.55,.06), midnight=satin(0x1a2432,.71,.08);
+const copper=satin(0xb16d54,.39,.39), steelSet=satin(0x354958,.36,.57);
+const cyanEmission=new T.MeshStandardMaterial({color:0x83d9e3,emissive:0x3f9eaf,emissiveIntensity:1.3,roughness:.28});
+const amberEmission=new T.MeshStandardMaterial({color:0xffc18b,emissive:0xb66b3b,emissiveIntensity:1.6,roughness:.35});
+const shadowMat=new T.MeshBasicMaterial({color:0x090e1b,transparent:true,opacity:.37,depthWrite:false,side:T.DoubleSide});
+const flat=color=>new T.MeshLambertMaterial({color,flatShading:true});
+floor.material=flat(0x17132a);wall.material=flat(0x141026);stageBox.material=flat(0x1a1530);
+function tube(parent,a,b,r,m,detail=10){
+ const va=new T.Vector3(...a),vb=new T.Vector3(...b);
+ const diff=vb.clone().sub(va),shape=new T.Mesh(new T.CylinderGeometry(r,r,diff.length(),detail),m);
+ shape.position.copy(va.add(vb).multiplyScalar(.5));shape.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),diff.normalize());
+ parent.add(shape);shape.castShadow=true;return shape
+}
+function drum(parent,x,y,z,r,h,m){
+ const mesh=new T.Mesh(new T.CylinderGeometry(r,r,h,28),m);
+ mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh
+}
+function plaque(textA,textB,glowHue,x,y,z,w=.95,h=.47){
+ const cv=document.createElement('canvas');cv.width=600;cv.height=320;
+ const q=cv.getContext('2d');q.fillStyle='#172231';q.fillRect(0,0,600,320);
+ const grad=q.createLinearGradient(30,0,520,320);grad.addColorStop(0,'#202e3c');grad.addColorStop(1,'#101b2a');q.fillStyle=grad;q.fillRect(13,13,574,294);
+ q.strokeStyle='#657589';q.lineWidth=7;q.strokeRect(20,20,560,280);
+ q.fillStyle=glowHue;q.font='bold 68px Arial';q.textAlign='center';q.fillText(textA,300,160);
+ q.font='bold 29px Arial';q.fillStyle='#9cb3bd';q.fillText(textB,300,227);
+ const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;const m=new T.MeshBasicMaterial({map:t,side:T.DoubleSide,toneMapped:false});
+ const frame=new T.Mesh(new T.PlaneGeometry(w,h),m);frame.position.set(x,y,z);artGroup.add(frame);
+ return frame
+}
+// Rear wall composition: two flanking equipment bays, warm arch, central stage identity.
+for(const x of [-4.15,4.15]){
+ cube(artGroup,x,2.25,-4.65,1.60,4.3,.40,midnight);
+ cube(artGroup,x,4.2,-4.37,1.76,.13,.17,copper);
+ for(let y of [1.0,1.95,2.9]){
+  cube(artGroup,x,y,-4.39,1.42,.045,.09,steelSet);
+  for(let k=0;k<5;k++){
+   const z=-4.25,px=x-.49+k*.245;
+   cube(artGroup,px,y+.23,z,.12,.36,.16,k%3===0?copper:satin(k%2?0x697c89:0x375268,.5,.24));
+  }
+ }
+ const p=new T.PointLight(0xffa96e,6,3.8);p.position.set(x,3.5,-3.8);artGroup.add(p);
+ cube(artGroup,x,3.6,-4.25,.65,.10,.10,amberEmission);
+}
+// Recessed layered portal and arc surround behind the cast.
+cube(artGroup,0,3.2,-4.66,5.75,3.6,.13,satin(0x263440,.79,.13));
+cube(artGroup,0,3.2,-4.48,4.55,2.75,.09,satin(0x111b2b,.43,.19));
+const arch=new T.Mesh(new T.TorusGeometry(1.58,.063,12,80,Math.PI),bronzed);
+arch.position.set(0,4.1,-4.14);arch.rotation.z=0;artGroup.add(arch);
+for(const x of [-1.60,1.60]){
+ tube(artGroup,[x,1.85,-4.14],[x,4.09,-4.14],.075,bronzed);
+ cube(artGroup,x,2.9,-4.0,.065,1.75,.065,cyanEmission);
+}
+plaque("FRAMEFORGE","STORY SYSTEMS","#ffcf9c",0,4.30,-4.01,1.8,.79);
+// Practical architectural strips and baffles.
+for(let x of [-3.12,3.12]){
+ cube(artGroup,x,3.0,-4.28,.10,4.35,.20,steelSet);
+ cube(artGroup,x,3.0,-4.13,.048,2.7,.05,amberEmission);
+}
+for(let z of [-2.7,-1.3,.35]){
+ tube(artGroup,[-5.2,.11,z],[5.2,.11,z],.017,steelSet,8);
+}
+// Foreground set dressing: restrained consoles with readable controls.
+for(const x of [-3.2,3.2]){
+ const side=Math.sign(x);
+ const stand=cube(artGroup,x,1.04,-2.6,.67,1.34,.78,steelSet);
+ cube(artGroup,x,1.75,-2.48,.83,.14,.63,copper);
+ const top=cube(artGroup,x,1.82,-2.39,.77,.065,.58,midnight);top.rotation.x=-.23;
+ for(let i=0;i<4;i++){
+  const spot=new T.Mesh(new T.SphereGeometry(.044,12,8),i%2?cyanEmission:amberEmission);
+  spot.position.set(x-.21+i*.14,1.85,-2.09);artGroup.add(spot);
+ }
+ tube(artGroup,[x,1.32,-2.08],[x+side*.25,1.2,-1.68],.044,steelSet);
+}
+// Three elevated soft luminous panels: subtle depth behind human and robots.
+for(let i=0;i<3;i++){
+ const x=-2.3+i*2.3;
+ const panel=cube(artGroup,x,4.55,-3.6,1.42,.10,.40,steelSet);panel.rotation.x=.24;
+ const light=cube(artGroup,x,4.51,-3.3,1.20,.035,.24,i===1?warmWhite:cyanEmission);light.rotation.x=.24;
+}
+// Physical shadow pools connect characters with the stage.
+const blobCv=document.createElement('canvas');blobCv.width=blobCv.height=128;
+const blobCx=blobCv.getContext('2d');const rg=blobCx.createRadialGradient(64,64,6,64,64,64);
+rg.addColorStop(0,'rgba(0,0,0,.54)');rg.addColorStop(.40,'rgba(0,0,0,.32)');rg.addColorStop(1,'rgba(0,0,0,0)');
+blobCx.fillStyle=rg;blobCx.fillRect(0,0,128,128);const blobTexture=new T.CanvasTexture(blobCv);
+for(const x of [-1.7,0,1.7]){
+ const blob=new T.Mesh(new T.PlaneGeometry(1.55,.91),new T.MeshBasicMaterial({map:blobTexture,transparent:true,depthWrite:false,opacity:.82}));
+ blob.rotation.x=-Math.PI/2;blob.position.set(x,.49,x===-1.7?-1:.5);artGroup.add(blob);
+}
+// A light dust layer adds depth cues without costly volumetric shaders.
+const scatter=new T.BufferGeometry(),dust=[];
+for(let i=0;i<55;i++){
+ const x=((((i*37)%113)/113)-.5)*10;
+ const y=.8+(((i*71)%113)/113)*4.6;
+ const z=-4.10+(((i*17)%79)/79)*6.3;dust.push(x,y,z);
+}
+scatter.setAttribute('position',new T.Float32BufferAttribute(dust,3));
+const flecks=new T.Points(scatter,new T.PointsMaterial({color:0xd9c4ab,size:.025,transparent:true,opacity:.48,depthWrite:false}));
+artGroup.add(flecks);
+// V6 SET (STYLE.md): a near-black room whose story lives on real monitors, not on overlay cards.
+// The V5 neon set stays hidden until the set pass replaces the rest of it.
+artGroup.visible=false;
+const v6Set=new T.Group();scene.add(v6Set);
+const bezelMat=flat(0x0b0a12);
+const MONO='"Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace';
+const TONES={bad:{ink:'#fc5757',rule:'#e05553',tint:'#471c30'},good:{ink:'#44e082',rule:'#3a9a66',tint:'#1c3a2e'}};
+function monitor(w,h,x,y,z,ry){
+ const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*h/w);
+ const texture=new T.CanvasTexture(cv);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=8;
+ const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;v6Set.add(g);
+ cube(g,0,0,-.05,w+.14,h+.14,.08,bezelMat);
+ g.add(new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:texture,toneMapped:false})));
+ return {ctx:cv.getContext('2d'),texture,width:cv.width,height:cv.height,drawn:null};
+}
+function windowChrome(c,W,title,rule){
+ c.fillStyle='#151029';c.fillRect(0,0,W,c.canvas.height);
+ c.fillStyle='#1b1534';c.fillRect(0,0,W,84);
+ ['#e05553','#dea32f','#23a93b'].forEach((dot,i)=>{c.fillStyle=dot;c.beginPath();c.arc(40+i*32,42,11,0,Math.PI*2);c.fill()});
+ c.fillStyle='#a7a1c7';c.font='700 34px '+MONO;c.textAlign='left';c.textBaseline='middle';c.fillText(title,148,44);
+ c.fillStyle=rule;c.fillRect(0,84,W,5);
+}
+// Metric screen: window title, label, one huge number in the state colour, a jagged sparkline, a badge.
+function drawWallScreen(screen,wall){
+ const key=JSON.stringify(wall??null);if(screen.drawn===key)return;screen.drawn=key;
+ const c=screen.ctx,W=screen.width,H=screen.height;
+ if(!wall){c.fillStyle='#151029';c.fillRect(0,0,W,H);screen.texture.needsUpdate=true;return}
+ const tone=TONES[wall.tone];
+ windowChrome(c,W,wall.window,tone.rule);
+ c.fillStyle='#676284';c.font='400 44px '+MONO;c.fillText(wall.label,56,176);
+ if(wall.badge){
+  c.font='700 38px '+MONO;const bw=c.measureText(wall.badge).width+56;
+  c.fillStyle=tone.tint;c.beginPath();c.roundRect(W-bw-40,128,bw,70,10);c.fill();
+  c.fillStyle=tone.ink;c.textAlign='center';c.fillText(wall.badge,W-bw/2-40,165);c.textAlign='left';
+ }
+ c.fillStyle=tone.ink;c.font='700 230px '+MONO;c.textBaseline='alphabetic';c.fillText(wall.value,46,430);
+ c.strokeStyle=tone.ink;c.lineWidth=7;c.lineJoin='miter';c.beginPath();
+ for(let i=0;i<=30;i++){
+  const jag=((i*37+11)%17)/17,trend=wall.tone==='bad'?-i*1.6:i*.4;
+  const px=24+i*(W-48)/30,py=H-90+trend-jag*(wall.tone==='bad'?62:30);
+  i?c.lineTo(px,py):c.moveTo(px,py);
+ }
+ c.stroke();screen.texture.needsUpdate=true;
+}
+// Side screen: an abstract chat/log window that dresses the set without competing with the story screen.
+function drawSideScreen(screen){
+ const c=screen.ctx,W=screen.width;
+ windowChrome(c,W,'notes',TONES.bad.rule);
+ for(let i=0;i<6;i++){
+  const right=i%2===1,w=260+((i*97)%5)*70;
+  c.fillStyle=right?'#2b2455':'#3a2732';c.beginPath();c.roundRect(right?W-w-48:48,130+i*82,w,46,14);c.fill();
+ }
+ screen.texture.needsUpdate=true;
+}
+const wallScreen=monitor(3.0,1.88,-1.0,4.45,-3.75,-.3);
+const sideScreen=monitor(1.6,1.0,-3.55,2.75,-3.35,.42);drawSideScreen(sideScreen);
+
+const dev=new T.Group();dev.position.set(-1.7,.33,-1);scene.add(dev);
+cube(dev,0,1.25,0,.95,1.3,.55,suit);cube(dev,0,2.28,0,.75,.9,.68,skin);cube(dev,0,2.78,-.02,.83,.25,.73,hair);cube(dev,-.55,1.36,0,.24,.99,.25,suit);cube(dev,.55,1.36,0,.24,.99,.25,suit);cube(dev,-.27,.4,0,.3,.45,.35,navy);cube(dev,.27,.4,0,.3,.45,.35,navy);
+const eyeA=ball(dev,-.18,2.35,.36,.065,dark),eyeB=ball(dev,.18,2.35,.36,.065,dark),mouth=cube(dev,0,2.06,.355,.23,.035,.025,dark);
+function robot(bodyCol,x){const root=new T.Group();root.position.set(x,.43,.5);scene.add(root);let hull=cube(root,0,1.4,0,1.06,1.07,.84,bodyCol);cube(root,0,1.44,.45,.82,.62,.035,dark);cube(root,-.23,1.55,.48,.19,.24,.04,glow);cube(root,.23,1.55,.48,.19,.24,.04,glow);let m=cube(root,0,1.24,.49,.32,.065,.04,glow);cube(root,-.67,1.3,0,.29,.55,.38,bodyCol);cube(root,.67,1.3,0,.29,.55,.38,bodyCol);ball(root,0,2.09,0,.13,white);let anten=cube(root,0,1.94,0,.08,.26,.08,bodyCol);ball(root,0,2.2,0,.13,glow);return {root,m,hull}};
+
+const b=robot(blue,0),o=robot(orange,1.72);dev.rotation.y=.17;
+// FRAMEFORGE PERFORMANCE RIG: consistent characters, authored 2D face masks on 3D models.
+const velvet=(color,roughness=.65,metalness=.12)=>new T.MeshStandardMaterial({color,roughness,metalness});
+function bevel(w,h,d,r,mat,parent,x,y,z){
+ const s=new T.Shape(),a=-w/2,by=-h/2;
+ s.moveTo(a+r,by);s.lineTo(a+w-r,by);s.quadraticCurveTo(a+w,by,a+w,by+r);s.lineTo(a+w,by+h-r);s.quadraticCurveTo(a+w,by+h,a+w-r,by+h);s.lineTo(a+r,by+h);s.quadraticCurveTo(a,by+h,a,by+h-r);s.lineTo(a,by+r);s.quadraticCurveTo(a,by,a+r,by);
+ const g=new T.ExtrudeGeometry(s,{depth:Math.max(.01,d-2*r),steps:1,bevelEnabled:true,bevelSize:r*.55,bevelThickness:r,bevelSegments:3,curveSegments:4});
+ g.translate(0,0,-Math.max(.01,d-2*r)/2);
+ const m=new T.Mesh(g,mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
+}
+// Materials an episode can recolour (characters[].look). shade darkens (<0) or lightens (>0) a part
+// relative to the chosen colour so the original two-tone design survives a new colour.
+const lookParts={dev:{hoodie:[],hair:[]},blue:{shell:[]},orange:{shell:[]}};
+function applyLooks(project){
+ for(const [id,slots] of Object.entries(lookParts))for(const [slot,parts] of Object.entries(slots)){
+  const chosen=project.characters.find(c=>c.id===id)?.look?.[slot];
+  for(const part of parts){
+   part.original??=part.material.color.getHex();
+   if(!chosen){part.material.color.setHex(part.original);continue}
+   const c=new T.Color(chosen);
+   part.material.color.copy(part.shade<0?c.lerp(new T.Color(0x000000),-part.shade):c.lerp(new T.Color(0xffffff),part.shade));
+  }
+ }
+}
+// The robots are built from their model sheet (design/robot-character.js) once DEV's scale is known: see buildRobot.
+function buildActor(actor,kind){
+ actor.root.children.forEach(c=>c.visible=false);
+ const group=new T.Group();actor.root.add(group);
+ return {group,head:group,blue:kind==='blue',armJoints:[],orangeEyes:[],orangeBrows:[],orangeMouth:null};
+}
+const faces={blue:buildActor(b,'blue'),orange:buildActor(o,'orange')};
+
+// The robots stand between the key light and DEV, so they must not shadow him in his close-ups.
+for(const robotRoot of [b.root,o.root])robotRoot.traverse(m=>{m.castShadow=false});
+
+const brows=[];
+for(const side of [-1,1]){
+ brows.push(bevel(.23,.055,.10,.017,hair,dev,side*.177,2.54,.38));
+ ball(dev,side*.42,2.29,.02,.09,skin);
+}
+for(let i=0;i<7;i++){
+ const h=bevel(.20,.21,.24,.045,hair,dev,(i-3)*.12,2.79+Math.sin(i*2.3)*.06,.015);
+ h.rotation.z=(i-3)*.11;
+}
+bevel(.14,.14,.13,.025,skin,dev,0,2.25,.41);
+bevel(.44,.06,.05,.012,hair,dev,0,2.01,.35);
+
+// V6 DEV (STYLE.md): flat-shaded low-poly, matte, a pupils-only face. Original design: a swept quiff and a
+// hoodie with a hood ring and drawstrings. The root keeps the V5 coordinates the cameras aim at.
+dev.children.forEach(child=>child.visible=false);
+const humanRig=new T.Group();dev.add(humanRig);
+const personSkin=Object.assign(flat(0xa3552f),{name:'dev-skin'}),blackHair=Object.assign(flat(0x2a1c22),{name:'dev-hair'}),
+ hoodie=flat(0x43676f),hoodieLight=flat(0x587d83),hoodieDark=flat(0x2b454e),
+ trouser=flat(0x1e1f38),shoeMat=flat(0x121019),stringMat=flat(0xe0c4dc),
+ featureInk=new T.MeshBasicMaterial({color:0x04030a}),mouthDark=new T.MeshBasicMaterial({color:0x2a0911});
+function facet(parent,geometry,material,x,y,z,sx=1,sy=1,sz=1){
+ const m=new T.Mesh(geometry,material);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
+}
+// Hand-made low-poly is never perfectly regular: nudge every vertex by a hash of where it is, so
+// copies of a vertex on neighbouring faces move together and the faceted surface stays closed.
+function jitter(geometry,amount){
+ const p=geometry.attributes.position,v=new T.Vector3();
+ const hash=(x,y,z,k)=>{const h=Math.sin(x*127.1+y*311.7+z*74.7+k*19.3)*43758.5453;return (h-Math.floor(h))*2-1};
+ for(let i=0;i<p.count;i++){
+  v.fromBufferAttribute(p,i);const [x,y,z]=[v.x,v.y,v.z].map(n=>Math.round(n*1e4)/1e4);
+  p.setXYZ(i,x+hash(x,y,z,1)*amount,y+hash(x,y,z,2)*amount,z+hash(x,y,z,3)*amount);
+ }
+ geometry.computeVertexNormals();return geometry;
+}
+// DEV is the approved model sheet (design/dev-character.js), built from the same forms that draw it, so the 3D matches
+// it facet for facet: the head and face (M1.3) and the body (M1.4), 2 heads from crown to ground. The body is cut at
+// its joints and skinned to bones, so the waist, elbows and knees bend. DEV keeps his place in the set: feet on the
+// stage, head centre where the cameras aim. The sheet's head height 1 is DEV_S engine units.
+const DEV_SPEC=window.FrameForgeDev.DEV,devBuild=window.FrameForgeDesign.build(DEV_SPEC),devRigSpec=window.FrameForgeDesign.rig(DEV_SPEC);
+const DEV_HEAD_Y=2.30,DEV_FEET_Y=.14,DEV_S=(DEV_HEAD_Y-DEV_FEET_Y)/-devRigSpec.ground;
+// Close-ups were framed for the M1.3 head (1.05 units tall); they stand back by this much to frame the new head the same.
+const DEV_FRAME=DEV_S/1.05;
+function devGeometry(tris){
+ const geometry=new T.BufferGeometry();
+ geometry.setAttribute('position',new T.Float32BufferAttribute(tris.flatMap(t=>t.p.flat()),3));
+ geometry.computeVertexNormals();return geometry;
+}
+const devRig=new T.Group();devRig.position.y=DEV_HEAD_Y;devRig.scale.setScalar(DEV_S);humanRig.add(devRig);
+const devBones={},devBoneList=devRigSpec.joints.map((j,i)=>{
+ const bone=new T.Bone(),parent=devRigSpec.joints.find(x=>x.name===j.parent)?.at||[0,0,0];
+ bone.name='dev-'+j.name;bone.position.set(j.at[0]-parent[0],j.at[1]-parent[1],j.at[2]-parent[2]);bone.userData.rest=bone.position.clone();
+ devBones[j.name]=bone;if(j.parent)devBones[j.parent].add(bone);return bone;
+});
+for(const k of['L','R']){devBones['shoulder'+k].rotation.order='ZXY';devBones['wrist'+k].rotation.order='YZX';}
+// Decals (pocket, its rim, drawstrings) sit a hair off the hoodie; a polygon offset keeps them from flickering.
+const decal=m=>Object.assign(m.clone(),{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
+const pocketMat=decal(hoodieDark),pocketRim=decal(flat(0x1c2f36)),stringDecal=decal(stringMat);
+let devBody;
+const DEV_BODY_MATS={hood:hoodie,hoodDark:hoodieDark,hoodRule:pocketRim,string:stringDecal,pants:trouser,shoe:shoeMat,sole:flat(0x8f8880),neck:personSkin};
+{
+ const mats=[...new Set(devRigSpec.tris.map(t=>t.mat))],index=Object.fromEntries(devRigSpec.joints.map((j,i)=>[j.name,i]));
+ const pos=[],skinIndex=[],skinWeight=[],geometry=new T.BufferGeometry();let start=0;
+ mats.forEach((m,g)=>{
+  const tris=devRigSpec.tris.filter(t=>t.mat===m);
+  for(const t of tris)t.p.forEach((p,i)=>{
+   pos.push(...p);const w=t.w[i].filter(x=>x[1]>1e-4);
+   for(let k=0;k<4;k++){skinIndex.push(w[k]?index[w[k][0]]:0);skinWeight.push(w[k]?w[k][1]:0);}
+  });
+  geometry.addGroup(start,tris.length*3,g);start+=tris.length*3;
+ });
+ geometry.setAttribute('position',new T.Float32BufferAttribute(pos,3));
+ geometry.setAttribute('skinIndex',new T.Uint16BufferAttribute(skinIndex,4));
+ geometry.setAttribute('skinWeight',new T.Float32BufferAttribute(skinWeight,4));
+ geometry.computeVertexNormals();
+ devBody=new T.SkinnedMesh(geometry,mats.map(m=>m==='hoodDark'?pocketMat:DEV_BODY_MATS[m]));
+ devBody.name='dev-body';devBody.castShadow=true;devBody.receiveShadow=true;devBody.frustumCulled=false;
+ devBody.add(devBones.hips);devRig.add(devBody);
+ dev.updateMatrixWorld(true);devBody.bind(new T.Skeleton(devBoneList));
+}
+// Mitten hands, one mesh per pose on each wrist; acting shows one at a time.
+const handSkin=Object.assign(flat(0xa3552f),{name:'dev-skin',emissive:new T.Color(0x2a0c04)});
+const devHands={L:{},R:{}};
+for(const k of['L','R'])for(const[pose,tris]of Object.entries(devRigSpec.hands[k])){
+ const at=devRigSpec.joints.find(j=>j.name==='wrist'+k).at,m=new T.Mesh(devGeometry(tris),handSkin);
+ m.position.set(-at[0],-at[1],-at[2]);m.castShadow=true;m.receiveShadow=true;m.visible=pose==='relaxed';
+ devBones['wrist'+k].add(m);devHands[k][pose]=m;
+}
+// The head rides on the neck. humanHead turns it about the top of the neck; headTilt adds each emotion's tilt.
+const DEV_NECK=devRigSpec.joints.find(j=>j.name==='neck').at,DEV_HEAD_PIVOT=devRigSpec.headPivot;
+const humanHead=new T.Group();humanHead.position.set(DEV_HEAD_PIVOT[0]-DEV_NECK[0],DEV_HEAD_PIVOT[1]-DEV_NECK[1],DEV_HEAD_PIVOT[2]-DEV_NECK[2]);
+devBones.neck.add(humanHead);
+const headTilt=new T.Group();headTilt.rotation.order='YXZ';humanHead.add(headTilt);
+const devHead=new T.Group();devHead.position.set(...DEV_HEAD_PIVOT.map(v=>-v));headTilt.add(devHead);
+const skull=facet(devHead,devGeometry(devBuild.head),personSkin,0,0,0);
+// Smiles lift the cheeks: a morph that pushes the cheek facets up and out, under the glasses.
+{
+ const p=skull.geometry.attributes.position,lift=new Float32Array(p.count*3);
+ for(let i=0;i<p.count;i++){
+  const x=p.getX(i),y=p.getY(i),z=p.getZ(i);if(z<=0)continue;
+  const k=.024*Math.exp(-(((Math.abs(x)-.25)/.09)**2)-(((y+.21)/.08)**2));
+  lift[i*3]=Math.sign(x)*k*.3;lift[i*3+1]=k;lift[i*3+2]=k*.6;
+ }
+ skull.geometry.morphAttributes.position=[new T.Float32BufferAttribute(lift,3)];skull.geometry.morphTargetsRelative=true;
+ skull.updateMorphTargets();
+}
+const devParts=mat=>devGeometry(devBuild.attach.filter(t=>t.mat===mat));
+// Ears and nose stand off the head, so their undersides face the dark ground fill. A faint warm floor keeps those
+// facets brown like the cheek beside them, instead of black slivers that read as extra mouths.
+const earSkin=Object.assign(flat(0xa3552f),{name:'dev-skin',emissive:new T.Color(0x2a0c04)});
+facet(devHead,devParts('skin'),earSkin,0,0,0);
+facet(devHead,devParts('hair'),blackHair,0,0,0);
+facet(devHead,devParts('ink'),new T.MeshBasicMaterial({color:0x04030a,side:T.DoubleSide}),0,0,0);
+// The face is crisp flat shapes on the head (STYLE.md), redrawn every frame from the face channels. Each shape is a
+// strip in face space, wrapped onto the head's smooth surface through a precomputed grid, lifted just off the facets.
+const FACE_COLOURS=Object.fromEntries(Object.entries({ink:0x04030a,mouth:0x2a0911,tongue:0x7c2c33,teeth:0xeadfd1,glint:0xfff7ee,white:0xe7dacb}).map(([k,v])=>[k,new T.Color(v)]));
+const FACE_GRID={x0:-.5,y0:-.56,step:1/64,nx:65,ny:59};
+const faceGrid=new Float32Array(FACE_GRID.nx*FACE_GRID.ny*6);
+for(let j=0;j<FACE_GRID.ny;j++)for(let i=0;i<FACE_GRID.nx;i++){
+ const f=devBuild.form.faceAt(FACE_GRID.x0+i*FACE_GRID.step,FACE_GRID.y0+j*FACE_GRID.step),o=(j*FACE_GRID.nx+i)*6;
+ faceGrid.set(f.p,o);faceGrid.set(f.n,o+3);
+}
+function onFace(x,y,lift,out,at){
+ const g=FACE_GRID,fx=Math.min(g.nx-1.001,Math.max(0,(x-g.x0)/g.step)),fy=Math.min(g.ny-1.001,Math.max(0,(y-g.y0)/g.step));
+ const i=Math.floor(fx),j=Math.floor(fy),u=fx-i,v=fy-j,w=[(1-u)*(1-v),u*(1-v),(1-u)*v,u*v],c=[j*g.nx+i,j*g.nx+i+1,(j+1)*g.nx+i,(j+1)*g.nx+i+1];
+ for(let k=0;k<3;k++){
+  let p=0,n=0;for(let q=0;q<4;q++){p+=faceGrid[c[q]*6+k]*w[q];n+=faceGrid[c[q]*6+3+k]*w[q];}
+  out[at+k]=p+n*lift;
+ }
+}
+const FACE_MAX=12000,faceMesh=new T.Mesh(new T.BufferGeometry(),new T.MeshBasicMaterial({vertexColors:true,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}));
+faceMesh.geometry.setAttribute('position',new T.BufferAttribute(new Float32Array(FACE_MAX*3),3));
+faceMesh.geometry.setAttribute('color',new T.BufferAttribute(new Float32Array(FACE_MAX*3),3));
+faceMesh.frustumCulled=false;devHead.add(faceMesh);
+function drawDevFace(f){
+ const pos=faceMesh.geometry.attributes.position.array,col=faceMesh.geometry.attributes.color.array,mapped=[];let v=0;
+ window.FrameForgeDesign.faceShapes(DEV_SPEC,f).forEach((s,k)=>{
+  // Later shapes (glints, lid lines, teeth) sit a hair above earlier ones, so layers never fight.
+  const n=s.pts.length>>1,lift=.012+k*.0005,c=FACE_COLOURS[s.fill],pt=new Float32Array(s.pts.length*3);
+  s.pts.forEach(([x,y],i)=>onFace(x,y,lift,pt,i*3));
+  const emit=i=>{if(v>=FACE_MAX)return;pos.set(pt.subarray(i*3,i*3+3),v*3);col[v*3]=c.r;col[v*3+1]=c.g;col[v*3+2]=c.b;v++;};
+  for(let i=0;i<n-1;i++){const t0=i,t1=i+1,b1=2*n-2-i,b0=2*n-1-i;emit(t0);emit(t1);emit(b1);emit(t0);emit(b1);emit(b0);}
+ });
+ faceMesh.geometry.setDrawRange(0,v);faceMesh.geometry.attributes.position.needsUpdate=true;faceMesh.geometry.attributes.color.needsUpdate=true;
+ faceMesh.geometry.computeBoundingSphere();
+}
+// The face is lit by its facets alone: soft shadows from hair, glasses, nose or ears smudge it as the head moves.
+// The skull still casts onto the body.
+devHead.children.forEach(m=>{if(m!==skull)m.castShadow=false});skull.receiveShadow=false;
+lookParts.dev.hoodie.push({material:hoodie,shade:0},{material:hoodieLight,shade:.16},{material:hoodieDark,shade:-.35},{material:pocketMat,shade:-.35},{material:pocketRim,shade:-.58});
+lookParts.dev.hair.push({material:blackHair,shade:0});
+// BLUE and ORANGE are their model sheet (design/robot-character.js, M3.2), built from the same forms that draw it and
+// at DEV's scale, so the three stand in the proportions the sheet shows. Each robot: matte faceted parts, a head on a
+// pivot (emotions tilt it), arms on shoulder pivots (the acting swings them), and a face of flat light on the visor,
+// redrawn every frame from the sheet's face channels, like DEV's.
+const ROBOT_SHEET=window.FrameForgeRobots,ROBOT_S=DEV_S;
+// Matte colours: about 40% from the middle to the lit end of each sheet ramp, as DEV's skin is.
+const ROBOT_MATS={blueShell:flat(0x53779b),blueDeep:flat(0x345274),orangeShell:flat(0xca6e35),orangeDeep:flat(0x974a21),trim:flat(0x282742),violet:flat(0x4b43a0)};
+const ROBOT_FACE_COLOURS=Object.fromEntries(Object.entries({visor:0x151029,visorDeep:0x0d0a18,bezelFlat:0x0b0a12,blueFace:0x79c5ff,orangeFace:0xffc15a,
+ blueFaceDim:0x2f5f8f,orangeFaceDim:0x8a5a1e,violetFlat:0x7a62c8,ink:0x04030a,mouth:0x2a0911,glint:0xfff7ee}).map(([k,v])=>[k,new T.Color(v)]));
+lookParts.blue.shell.push({material:ROBOT_MATS.blueShell,shade:0},{material:ROBOT_MATS.blueDeep,shade:-.35});
+lookParts.orange.shell.push({material:ROBOT_MATS.orangeShell,shade:0},{material:ROBOT_MATS.orangeDeep,shade:-.35});
+const robotMesh=(tris,parent,offset)=>{
+ for(const mat of new Set(tris.map(t=>t.mat))){
+  const m=new T.Mesh(devGeometry(tris.filter(t=>t.mat===mat)),ROBOT_MATS[mat]);
+  if(offset)m.position.set(...offset.map(v=>-v));m.castShadow=false;m.receiveShadow=true;parent.add(m);
+ }
+};
+// Flat face shapes as triangles on a surface: strips (top run, bottom run reversed) or convex fans. Triangles are cut
+// small in face space before they are wrapped, so a big shape (the visor) follows the head's curve instead of cutting
+// under its facets.
+function faceTriangles(shapes,faceAt,lift,pos,col,at){
+ const MAX=.02;
+ shapes.forEach((sh,k)=>{
+  const c=ROBOT_FACE_COLOURS[sh.fill],up=lift+k*.0015;
+  const put=([x,y])=>{if(at>=pos.length/3)return;const f=faceAt(x,y);pos[at*3]=f.p[0]+f.n[0]*up;pos[at*3+1]=f.p[1]+f.n[1]*up;pos[at*3+2]=f.p[2]+f.n[2]*up;
+   col[at*3]=c.r;col[at*3+1]=c.g;col[at*3+2]=c.b;at++;};
+  const tri=(a,b,d)=>{
+   const n=Math.max(1,Math.ceil(Math.max(Math.hypot(a[0]-b[0],a[1]-b[1]),Math.hypot(b[0]-d[0],b[1]-d[1]),Math.hypot(d[0]-a[0],d[1]-a[1]))/MAX));
+   const P=(i,j)=>[a[0]+(b[0]-a[0])*i/n+(d[0]-a[0])*j/n,a[1]+(b[1]-a[1])*i/n+(d[1]-a[1])*j/n];
+   for(let j=0;j<n;j++)for(let i=0;i<n-j;i++){put(P(i,j));put(P(i+1,j));put(P(i,j+1));if(i+j<n-1){put(P(i+1,j));put(P(i+1,j+1));put(P(i,j+1));}}
+  };
+  const p=sh.pts;
+  if(sh.strip){const n=p.length>>1;for(let i=0;i<n-1;i++){tri(p[i],p[i+1],p[2*n-2-i]);tri(p[i],p[2*n-2-i],p[2*n-1-i]);}}
+  else{const mid=p.reduce((a,q)=>[a[0]+q[0]/p.length,a[1]+q[1]/p.length],[0,0]);for(let i=0;i<p.length;i++)tri(mid,p[i],p[(i+1)%p.length]);}
+ });
+ return at;
+}
+// A head's front surface sampled once on a grid (point and normal), then read by bilinear interpolation: the faces
+// are redrawn every frame, and the exact surface costs five evaluations per vertex.
+function surfaceGrid(form){
+ const [rx,ry]=form.r,nx=65,ny=49,x0=-rx,y0=-ry,dx=2*rx/(nx-1),dy=2*ry/(ny-1),g=new Float32Array(nx*ny*6);
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const f=form.faceAt(x0+i*dx,y0+j*dy);g.set(f.p,(j*nx+i)*6);g.set(f.n,(j*nx+i)*6+3);}
+ const p=[0,0,0],n=[0,0,0],out={p,n};
+ return(x,y)=>{
+  const fx=Math.min(nx-1.001,Math.max(0,(x-x0)/dx)),fy=Math.min(ny-1.001,Math.max(0,(y-y0)/dy)),i=fx|0,j=fy|0,u=fx-i,v=fy-j;
+  const a=(j*nx+i)*6,b=a+6,c=a+nx*6,d=c+6,w0=(1-u)*(1-v),w1=u*(1-v),w2=(1-u)*v,w3=u*v;
+  for(let k=0;k<3;k++){p[k]=g[a+k]*w0+g[b+k]*w1+g[c+k]*w2+g[d+k]*w3;n[k]=g[a+3+k]*w0+g[b+3+k]*w1+g[c+3+k]*w2+g[d+3+k]*w3;}
+  return out;
+ };
+}
+const robotFaceMaterial=()=>new T.MeshBasicMaterial({vertexColors:true,side:T.DoubleSide,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
+function buildRobot(actor,who){
+ const spec=ROBOT_SHEET.ROBOTS[who],robot=window.FrameForgeRobot.build(spec),g=actor.group;
+ const rig=new T.Group();rig.scale.setScalar(ROBOT_S);g.add(rig);
+ // Body, neck and base stay put; the head turns about its pivot; each arm swings about its shoulder.
+ robotMesh(robot.parts.filter(p=>!p.head&&!p.arm).flatMap(p=>p.tris),rig);
+ const headTilt=new T.Group();headTilt.position.set(...robot.pivot);headTilt.rotation.order='YXZ';rig.add(headTilt);
+ robotMesh(robot.parts.filter(p=>p.head).flatMap(p=>p.tris),headTilt,robot.pivot);
+ for(const side of [1,-1]){
+  const at=robot.shoulders[side],pivot=new T.Group();pivot.name=who+'_shoulder_'+side;pivot.position.set(...at);rig.add(pivot);
+  robotMesh(robot.parts.filter(p=>p.arm===side).flatMap(p=>p.tris),pivot,at);
+  actor.armJoints.push({pivot,sign:side,wrist:null});
+ }
+ // The chest light is fixed: drawn once onto the body.
+ if(spec.chest){
+  const shapes=spec.chest.map(d=>({fill:d.fill,pts:d.shape==='circle'?Array.from({length:16},(_,i)=>[d.x+d.r*Math.cos(i*Math.PI/8),d.y+d.r*Math.sin(i*Math.PI/8)]):
+   [[d.x-d.w/2,d.y-d.h/2],[d.x+d.w/2,d.y-d.h/2],[d.x+d.w/2,d.y+d.h/2],[d.x-d.w/2,d.y+d.h/2]]}));
+  const pos=new Float32Array(20000*3),col=new Float32Array(20000*3),n=faceTriangles(shapes,robot.body.faceAt,.004,pos,col,0);
+  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(pos.slice(0,n*3),3));geo.setAttribute('color',new T.BufferAttribute(col.slice(0,n*3),3));
+  rig.add(new T.Mesh(geo,robotFaceMaterial()));
+ }
+ // The face mesh lives in the head's frame (relative to the pivot), refilled from the face channels every frame.
+ const faceMesh=new T.Mesh(new T.BufferGeometry(),robotFaceMaterial());
+ faceMesh.geometry.setAttribute('position',new T.BufferAttribute(new Float32Array(40000*3),3));
+ faceMesh.geometry.setAttribute('color',new T.BufferAttribute(new Float32Array(40000*3),3));
+ faceMesh.frustumCulled=false;faceMesh.position.set(...robot.pivot.map(v=>-v));headTilt.add(faceMesh);
+ Object.assign(actor,{who,spec,robot,rig,headTilt,faceMesh,headAt:surfaceGrid(robot.head)});
+ return actor;
+}
+// One moment of a robot's face: emotion, the sound being spoken and how loud, a blink, and where it looks (-1..1).
+function drawRobotFace(actor,emotion,{viseme=null,open=0,blink=false,look=0}={}){
+ const f=ROBOT_SHEET.face(actor.who,emotion,{viseme,open,blink,look});
+ const pos=actor.faceMesh.geometry.attributes.position.array,col=actor.faceMesh.geometry.attributes.color.array;
+ const v=faceTriangles(window.FrameForgeRobot.faceShapes(actor.spec,f),actor.headAt,.006,pos,col,0);
+ actor.faceMesh.geometry.setDrawRange(0,v);actor.faceMesh.geometry.attributes.position.needsUpdate=true;actor.faceMesh.geometry.attributes.color.needsUpdate=true;
+ actor.faceState={emotion,viseme,open,blink,look};
+ applyRobotPose(actor,emotion,actor.act||null);
+}
+// The body, head and arms: the emotion's head pose (the sheet's roll, pitch and yaw) plus the acting channels
+// (src/robot-acting-core.js), in sheet units and radians.
+function applyRobotPose(actor,emotion,ch){
+ const p=ROBOT_SHEET.pose(emotion),d=Math.PI/180,c=ch||{};
+ actor.headTilt.rotation.set((p.pitch||0)*d+(c.headP||0),(p.yaw||0)*d+(c.headY||0),(p.roll||0)*d-(c.headR||0));
+ actor.group.position.y=(c.hover||0)*ROBOT_S;
+ actor.group.rotation.set(c.tilt||0,c.turn||0,c.lean||0);
+ for(const arm of actor.armJoints){const s=arm.sign>0?'L':'R';arm.pivot.rotation.set(-(c[s+'.swing']||0),0,arm.sign*(c[s+'.out']||0));}
+}
+buildRobot(faces.blue,'blue');buildRobot(faces.orange,'orange');
+// Where the cameras aim: each robot's head centre, standing on its root (which hovers at y .43).
+const ROBOT_HEAD_Y={blue:.43+ROBOT_S*ROBOT_SHEET.ROBOTS.blue.head.c[1],orange:.43+ROBOT_S*ROBOT_SHEET.ROBOTS.orange.head.c[1]};
+// Robot close-ups stand back so the sheet head is about 60% of the frame width with its shoulders in (STYLE.md).
+const ROBOT_FRAME=1.15;
+// Face channels: the sheet's emotion presets, mixed by the performance core's blend, plus blinks, gaze and speech.
+const DEV_EMOTIONS=window.FrameForgeDev.EMOTIONS,DEV_MOUTHS=window.FrameForgeDev.MOUTH_CHART;
+const VISEME_MOUTH={closed:'M B P',round:'O',wide:'E',teeth:'F V',open:'A'},FACE_DEFAULT={eyeScale:1,w:1,th:1,teethH:.32};
+// The jaw also drops with the voice's loudness, on top of the mouth shape: fully on vowels, a little on F/V, never on M/B/P.
+const VISEME_JAW={open:1,wide:.9,round:.8,teeth:.35,closed:0};
+function mixFace(a,b,t){
+ const out={};
+ for(const k of new Set([...Object.keys(a),...Object.keys(b)])){
+  const x=a[k],y=b[k];
+  if(k==='mouth')out.mouth=mixFace(x||{},y||{},t);
+  else if(Array.isArray(x)||Array.isArray(y)){const xa=x||[0,0],ya=y||[0,0];out[k]=xa.map((q,i)=>q+(ya[i]-q)*t);}
+  else{const p=x??FACE_DEFAULT[k]??0,q=y??FACE_DEFAULT[k]??0;out[k]=p+(q-p)*t;}
+ }
+ return out;
+}
+function devFaceChannels(pose,speech,inLine,from,to){
+ const a=DEV_EMOTIONS[from]||DEV_EMOTIONS.neutral,b=DEV_EMOTIONS[to]||DEV_EMOTIONS.neutral,t=pose.blend??1;
+ const f=mixFace(a.face,b.face,t),head=mixFace(a.pose,b.pose,t);
+ // A blink closes whatever lid the emotion holds; the gaze adds to the emotion's own look.
+ f.lidU=(f.lidU||0)+(1-(f.lidU||0))*(pose.blink||0);
+ const g=f.gaze||[0,0];f.gaze=[g[0]+pose.gazeX*.03,g[1]+pose.gazeY*.03];
+ // Speech uses the sheet's mouth chart, opened by the voice. Between syllables of DEV's own line the mouth rests near
+ // closed, so word gaps never flip it to a smile or frown.
+ const m=f.mouth||{};
+ if(speech&&speech.viseme!=='rest'){
+  const shape=DEV_MOUTHS[VISEME_MOUTH[speech.viseme]]||DEV_MOUTHS.A,k=Math.min(1.15,.45+pose.mouthOpen*.9);
+  f.mouth={...mixFace(m,shape,.85),o:Math.max((shape.o||0)*k,(VISEME_JAW[speech.viseme]??1)*pose.mouthOpen*.055),s:(m.s||0)*.5+(shape.s||0)*.5};
+ }else if(inLine)f.mouth={...mixFace(m,DEV_MOUTHS.rest,.6),o:0};
+ return{f,head};
+}
+let devFace=null;
+function applyHumanFacePose(pose,speech=null,inLine=false,from='neutral',to='neutral'){
+ const{f,head}=devFaceChannels(pose,speech,inLine,from,to);
+ drawDevFace(f);devFace=f;
+ skull.morphTargetInfluences[0]=Math.max(0,Math.min(1,pose.cheek));
+ const rad=T.MathUtils.degToRad;headTilt.rotation.set(rad(head.pitch||0),rad(head.yaw||0),rad(head.roll||0));
+}
+
+// The body pose from the acting core onto the bones. Crouches bend hips, knees and ankles so the feet stay planted.
+const DEV_THIGH=devRigSpec.legLength/2,DEV_REST={channels:Object.fromEntries(window.FrameForgeDevActing.channels.map(c=>[c,0])),hands:{L:'relaxed',R:'relaxed'}};
+function applyDevBody({channels:c,hands},look=0,talk=0,t=0){
+ const B=devBones,knee=Math.min(.9,c.crouch)*.75;
+ B.hips.position.copy(B.hips.userData.rest);B.hips.position.y+=c.bob+c.hop-2*DEV_THIGH*(1-Math.cos(knee));
+ B.spine.rotation.set(c.spineP,c.spineY,c.spineR);B.chest.rotation.set(c.chestP,c.chestY,c.chestR);B.neck.rotation.set(c.neckP,0,0);
+ humanHead.rotation.set(c.headP+.018*Math.sin(t*1.1),c.headY+look,c.headR+talk);
+ for(const[k,s]of[['L',1],['R',-1]]){
+  const a=n=>c[k+'.'+n],sh=B['shoulder'+k];
+  sh.position.copy(sh.userData.rest);sh.position.y+=a('lift');sh.rotation.set(-a('raise'),s*a('twist'),s*a('out'));
+  B['elbow'+k].rotation.set(-a('bend'),0,0);B['wrist'+k].rotation.set(0,s*a('wtwist'),-s*a('wflex'));
+  B['hip'+k].rotation.set(-knee,0,0);B['knee'+k].rotation.set(2*knee,0,0);B['ankle'+k].rotation.set(-knee,0,0);
+  for(const[pose,m]of Object.entries(devHands[k]))m.visible=pose===hands[k];
+ }
+}
+
+function estimateViseme(text,local,duration){
+ const words=text.toLowerCase().match(/[a-z']+/g)||[];
+ if(!words.length||local<.10||local>duration*.91)return 'rest';
+ const weights=words.map(w=>Math.max(2,w.length*.7+1.5));
+ const total=weights.reduce((a,b)=>a+b,0);
+ const cursor=Math.max(0,Math.min(.999,(local-.1)/(duration*.90-.1)))*total;
+ let amount=0,word=words[0],within=0;
+ for(let i=0;i<words.length;i++){
+  if(cursor<amount+weights[i]){word=words[i];within=(cursor-amount)/weights[i];break;}
+  amount+=weights[i];
+ }
+ const letter=word[Math.min(word.length-1,Math.floor(within*word.length))]||'a';
+ return /[bmp]/.test(letter)?'closed':/[oouw]/.test(letter)?'round':/[iey]/.test(letter)?'wide':/[fv]/.test(letter)?'teeth':'open';
+}
+
+const oldUpdate=update;let lastFaceDraw=0;
+update=function(){
+ const t=time;let elapsed=0,shot=shots.at(-1),local=0;
+ for(const v of shots){if(time<elapsed+v.duration){shot=v;local=time-elapsed;break}elapsed+=v.duration}
+ const speechEnd=Math.min(shot.duration*.82,Math.max(.6,shot.text.length/16));
+ const beat=Math.floor(local*9);
+ let open=0;if(envReady&&decodedEnvelope){open=decodedEnvelope[Math.min(decodedEnvelope.length-1,Math.max(0,Math.floor(time*20)))]||0}else if(running&&analyser&&audioSamples){analyser.getByteTimeDomainData(audioSamples);let sq=0;for(const v of audioSamples){const x=(v-128)/128;sq+=x*x}open=Math.max(0,Math.min(1,(Math.sqrt(sq/audioSamples.length)-.015)*14))}
+ // Acoustic envelope maps graphemes into speaking regions and pauses.
+ const speechCue=window.FrameForgeSpeechCore.evaluate({
+   text:shot.text,local,duration:shot.duration,shotStart:t-local,
+   samples:envReady?decodedEnvelope:null,rate:20,audioEnergy:open,speaker:shot.speaker
+ });
+ const viseme=speechCue.viseme;
+ const speechPower=speechCue.mouthOpen;
+ const index=shots.indexOf(shot);
+ // The wall screen keeps showing what it last showed until a shot gives it something new.
+ drawWallScreen(wallScreen,shots.slice(0,index+1).findLast(s=>s.wall)?.wall);
+ const expression={blue:shot.cast.blue.emotion,orange:shot.cast.orange.emotion};
+ // Listeners visibly notice something before the next speaker begins.
+ const reaction=cinematicReaction(shot,local);
+ if(reaction?.emotion)expression[reaction.role]=reaction.emotion;
+ const blueGaze=shot.speaker==='dev'?-0.55:shot.speaker==='orange'?0.45:0;
+ const orangeGaze=shot.speaker==='dev'?-0.75:shot.speaker==='blue'?-0.48:0;
+ if(offlineMode||Math.abs(t-lastFaceDraw)>.04){
+  // Each robot blinks on its own rhythm; the speaker's mouth takes the sound's shape, opened by its loudness.
+  const talking=id=>shot.speaker===id&&speechCue.voiced;
+  drawRobotFace(faces.blue,expression.blue,{viseme:talking('blue')?viseme:null,open:talking('blue')?speechPower:0,blink:Math.sin(t*2.05+.3)>.985,look:blueGaze});
+  drawRobotFace(faces.orange,expression.orange,{viseme:talking('orange')?viseme:null,open:talking('orange')?speechPower:0,blink:Math.sin(t*1.6+2.1)>.988,look:orangeGaze});
+  lastFaceDraw=t;
+ }
+ brows.forEach((b,i)=>{b.position.y=shot.speaker==='dev'?2.57:2.54;b.rotation.z=shot.speaker==='dev'?(i?-.13:.13):0;});
+ mouth.scale.y=shot.speaker==='dev'?1+open*3.5:1;
+
+// Directed deterministic gestures: each shot has an action, not just one repeating movement.
+ const humanAction=shot.cast.dev.action,blueAction=shot.cast.blue.action,orangeAction=shot.cast.orange.action;
+ // The speaker's accent hits the stressed middle of the line; listeners react just after it ends.
+ const lineAt=shot.voice?shot.timing.lead:.1,lineLen=shot.voice?shot.voice.seconds:shot.duration*.7;
+ const accentAt=id=>id===shot.speaker?(lineAt+.4*lineLen)/shot.duration:Math.min(.9,(lineAt+lineLen+.1)/shot.duration);
+ // DEV acts with his whole body (src/dev-acting-core.js): key poses around the accent, each joint on its own spring.
+ const devAct=window.FrameForgeDevActing.evaluate({action:humanAction,local,duration:shot.duration,time:t,accentAt:accentAt('dev'),
+  speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0});
+ // BLUE and ORANGE act with their bodies too (src/robot-acting-core.js), each in character.
+ for(const [who,action,look] of [['blue',blueAction,blueGaze],['orange',orangeAction,orangeGaze]]){
+  faces[who].act=window.FrameForgeRobotActing.evaluate({robot:who,action,local,duration:shot.duration,time:t,accentAt:accentAt(who),
+   speaking:shot.speaker===who&&speechCue.voiced,energy:shot.speaker===who?speechPower:0,look}).channels;
+  applyRobotPose(faces[who],expression[who],faces[who].act);
+ }
+ // He looks toward whoever speaks and sways a little while he talks.
+ applyDevBody(devAct,(shot.speaker==='orange'?.13:shot.speaker==='blue'?-.12:0)+.018*Math.sin(t*.72),shot.speaker==='dev'?.035*Math.sin(t*1.2):0,t);
+
+ oldUpdate();
+ // Apply coordinated facial acting AFTER the legacy mouth, brow and head updates.
+ const prior=shots[index-1];
+ const fromEmotion=prior?.cast.dev.emotion||'neutral';
+ const toEmotion=shot.cast.dev.emotion;
+ const facialPose=window.FrameForgePerformanceCore.evaluate({
+  time:t,local,duration:shot.duration,emotion:toEmotion,fromEmotion,
+  speaking:shot.speaker==='dev'&&speechCue.voiced,energy:shot.speaker==='dev'?speechPower:0,
+gazeX:shot.speaker==='orange'?.38:shot.speaker==='blue'?-.34:devAct.channels.headY*.6
+ });
+ const devInLine=shot.speaker==='dev'&&local>=lineAt-.05&&local<=lineAt+lineLen+.2;
+ applyHumanFacePose(facialPose,shot.speaker==='dev'?speechCue:null,devInLine,fromEmotion,toEmotion);
+ renderer.render(scene,cam);
+};
+// V5 projects are versioned documents, NOT hardcoded dialogue arrays.
+const projectCatalog=Object.create(null);
+// The episode list is data: add an entry to projects/index.json to publish a new episode.
+const projectReady=fetch('./projects/index.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Missing projects/index.json (HTTP '+r.status+')');return r.json()}).then(index=>{
+ const select=$('preset');select.innerHTML='';
+ for(const {key,label} of index.episodes){const o=document.createElement('option');o.value=key;o.textContent=label;select.appendChild(o)}
+ return Promise.all(index.episodes.map(async ({key,file})=>{
+ const path='./projects/'+file;
+ const response=await fetch(path,{cache:'no-cache'});
+ if(!response.ok)throw new Error('Missing project '+path+' (HTTP '+response.status+')');
+ const document=await response.json();
+ window.FrameForgeProjectCore.assertProject(document);
+ projectCatalog[key]=document;
+ }));
+}).then(()=>{window.FrameForgeProjectsLoaded=true;});
+let shots=[],duration=30,time=0,running=false,last=performance.now(),selected=0;
+function load(){const p=$('preset').value;const project=projectCatalog[p];if(!project){$('recordStatus').textContent='Project not yet loaded';return;}
+ window.FrameForgeProjectCore.assertRendererCompatible(project);
+ soundtrack.pause();
+ if(project.audio.state==='mastered'){soundtrack.src=project.audio.masterUrl;soundtrack.load();$('recordStatus').textContent=project.shots.length+' scenes with mastered audio ready';}
+ else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard: no voices yet';}audioStale=false;audioMode=project.audio.state==='mastered'?'master':'none';browserVoice=null;voiceRun++;applyLooks(project);fillLooks(project);fillVoices(project);fillPronunciations(project);lastGuessed=[];loadEnvelope(project.audio.voiceUrl);shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();if(audioMode==='none')autoVoice();}
+function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration.toFixed(1)+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration.toFixed(1)+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});fillInspector();}
+const performerCoordinates={
+ blue:[0,ROBOT_HEAD_Y.blue,.54],
+ orange:[1.72,ROBOT_HEAD_Y.orange,.54],
+ dev:[-1.70,2.55,-1.0]
+};
+function cinematicReaction(shot,local){
+ const cut=shot.reactionCut;
+ if(!cut||local<shot.duration-cut.seconds)return null;
+ // Robot reaction cuts (31° lens) stand far enough back for the sheet head to fill about 60% of the frame width.
+ const subject=performerCoordinates[cut.role],scale=cut.role==='dev'?3.50:4.7,k=cut.role==='dev'?DEV_FRAME:ROBOT_FRAME;
+ return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14)*k,subject[1]+.08*k,subject[2]+scale*k]};
+}
+
+function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,ROBOT_HEAD_Y.blue,.57]:s.camera==='orange'?[1.72,ROBOT_HEAD_Y.orange,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
+ const wide=s.camera==='duo'||s.camera==='wide'||s.camera==='screen';
+ // Two-shots lean toward the aimed character (by default the speaker) so they stay in frame.
+ if(s.camera==='duo'||s.camera==='wide')tgt=[aim==='center'?0:performerCoordinates[aim][0]*(s.camera==='duo'?.5:.35),tgt[1],tgt[2]];
+ const ease=Math.max(0,Math.min(1,local/s.duration));
+ const travel=move==='static'?0:(ease*ease*(3-2*ease)-.5)*amount*(move==='pull'?-1:1);
+ const dolly=move==='drift'?0:travel,drift=move==='drift'?travel*.8:dolly*.14;
+ const pos=wide?[tgt[0]+offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance];
+ cam.fov=fov;cam.updateProjectionMatrix();
+ cam.position.set(pos[0]+drift+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
+ if(s.camera==='dev'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.sub(look).multiplyScalar(DEV_FRAME).add(look);}
+ // Robot close-ups: at the robot's eye level (its head sits lower or higher than DEV's), framed for the sheet head.
+ if(s.camera==='blue'||s.camera==='orange'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.y=tgt[1]+.04+up;cam.position.sub(look).multiplyScalar(ROBOT_FRAME).add(look);}
+ cam.lookAt(tgt[0],tgt[1]+lookUp,tgt[2]);
+ if(roll)cam.rotateZ(roll*Math.PI/180);
+ // Listener reaction inserts are intentional editorial cuts, not camera jitter.
+ const listenerCut=cinematicReaction(s,local);
+ if(listenerCut){
+  cam.position.set(...listenerCut.camera);
+  cam.lookAt(...listenerCut.subject);
+  cam.fov=listenerCut.role==='dev'?34:31;
+  cam.updateProjectionMatrix();
+ }
+ b.root.position.y=.43;o.root.position.y=.43;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=KEY_INTENSITY*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(VOID);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
+const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
+function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
+$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{
+ const s=shots[selected],text=$('dialogue').value.trim()||s.text,speaker=$('speaker').value,camera=$('camera').value;
+ if(text!==s.text||speaker!==s.speaker){s.voice=null;markAudioStale();}
+ if(camera!==s.camera){
+  // A new camera starts from that camera's default framing; the move, cant and aim choices stay.
+  Object.assign(s.framing,window.FrameForgeProjectCore.defaultFraming(camera));
+  if(s.framing.aim!=='center'&&camera!=='duo'&&camera!=='wide')s.framing.aim='center';
+ }
+ s.text=text;s.speaker=speaker;s.camera=camera;refresh();update()};
+// --- Shot inspector -------------------------------------------------------------------
+let audioStale=false;
+function markAudioStale(){
+ if(!audioStale){audioStale=true;audioMode='none';browserVoice=null;running=false;soundtrack.pause();soundtrack.removeAttribute('src');soundtrack.load();loadEnvelope(null);}
+ autoVoice();
+}
+// --- Voices in the browser ------------------------------------------------------------------------
+// Kokoro runs in a worker (src/kokoro-worker.js) and caches every line it voices. Shots are re-timed
+// from their lines as tools/build-audio.mjs does (lead + line + pause), and the lines become one voice
+// track that drives playback, lip sync and the MP4 export.
+const VOICES=[['af_heart','Heart · US'],['af_bella','Bella · US'],['af_nicole','Nicole · US, soft'],['af_aoede','Aoede · US'],['af_kore','Kore · US'],
+ ['af_sarah','Sarah · US'],['am_michael','Michael · US'],['am_fenrir','Fenrir · US'],['am_puck','Puck · US'],['am_echo','Echo · US'],['am_eric','Eric · US'],
+ ['am_liam','Liam · US'],['am_onyx','Onyx · US, deep'],['bf_emma','Emma · UK'],['bf_isabella','Isabella · UK'],['bm_george','George · UK'],
+ ['bm_fable','Fable · UK'],['bm_lewis','Lewis · UK'],['bm_daniel','Daniel · UK']];
+const DEFAULT_VOICE={dev:'am_michael',blue:'af_heart',orange:'bm_george'},FPS=30;
+let voiceWorker=null,voiceSeq=0,voiceEngine={state:'unknown'},audioMode='none',browserVoice=null,voiceRun=0,voiceTimer=0,trackUrl=null,auditionPlayer=null;
+const voicePending=new Map(),voiceProgress={};
+function voiceCall(message){
+ if(!voiceWorker){
+  voiceWorker=new Worker('./src/kokoro-worker.js',{type:'module'});
+  voiceWorker.onmessage=({data})=>{
+   if(data.type==='progress'){voiceProgress[data.file]=data;showVoiceEngine();return;}
+   const pending=voicePending.get(data.id);if(!pending)return;
+   voicePending.delete(data.id);data.type==='error'?pending.reject(new Error(data.message)):pending.resolve(data);
+  };
+  voiceWorker.onerror=e=>{
+   e.preventDefault();const err=new Error('the voice engine could not start'+(navigator.onLine?'':' offline before its first download'));
+   for(const p of voicePending.values())p.reject(err);voicePending.clear();voiceWorker=null;
+  };
+ }
+ const id=++voiceSeq;
+ return new Promise((resolve,reject)=>{voicePending.set(id,{resolve,reject});voiceWorker.postMessage({...message,id});});
+}
+function showVoiceEngine(){
+ const e=voiceEngine,meter=$('voiceMeter'),files=Object.values(voiceProgress);
+ const loaded=files.reduce((a,f)=>a+f.loaded,0),total=files.reduce((a,f)=>a+(f.total||f.loaded),0);
+ const mb=x=>Math.round(x/1e6);
+ $('voiceEngine').textContent=e.state==='ready'?'Voices ready · '+(e.device==='webgpu'?'GPU (WebGPU)':'CPU (WebAssembly)')+(e.source==='local'?' · local model':''):
+  e.state==='loading'?(total&&loaded<total?'Downloading voices: '+mb(loaded)+' / '+mb(total)+' MB (once only)…':'Loading voices…'):
+  e.state==='downloaded'?'Voices downloaded · loading…':e.state==='missing'?'Voices are not downloaded yet: one 326 MB download, then they work offline.':
+  e.state==='error'?'Voices unavailable: '+e.message:'Checking for the voice model…';
+ meter.hidden=e.state!=='loading'||!total;meter.firstChild.style.width=(total?100*loaded/total:0)+'%';
+ $('voiceDownload').hidden=!['missing','error'].includes(e.state);$('voiceDownload').textContent=e.state==='error'?'↻ Try again':'⬇ Download voices · 326 MB, once';
+}
+function ensureVoices(){
+ if(voiceEngine.state==='ready')return Promise.resolve(voiceEngine);
+ if(voiceEngine.promise)return voiceEngine.promise;
+ const promise=voiceCall({type:'init'}).then(r=>{voiceEngine={state:'ready',...r};showVoiceEngine();fillInspector();return voiceEngine;},
+  err=>{voiceEngine={state:'error',message:err.message};showVoiceEngine();throw err;});
+ voiceEngine={state:'loading',promise};showVoiceEngine();
+ return promise;
+}
+voiceCall({type:'status'}).then(r=>{
+ voiceEngine={state:r.modelCached?'downloaded':'missing'};showVoiceEngine();
+ // A downloaded model loads in the background, so the first line is voiced without a wait.
+ if(r.modelCached){ensureVoices().catch(e=>console.error('Voices',e));if(audioMode==='none'&&window.FrameForgeCurrentProject)autoVoice();}
+}).catch(e=>{voiceEngine={state:'error',message:e.message};showVoiceEngine();});
+$('voiceDownload').onclick=()=>ensureVoices().then(()=>{if(audioMode==='none')voiceAllLines()}).catch(e=>console.error('Voices',e));
+$('voiceLines').onclick=()=>voiceAllLines().catch(e=>console.error('Voicing',e));
+function voiceOf(speaker){
+ const c=window.FrameForgeCurrentProject?.characters.find(x=>x.id===speaker);
+ return c?.voice?.kokoro??{voice:DEFAULT_VOICE[speaker]??'af_heart',speed:1};
+}
+// The episode's own pronunciations ([{word, sayAs}]), and the words the last voicing had to guess.
+const projectPronunciations=()=>window.FrameForgeCurrentProject?.pronunciations??[];
+let lastGuessed=[],pronRows=[];
+// The editor's rows; only complete, single-word rows are kept in the episode, and a change re-voices.
+function fillPronunciations(project){pronRows=(project.pronunciations??[]).map(p=>({...p}));renderPronunciations(project);}
+function commitPronunciations(project){
+ const seen=new Set(),list=[];
+ for(const r of pronRows){const word=r.word.trim(),as=r.sayAs.trim(),k=word.toLowerCase();
+  if(/^[\p{L}\d][\p{L}\d'-]{0,39}$/u.test(word)&&as&&as.length<=120&&!seen.has(k)){seen.add(k);list.push({word,sayAs:as});}}
+ if(JSON.stringify(list)===JSON.stringify(project.pronunciations??[]))return;
+ if(list.length)project.pronunciations=list;else delete project.pronunciations;
+ markAudioStale();
+}
+function renderPronunciations(project){
+ const grid=$('pronGrid');grid.innerHTML='';
+ pronRows.forEach((r,i)=>{
+  const word=document.createElement('input'),say=document.createElement('input');
+  word.value=r.word;word.placeholder='Kokoro';word.id='pron-word-'+i;word.setAttribute('aria-label','Word');
+  say.value=r.sayAs;say.placeholder='koh-KOR-oh';say.id='pron-say-'+i;say.setAttribute('aria-label','How it sounds');
+  word.onchange=()=>{r.word=word.value;commitPronunciations(project);};say.onchange=()=>{r.sayAs=say.value;commitPronunciations(project);};
+  const play=document.createElement('button');play.textContent='▶';play.title='Hear it';
+  play.onclick=()=>{if(!['ready','downloaded'].includes(voiceEngine.state)){$('voiceStatus').textContent='Download the voices first.';return}
+   const speaker=shots.find(s=>lineWords(s.text).has(r.word.trim().toLowerCase()))?.speaker??project.characters[0].id;
+   audition(r.word.trim()||'?',voiceOf(speaker));};
+  const remove=document.createElement('button');remove.textContent='✕';remove.title='Remove';
+  remove.onclick=()=>{pronRows.splice(i,1);commitPronunciations(project);renderPronunciations(project);};
+  grid.append(word,say,play,remove);
+ });
+ // A new row starts from a word the voices had to guess, if one is not listed yet.
+ $('pronAdd').onclick=()=>{
+  const listed=new Set(pronRows.map(r=>r.word.trim().toLowerCase()));
+  pronRows.push({word:lastGuessed.find(w=>!listed.has(w.toLowerCase()))??'',sayAs:''});
+  renderPronunciations(project);$('pron-'+(pronRows.at(-1).word?'say-':'word-')+(pronRows.length-1)).focus();
+ };
+}
+const lineWords=text=>new Set((text.match(/[\p{L}\d'-]+/gu)||[]).map(w=>w.toLowerCase().replace(/'s$/,'')));
+// A line is spoken with its speaker's emotion in that shot (src/voice-emotion.js).
+const lineEmotion=s=>s.cast?.[s.speaker]?.emotion??'neutral';
+// Lines re-voice by themselves once the model is downloaded; only changed lines are synthesised.
+function autoVoice(){
+ clearTimeout(voiceTimer);
+ if(['ready','downloaded','loading'].includes(voiceEngine.state))voiceTimer=setTimeout(()=>voiceAllLines().catch(e=>console.error('Voicing',e)),250);
+}
+// 16-bit WAV of one channel or an array of channels.
+function wavBlob(samples,rate){
+ const channels=Array.isArray(samples)?samples:[samples],n=channels[0].length,k=channels.length,bytes=n*k*2;
+ const data=new DataView(new ArrayBuffer(44+bytes)),text=(at,s)=>[...s].forEach((c,i)=>data.setUint8(at+i,c.charCodeAt(0)));
+ text(0,'RIFF');data.setUint32(4,36+bytes,true);text(8,'WAVE');text(12,'fmt ');data.setUint32(16,16,true);data.setUint16(20,1,true);
+ data.setUint16(22,k,true);data.setUint32(24,rate,true);data.setUint32(28,rate*2*k,true);data.setUint16(32,2*k,true);data.setUint16(34,16,true);
+ text(36,'data');data.setUint32(40,bytes,true);
+ for(let i=0;i<n;i++)for(let c=0;c<k;c++)data.setInt16(44+(i*k+c)*2,Math.max(-1,Math.min(1,channels[c][i]))*32767,true);
+ return new Blob([data],{type:'audio/wav'});
+}
+// Music, sound effects and mastering for browser-voiced episodes (src/episode-mix.mjs, in its own worker).
+let mixWorker=null,mixSeq=0;const mixPending=new Map();
+function mixCall(message){
+ if(!mixWorker){
+  mixWorker=new Worker('./src/mix-worker.js',{type:'module'});
+  mixWorker.onmessage=({data})=>{const p=mixPending.get(data.id);if(!p)return;mixPending.delete(data.id);data.error?p.reject(new Error(data.error)):p.resolve(data);};
+  mixWorker.onerror=e=>{e.preventDefault();for(const p of mixPending.values())p.reject(new Error('the mixer could not start'));mixPending.clear();mixWorker=null;};
+ }
+ const id=++mixSeq;
+ return new Promise((resolve,reject)=>{mixPending.set(id,{resolve,reject});mixWorker.postMessage({...message,id});});
+}
+// A shot's sound cues live in the episode file (a duplicated shot keeps its original's).
+function shotCues(project,id){const byId=Object.fromEntries(project.shots.map(s=>[s.id,s]));return (byId[id]??byId[id.replace(/-copy\d*$/,'')])?.sfx??[];}
+async function audition(text,v,emotion='neutral'){
+ const status=$('voiceStatus');status.textContent='Voicing “'+text+'”…';
+ try{
+  const r=await voiceCall({type:'speak',text,voice:v.voice,speed:v.speed??1,emotion,pronunciations:projectPronunciations()});
+  auditionPlayer?.pause();if(auditionPlayer)URL.revokeObjectURL(auditionPlayer.src);
+  auditionPlayer=new Audio(URL.createObjectURL(wavBlob(r.samples,r.rate)));auditionPlayer.play().catch(()=>{});
+  status.textContent=v.voice+(emotion!=='neutral'?' · '+emotion:'')+' · '+r.seconds.toFixed(1)+' s'+(r.cached?' (cached)':' in '+(r.ms/1000).toFixed(1)+' s')+(r.guessed.length?' · guessed: '+r.guessed.join(', '):'');
+ }catch(e){status.textContent='Voice preview failed: '+e.message;}
+}
+function fillVoices(project){
+ const grid=$('voiceGrid');grid.innerHTML='';
+ for(const c of project.characters){
+  const v=voiceOf(c.id),name=document.createElement('b');name.textContent=c.name;
+  const select=document.createElement('select');select.id='voice-'+c.id;select.setAttribute('aria-label',c.name+' voice');
+  for(const [id,label] of VOICES.some(([id])=>id===v.voice)?VOICES:[[v.voice,v.voice],...VOICES]){const o=document.createElement('option');o.value=id;o.textContent=label;select.appendChild(o)}
+  select.value=v.voice;
+  const speed=document.createElement('input');speed.type='range';speed.min='.7';speed.max='1.3';speed.step='.05';speed.value=String(v.speed??1);
+  speed.id='voice-speed-'+c.id;speed.title='Speaking speed';speed.setAttribute('aria-label',c.name+' speaking speed');
+  const pick=document.createElement('div');pick.append(select,speed);
+  const play=document.createElement('button');play.textContent='▶';play.title='Hear '+c.name;
+  const change=()=>{c.voice.kokoro={voice:select.value,speed:Number(speed.value)};markAudioStale();};
+  select.onchange=change;speed.onchange=change;
+  play.onclick=()=>{if(!['ready','downloaded'].includes(voiceEngine.state)){$('voiceStatus').textContent='Download the voices first.';return}
+   audition(shots.find(s=>s.speaker===c.id)?.text||'Hi! This is how I sound.',voiceOf(c.id));};
+  grid.append(name,pick,play);
+ }
+}
+async function voiceAllLines(){
+ const project=window.FrameForgeCurrentProject;if(!project||!shots.length)return false;
+ clearTimeout(voiceTimer);
+ const run=++voiceRun,status=$('voiceStatus'),lines=[];
+ if(voiceEngine.state==='missing'||voiceEngine.state==='unknown'){status.textContent='Download the voices first (the button above).';return false;}
+ try{
+  if(voiceEngine.state==='error')await ensureVoices();
+  for(let i=0;i<shots.length;i++){
+   const s=shots[i],v=voiceOf(s.speaker);
+   status.textContent='Voicing line '+(i+1)+' of '+shots.length+'…';
+   lines.push(await voiceCall({type:'speak',text:s.text,voice:v.voice,speed:(v.speed??1)*s.timing.pace,emotion:lineEmotion(s),pronunciations:projectPronunciations()}));
+   if(run!==voiceRun)return false;
+  }
+  // The voice is the clock: each shot lasts lead + its line + pause, frame-rounded.
+  let clock=0;const starts=[];
+  shots.forEach((s,i)=>{s.duration=Math.round((s.timing.lead+lines[i].seconds+s.timing.pauseAfter)*FPS)/FPS;s.voice=null;
+   starts.push(clock+s.timing.lead);clock=Math.round((clock+s.duration)*FPS)/FPS;});
+  const rate=lines[0].rate,track=new Float32Array(Math.ceil(clock*rate));
+  lines.forEach((l,i)=>{const at=Math.round(starts[i]*rate);for(let j=0;j<l.samples.length&&at+j<track.length;j++)track[at+j]+=l.samples[j];});
+  // The soundtrack: the voices with the episode's music and sound effects, mastered like our offline renders.
+  status.textContent='Mixing music and sound effects…';
+  const mix=await mixCall({voice:track.slice(),music:project.audio?.music??null,
+   shots:shots.map((s,i)=>({id:s.id,start:starts[i]-s.timing.lead,lead:s.timing.lead,seconds:lines[i].seconds,sfx:shotCues(project,s.id)}))});
+  if(run!==voiceRun)return false;
+  browserVoice={samples:track,mix:{channels:[mix.left,mix.right],lufs:mix.lufs,peakDb:mix.peakDb,music:mix.music,effects:mix.effects,ms:mix.ms},rate,lines:lines.map((l,i)=>({shot:shots[i].id,start:starts[i],seconds:l.seconds,emotion:l.emotion,phonemes:l.phonemes,guessed:l.guessed,cached:l.cached,ms:l.ms}))};
+  audioMode='browser';audioStale=false;running=false;soundtrack.pause();
+  if(trackUrl)URL.revokeObjectURL(trackUrl);trackUrl=URL.createObjectURL(wavBlob(browserVoice.mix.channels,rate));soundtrack.src=trackUrl;soundtrack.load();
+  useEnvelope(track,rate);
+  const fresh=lines.filter(l=>!l.cached).length,guessed=[...new Set(lines.flatMap(l=>l.guessed))];
+  status.textContent='Voiced '+lines.length+' lines in your browser ('+fresh+' new, '+(lines.length-fresh)+' from the cache)'+
+   (mix.music||mix.effects?', with '+[mix.music&&'music',mix.effects&&mix.effects+' sound effects'].filter(Boolean).join(' and '):'')+'.'+
+   (guessed.length?' Guessed pronunciations: '+guessed.join(', ')+' (fix them under Pronunciations).':'');
+  lastGuessed=guessed;
+  $('recordStatus').textContent=lines.length+' scenes voiced in your browser';
+  refresh();time=shotStart(selected);update();
+  return true;
+ }catch(e){if(run===voiceRun)status.textContent='Voicing failed: '+e.message;throw e;}
+}
+function shotStart(i){return shots.slice(0,i).reduce((a,v)=>a+v.duration,0)}
+const LOOK_LABELS={dev:{hoodie:'DEV hoodie',hair:'DEV hair'},blue:{shell:'BLUE shell'},orange:{shell:'ORANGE shell'}};
+function fillLooks(project){
+ const box=$('looks');box.innerHTML='';
+ for(const [id,slots] of Object.entries(LOOK_LABELS))for(const [slot,label] of Object.entries(slots)){
+  const character=project.characters.find(c=>c.id===id);if(!character)continue;
+  const name=document.createElement('label');name.textContent=label;name.htmlFor='look-'+id+'-'+slot;
+  const input=document.createElement('input');input.type='color';input.id='look-'+id+'-'+slot;
+  input.value=character.look?.[slot]??'#'+new T.Color(lookParts[id][slot][0].original??lookParts[id][slot][0].material.color.getHex()).getHexString();
+  input.oninput=()=>{character.look={...character.look,[slot]:input.value};applyLooks(project);update()};
+  box.append(name,input);
+ }
+}
+$('resetLooks').onclick=()=>{const project=window.FrameForgeCurrentProject;if(!project)return;for(const c of project.characters)delete c.look;applyLooks(project);fillLooks(project);update()};
+function fillInspector(){
+ const s=shots[selected];if(!s)return;
+ $('dialogue').value=s.text;$('speaker').value=s.speaker;$('camera').value=s.camera;$('shotTitle').value=s.title;
+ showTiming(s);
+ $('move').value=s.framing.move;$('moveAmount').value=s.framing.amount;$('roll').value=s.framing.roll;$('rollValue').textContent=s.framing.roll+'°';
+ for(const id of ['dev','blue','orange']){$('act-'+id).value=s.cast[id].action;$('emo-'+id).value=s.cast[id].emotion;}
+ const canVoice=['ready','downloaded','loading'].includes(voiceEngine.state);
+ $('audioState').textContent=audioStale?(canVoice?'Voices are out of date: re-voicing the changed lines in your browser…':'Voices are out of date: press Voice every line (left panel). Playback is silent until then.'):
+  audioMode==='browser'?'Voiced and mixed in your browser: voices, music and sound effects; each shot lasts as long as its line.':
+  audioMode==='master'?'Voice, music and timing are in sync.':'Storyboard: no voices yet. Press Voice every line (left panel).';
+ $('audioState').className='fine'+(audioStale?' stale':'');
+}
+(()=>{
+ const core=window.FrameForgeProjectCore,names={dev:'DEV',blue:'BLUE',orange:'ORANGE'},grid=$('castGrid');
+ for(const id of ['dev','blue','orange']){
+  const label=document.createElement('b');label.textContent=names[id];grid.appendChild(label);
+  for(const [kind,values] of [['act',core.actions],['emo',core.emotions]]){
+   const select=document.createElement('select');select.id=kind+'-'+id;select.setAttribute('aria-label',names[id]+(kind==='act'?' action':' emotion'));
+   for(const v of values){const o=document.createElement('option');o.value=v;o.textContent=v;select.appendChild(o)}
+   select.onchange=()=>{
+    const s=shots[selected];s.cast[id][kind==='act'?'action':'emotion']=select.value;
+    // The speaker's emotion is also how the line is spoken.
+    if(kind==='emo'&&id===s.speaker){s.voice=null;markAudioStale();}
+    update()};
+   grid.appendChild(select);
+  }
+ }
+})();
+$('shotTitle').onchange=e=>{shots[selected].title=e.target.value.trim();refresh();update()};
+$('move').onchange=e=>{shots[selected].framing.move=e.target.value;update()};
+$('moveAmount').oninput=e=>{shots[selected].framing.amount=Number(e.target.value);update()};
+// Timing: the pause before and after a line, and how fast it is spoken. Lead and pause re-time the cut from the
+// cached lines; a new pace re-voices the line.
+function showTiming(s){
+ $('lead').value=s.timing.lead;$('pauseAfter').value=s.timing.pauseAfter;$('pace').value=s.timing.pace;
+ $('leadValue').textContent=s.timing.lead.toFixed(2)+' s';$('pauseValue').textContent=s.timing.pauseAfter.toFixed(2)+' s';
+ $('paceValue').textContent='×'+s.timing.pace.toFixed(2);
+}
+for(const [id,key] of [['lead','lead'],['pauseAfter','pauseAfter'],['pace','pace']]){
+ $(id).oninput=e=>{const s=shots[selected];s.timing={...s.timing,[key]:Number(e.target.value)};showTiming(s);};
+ $(id).onchange=()=>{shots[selected].voice=null;markAudioStale();refresh();update();};
+}
+$('roll').oninput=e=>{shots[selected].framing.roll=Number(e.target.value);$('rollValue').textContent=e.target.value+'°';update()};
+function reorder(apply){apply();markAudioStale();time=shotStart(selected);refresh();update()}
+$('shotUp').onclick=()=>{if(selected>0)reorder(()=>{[shots[selected-1],shots[selected]]=[shots[selected],shots[selected-1]];selected--})};
+$('shotDown').onclick=()=>{if(selected<shots.length-1)reorder(()=>{[shots[selected+1],shots[selected]]=[shots[selected],shots[selected+1]];selected++})};
+$('shotDel').onclick=()=>{if(shots.length>1)reorder(()=>{shots.splice(selected,1);selected=Math.min(selected,shots.length-1)})};
+$('shotDup').onclick=()=>reorder(()=>{
+ const copy=structuredClone(shots[selected]),ids=new Set(shots.map(s=>s.id)),base=copy.id.replace(/-copy\d*$/,'');
+ let n=1;do{copy.id=base+'-copy'+(n>1?n:'');n++}while(ids.has(copy.id));
+ copy.voice=null;shots.splice(selected+1,0,copy);selected++;
+});
+function snapshotProject(){
+ const base=window.FrameForgeCurrentProject;
+ if(!base)throw new Error('No episode loaded');
+ const project=structuredClone(base);
+ // Shots are matched by id, so reordered, duplicated and deleted shots save correctly.
+ const byId=Object.fromEntries(project.shots.map(s=>[s.id,s]));
+ project.shots=shots.map(s=>{
+  const out={...(byId[s.id]??byId[s.id.replace(/-copy\d*$/,'')]),id:s.id,dialogue:s.text,speaker:s.speaker,camera:s.camera,duration:s.duration,
+   intent:s.intent,cast:s.cast,framing:s.framing};
+  // Timing is saved only where it differs from the defaults.
+  const timing=Object.fromEntries(Object.entries(s.timing).filter(([k,v])=>v!=={lead:.15,pauseAfter:.35,pace:1}[k]));
+  for(const [key,value] of [['title',s.title||undefined],['reactionCut',s.reactionCut],['insert',s.insert],['voice',s.voice],['timing',Object.keys(timing).length?timing:undefined]])
+   if(value)out[key]=value;else delete out[key];
+  delete out.acting;delete out.emotion;delete out.action;
+  return out;
+ });
+ if(audioStale||audioMode==='browser')project.audio={...project.audio,state:'storyboard_only',masterUrl:null,voiceUrl:undefined};
+ window.FrameForgeProjectCore.assertProject(project);
+ return project;
+}
+$('download').onclick=()=>{
+ try{
+  const project=snapshotProject();
+  const blob=new Blob([JSON.stringify(project,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=project.id+'.frameforge.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  $('projectImportStatus').textContent='Exported '+project.title+' as a validated, reusable episode.';
+ }catch(err){$('projectImportStatus').textContent='Export refused: '+err.message;}
+};
+function openProject(project){
+ window.FrameForgeProjectCore.assertRendererCompatible(project);
+ projectCatalog.custom=project;
+ const select=$('preset');
+ let option=select.querySelector('option[value="custom"]');
+ if(!option){option=document.createElement('option');option.value='custom';select.add(option);}
+ option.textContent=project.title+' — Imported project';
+ select.value='custom';
+ load();
+}
+$('projectImport').onchange=async event=>{
+ const file=event.target.files?.[0];if(!file)return;
+ try{
+  if(file.size>1048576)throw new Error('Maximum project file size is 1 MiB');
+  const project=JSON.parse(await file.text());
+  openProject(project);
+  $('projectImportStatus').textContent='Loaded '+project.title+' ('+project.shots.length+' scenes). Save edits with Download episode JSON.';
+ }catch(err){$('projectImportStatus').textContent='Import rejected: '+err.message;}
+ finally{event.target.value='';}
+};$('narrate').onclick=()=>{if(['ready','downloaded'].includes(voiceEngine.state)){const s=shots[selected];audition(s.text,{...voiceOf(s.speaker),speed:(voiceOf(s.speaker).speed??1)*s.timing.pace},lineEmotion(s));return}if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
+let recorder=null,recordedChunks=[],recordingStream=null;
+function stopRecording(){if(!recorder||recorder.state==='inactive')return;recorder.stop();$('recordStatus').textContent='Finalizing the WebM recording…';}
+$('record').onclick=async()=>{
+ if(recorder&&recorder.state==='recording'){stopRecording();return}if(audioMode==='none'||audioStale){$('recordStatus').textContent='Recording needs voices: press Voice every line first.';return}
+ if(!window.MediaRecorder||!outCanvas.captureStream){$('recordStatus').textContent='Video capture not available in this browser';return}
+ try{
+  audioInit();await audioContext.resume();running=false;soundtrack.pause();time=0;soundtrack.currentTime=0;update();
+  const videoStream=outCanvas.captureStream(30);
+  recordingStream=new MediaStream([...videoStream.getVideoTracks(),...audioDestination.stream.getAudioTracks()]);
+  const mime=['video/webm;codecs=vp8,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t));
+  if(!mime)throw new Error('WebM recording unavailable');
+  recorder=new MediaRecorder(recordingStream,{mimeType:mime,videoBitsPerSecond:4500000});
+  recordedChunks=[];
+  recorder.ondataavailable=e=>{if(e.data.size)recordedChunks.push(e.data)};
+  recorder.onerror=e=>{$('recordStatus').textContent='Recording failed: '+(e.error?.message||'unknown error')};
+  recorder.onstop=()=>{
+   const blob=new Blob(recordedChunks,{type:mime});
+   if(blob.size>1024){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='frameforge-recording.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);$('recordStatus').textContent='Recording completed: '+(blob.size/1024/1024).toFixed(1)+' MB';}
+   else $('recordStatus').textContent='Recording empty; no film generated.';
+   recordingStream?.getTracks().forEach(t=>t.stop());recorder=null;recordingStream=null;
+  };
+  recorder.start(1000);running=true;last=performance.now();soundtrack.currentTime=0;await soundtrack.play();$('record').textContent='■ Finish recording';$('recordStatus').textContent='Recording video and dialogue audio…';
+ }catch(e){$('recordStatus').textContent='Recording error: '+e.message;running=false;recorder=null}
+};
+function frame(now){
+ if(!offlineMode && running){
+  if(!soundtrack.paused&&soundtrack.readyState>1)time=soundtrack.currentTime;
+  else time+=(now-last)/1000;
+  if(time>=duration-.05||soundtrack.ended){time=duration;running=false;soundtrack.pause();stopRecording()}
+ }
+ last=now;if(!offlineMode)composeFilmFrame(720,1280);requestAnimationFrame(frame)
+}
+soundtrack.addEventListener('ended',()=>{running=false;time=duration;stopRecording();update();});
+
+let offlineMode=false,decodedEnvelope=null,envReady=false;
+const outCanvas=document.createElement('canvas');
+const outCtx=outCanvas.getContext('2d',{alpha:false});
+// The monitor shows the composited film frame (title card, subtitles, inserts), so the preview matches the export.
+outCanvas.className='film';stage.prepend(outCanvas);renderer.domElement.remove();
+function roundRect(x,y,w,h,r){outCtx.beginPath();outCtx.roundRect(x,y,w,h,r)}
+let envPromise=Promise.resolve(),envToken=0;
+function loadEnvelope(url){
+ const token=++envToken;envReady=false;decodedEnvelope=null;
+ envPromise=(async()=>{
+ if(!url){envReady=true;return;}
+ const response=await fetch(url);if(!response.ok)throw Error('Voice audio HTTP '+response.status);
+ const buffer=await response.arrayBuffer();
+ const ctx=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(1,1,24000);
+ const audioBuffer=await ctx.decodeAudioData(buffer);
+ if(token!==envToken)return;
+ decodedEnvelope=envelopeOf(audioBuffer.getChannelData(0),audioBuffer.sampleRate);
+ envReady=true;
+ })().catch(e=>{console.error('Voice timing analysis error',e);});
+ return envPromise;
+}
+// A voice track already in memory (voiced in the browser).
+function useEnvelope(samples,rate){envToken++;decodedEnvelope=envelopeOf(samples,rate);envReady=true;envPromise=Promise.resolve();}
+// 20 Hz loudness of a voice track, normalised so loud syllables reach about 1.
+function envelopeOf(samples,rate){
+ const windowSamples=Math.max(1,Math.round(rate/20));
+ const raw=[];
+ for(let i=0;i<samples.length;i+=windowSamples){
+  let sum=0;const end=Math.min(samples.length,i+windowSamples);
+  for(let j=i;j<end;j++)sum+=samples[j]*samples[j];
+  raw.push(Math.sqrt(sum/Math.max(1,end-i)));
+ }
+ const sorted=raw.filter(x=>x>.002).sort((a,b)=>a-b);
+ const p90=sorted[Math.floor(sorted.length*.9)]||.06;
+ return raw.map((x,i)=>Math.max(0,Math.min(1,(.22*(raw[i-1]||x)+.56*x+.22*(raw[i+1]||x))/(p90*.93))));
+}
+function wrapWords(c,text,maxWidth){
+ const words=text.trim().split(/\s+/),lines=[];let current='';
+ for(const word of words){
+  const candidate=current?current+' '+word:word;
+  if(current&&c.measureText(candidate).width>maxWidth){lines.push(current);current=word;}else current=candidate;
+ }if(current)lines.push(current);
+ // Two lines split where they are most even, so a caption never ends on one lonely word.
+ if(lines.length===2){
+  let best=lines,widest=Infinity;
+  for(let i=1;i<words.length;i++){
+   const pair=[words.slice(0,i).join(' '),words.slice(i).join(' ')],w=Math.max(...pair.map(x=>c.measureText(x).width));
+   if(w<widest){widest=w;best=pair}
+  }
+  return best;
+ }
+ return lines;
+}
+function renderFilmFrame(t,w=360,hh=640,encode=true){
+ offlineMode=true;running=false;soundtrack.pause();
+ time=Math.max(0,Math.min(duration-.001,t));
+ composeFilmFrame(w,hh);
+ return encode?outCanvas.toDataURL('image/jpeg',.88):outCanvas;
+}
+function composeFilmFrame(w,hh){
+ if(renderer.domElement.width!==w||renderer.domElement.height!==hh)renderer.setSize(w,hh,false);
+ update();
+ if(outCanvas.width!==w)outCanvas.width=w;if(outCanvas.height!==hh)outCanvas.height=hh;
+ outCtx.drawImage(renderer.domElement,0,0,w,hh);
+ const scale=w/360;
+ outCtx.save();outCtx.scale(scale,scale);const H=hh/scale;
+ let accumulated=0,activeIndex=shots.length-1;
+ for(let i=0;i<shots.length;i++){if(time<accumulated+shots[i].duration){activeIndex=i;break}accumulated+=shots[i].duration}
+ const insert=shots[activeIndex].insert;
+ if(shots[activeIndex].camera==='screen'&&insert){
+  const alarmTone=insert.tone==='bad',shift=Math.max(0,Math.min(1,(time-accumulated)/Math.max(.1,shots[activeIndex].duration)));
+  const grd=outCtx.createLinearGradient(0,0,360,H);
+  grd.addColorStop(0,'#172340');grd.addColorStop(.7,'#0b1128');grd.addColorStop(1,'#060a18');
+  outCtx.fillStyle=grd;outCtx.fillRect(0,0,360,H);
+  const glass=outCtx.createLinearGradient(0,118,0,H*.79);
+  glass.addColorStop(0,'#192a42');glass.addColorStop(1,'#0b1428');
+  outCtx.fillStyle=glass;roundRect(16,112,328,H*.72,15);outCtx.fill();
+  outCtx.lineWidth=1.5;outCtx.strokeStyle='#48668c';outCtx.stroke();
+  outCtx.fillStyle='#0b1425';roundRect(26,124,308,H*.69,11);outCtx.fill();
+  outCtx.textAlign='left';
+  outCtx.fillStyle='#8d9fb4';outCtx.font='bold 11px Arial';
+  outCtx.fillText(insert.window,39,154);
+  for(let j=0;j<3;j++){outCtx.fillStyle=['#e97e80','#edbc6c','#71d5ab'][j];outCtx.beginPath();outCtx.arc(281+j*16,148,4,0,Math.PI*2);outCtx.fill();}
+  outCtx.fillStyle='#8e9db3';outCtx.font='11px monospace';
+  outCtx.fillText(insert.context,40,187);
+  outCtx.fillStyle=alarmTone?'#f2a3ad':'#82f0c8';outCtx.font='bold 17px Arial';
+  outCtx.fillText(insert.headline,40,235);
+  outCtx.textAlign='center';outCtx.font='900 83px Arial';
+  outCtx.fillText(insert.value,180,341);
+  outCtx.font='13px Arial';outCtx.fillStyle='#e4e9f5';
+  outCtx.fillText(insert.caption,180,376);
+  outCtx.textAlign='left';
+  outCtx.fillStyle='#172438';roundRect(40,404,280,53,7);outCtx.fill();
+  outCtx.fillStyle='#a9bdca';outCtx.font='13px monospace';
+  outCtx.fillText(insert.request,52,425);
+  outCtx.fillStyle=alarmTone?'#f4a1a8':'#a3f1cf';outCtx.font='bold 12px monospace';
+  outCtx.fillText(insert.status,52,445);
+  const graphY=Math.min(H-60,505),barMax=240;
+  // A filled rect, not a 1px stroke: Chrome anti-aliases stroke ends differently on its first draw.
+  outCtx.fillStyle='#344b67';outCtx.fillRect(45,graphY+79.5,270,1);
+  outCtx.strokeStyle=alarmTone?'#f1a0aa':'#80e5bf';outCtx.lineWidth=3;outCtx.beginPath();
+  for(let i=0;i<10;i++){
+   let px=46+i*(barMax/9),v=insert.graph==='flat'?72:75-23*Math.exp(-i*.6);
+   if(i===0)outCtx.moveTo(px,graphY+v);else outCtx.lineTo(px,graphY+v);
+  }
+  outCtx.stroke();outCtx.font='11px Arial';outCtx.fillStyle='#8b9eb5';
+  outCtx.fillText(insert.footer,45,graphY+106);
+  if(shift>.68){outCtx.fillStyle=alarmTone?'#ef7e87':'#64d4a3';outCtx.fillRect(40,H*.77,280,2);}
+ }
+ // Captions (STYLE.md): plain white type in the upper middle of the frame. No box, no header pill.
+ // Shadow sizes are in output pixels: the canvas transform does not scale them.
+ const lineText=$('subtitle').textContent;
+ outCtx.font='800 16px "Inter","Ubuntu Sans","Hanken Grotesk",Arial,sans-serif';
+ const lines=wrapWords(outCtx,lineText,278),lineHeight=23,top=H*.31-(lines.length-1)*lineHeight/2;
+ outCtx.textAlign='center';outCtx.textBaseline='middle';
+ outCtx.fillStyle='#fff';outCtx.shadowColor='rgba(0,0,0,.75)';outCtx.shadowBlur=5*scale;outCtx.shadowOffsetY=scale;
+ lines.forEach((line,i)=>outCtx.fillText(line,180,top+i*lineHeight));
+ outCtx.restore();
+}
+
+let offlineExportActive=false;
+async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,download=true,startTime=0}={}){
+ if(offlineExportActive)throw new Error('Another export is already running');
+ const project=window.FrameForgeCurrentProject;
+ if(audioStale)throw new Error('Voices are out of date after your edits: press Voice every line first.');
+ if(audioMode==='none')throw new Error('This episode has no voices yet: press Voice every line first.');
+ if(typeof VideoEncoder!=='function')throw new Error('This browser lacks WebCodecs video encoding.');
+ const fps=30,frames=frameLimit??Math.round(duration*fps);
+ if(!Number.isInteger(frames)||frames<=0||frames>18000)throw new Error('Invalid frame count');
+ if(!Number.isFinite(startTime)||startTime<0||startTime+frames/fps>duration+.05)throw new Error('Export segment outside the film duration');
+ if(width%2||height%2)throw new Error('MP4 requires even output dimensions');
+ offlineExportActive=true;const started=performance.now();const status=$('mp4Status');
+ let sourceVideo=null,sourceAudio=null;
+ try{
+  status.textContent='Initializing the MP4 encoders…';
+  await envPromise;
+  if(!envReady)throw new Error('Voice timing analysis unavailable');
+  const media=await import('https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/+esm');
+  const {Output,BufferTarget,Mp4OutputFormat,CanvasSource,AudioBufferSource,Quality,canEncodeAudio}=media;
+  if(!(await canEncodeAudio('aac'))){
+    status.textContent='Loading free AAC audio encoder…';
+    const {registerAacEncoder}=await import('https://cdn.jsdelivr.net/npm/@mediabunny/aac-encoder@1.62.1/+esm');
+    registerAacEncoder();
+  }
+  const output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
+  sourceVideo=new CanvasSource(outCanvas,{codec:'avc',quality:new Quality({bitrate:width>=1080?6800000:width>=720?4200000:width>=480?2400000:1300000}),keyFrameInterval:2,hardwareAcceleration:'no-preference'});
+  sourceAudio=new AudioBufferSource({codec:'aac',quality:new Quality({bitrate:160000})});
+  output.addVideoTrack(sourceVideo);output.addAudioTrack(sourceAudio);
+  // The browser-made soundtrack, or the episode's decoded mastered mix. Audio and video share one clock.
+  let decoded;
+  if(audioMode==='browser'){
+   const channels=browserVoice.mix.channels;
+   decoded=new AudioBuffer({sampleRate:browserVoice.rate,numberOfChannels:channels.length,length:channels[0].length});
+   channels.forEach((c,i)=>decoded.copyToChannel(c,i));
+  }else{
+   const voice=await fetch(project.audio.masterUrl);if(!voice.ok)throw new Error('Audio master failed to load: '+voice.status);
+   const audioContextForExport=new(window.AudioContext||window.webkitAudioContext)();
+   try{decoded=await audioContextForExport.decodeAudioData(await voice.arrayBuffer())}
+   finally{await audioContextForExport.close()}
+  }
+  const intendedLength=Math.round(frames/fps*decoded.sampleRate);
+  const startSample=Math.round(startTime*decoded.sampleRate);
+  if(decoded.length<startSample+intendedLength-100)throw new Error('Voice track is shorter than the chosen video segment');
+  const audioBuffer=new AudioBuffer({sampleRate:decoded.sampleRate,numberOfChannels:decoded.numberOfChannels,length:intendedLength});
+  for(let c=0;c<decoded.numberOfChannels;c++)audioBuffer.copyToChannel(decoded.getChannelData(c).subarray(startSample,startSample+intendedLength),c);
+  await output.start();
+  await sourceAudio.add(audioBuffer);
+  sourceAudio.close();sourceAudio=null;
+  for(let i=0;i<frames;i++){
+   renderFilmFrame(startTime+i/fps,width,height,false);
+   await sourceVideo.add(i/fps,1/fps);
+   if(i%15===0||i===frames-1){status.textContent='Rendering exact frames: '+(i+1)+' / '+frames+' ('+Math.floor((i+1)*100/frames)+'%)';await new Promise(r=>setTimeout(r,0))}
+  }
+  sourceVideo.close();sourceVideo=null;
+  status.textContent='Finalizing H.264 video and AAC audio…';
+  await output.finalize();
+  const raw=output.target.buffer;
+  if(!raw||raw.byteLength<1000)throw new Error('MP4 unexpectedly empty');
+  const blob=new Blob([raw],{type:'video/mp4'});
+  status.textContent='MP4 complete · '+(blob.size/1024/1024).toFixed(2)+' MB · '+(frames/fps).toFixed(2)+' seconds · '+(width+'×'+height);
+  if(download){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='frameforge-'+project.id+'-'+width+'x'+height+'.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+  return {blob,bytes:blob.size,duration:frames/fps,frames,width,height,elapsed:Math.round((performance.now()-started)/1000)};
+ }catch(e){status.textContent='Export failed: '+e.message;throw e}
+ finally{
+  sourceVideo?.close();sourceAudio?.close();offlineMode=false;offlineExportActive=false;
+  renderer.setSize(720,1280,false);running=false;time=0;update();
+ }
+}
+$('exportMP4').onclick=async()=>{const size=Number($('mp4Res').value);$('exportMP4').disabled=true;try{await exportFrameAccurateMP4({width:size,height:Math.round(size*16/9)})}catch(e){console.error('MP4 export',e)}finally{$('exportMP4').disabled=false}};
+window.FrameForgeMP4Test=exportFrameAccurateMP4;
+
+window.FrameForgeActing={pose:()=>({human:{head:humanHead.rotation.toArray(),body:devBones.spine.rotation.toArray(),joints:Object.fromEntries(Object.entries(devBones).map(([k,b])=>[k,b.rotation.toArray().slice(0,3)]))},blue:faces.blue.armJoints?.map(a=>a.pivot.rotation.toArray()),orange:faces.orange.armJoints?.map(a=>a.pivot.rotation.toArray())})};
+// V5 Phase 1C — render existing studio rig geometry for actual art QA.
+const ART_VIEWS=[
+ {id:'front',radians:0,label:'Front'},
+ {id:'three-quarter',radians:-Math.PI/4,label:'Three-quarter'},
+ {id:'side',radians:-Math.PI/2,label:'Side'},
+ {id:'back',radians:Math.PI,label:'Back'}
+];
+const ART_EXPRESSIONS=['neutral','happy','worried','surprised','angry','sad','thinking'];
+// act (DEV only): {action, local, duration, accentAt} poses the body mid-action, with blinks and breathing at that time.
+function artPose(actorId,emotion,act=null){
+ if(actorId==='dev'){
+  const pose=window.FrameForgePerformanceCore.evaluate(act?{time:act.local,local:act.local,duration:act.duration,emotion,gazeX:0,gazeY:0}:{
+    time:1.25,local:1,duration:2,emotion,
+    speaking:emotion==='surprised',energy:emotion==='surprised'?.42:0,
+    gazeX:0,gazeY:0
+  });
+  applyDevBody(act?window.FrameForgeDevActing.evaluate({...act,time:act.local}):DEV_REST);
+  applyHumanFacePose(pose,null,false,emotion,emotion);
+ }else{
+  drawRobotFace(actorId==='blue'?faces.blue:faces.orange,emotion);
+ }
+}
+function captureCharacterView(actorId,angle='front',emotion='neutral',width=360,height=460,portrait=false,act=null){
+ const actors={dev,blue:b.root,orange:o.root};
+ if(!Object.hasOwn(actors,actorId))throw new Error('Unknown character '+actorId);
+ const view=ART_VIEWS.find(x=>x.id===angle);
+ if(!view)throw new Error('Unknown view '+angle);
+ if(!ART_EXPRESSIONS.includes(emotion))throw new Error('Unknown expression '+emotion);
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<160||height<200||width>1024||height>1024)throw new Error('Invalid sheet resolution');
+ const selected=actors[actorId];
+ if(typeof portrait!=='boolean')throw new Error('portrait must be boolean');
+ const show=scene.children.map(child=>[child,child.visible]);
+ const camera={position:cam.position.clone(),quaternion:cam.quaternion.clone(),fov:cam.fov,aspect:cam.aspect,near:cam.near,far:cam.far};
+ const size=renderer.getSize(new T.Vector2());
+ const bg=scene.background,fog=scene.fog;
+ const baseRotation=selected.rotation.y;
+ const wasRunning=running;
+ const faceData={
+  headRotation:humanHead.rotation.clone(),tilt:headTilt.rotation.clone()
+ };
+ try{
+  running=false;soundtrack.pause();
+  // Mid-action views keep the stage under DEV, so hops and crouches show their contact with the floor.
+  scene.children.forEach(child=>{
+   if(child.isLight)return;
+   child.visible=(child===selected)||Boolean(act&&child===stageBox);
+  });
+  selected.visible=true;
+  selected.rotation.y=view.radians;
+  artPose(actorId,emotion,act);
+  scene.background=new T.Color(0x111d30);
+  scene.fog=null;
+  renderer.setSize(width,height,false);
+  cam.aspect=width/height;cam.fov=portrait?31:34;cam.near=.1;cam.far=50;cam.updateProjectionMatrix();
+  const centerY=actorId==='dev'?2.1:1.54;
+  // DEV's portrait frames the whole head, quiff included.
+  const devK=actorId==='dev'?DEV_FRAME:1,faceY=actorId==='dev'?selected.position.y+DEV_HEAD_Y+.10*devK:selected.position.y+1.45;
+  const targetY=portrait?faceY:centerY;
+  cam.position.set(selected.position.x,targetY+(portrait?.04*devK:.15),selected.position.z+(portrait?(actorId==='dev'?3.3*devK:2.8):6.6));
+  cam.lookAt(selected.position.x,targetY,selected.position.z);
+  renderer.render(scene,cam);
+  return renderer.domElement.toDataURL('image/png');
+ }finally{
+  selected.rotation.y=baseRotation;
+  for(const [child,visible]of show)child.visible=visible;
+  headTilt.rotation.copy(faceData.tilt);
+  humanHead.rotation.copy(faceData.headRotation);
+  scene.background=bg;scene.fog=fog;
+  renderer.setSize(size.x,size.y,false);
+  cam.position.copy(camera.position);cam.quaternion.copy(camera.quaternion);
+  cam.fov=camera.fov;cam.aspect=camera.aspect;cam.near=camera.near;cam.far=camera.far;cam.updateProjectionMatrix();
+  if(typeof update==='function'&&shots.length)update();
+  running=wasRunning;
+  renderer.render(scene,cam);
+ }
+}
+function captureEnvironment(width=360,height=640){
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<160||height<220||width>1024||height>1400)throw new Error('Invalid environment output size');
+ const actors=[dev,b.root,o.root];
+ const previous=actors.map(actor=>actor.visible);
+ const oldSize=renderer.getSize(new T.Vector2()),position=cam.position.clone(),quat=cam.quaternion.clone();
+ const oldFov=cam.fov,oldAspect=cam.aspect,oldTime=time,wasRunning=running;
+ try{
+  running=false;soundtrack.pause();
+  actors.forEach(actor=>actor.visible=false);
+  renderer.setSize(width,height,false);
+  cam.aspect=width/height;cam.fov=40;cam.updateProjectionMatrix();
+  cam.position.set(0,3.1,8.6);cam.lookAt(0,1.45,0);
+  renderer.render(scene,cam);
+  return renderer.domElement.toDataURL('image/png');
+ }finally{
+  actors.forEach((actor,i)=>actor.visible=previous[i]);
+  renderer.setSize(oldSize.x,oldSize.y,false);
+  cam.position.copy(position);cam.quaternion.copy(quat);cam.fov=oldFov;cam.aspect=oldAspect;cam.updateProjectionMatrix();
+  time=oldTime;running=wasRunning;
+  renderer.render(scene,cam);
+ }
+}
+window.FrameForgeSpeechQA=Object.freeze({
+ version:window.FrameForgeSpeechCore.version,
+ types:window.FrameForgeSpeechCore.types,
+ at:(seconds)=>{
+  const secondsSafe=Math.max(0,Number(seconds)||0);let cursor=0,shot=shots.at(-1);
+  for(const s of shots){if(secondsSafe<cursor+s.duration){shot=s;break}cursor+=s.duration}
+  return window.FrameForgeSpeechCore.evaluate({text:shot.text,local:secondsSafe-cursor,
+    duration:shot.duration,shotStart:cursor,samples:envReady?decodedEnvelope:null,
+    rate:20,audioEnergy:0,speaker:shot.speaker});
+ }
+});
+window.FrameForgePerformanceQA=Object.freeze({
+ poseAt:(input)=>window.FrameForgePerformanceCore.evaluate(input),
+ facialChannels:()=>['lid','brow','slope','cheek','smile','round','jaw','gazeX','gazeY','mouthOpen','mouthWidth'],
+ // DEV's face is the sheet's shapes: per side one pupil and one brow, and one mouth.
+ humanRig:()=>({pupils:2,brows:2,mouths:1}),
+ // What the face shows now: mouth opening (.24 closed, ~.9 wide open) and width, brow inner-end heights, eye openness.
+ peek:()=>{const m=devFace.mouth,br=DEV_SPEC.face.brows,r=x=>Math.round(x*1e6)/1e6;return{mouthScale:r(.24+(m.o||0)/.065*.7),mouthWidth:r(m.w??1),mouthY:r(DEV_SPEC.face.mouth.y-(m.o||0)/2),
+  browHeights:[0,1].map(i=>r(br.y+(devFace.browLift||0)+(devFace.browUp?.[i]||0)+(devFace.browTilt||0)*.5)),eyeOpen:[0,1].map(()=>r(1-devFace.lidU))};}
+});
+// How deep DEV's forearms and hands sink into his trunk or head, and how far the two mittens overlap, in head heights
+// (0 = clear). Measured on the posed bones: limb samples are carried into the chest's and the head's rest frames and
+// tested against the sheet's trunk rings and an ellipsoid round the head and hair.
+function devBodyClearance(){
+ dev.updateMatrixWorld(true);
+ const J=Object.fromEntries(devRigSpec.joints.map(j=>[j.name,new T.Vector3(...j.at)])),a=DEV_SPEC.body.arm,rings=DEV_SPEC.body.trunk;
+ const world=(bone,p)=>p.clone().sub(J[bone]).applyMatrix4(devBones[bone].matrixWorld);
+ const into=(bone,w)=>w.clone().applyMatrix4(devBones[bone].matrixWorld.clone().invert()).add(J[bone]);
+ // devHead's own space is the sheet's head space (head centre at the origin), tilts included.
+ const trunkDepth=(p,r)=>{
+  if(p.y>rings[0][0]||p.y<rings.at(-1)[0])return 0;
+  let i=0;while(i<rings.length-2&&p.y<rings[i+1][0])i++;
+  const A=rings[i],B=rings[i+1],t=(p.y-A[0])/(B[0]-A[0]),L=k=>A[k]+(B[k]-A[k])*t,n=L(4);
+  const rho=Math.pow(Math.abs(p.x/L(1))**n+Math.abs(p.z/(p.z>=0?L(2):L(3)))**n,1/n),d=Math.hypot(p.x,p.z);
+  return Math.max(0,r-d*(1-1/Math.max(rho,1e-6)));
+ };
+ const headDepth=(p,r)=>{const q=p.clone().sub(new T.Vector3(0,.06,-.02)),rho=Math.hypot(q.x/.56,q.y/.6,q.z/.54);return Math.max(0,r-q.length()*(1-1/Math.max(rho,1e-6)));};
+ const out={trunk:0,head:0,hands:0},centres={},headFrame=devHead.matrixWorld.clone().invert();
+ for(const k of['L','R']){
+  const el=J['elbow'+k],wr=J['wrist'+k],dir=wr.clone().sub(el).normalize(),hand=wr.clone().addScaledVector(dir,a.cuff*.6+a.hand[1]);
+  const samples=[[.35,1],[.7,1],[1,1]].map(([u,r])=>['elbow'+k,el.clone().lerp(wr,u),a.r[2]*r]).concat([['wrist'+k,hand,a.hand[0]*.85]]);
+  for(const[bone,p,r]of samples){
+   const w=world(bone,p);
+   out.trunk=Math.max(out.trunk,trunkDepth(into('chest',w),r),trunkDepth(into('spine',w),r));
+   out.head=Math.max(out.head,headDepth(w.clone().applyMatrix4(headFrame),r));
+  }
+  centres[k]=world('wrist'+k,hand);
+ }
+ out.hands=Math.max(0,1.5*a.hand[0]-centres.L.distanceTo(centres.R)/DEV_S);
+ return Object.fromEntries(Object.entries(out).map(([k,v])=>[k,Math.round(v*1e4)/1e4]));
+}
+window.FrameForgeArtLab=Object.freeze({
+ version:'v5-phase1c-actual-rigs',
+ actors:()=>['dev','blue','orange'],
+ views:()=>ART_VIEWS.map(x=>x.id),
+ expressions:()=>[...ART_EXPRESSIONS],
+ capture:captureCharacterView,
+ // DEV posed mid-action ({action, local, duration, accentAt}), or as the timeline has him now.
+ clearance:(act=null)=>{if(!act)return devBodyClearance();artPose('dev','neutral',act);const r=devBodyClearance();if(shots.length)update();return r;},
+ captureEnvironment
+});
+
+// The robots as built from their sheet, for tests: face state and size, head pose, arms, and where the head lands on
+// screen (normalised device coordinates) at the current time.
+window.FrameForgeRobotQA=Object.freeze({
+ sheet:()=>({status:ROBOT_SHEET.STATUS,scale:ROBOT_S,headY:{...ROBOT_HEAD_Y}}),
+ state:who=>{const a=faces[who],head=new T.Vector3();a.headTilt.getWorldPosition(head);
+  const c=a.robot.head.c,p=a.robot.pivot,centre=a.headTilt.localToWorld(new T.Vector3(c[0]-p[0],c[1]-p[1],c[2]-p[2])),ndc=centre.clone().project(cam);
+  return{face:a.faceState,faceVertices:a.faceMesh.geometry.drawRange.count,head:a.headTilt.rotation.toArray().slice(0,3),arms:a.armJoints.length,
+   body:[a.group.position.y,...a.group.rotation.toArray().slice(0,3)],armPose:a.armJoints.map(j=>j.pivot.rotation.toArray().slice(0,3)),
+   headCentre:centre.toArray(),screen:[ndc.x,ndc.y,ndc.z]};},
+ faceHash:who=>{const g=faces[who].faceMesh.geometry,n=g.drawRange.count*3,a=g.attributes.position.array;let h=0;for(let i=0;i<n;i+=7)h=(h*31+Math.round(a[i]*1e4))|0;return h+':'+g.drawRange.count;},
+ draw:(who,emotion,o={})=>{drawRobotFace(faces[who],emotion,o);return window.FrameForgeRobotQA.faceHash(who);}
+});
+window.FrameForgeQA={
+ renderer,scene,cam,shots:()=>shots,time:()=>time,
+ setPreviewSize:(w,h)=>renderer.setSize(w,h,false),
+ setTime:(t)=>{running=false;soundtrack.pause();time=t;update();},
+ envelopeReady:()=>envReady,envelope:()=>decodedEnvelope,
+ setOffline:(enabled)=>{offlineMode=Boolean(enabled);running=false;soundtrack.pause();},
+ renderFilmFrame:(t,w=360,h=640)=>renderFilmFrame(t,w,h),
+ renderFrameJPEG:(t,w,h,quality=.95)=>renderFilmFrame(t,w,h,false).toDataURL('image/jpeg',quality),
+ project:(key)=>structuredClone(projectCatalog[key]),
+ openProject,
+ sceneTitle:()=>$('sceneTitle').textContent
+};
+// In-browser voice path, for tests: engine state, the voice track and its loudness.
+window.FrameForgeVoiceQA=Object.freeze({
+ status:()=>({state:voiceEngine.state,device:voiceEngine.device,source:voiceEngine.source,model:voiceEngine.model,mode:audioMode,stale:audioStale,lines:browserVoice?.lines??null,
+  mix:browserVoice?{lufs:browserVoice.mix.lufs,peakDb:browserVoice.mix.peakDb,music:browserVoice.mix.music,effects:browserVoice.mix.effects,ms:browserVoice.mix.ms}:null}),
+ // The audio element that plays the episode: what it plays and whether it is playing.
+ soundtrack:()=>({src:soundtrack.currentSrc,readyState:soundtrack.readyState,paused:soundtrack.paused,currentTime:soundtrack.currentTime,
+  duration:soundtrack.duration,error:soundtrack.error?.message??soundtrack.error?.code??null}),
+ // RMS of the mixed soundtrack (both channels) between two times.
+ mixRms:(from,to)=>{if(!browserVoice)return null;const {mix:{channels},rate}=browserVoice,a=Math.max(0,Math.round(from*rate)),b=Math.min(channels[0].length,Math.round(to*rate));
+  let s=0;for(const c of channels)for(let i=a;i<b;i++)s+=c[i]*c[i];return Math.sqrt(s/Math.max(1,(b-a)*channels.length));},
+ ensure:()=>ensureVoices().then(e=>({state:e.state,device:e.device,source:e.source,model:e.model,ms:e.ms})),
+ voiceAll:()=>voiceAllLines(),
+ phonemize:(text,voice='am_michael')=>voiceCall({type:'phonemize',text,voice,pronunciations:projectPronunciations()}),
+ speak:(text,voice='am_michael',speed=1,emotion='neutral')=>voiceCall({type:'speak',text,voice,speed,emotion}).then(({samples,...r})=>({...r,length:samples.length})),
+ // The samples themselves, for measuring a delivery (pitch, loudness, length).
+ samples:(text,voice='am_michael',speed=1,emotion='neutral')=>voiceCall({type:'speak',text,voice,speed,emotion}).then(r=>({...r,samples:Array.from(r.samples)})),
+ rms:(from,to)=>{if(!browserVoice)return null;const {samples,rate}=browserVoice,a=Math.max(0,Math.round(from*rate)),b=Math.min(samples.length,Math.round(to*rate));
+  let s=0;for(let i=a;i<b;i++)s+=samples[i]*samples[i];return Math.sqrt(s/Math.max(1,b-a));}
+});
+// Offline: the studio keeps working without a connection once it has loaded (sw.js).
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Offline cache unavailable',e));
+
+projectReady.then(()=>{load();requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
+</script></body></html>

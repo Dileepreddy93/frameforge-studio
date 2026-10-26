@@ -1,0 +1,14 @@
+{
+ "version":1,
+ "policy":"Keep verified public observations separate from marketing claims, hypotheses, and inaccessible private code.",
+ "references":[
+  {"id":"agent-poly","url":"https://agentpolystudios.com/","status":"partial_public","role":"Character and performance benchmark: marketed emotions, body actions, cameras, customizability; paid/private source NOT obtained.","nextTest":"Examine real rendered poses under matched camera and light.","rights":"Build independent assets and code."},
+  {"id":"claude-pixel","url":"https://promptbase.shop/learn/claude-pixel","status":"public_workflow_only","role":"Three.js procedural animation, per-line voices, timing, camera direction, browser/FFmpeg finishing.","nextTest":"Timestamped source-reference analysis and film comparison.","rights":"No assumption of purchased/private studio source access."},
+  {"id":"nmxwz-pdf","url":"NMXWZ-1.pdf (user supplied)","status":"all_five_pages_read","role":"16:9 multi-view character sheets and expressions; 9:16 worlds; first-frame approval; repeating style/voice lock; 8-second clips; word-timed captions and -14 LUFS suggested master.","nextTest":"Reproducible image/shot/caption style consistency matrix.","rights":"Workflow ideas; generated video pixels are not editable 3D meshes."},
+  {"id":"viralspy","url":"https://viralspy.app/","status":"unverified_site","role":"Optional content/competitor insights only.","nextTest":"Verify API, terms and capabilities before integration.","rights":"No unsolicited scraping."},
+  {"id":"gumroad-skills","url":"https://futurist40.gumroad.com/l/starter-pack-15-claude-skills","status":"unverified_site","role":"Potential workflow instruction patterns only.","nextTest":"Review real skill files and license if acquired.","rights":"No unapproved paid dependency."},
+  {"id":"hypedtown","url":"https://www.hypedtown.com/","status":"unverified_site","role":"Research backlog.","nextTest":"Confirm accessible features and evidence.","rights":"No inferred functionality."},
+  {"id":"canwebuildthis","url":"https://www.canwebuildthis.dev/","status":"unverified_site","role":"Research backlog.","nextTest":"Confirm accessible features and evidence.","rights":"No inferred functionality."},
+  {"id":"git-blame-video","url":"exact user reference clip (not stored in repo)","status":"reported_in_previous_report_not_reverified","role":"Target film-quality benchmark; earlier report claims 52.181 sec, 720x1280, 30 FPS.","nextTest":"Obtain actual file, verify checksum, break down timestamped acting/lighting/audio.","rights":"Reference analysis, not source redistribution."}
+ ]
+}

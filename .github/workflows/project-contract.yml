@@ -1,0 +1,146 @@
+name: FrameForge code quality
+on:
+  push:
+    branches: [develop, "feature/**"]
+  pull_request:
+    branches: [develop, main]
+jobs:
+  source-and-project-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile and validate the project contract
+        run: |
+          node tests/git-blame-reference-contract.mjs
+          node tests/rigged-asset-core.test.mjs
+          node tests/project-core.test.cjs
+          node tests/project-integration.test.mjs
+          node tests/performance-core.test.cjs
+          node tests/speech-performance-core.test.cjs
+          node tests/voice-emotion.test.cjs
+          node tests/episode-mix.test.mjs
+          node tests/robot-design.test.cjs
+          node tests/robot-character.test.cjs
+          node tests/robot-acting.test.cjs
+      - name: Engine module parses
+        run: node tests/engine-syntax.test.mjs
+  real-character-render-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real Chromium rendering dependencies
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Render 3D character views, emotions, and environment in Chromium
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          google-chrome --version
+          node tests/phase0-video-playback.cjs
+          node tests/character-art-browser.cjs dev
+          node tests/character-art-browser.cjs blue
+          node tests/character-art-browser.cjs orange
+          node tests/robot-build-browser.cjs
+          node tests/performance-browser.cjs
+          node tests/speech-performance-browser.cjs
+          node tests/determinism-browser.cjs
+          node tests/episode-data-browser.cjs
+          node tests/studio-editor-browser.cjs
+          node tests/landing-browser.cjs
+  portable-video-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: source-and-project-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and software H264 encoder
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y -qq ffmpeg
+          ffmpeg -hide_banner -encoders | grep -w libx264
+          ffprobe -version | head -1
+      - name: Verify actual V4 archived full-film bytes and decode
+        run: node tools/verify-phase0.mjs
+      - name: Extract five real V4 frames with timestamped hashes
+        run: |
+          python3 tools/capture_reference.py media/v4-review/frameforge-v4-complete-director-41s.mp4 --allow-own --out artifacts/p0-v4-frame-evidence --times 0.8,7.95,17.7,30.5,40.8
+          node tests/phase0-frame-evidence.test.mjs artifacts/p0-v4-frame-evidence/manifest.json
+      - name: Preserve actual V4 image QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-phase0-v4-five-frames
+          path: artifacts/p0-v4-frame-evidence/
+          if-no-files-found: error
+      - name: Render deterministic V5.2 voiced performance MP4
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          FRAMEFORGE_PREVIEW_OUTPUT=artifacts/v5-3-audio-guided-3s.mp4 node tests/export-performance-preview.cjs
+          ffprobe -v error -count_frames -show_entries stream=codec_type,nb_read_frames -of json artifacts/v5-3-audio-guided-3s.mp4
+      - name: Save motion preview for visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-v5-3-audio-guided-motion-3sec
+          path: artifacts/v5-3-audio-guided-3s.mp4
+          if-no-files-found: error
+
+  rigged-character-import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real headless Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Import real Khronos GLB and render 7 rigged character frames
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-glb-http.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          export FRAMEFORGE_RIG_OUT=artifacts/p1-rigged-asset-lab
+          node tests/rigged-asset-browser.cjs
+          node tests/ara-built-in-browser.cjs
+          node tests/ara-mobile-browser.cjs
+      - name: Preserve actual mobile-sized WebGL character screenshot and test measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-human-mobile-chromium
+          path: artifacts/p1-mobile-character/
+          if-no-files-found: warn
+      - name: Preserve generated human expression and body render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-real-human-face-frames
+          path: artifacts/p1-real-human-preview/
+          if-no-files-found: warn
+      - name: Preserve actual GLB camera and skinning render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-real-glb-7-frames
+          path: artifacts/p1-rigged-asset-lab/
+          if-no-files-found: warn

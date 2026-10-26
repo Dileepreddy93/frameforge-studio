@@ -1,0 +1,163 @@
+{
+  "schema": "frameforge.project/1",
+  "id": "mountain-mystery",
+  "title": "The Hidden City",
+  "logline": "A mysterious mountain hides a forgotten futuristic city.",
+  "output": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "style": {
+    "styleLock": "Original cinematic stylized low-poly 3D. Unified characters, detailed moody studio, rich key/fill/rim lighting. No anime, no Pixar imitation, no photorealism. Stable proportions and identities."
+  },
+  "environment": {
+    "id": "developer-neon-lab",
+    "description": "Moody layered developer studio with desk, monitor, ambient fixtures and readable story-relevant interface props.",
+    "safeZone": {
+      "top": 220,
+      "bottom": 420
+    }
+  },
+  "characters": [
+    {
+      "id": "dev",
+      "name": "DEV",
+      "visualIdentity": "Original stylized low-poly adult developer, visible facial expressions, coherent hoodie and hair silhouette",
+      "voice": {
+        "profile": "developer",
+        "voiceLock": "Consistent expressive adult voice, clear words, measured comic timing; maintain this exact profile between shots"
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "worried",
+        "surprised",
+        "happy"
+      ]
+    },
+    {
+      "id": "blue",
+      "name": "BLUE",
+      "visualIdentity": "Original blue-grey expressive robot with a cohesive rounded metal body and contrasting digital face",
+      "voice": {
+        "profile": "blue-assistant",
+        "voiceLock": "Distinct playful high-mid synthetic English voice with precise pacing and consistent timbre"
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "happy",
+        "worried",
+        "surprised"
+      ]
+    },
+    {
+      "id": "orange",
+      "name": "ORANGE",
+      "visualIdentity": "Original warm orange robot with a cohesive rounded metal body and expressive contrasting digital face",
+      "voice": {
+        "profile": "orange-assistant",
+        "voiceLock": "Distinct warm synthetic English voice, emotionally controlled, deadpan comedic delivery"
+      },
+      "sheetStatus": "not_created",
+      "expressions": [
+        "neutral",
+        "happy",
+        "worried",
+        "surprised"
+      ]
+    }
+  ],
+  "shots": [
+    {
+      "id": "shot-01",
+      "dialogue": "The scanner says there is something under this mountain.",
+      "speaker": "dev",
+      "camera": "wide",
+      "duration": 5,
+      "intent": "setup",
+      "firstFrameStatus": "not_created",
+      "cast": {
+        "dev": {
+          "emotion": "neutral"
+        }
+      }
+    },
+    {
+      "id": "shot-02",
+      "dialogue": "It's not a mountain. It's a door.",
+      "speaker": "blue",
+      "camera": "blue",
+      "duration": 4,
+      "intent": "contrast",
+      "firstFrameStatus": "not_created",
+      "cast": {
+        "dev": {
+          "emotion": "surprised"
+        }
+      }
+    },
+    {
+      "id": "shot-03",
+      "dialogue": "A door to what?",
+      "speaker": "dev",
+      "camera": "dev",
+      "duration": 4,
+      "intent": "escalation",
+      "firstFrameStatus": "not_created",
+      "cast": {
+        "dev": {
+          "emotion": "worried"
+        }
+      }
+    },
+    {
+      "id": "shot-04",
+      "dialogue": "To a city everyone forgot.",
+      "speaker": "orange",
+      "camera": "orange",
+      "duration": 6,
+      "intent": "reaction",
+      "firstFrameStatus": "not_created",
+      "cast": {
+        "dev": {
+          "emotion": "surprised"
+        }
+      }
+    },
+    {
+      "id": "shot-05",
+      "dialogue": "Then why is it opening for us?",
+      "speaker": "dev",
+      "camera": "duo",
+      "duration": 5,
+      "intent": "reveal",
+      "firstFrameStatus": "not_created",
+      "cast": {
+        "dev": {
+          "emotion": "worried"
+        }
+      }
+    },
+    {
+      "id": "shot-06",
+      "dialogue": "Because someone has been waiting.",
+      "speaker": "blue",
+      "camera": "wide",
+      "duration": 6,
+      "intent": "punchline",
+      "firstFrameStatus": "not_created",
+      "cast": {
+        "dev": {
+          "emotion": "happy"
+        }
+      }
+    }
+  ],
+  "audio": {
+    "state": "storyboard_only",
+    "masterUrl": null,
+    "audioAlignment": "approximate_existing_v4_engine_not_phoneme_aligned"
+  }
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameForge | Character & Expression Lab</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,Arial,sans-serif}*{box-sizing:border-box}
+body{background:#080e1d;color:#f0f5fc;margin:0}header{padding:22px max(20px,4vw);background:#111d30;border-bottom:1px solid #324764}
+h1{margin:0;font-size:26px;letter-spacing:-.04em}.kicker{color:#95d5dc;letter-spacing:.16em;font-size:11px;font-weight:750;margin-bottom:9px}p{color:#9eafc2;max-width:780px;font-size:13px;line-height:1.6}
+main{max-width:1440px;margin:auto;padding:20px}section{margin-bottom:25px}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:15px;background:#141f31;border:1px solid #324361;border-radius:14px}
+select,button{color:white;border:1px solid #496783;border-radius:9px;padding:10px 14px;font:inherit;background:#243751}
+button{background:#15718e;cursor:pointer;font-weight:750}button:disabled{opacity:.5;cursor:wait}
+.status{color:#b3d1d7;font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+figure{margin:0;background:linear-gradient(140deg,#182638,#0a1220);padding:7px;border-radius:13px;border:1px solid #3c4c60;overflow:hidden}
+figure img{display:block;width:100%;aspect-ratio:36/46;object-fit:contain;border-radius:9px;background:#101b2b}
+figcaption{padding:7px 4px;text-align:center;color:#d4e2eb;font-size:12px}footer{color:#a0b7c3;padding:20px;font-size:12px}
+#studio{position:absolute;width:2px;height:2px;opacity:.001;pointer-events:none;border:0}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:21px}}
+</style></head><body>
+<header><div class="kicker">V5 / STUDIO ART DIRECTION</div>
+<h1>Character &amp; Expression Laboratory</h1>
+<p>Actual Three.js geometry, lighting and facial displays from the live development engine. Four views and four facial performances per character. These are engineering studies, <strong>not yet art-approved character sheets</strong>.</p></header>
+<main><div class="toolbar">
+<label for="actor">Character</label><select id="actor"><option value="dev">DEV — Human</option><option value="blue">BLUE — Assistant</option><option value="orange">ORANGE — Assistant</option></select>
+<button id="render" disabled>Render both sheets</button><button id="save" disabled>Export contact sheet PNG</button>
+<span id="status" class="status" role="status">Loading Three.js film engine…</span></div>
+<section><h2>01 / Model turnaround</h2><div id="turnaround" class="grid"></div></section>
+<section><h2>02 / Facial performance portraits</h2><div id="emotions" class="grid"></div></section>
+<section><h2>03 / Environment-only first frame</h2><p>Actors hidden. Set materials, lighting, props, and vertical framing are rendered from the same 3D world. Caption-safe placement must be visually approved.</p><figure style="max-width:360px"><img id="environment" alt="Environment-only 3D render"><figcaption>3D environment · unapproved</figcaption></figure></section>
+<p>Source guide: NMXWZ specifies front / three-quarter / side / back at matching scale plus four close-up expressions. The source character engine remains independently authored; creator marketing media are reference material only.</p>
+<iframe id="studio" src="./studio.html" title="FrameForge renderer"></iframe></main>
+<footer>Character identity and first-frame approval statuses remain unapproved until visual QA is complete.</footer>
+<script>
+const $=id=>document.getElementById(id);
+const engine=$('studio'),status=$('status'),actor=$('actor'),btn=$('render'),save=$('save');
+let shots=[],preparedSheet=null;
+function engineApi(){const w=engine.contentWindow;return w&&w.FrameForgeArtLab&&w.FrameForgeProjectsLoaded?w.FrameForgeArtLab:null}
+function viewFigure(title,url){const fig=document.createElement('figure');const img=document.createElement('img');img.src=url;img.alt=actor.value+' '+title+' 3D render';const cap=document.createElement('figcaption');cap.textContent=title;fig.append(img,cap);return fig}
+async function make(){
+ const api=engineApi();if(!api){status.textContent='Renderer unavailable';return}
+ btn.disabled=true;save.disabled=true;preparedSheet=null;status.textContent='Rendering real 3D rig...';
+ try{
+  const who=actor.value;shots=[];
+  const views=api.views(),expressions=api.expressions();
+  $('turnaround').replaceChildren(...views.map(view=>{
+   const png=api.capture(who,view,'neutral',360,460);
+   shots.push({name:view,png});return viewFigure(view,png);
+  }));
+  $('emotions').replaceChildren(...expressions.map(expression=>{
+   const png=api.capture(who,'front',expression,360,460,true);
+   shots.push({name:expression,png});return viewFigure(expression,png);
+  }));
+  if(!$('environment').src){$('environment').src=api.captureEnvironment(360,640);}
+  status.textContent='Preparing contact sheet for reliable one-click export...';
+  preparedSheet=await composeSheet(shots,views.length);
+  save.disabled=false;status.textContent=who.toUpperCase()+' · '+shots.length+' true 3D frames rendered; export ready; art approval pending';
+ }catch(error){status.textContent='Rendering error: '+error.message;console.error(error)}
+ finally{btn.disabled=false}
+}
+// Views on the first row, expressions on the second.
+async function composeSheet(frames,views){
+ if(!views||frames.length<=views)throw new Error('Expected the views and then the expression frames');
+ const cellW=360,cellH=500,cols=Math.max(views,frames.length-views);
+ const cvs=document.createElement('canvas');cvs.width=cellW*cols;cvs.height=cellH*2;const ctx=cvs.getContext('2d');
+ ctx.fillStyle='#0c1523';ctx.fillRect(0,0,cvs.width,cvs.height);
+ for(let i=0;i<frames.length;i++){
+  const img=new Image();img.src=frames[i].png;await img.decode();
+  const row=i<views?0:1,x=(row?i-views:i)*cellW,y=row*cellH;
+  ctx.drawImage(img,x,y,cellW,460);ctx.fillStyle='#e0eafb';ctx.font='bold 19px sans-serif';ctx.fillText(frames[i].name.toUpperCase(),x+17,y+488);
+ }
+ return cvs.toDataURL('image/png');
+}
+function exportSheet(){
+ // No asynchronous work after the actual user click: preserve user activation
+ // even on slow software-rendered browser sessions and mobile devices.
+ if(!preparedSheet){status.textContent='Contact sheet is still being prepared';return}
+ const a=document.createElement('a');
+ a.download='frameforge-'+actor.value+'-turnaround-expression-unapproved.png';
+ a.href=preparedSheet;document.body.append(a);a.click();a.remove();
+}
+btn.addEventListener('click',make);actor.addEventListener('change',make);save.addEventListener('click',exportSheet);
+const loader=setInterval(()=>{if(engineApi()){clearInterval(loader);btn.disabled=false;make()}},400);
+setTimeout(()=>{if(!engineApi()){clearInterval(loader);status.textContent='Renderer did not initialize. Check Chrome WebGL support and project assets.'}},25000);
+</script></body></html>

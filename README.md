@@ -1,3 +1,7 @@
+> **Current project state (October 24, 2026):** This README's original material documents the preserved V3 backup. For the active V5+ studio, implementation phases, exact evidence and new-chat continuation, start at [CONTINUE_HERE.md](CONTINUE_HERE.md), [nine-phase contract](docs/IMPLEMENTATION_PLAN_P0_P8.md) and [execution ledger](docs/EXECUTION_LEDGER.md). V3 production is intentionally preserved. Development now includes merged V5.3 speech work on `develop`; quality is still not reference-approved.
+
+---
+
 # FrameForge Studio
 
 Private backup of the verified FrameForge Studio V3 snapshot, stored before new experiments.
@@ -28,3 +32,57 @@ The HTML needs the internet for its Three.js dependency and externally hosted V3
 The v3.0-stable tag is protected by our workflow, not by GitHub branch protection. Keep main stable and perform later experiments on dedicated branches.
 
 Do not commit .env, API credentials, private keys or GitHub/Vercel tokens.
+
+## V5 experimental foundation (feature branch only)
+
+The new browser now loads JSON from the projects/ directory. Existing episodes are preserved in a validated schema with character, voice and style locks. You can import a JSON project with the current three rigs, edit dialogue/speaker/camera and download a complete revised project file. The source of truth is documented at docs/PROJECT_FORMAT.md.
+
+Tests (Node 22+):
+- node tests/engine-syntax.test.mjs
+- node tests/project-core.test.cjs
+- node tests/project-integration.test.mjs
+
+Browser tests need Playwright (`npm install --no-save playwright@1.56.1 && npx playwright install chromium`):
+- node tests/determinism-browser.cjs — same time gives the same frame (fresh, repeated, after a jump)
+- node tests/episode-data-browser.cjs — every shot decision comes from the episode JSON, not shot order
+- Others (`performance-browser`, `speech-performance-browser`, `project-browser`, ...) need a local HTTP server and FRAMEFORGE_URL.
+
+CI runs these in .github/workflows/project-contract.yml.
+
+## Voices in the browser (what buyers use)
+The studio voices every line in the browser with Kokoro-82M (Apache-2.0): `src/kokoro-worker.js` runs the model with
+ONNX Runtime Web (WebGPU, else WebAssembly), `src/kokoro-g2p.js` turns text into phonemes from misaki's dictionary
+(`assets/voice/`, see its NOTICE.md). The 326 MB model downloads once from Hugging Face (pinned revision) into the
+browser's cache; a `models/kokoro-82m-v1.0/` folder next to `studio.html` is used first. Voiced lines are cached, and
+`sw.js` keeps the studio working offline. No keys, no server.
+
+Each line is spoken with its speaker's emotion in that shot (`cast.<speaker>.emotion`, set in the Shot inspector).
+Kokoro has no emotion input, so `src/voice-emotion.js` shapes the delivery around it: Kokoro's speed sets the pace,
+then TD-PSOLA moves the pitch level, range and the end of the line (and adds a slight tremor when worried) without
+changing the voice's timbre, a high shelf makes it brighter or darker and the line's loudness moves up or down.
+Neutral lines are untouched. The offline path (`tools/voice_lines.py`) runs the same file through
+`tools/voice-emotion.mjs`. Tests: `node tests/voice-emotion.test.cjs` (no model) and `tests/voice-emotion-browser.cjs`
+(real model; set `FRAMEFORGE_EMOTION_OUT` to keep every take as a WAV). Browser tests run without jsDelivr access when
+`FRAMEFORGE_CDN_MIRROR` points at a folder with the pinned npm packages (`tests/cdn-mirror.cjs`).
+
+British voices (`b*_`, ORANGE) read British English from misaki's GB dictionaries. An episode can list its own
+`pronunciations` (`{word: "Kokoro", sayAs: "koh-KOR-oh"}`, edited under Voices). The offline renders read every line
+through the same pronouncer (`tools/phonemize.mjs`), so both paths say words the same way.
+
+Each shot's timing (pause before the line, pause after it, and the line's pace) is set in the Shot inspector and
+saved with the episode; both voice paths honour it.
+
+Browser-voiced episodes are mixed like our offline renders (`src/episode-mix.mjs`, in `src/mix-worker.js`): the
+episode's music cues and each shot's sound cues from `src/sound-kit.mjs`, music ducked under speech, mastered to
+-14 LUFS in stereo. An edited finished episode keeps its score. Test: `node tests/episode-mix.test.mjs` and
+`tests/episode-mix-browser.cjs`.
+
+## Making an episode (our own renders)
+1. Write or edit `projects/<episode>.frameforge.json` (format: docs/PROJECT_FORMAT.md).
+2. Audio: `node tools/build-audio.mjs projects/<episode>.frameforge.json` generates voice lines with local Kokoro,
+   times every shot from its line, synthesises music and sound effects, and masters to -14 LUFS.
+   This needs the Kokoro venv: `python3.12 -m venv .venv && .venv/bin/pip install kokoro-onnx soundfile`.
+3. Video: `node tools/render-episode.mjs projects/<episode>.frameforge.json` renders every frame at 1080x1920, 30 fps
+   and writes `renders/<id>-1080x1920.mp4`. Use `--shots shot-01:shot-04` for a part.
+   Add `--gpu` to render on the GPU through the installed Chrome (several times faster; frames match the software
+   render to SSIM 0.995). The default software path is bit-exact and is what the tests use.

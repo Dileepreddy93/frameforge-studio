@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEV Model Sheet</title>
+<!-- M1.2: the DEV model sheet (direction A with C's eyes), drawn as SVG from design/dev-character.js. Screenshot with
+     tools/design-shot.cjs. Reference images are read from ../../proof/v6/refs/ (outside this public repo) when present. -->
+<style>
+ :root{--bg:#0C0916;--panel:#120E1F;--line:#2A2340;--ink:#ECE8F6;--dim:#9C95B8}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,'Ubuntu Sans',system-ui,sans-serif;width:2400px}
+ header{padding:40px 56px 6px;display:flex;align-items:baseline;gap:28px}
+ h1{font-size:52px;margin:0;letter-spacing:-.5px}
+ header p{font-size:22px;color:var(--dim);margin:0}
+ section{margin:18px 56px;padding:18px 20px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+ h2{font-size:27px;margin:0 0 12px;font-weight:700}
+ h2 small{font-size:19px;color:var(--dim);font-weight:400;margin-left:12px}
+ .top{display:grid;grid-template-columns:1700px 1fr;gap:20px;align-items:start}
+ .side{display:flex;flex-direction:column;gap:14px}
+ .sw{display:grid;grid-template-columns:150px repeat(3,1fr);gap:6px;align-items:center;font-size:16px;color:var(--dim)}
+ .sw b{color:var(--ink);font-weight:600;font-size:17px}
+ .chip{height:34px;border-radius:6px;display:flex;align-items:flex-end;padding:0 6px 3px;font:12px monospace;color:rgba(255,255,255,.75)}
+ .refs{display:flex;gap:12px}
+ figure{margin:0;background:#0F0B1A;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+ figure svg{display:block}
+ figcaption{font-size:16px;padding:7px 10px;color:var(--dim)}
+ .row{display:flex;gap:10px}
+ .cell{background:#100C1B;border-radius:12px;overflow:hidden}
+ .cell svg{display:block}
+ .cell .tag{display:block;font-size:19px;color:#D6D0E8;padding:4px 12px 9px}
+ .phone{display:flex;gap:10px;align-items:center;margin-top:12px;background:#0F0B1A;border-radius:12px;padding:10px 14px}
+ .phone .q{font-size:18px;color:var(--dim);width:300px;line-height:1.35}
+ .phone .h{display:flex;flex-direction:column;align-items:center;font-size:13px;color:var(--dim);width:120px}
+ .notes{font-size:18.5px;line-height:1.5;color:#D6D0E8;margin:0;padding-left:22px}
+ svg polygon{stroke-width:.9px;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+ .guide line{stroke:#3B3460;stroke-width:1.2px;vector-effect:non-scaling-stroke;stroke-dasharray:6 6}
+ .guide text{fill:#9C95B8;font-family:Inter,'Ubuntu Sans',sans-serif}
+</style>
+</head>
+<body>
+<header><h1>DEV · model sheet</h1><p>Direction A with C's eyes (picked in M1.1). The reference the 3D build matches: head and face in M1.3, body and hands in M1.4.</p></header>
+<section class="top"><div><h2>Turnaround<small>front, three-quarter, side, back · proportion lines in head heights</small></h2><div id="turn"></div></div><div class="side" id="side"></div></section>
+<section><h2>Seven emotions<small>brows, lids, eyes, mouth and head tilt together</small></h2><div class="row" id="emo"></div><div class="phone" id="phone"></div></section>
+<section><h2>Eye chart<small>the upper-lid line carries the mood; glints move less than the pupils (they reflect the key light)</small></h2><div class="row" id="eyes"></div></section>
+<section><h2>Mouth chart<small>lip-sync shapes and the two moods</small></h2><div class="row" id="mouths"></div></section>
+<section><h2>Hands<small>mitten with a thumb · palm and three-quarter views</small></h2><div style="display:flex;gap:20px;align-items:flex-start"><div class="row" id="hands"></div><ul class="notes" id="notes"></ul></div></section>
+<script src="dev-forms.js"></script>
+<script src="dev-character.js"></script>
+<script>
+'use strict';
+const F=FrameForgeDesign,{DEV,EMOTIONS,EYE_CHART,MOUTH_CHART,HAND_POSES}=FrameForgeDev;
+const ch=F.build(DEV);
+const svg=(vb,w,h,inner)=>'<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+vb.join(' ')+'" width="'+w+'" height="'+h+'">'+inner+'</svg>';
+const cell=(inner,tag)=>'<div class="cell">'+inner+(tag?'<span class="tag">'+tag+'</span>':'')+'</div>';
+// Turnaround: one drawing so the proportion lines run through all four views.
+(function(){
+ const views=[[0,'front'],[40,'three-quarter'],[90,'side'],[180,'back']],slot=1.32,g=-DEV.body.ground,S=270;
+ let figs='',hairTop=0;
+ views.forEach(([yaw,label],i)=>{
+  const r=F.render(ch,{yaw,face:EMOTIONS.neutral.face}),cx=(r.bbox[0]+r.bbox[2])/2,x=i*slot;hairTop=Math.min(hairTop,r.bbox[1]);
+  figs+='<ellipse cx="'+x+'" cy="'+g+'" rx=".36" ry=".05" fill="#07050C"/><g transform="translate('+(x-cx)+' 0)">'+r.svg+'</g>';
+  figs+='<text x="'+x+'" y="'+(g+.16)+'" font-size=".07" text-anchor="middle" fill="#D6D0E8" font-family="Inter,Ubuntu Sans,sans-serif">'+label+'</text>';
+ });
+ const shoulder=-DEV.body.arm.shoulder[1],hem=-DEV.body.trunk[DEV.body.trunk.length-1][0],eye=-DEV.face.eyes.y;
+ const lines=[[hairTop,'hair top'],[-.5,'crown · 0'],[eye,'eye line · 60%'],[.5,'chin · 1 head'],[shoulder,'shoulders'],[hem,'hoodie hem'],[g,'ground · 2 heads']];
+ const x0=-1.62,x1=3*slot+.7;
+ const guide='<g class="guide">'+lines.map(([y,t])=>'<line x1="'+(x0+.86)+'" x2="'+x1+'" y1="'+y+'" y2="'+y+'"/><text x="'+(x0+.02)+'" y="'+(y+.022)+'" font-size=".062">'+t+'</text>').join('')+'</g>';
+ const y0=hairTop-.1,h=g+.24-y0;
+ document.getElementById('turn').innerHTML=svg([x0,y0,x1-x0,h],Math.round((x1-x0)*S),Math.round(h*S),guide+figs);
+})();
+// Palette (the flat-shading ramps: shadow, mid, lit) and the references.
+(function(){
+ const rows=[['skin','Skin'],['hair','Hair (+ blue rim)'],['hood','Hoodie'],['hoodDark','Pocket, cuffs'],['pants','Trousers'],['shoe','Shoes'],['sole','Soles']];
+ let h='<div><h2>Palette<small>shadow · mid · lit</small></h2><div class="sw">';
+ for(const[k,l]of rows){h+='<b>'+l+'</b>'+F.MAT[k].ramp.map(c=>'<div class="chip" style="background:'+c+'">'+c+'</div>').join('');}
+ h+='<b>Face ink</b>'+['#04030A','#2A0911','#7C2C33'].map(c=>'<div class="chip" style="background:'+c+'">'+c+'</div>').join('');
+ h+='<b>Glints, teeth</b>'+['#FFF7EE','#EADFD1','#B098B1'].map(c=>'<div class="chip" style="background:'+c+';color:#333">'+c+'</div>').join('');
+ h+='</div><p style="font-size:16px;color:var(--dim);margin:8px 0 0">Last chip: drawstrings. Rim colour on hair <span style="color:#4B87C0">#4B87C0</span>, on hoodie <span style="color:#467498">#467498</span>.</p></div>';
+ const ref=(src,iw,ih,crop,w,cap)=>'<figure><svg viewBox="'+crop.join(' ')+'" width="'+w+'" height="'+Math.round(w*crop[3]/crop[2])+'"><image href="'+src+'" width="'+iw+'" height="'+ih+'"/></svg><figcaption>'+cap+'</figcaption></figure>';
+ h+='<div><h2>Next to the references</h2><div class="refs">'+ref('../../proof/v6/refs/agentpoly-human.jpg',432,540,[60,130,330,380],255,'Agent Poly HUMAN (appeal bar)')+ref('../../proof/v6/refs/ref-dev-closeup-t9.png',1080,1920,[100,240,900,1040],255,'Reference DEV (look)')+'</div></div>';
+ document.getElementById('side').innerHTML=h;
+})();
+// Emotions, and the same seven at phone size.
+(function(){
+ let h='',p='<div class="q"><b style="color:#ECE8F6">Phone size.</b> Wide-shot heads on a phone. Can you still name each one?</div>';
+ for(const[e,v]of Object.entries(EMOTIONS)){
+  const r=F.render(ch,{yaw:10,face:v.face,pose:v.pose}),hb=r.headBox,cx=(hb[0]+hb[2])/2,cy=(hb[1]+hb[3])/2+.02,u=300/218,hh=360/218;
+  h+=cell(svg([cx-u/2,cy-hh/2,u,hh],300,360,r.svg),e);
+  const s=78,pu=110/s,ph=104/s;p+='<div class="h">'+svg([cx-pu/2,cy-ph/2+.03,pu,ph],110,104,r.svg)+e+'</div>';
+ }
+ document.getElementById('emo').innerHTML=h;document.getElementById('phone').innerHTML=p;
+})();
+// Eye chart: both eyes and brows, straight on.
+(function(){
+ const y=-DEV.face.eyes.y;let h='';
+ for(const[k,v]of Object.entries(EYE_CHART)){const r=F.render(ch,{face:{...v,mouth:{s:.012}}});h+=cell(svg([-.36,y-.24,.72,.36],302,151,r.svg),k);}
+ document.getElementById('eyes').innerHTML=h;
+})();
+// Mouth chart: nose and mouth.
+(function(){
+ const y=-DEV.face.mouth.y;let h='';
+ for(const[k,v]of Object.entries(MOUTH_CHART)){const r=F.render(ch,{face:{lidU:.1,mouth:v}});h+=cell(svg([-.19,y-.125,.38,.22],262,152,r.svg),k);}
+ document.getElementById('mouths').innerHTML=h;
+})();
+// Hands: palm toward the camera, fingers up, with the cuff and sleeve; then turned to three-quarter.
+(function(){
+ const a=DEV.body.arm,X=[1,0,0],Y=[0,1,0],Z=[0,0,1];let h='';
+ const sleeve=F.tube([[0,-.2,0],[0,-.05,0]],[a.r[2],a.r[2]],7,'hood',{capStart:1}).concat(F.tube([[0,-.06,0],[0,.004,0]],[a.r[2]*1.12,a.r[2]*1.08],7,'hoodDark',{capStart:1,capEnd:1}));
+ for(const pose of HAND_POSES)for(const[yaw,label]of[[0,'palm'],[-60,'three-quarter']]){
+  const tris=F.place(F.hand(pose,a.hand,31),[0,-.012,0],X,Y,Z).concat(sleeve),r=F.renderParts(tris,{yaw,pitch:8});
+  const cx=(r.bbox[0]+r.bbox[2])/2;h+=cell(svg([cx-.15,-.27,.3,.36],205,246,r.svg),pose+' · '+label);
+ }
+ document.getElementById('hands').innerHTML=h;
+ document.getElementById('notes').innerHTML=['Head: a stack of superellipse sections (profile curves in <code>dev-character.js</code>), cut into about 320 flat facets; wider than tall.',
+  'Face: crisp shapes on the head, never textures. Eyes: big ink pupils, two fixed glints, a heavy upper-lid line. Brows: rounded ink bars. Mouth: dark shape with tongue and top teeth.',
+  'Glasses: thick 12-sided round rims, ink, floating just off the face; temples run to the ears.',
+  'Hair: a cap on a designed hairline plus 11 chunks; the wave quiff rises from a part on his left and sweeps to his right.',
+  'Body: 2 heads from crown to ground. Hoodie with a collar roll and a hood lying on the back, pocket, cuffs and drawstrings.',
+  'Hands: palm, one mitten for the fingers, a thumb; pointing adds the index finger.'].map(t=>'<li>'+t+'</li>').join('');
+})();
+window.FF_READY=true;
+</script>
+</body>
+</html>
