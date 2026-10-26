@@ -128,7 +128,7 @@
   for(const side of [1,-1]){
    const cx=side*e.x+gx,cy=e.y+gy,rx=e.rx*scale,ry=e.ry*scale*open;
    const lidU=ch.lidU??0,slope=(ch.lidSlope??0)*side,lidL=ch.lidL??0,own=side>0?(ch.lidUL??lidU):(ch.lidUR??lidU);
-   if(lidL>.5){out.push({pts:arch(cx,cy-ry*.2,rx*1.05,ry*.75,Math.max(.012,e.ry*.32)),fill:lit});continue;}
+   if(lidL>.5){out.push({pts:arch(cx,cy-ry*.2,rx*1.05,ry*.75,Math.max(.012,e.ry*.32)),fill:lit,strip:true});continue;}
    let poly=e.style==='pill'?roundRect(cx,cy,rx*2,ry*2,rx):e.style==='square'?roundRect(cx,cy,rx*2,ry*2,rx*.35):ellipse(cx,cy,rx,ry);
    // The upper lid: a cut line lowered by lidU, tilted by slope (inner corner = toward the face centre).
    if(own>0){const yTop=cy+ry-2*ry*own;poly=clipHalf(poly,([x,y])=>yTop-(x-cx)*(-slope)*1.2-y);}
@@ -148,7 +148,7 @@
     const cx=side*b.x+gx*.5,cy=b.y+lift,l=b.len/2;
     // + tilt raises the inner end (worried); - lowers it (angry).
     const yi=cy+tilt*l*2.2,yo=cy-tilt*l*.6,xi=cx-side*l,xo=cx+side*l;
-    out.push({pts:[[xi,yi+b.th/2],[xo,yo+b.th/2],[xo,yo-b.th/2],[xi,yi-b.th/2]],fill:f.ink?'ink':lit});
+    out.push({pts:[[xi,yi+b.th/2],[xo,yo+b.th/2],[xo,yo-b.th/2],[xi,yi-b.th/2]],fill:f.ink?'ink':lit,strip:true});
    }
   }
   if(f.mouth){
@@ -166,7 +166,7 @@
     // A curved line: smile s bends the ends up (+) or down (-).
     const n=12,top=[],bot=[];
     for(let i=0;i<=n;i++){const u=-1+2*i/n,x=sh+u*w,y=m.y+s*(u*u)*1.8-s*.4;top.push([x,y+m.th/2]);bot.push([x,y-m.th/2]);}
-    out.push({pts:top.concat(bot.reverse()),fill:f.ink?'ink':lit});
+    out.push({pts:top.concat(bot.reverse()),fill:f.ink?'ink':lit,strip:true});
    }
   }
   if(f.cheeks&&(ch.blush??0)>0)for(const side of [1,-1])out.push({pts:ellipse(side*f.cheeks.x,f.cheeks.y,f.cheeks.r,f.cheeks.r*.6,12),fill:dim||lit});
@@ -199,14 +199,17 @@
   P(body.tris,{name:'body',form:body,decals:spec.chest});
   if(B.belt)P(tube([add(B.c,[0,B.belt.y-B.belt.h/2,0]),add(B.c,[0,B.belt.y+B.belt.h/2,0])],[[B.r[0]*B.belt.k,B.r[2]*B.belt.k],[B.r[0]*B.belt.k,B.r[2]*B.belt.k]],B.seg[0],deep));
   const A=spec.arms;
+  // Each arm is tagged with its side and swings about its shoulder (a floating hand: a point beside the body).
+  const shoulders={};
   for(const side of [1,-1]){
    const sx=v=>[side*v[0],v[1],v[2]];
+   shoulders[side]=A.style!=='float'?sx(A.shoulder):sx([A.hand[0]-A.size[0]*1.6,A.hand[1]+A.size[1]*2.2,0]);
    if(A.style!=='float'){
     const sh=sx(A.shoulder),el=sx(A.elbow),wr=sx(A.wrist);
-    P(shell(sh,[A.r*1.35,A.r*1.35,A.r*1.35],[2.2,2.2],[8,6],deep).tris);
-    P(tube([sh,el,wr],[A.r,A.r*.95,A.r*.9],7,'trim'));
+    P(shell(sh,[A.r*1.35,A.r*1.35,A.r*1.35],[2.2,2.2],[8,6],deep).tris,{arm:side});
+    P(tube([sh,el,wr],[A.r,A.r*.95,A.r*.9],7,'trim'),{arm:side});
    }
-   P(mitten(sx(A.hand),A.size,A.handMat||mat,side));
+   P(mitten(sx(A.hand),A.size,A.handMat||mat,side),{arm:side});
   }
   const G=spec.base;
   if(G.type==='hover'){
@@ -223,7 +226,7 @@
    P(disc([0,G.r,0],[1,0,0],G.r,G.w,14,'trim'),{bias:-.01});
    P(disc([0,G.r,0],[1,0,0],G.r*.45,G.w*1.15,10,spec.accent));
   }
-  return{spec,parts,head,body,pivot:H.pivot||add(H.c,[0,-H.r[1]*.8,0])};
+  return{spec,parts,head,body,shoulders,pivot:H.pivot||add(H.c,[0,-H.r[1]*.8,0])};
  }
 
  // ---------- render ----------

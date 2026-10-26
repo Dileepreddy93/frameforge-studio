@@ -26,6 +26,7 @@ jobs:
           node tests/voice-emotion.test.cjs
           node tests/episode-mix.test.mjs
           node tests/robot-design.test.cjs
+          node tests/robot-character.test.cjs
       - name: Engine module parses
         run: node tests/engine-syntax.test.mjs
   real-character-render-tests:
