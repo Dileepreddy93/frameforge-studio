@@ -1,8 +1,8 @@
-# M5.3 · Light: three options for your pick
+# M5.3 · Light: a character key and a black lift
 
-**Part 1 of 2. Nothing in the studio's defaults has changed.** This step draws three light options on the real
-films, measures them, and waits for your pick. Part 2 (after your pick): apply it in `studio.html`, re-render both
-films, re-make `media/v5/`, and finish this note.
+Part 1 drew three options on the real films and measured them. On 2026-10-31 the user left the pick to me. **Part 2
+applies B's character key with A's black lift**, re-renders both films and re-makes `media/v5/`. See "Part 2" at the
+end.
 
 M5.2 (story on in-world screens) was approved by the user on 2026-10-31.
 

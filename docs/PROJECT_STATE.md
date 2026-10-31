@@ -15,7 +15,7 @@ a 1080×1920 MP4. Buyers use it alone: no keys, no server, nothing paid per vide
 | Area | State | Evidence |
 |---|---|---|
 | Characters | DEV, BLUE and ORANGE: 2D model sheets approved by the user, built in 3D, acting on springs and key poses | `design/*-model-sheet.html`, `docs/releases/M3_*` |
-| Look | matte flat-shaded low-poly, one warm key and one blue rim, STYLE.md palette, white captions at 31%, screen inserts in the screen palette | `STYLE.md`, `docs/releases/M4_3_*` |
+| Look | matte flat-shaded low-poly, one warm key and one blue rim, a character-only key and a black lift (M5.3), STYLE.md palette, white captions at 31%, screen inserts in the screen palette | `STYLE.md`, `docs/releases/M4_3_*` |
 | Voices | Kokoro-82M in the browser (WebGPU or WASM), emotion, British English for `b*_` voices, pronunciations, timing | `docs/releases/M2_*` |
 | Sound | synthesised music and effects, ducking, mastered to −14 LUFS in the browser and offline | `docs/releases/M2_5_*`, `M4_1_*` |
 | Episodes | Zero Latency (36.97 s) and Dark Mode (32.50 s), re-voiced and rendered at 1080×1920 | `docs/releases/M4_1_*`, `M4_2_*` |
@@ -24,10 +24,11 @@ a 1080×1920 MP4. Buyers use it alone: no keys, no server, nothing paid per vide
 | Licences | no GPL or LGPL in what buyers run; credits page; research rigs and undocumented V3 audio aren't deployed | `docs/releases/M4_4_*`, `credits.html` |
 
 ## Known gaps (honest)
-- **Below the reference** (`git-blame.mp4`) in key light, cutting pace and camera life. Ranked in
+- **Below the reference** (`git-blame.mp4`) in cutting pace and camera life, and DEV's face is still darker. Ranked in
   `docs/releases/M4_3_REFERENCE_COMPARISON.md`. Not parity. The set was rebuilt as the screen arena (M5.1) and the
-  screen shots moved onto its story window (M5.2); its screens are still brighter and sharper than the reference's. Light (M5.3): three options are drawn and
-  measured in `docs/releases/M5_3_LIGHT.md`, waiting for the user's pick; the studio's light is unchanged.
+  screen shots moved onto its story window (M5.2); its screens are still brighter and sharper than the reference's. Light (M5.3): a character key and a black lift
+  bring the blacks and the robots' highlights to the reference's numbers; DEV's face stays darker than its pale face
+  (`docs/releases/M5_3_LIGHT.md`).
 - The user still has to judge the M4.1 voices by ear (DEV's "worried" may sound neutral).
 - The Opus fallback (no AAC encoder, e.g. Chrome on Linux) narrows the music's faint stereo.
 - Tested only in Chrome on Linux and phone emulation; Safari, Firefox and real phones are untested.

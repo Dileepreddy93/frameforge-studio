@@ -46,6 +46,11 @@ Three main colours on a near-black set: **terracotta** (characters), **teal-blue
   every form falls to near black (ambient ≤ 5%).
 - **Rim / top:** one cool blue-lavender light (`#7F9CFF`) from behind-left and above. It paints hair edges,
   hood tops and box tops blue/lilac.
+- **Character key** (M5.3): a second warm key (`#FFD6BC`, 5.5) that only the cast sees, from the key's side
+  (camera right, 50° off the lens axis, 30° up, camera-relative). It brightens the lit side of faces and bodies,
+  casts no shadows, and leaves the far side dark. The set doesn't get it.
+- **Black lift** (M5.3): blacks rise to a violet haze, `#070510` screen-blended over the frame (luma ~10, like the
+  reference). Highlights are untouched.
 - A pink-violet pool on the plaza (or desk) top. Nothing else: no neon strips, no fill, no bloom, no fog glow.
 
 ## Camera
@@ -91,6 +96,7 @@ thruster. BLUE is 1.48 tall and eager; ORANGE is 1.58 and deadpan (resting lids 
 
 ## How we draw this in code
 three.js; `MeshLambertMaterial({flatShading:true})` on low-detail geometry; black facial features as
-`MeshBasicMaterial`; one `DirectionalLight` key and one `DirectionalLight` rim and almost no ambient light;
+`MeshBasicMaterial`; one `DirectionalLight` key and one `DirectionalLight` rim and almost no ambient light; the character key added to
+the cast's materials (`addCharacterKey`) and the black lift (`blackLift`) in `studio.html`;
 screens as `CanvasTexture` on `MeshBasicMaterial({toneMapped:false})`, drawn from the app layouts in
 `design/set-forms.js`; the set in `src/arena-set.js` (instanced keycaps); captions drawn in the film compositor.
