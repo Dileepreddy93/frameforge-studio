@@ -41,5 +41,15 @@ never in it: `project`, `project-import-export`, `offline-episode`, `episode-mix
 Unit tests. Locally (cloud container, CDN mirror): `render-failure`, `export-codec`, `offline-episode`, `project`,
 `project-import-export`, `studio-editor`. GitHub Actions: see "CI result" below.
 
+## CI result
+Run 147 (https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41219153365, the M5.6 commit on
+`claude/serene-dijkstra-7u51a6`) passed all five jobs. It's the first green run since M4.3 (run 142):
+- `source-and-project-tests`: all 12 unit tests, the planner tests included;
+- `real-character-render-tests`: the browser list including `export-codec`, plus `project`,
+  `project-import-export`, `offline-episode` and `render-failure`;
+- `voice-and-mix-tests`: `episode-mix`, with the Kokoro model downloaded. It can't run in the cloud container;
+- `portable-video-export`;
+- `rigged-character-import`.
+
 ## Rollback
 Revert this commit: the renderer writes straight to `--out` again, and the workflow goes back to its M4 form.
