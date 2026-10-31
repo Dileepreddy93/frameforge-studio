@@ -1,0 +1,6 @@
+{
+ "base": {},
+ "A": {"charLights":[{"az":55,"el":30,"intensity":3,"color":"#FFE6D0"}],"lift":"#070510"},
+ "B": {"charLights":[{"az":50,"el":30,"intensity":5.5,"color":"#FFD6BC"}],"lift":"#0A0814"},
+ "C": {"charLights":[{"az":45,"el":30,"intensity":8,"color":"#FFD2B4"},{"az":110,"el":50,"intensity":6,"color":"#FFAA70"}],"lift":"#0C0916"}
+}

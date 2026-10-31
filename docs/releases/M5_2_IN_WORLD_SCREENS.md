@@ -1,5 +1,7 @@
 # M5.2 · The story on in-world screens
 
+**Approved by the user on 2026-10-31.**
+
 The full-frame screen cards are gone. A `screen` shot now looks at the arena's big centre window (the story window,
 M5.1) from in front of it and off to its left, so the monitor is seen in perspective and runs off the frame's right
 edge, as in the reference. The window shows the shot's insert, with the same data as the card, and keeps showing it
