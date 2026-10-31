@@ -10,7 +10,11 @@ const {chromium}=require('playwright');
 const {useCdnMirror}=require('./cdn-mirror.cjs');
 
 const URL_=process.env.FRAMEFORGE_URL||'http://127.0.0.1:8959/';
-const probe=file=>JSON.parse(spawnSync('ffprobe',['-v','error','-show_entries','stream=codec_type,codec_name,channels','-of','json',file],{encoding:'utf8'}).stdout).streams;
+const probe=file=>{
+ const r=spawnSync('ffprobe',['-v','error','-show_entries','stream=codec_type,codec_name,channels','-of','json',file],{encoding:'utf8'});
+ if(r.error||r.status!==0)throw new Error('ffprobe is needed to check the exported MP4 ('+(r.error?.message||r.stderr.trim())+'): install ffmpeg');
+ return JSON.parse(r.stdout).streams;
+};
 
 async function exportWith(browser,noAac){
  const context=await browser.newContext({viewport:{width:1100,height:850}});

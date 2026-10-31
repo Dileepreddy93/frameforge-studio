@@ -24,7 +24,9 @@ a 1080×1920 MP4. Buyers use it alone: no keys, no server, nothing paid per vide
 | Licences | no GPL or LGPL in what buyers run; credits page; research rigs and undocumented V3 audio aren't deployed | `docs/releases/M4_4_*`, `credits.html` |
 
 ## Known gaps (honest)
-- **Below the reference** (`git-blame.mp4`) in cutting pace and camera life, and DEV's face is still darker. Ranked in
+- **Not reference parity.** Cutting pace and camera life now measure close to the reference (M5.4: 1.85 / 1.91 s
+  per shot against 1.93; 0.2% / 2.0% near-still frames against 1%), but our close-ups move more than its close-ups,
+  and DEV's face is still darker (M5.3). Ranked in
   `docs/releases/M4_3_REFERENCE_COMPARISON.md`. Not parity. The set was rebuilt as the screen arena (M5.1) and the
   screen shots moved onto its story window (M5.2); its screens are still brighter and sharper than the reference's. Light (M5.3): a character key and a black lift
   bring the blacks and the robots' highlights to the reference's numbers; DEV's face stays darker than its pale face
@@ -32,6 +34,5 @@ a 1080×1920 MP4. Buyers use it alone: no keys, no server, nothing paid per vide
 - The user still has to judge the M4.1 voices by ear (DEV's "worried" may sound neutral).
 - The Opus fallback (no AAC encoder, e.g. Chrome on Linux) narrows the music's faint stereo.
 - Tested only in Chrome on Linux and phone emulation; Safari, Firefox and real phones are untested.
-- The studio's phone layout puts the controls above the film monitor.
-- `tools/render-episode.mjs` exited 0 once with an empty MP4 when ffmpeg failed.
+- The phone layout (M5.5) was checked only in Chromium emulation, not on a real phone or in Safari.
 - Hindi and Telugu voices aren't connected.

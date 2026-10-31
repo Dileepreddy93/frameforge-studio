@@ -33,11 +33,12 @@ notes in `docs/releases/M2_*`, `M3_*` and `M4_*` first. Older docs (`docs/HANDOF
 **Not verified, or known to be behind:**
 - **Not reference parity.** `docs/releases/M4_3_REFERENCE_COMPARISON.md` ranks the gaps: set density and scale
   (rebuilt in M5.1 as the screen arena), in-world screen shots instead of flat cards (done in M5.2), a harder key light (M5.3: a character key and a black
-  lift), faster cutting, and the camera never resting.
+  lift), faster cutting and the camera never resting (M5.4:
+  planner reaction cuts and distance-scaled moves).
 - Delivery by ear: the user hasn't listened to the M4.1 voices yet. DEV's "worried" lines barely move in pitch.
 - The Opus fallback narrows the music's faint stereo (M4.4).
 - Real phones, Safari and Firefox, and WebGPU on real GPUs: only Chrome on Linux and phone emulation were tested.
-- On a phone, the studio's controls come before the film monitor.
+- The phone layout (M5.5: film first) was checked in emulation only.
 
 ## Commands
 ```

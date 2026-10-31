@@ -1,9 +1,10 @@
 name: FrameForge code quality
 on:
   push:
-    branches: [develop, "feature/**"]
+    branches: [develop, "feature/**", "claude/**"]
   pull_request:
     branches: [develop, main]
+  workflow_dispatch:
 jobs:
   source-and-project-tests:
     runs-on: ubuntu-latest
@@ -28,6 +29,7 @@ jobs:
           node tests/robot-design.test.cjs
           node tests/robot-character.test.cjs
           node tests/robot-acting.test.cjs
+          node tests/kokoro-g2p.test.cjs
       - name: Engine module parses
         run: node tests/engine-syntax.test.mjs
   real-character-render-tests:
@@ -44,6 +46,9 @@ jobs:
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
+          # export-codec, offline-episode and the render check read the MP4s they make with ffprobe (M5.6).
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          ffprobe -version | head -1
       - name: Render 3D character views, emotions, and environment in Chromium
         run: |
           python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
@@ -61,6 +66,33 @@ jobs:
           node tests/studio-editor-browser.cjs
           node tests/landing-browser.cjs
           node tests/export-codec-browser.cjs
+      - name: Episode files, offline studio and the offline renderer (M4 and M5.6)
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server-2.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/project-browser.cjs
+          node tests/project-import-export-browser.cjs
+          node tests/offline-episode-browser.cjs
+          node tests/render-failure-browser.cjs
+  voice-and-mix-tests:
+    # Downloads the Kokoro voice model (about 326 MB) from huggingface.co on every run.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and ffmpeg
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Voice an episode in the browser, mix it and export it (M2.5, M4.4)
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/episode-mix-browser.cjs
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

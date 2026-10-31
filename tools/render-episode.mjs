@@ -7,10 +7,14 @@
 //          --gpu  render on the GPU through the installed Chrome (Vulkan): much faster, but pixels can
 //                 differ slightly from software rendering and between machines
 // Needs: npm install --no-save playwright@1.56.1 && npx playwright install chromium; ffmpeg on PATH.
+// Fails loudly (M5.6): any ffmpeg failure (missing, crashed, bad exit) ends the render with a non-zero exit code and
+// leaves nothing at --out. Frames go to a temporary file beside it, which replaces --out only after the final check.
+// FRAMEFORGE_CDN_MIRROR=<folder> serves the pinned CDN libraries from a local npm folder (tests/cdn-mirror.cjs).
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import {spawn,execFileSync} from 'node:child_process';
+import {spawn,execFileSync,spawnSync} from 'node:child_process';
+import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 
@@ -40,6 +44,9 @@ const first=Math.round(from*FPS),frames=Math.round(to*FPS)-first;
 if(frames<=0)throw new Error('Empty segment');
 const out=path.resolve(opt('out',path.join(ROOT,'renders',`${project.id}-${width}x${height}${shots?'-'+shots.replace(':','-'):''}.mp4`)));
 fs.mkdirSync(path.dirname(out),{recursive:true});
+const partial=out.replace(/\.mp4$/i,'')+`.partial-${process.pid}.mp4`;
+const fail=message=>{try{fs.rmSync(partial,{force:true})}catch{}console.error('render-episode: '+message);process.exit(1)};
+{const v=spawnSync('ffmpeg',['-version'],{encoding:'utf8'});if(v.error||v.status!==0)fail('ffmpeg is not available ('+(v.error?.code||'exit '+v.status)+'): install ffmpeg and put it on PATH');}
 
 // Static server for the studio page and episode assets.
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.mp3':'audio/mpeg','.ogg':'audio/ogg','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.css':'text/css'};
@@ -59,13 +66,25 @@ const ffmpeg=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y',
  '-f','image2pipe','-framerate',String(FPS),'-c:v','mjpeg','-i','-',
  '-ss',from.toFixed(4),'-t',(frames/FPS).toFixed(4),'-i',path.join(ROOT,project.audio.masterUrl),
  '-map','0:v:0','-map','1:a:0','-c:v','libx264','-preset','medium','-crf','17','-pix_fmt','yuv420p',
- '-r',String(FPS),'-c:a','aac','-b:a','192k','-ar','48000','-movflags','+faststart',out],{stdio:['pipe','inherit','inherit']});
-const ffmpegDone=new Promise((ok,fail)=>ffmpeg.on('close',code=>code===0?ok():fail(new Error('ffmpeg exited '+code))));
-const write=buf=>new Promise(ok=>ffmpeg.stdin.write(buf)?ok():ffmpeg.stdin.once('drain',ok));
+ '-r',String(FPS),'-c:a','aac','-b:a','192k','-ar','48000','-movflags','+faststart',partial],{stdio:['pipe','inherit','inherit']});
+// ffmpeg can die at any point (bad input, full disk, killed): remember why, and stop feeding it frames.
+let ffmpegError=null;
+const ffmpegDone=new Promise(ok=>{
+ ffmpeg.on('error',e=>{ffmpegError??=new Error('ffmpeg could not run: '+e.message);ok()});
+ ffmpeg.on('close',(code,signal)=>{if(code!==0)ffmpegError??=new Error(`ffmpeg exited ${code??signal} before the render finished`);ok()});
+});
+ffmpeg.stdin.on('error',e=>{ffmpegError??=new Error('ffmpeg stopped reading frames ('+e.code+')')});
+const write=buf=>new Promise((ok,no)=>{
+ if(ffmpegError)return no(ffmpegError);
+ const closed=()=>no(ffmpegError||new Error('ffmpeg closed its input'));
+ if(ffmpeg.stdin.write(buf))return ok();
+ ffmpeg.stdin.once('drain',()=>{ffmpeg.off('close',closed);ok()});ffmpeg.once('close',closed);
+});
 
 const started=Date.now();
 try{
  const page=await browser.newPage({viewport:{width:1100,height:900},deviceScaleFactor:1});
+ if(process.env.FRAMEFORGE_CDN_MIRROR)await createRequire(import.meta.url)('../tests/cdn-mirror.cjs').useCdnMirror(page);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(`http://127.0.0.1:${server.address().port}/studio.html`,{waitUntil:'domcontentloaded',timeout:60000});
  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgeQA?.openProject,null,{timeout:90000});
@@ -83,13 +102,20 @@ try{
  if(errors.length)throw new Error('Page errors: '+errors.join('; '));
  ffmpeg.stdin.end();
  await ffmpegDone;
-}finally{
- await browser.close();server.close();
+ if(ffmpegError)throw ffmpegError;
+}catch(e){
+ if(ffmpeg.exitCode===null)ffmpeg.kill('SIGKILL');
+ await browser.close().catch(()=>{});server.close();
+ fail((e.message||String(e))+(ffmpegError&&e!==ffmpegError?' (ffmpeg: '+ffmpegError.message+')':''));
 }
-const probe=JSON.parse(execFileSync('ffprobe',['-v','error','-count_frames','-show_entries',
- 'stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames:format=duration,size','-of','json',out],{encoding:'utf8'}));
-const v=probe.streams.find(s=>s.codec_type==='video');
-if(Number(v.nb_read_frames)!==frames||v.width!==width||v.height!==height||v.r_frame_rate!=='30/1')
- throw new Error(`Output check failed: ${v.nb_read_frames} frames ${v.width}x${v.height} @ ${v.r_frame_rate}`);
+await browser.close();server.close();
+let probe;
+try{probe=JSON.parse(execFileSync('ffprobe',['-v','error','-count_frames','-show_entries',
+ 'stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames:format=duration,size','-of','json',partial],{encoding:'utf8'}));}
+catch(e){fail('the encoded file does not read back with ffprobe: '+e.message)}
+const v=probe.streams?.find(s=>s.codec_type==='video');
+if(!v||Number(v.nb_read_frames)!==frames||v.width!==width||v.height!==height||v.r_frame_rate!=='30/1'||!probe.streams.some(s=>s.codec_type==='audio'))
+ fail(`output check failed: ${v?.nb_read_frames} frames ${v?.width}x${v?.height} @ ${v?.r_frame_rate}, expected ${frames} frames ${width}x${height} @ 30/1 with audio`);
+fs.renameSync(partial,out);
 console.log(`\n${out}\n${frames} frames, ${width}x${height} @ 30 fps, ${Number(probe.format.duration).toFixed(2)} s, `+
  `${(probe.format.size/1048576).toFixed(1)} MB, rendered in ${Math.round((Date.now()-started)/1000)} s`);
