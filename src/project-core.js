@@ -78,7 +78,7 @@
    if(f!==undefined&&!(isRecord(f)&&inRange(f.distance,1,30)&&inRange(f.offset,-8,8)&&inRange(f.up,-1,10)&&inRange(f.fov,15,75)&&(f.lookUp===undefined||inRange(f.lookUp,-1,6))))fail(at+'.framing','Expected distance 1-30, offset -8..8, up -1..10, fov 15-75, lookUp -1..6');
    else if(f!==undefined&&!((f.move===undefined||MOVES.has(f.move))&&(f.amount===undefined||inRange(f.amount,0,2))&&(f.roll===undefined||inRange(f.roll,-20,20))&&(f.aim===undefined||f.aim==='center'||characterIds.has(f.aim))))fail(at+'.framing','Expected move push|pull|drift|static, amount 0-2, roll -20..20 degrees, aim center or a character id');
    const r=s.reactionCut;
-   if(r!==undefined&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');
+   if(r!==undefined&&r!==false&&!(isRecord(r)&&characterIds.has(r.role)&&inRange(r.seconds,.1,Number.isFinite(s.duration)?s.duration:15)&&(r.emotion===undefined||EMOTIONS.has(r.emotion))))fail(at+'.reactionCut','Expected a registered role, seconds within the shot and a known emotion');
    const tm=s.timing;
    if(tm!==undefined&&!(isRecord(tm)&&(tm.lead===undefined||inRange(tm.lead,0,2))&&(tm.pauseAfter===undefined||inRange(tm.pauseAfter,0,4))&&(tm.pace===undefined||inRange(tm.pace,.7,1.4))))fail(at+'.timing','Expected lead 0-2 s, pauseAfter 0-4 s and pace 0.7-1.4');
    const vo=s.voice;
@@ -126,9 +126,33 @@
     title:s.title??'',cast,
     framing:{distance,offset,up,fov,lookUp,move:'push',amount:.33,roll:0,aim:s.camera==='duo'?s.speaker:'center',...s.framing},
     timing:{lead:s.timing?.lead??.15,pauseAfter:s.timing?.pauseAfter??.35,pace:s.timing?.pace??1},voice:s.voice??null,
-    reactionCut:s.reactionCut??null,insert:s.insert??null,wall:s.wall??null
+    ...reactionPlan(p,s),insert:s.insert??null,wall:s.wall??null
    };
   });
+ }
+ // Shot planner (M5.4): the reference cuts every ~1.9 s, often to a listener (robot, human, robot). A close-up or
+ // screen shot of 2.4 s or more without an authored reactionCut ends on a listener's reaction for 30% of the shot,
+ // 0.6-0.9 s, never leaving less than 1.4 s before the cut. The listener comes from the shot alone, so moving a shot
+ // never changes it: one whose emotion the shot sets, DEV first when a robot speaks, BLUE first when DEV does.
+ // Only the picture cuts: shot timing, voices, music and effects are unchanged. reactionCut:false opts a shot out.
+ const PLAN={minShot:2.4,share:.3,min:.6,max:.9,keep:1.4};
+ function plannedReaction(p,s){
+  if(!['dev','blue','orange','screen'].includes(s.camera)||!(s.duration>=PLAN.minShot))return null;
+  const order=s.speaker==='dev'?['blue','orange']:['dev','blue','orange'];
+  const ids=p.characters.map(c=>c.id).sort((a,b)=>(order.indexOf(a)+1||99)-(order.indexOf(b)+1||99));
+  const listeners=ids.filter(id=>id!==s.speaker&&id!==s.camera),moved=listeners.filter(id=>{const e=s.cast?.[id]?.emotion;return e&&e!=='neutral'});
+  const role=moved[0]??listeners[0];
+  if(!role)return null;
+  const seconds=Math.round(Math.min(PLAN.max,Math.max(PLAN.min,s.duration*PLAN.share),s.duration-PLAN.keep)*100)/100;
+  if(seconds<PLAN.min)return null;
+  const emotion=s.cast?.[role]?.emotion;
+  return{role,seconds,...(emotion&&emotion!=='neutral'&&EMOTIONS.has(emotion)?{emotion}:{})};
+ }
+ function reactionPlan(p,s,i){
+  if(s.reactionCut===false)return{reactionCut:null,reactionSource:'off'};
+  if(s.reactionCut)return{reactionCut:s.reactionCut,reactionSource:'authored'};
+  const planned=plannedReaction(p,s);
+  return{reactionCut:planned,reactionSource:planned?'planned':'none'};
  }
  function defaultFraming(camera){const [distance,offset,up,fov,lookUp]=DEFAULT_FRAMING[camera];return{distance,offset,up,fov,lookUp}}
  function assertRendererCompatible(p){

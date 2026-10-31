@@ -516,6 +516,13 @@
       "voice": {
         "file": "lines/shot-09.wav",
         "seconds": 2.274
+      },
+      "framing": {
+        "distance": 16.5,
+        "offset": -6,
+        "up": 0.9,
+        "fov": 40,
+        "lookUp": 2.3
       }
     },
     {

@@ -372,6 +372,13 @@
       "voice": {
         "file": "lines/shot-07.wav",
         "seconds": 2.587
+      },
+      "framing": {
+        "distance": 15.5,
+        "offset": -6.5,
+        "up": 3.6,
+        "fov": 40,
+        "lookUp": 2
       }
     },
     {

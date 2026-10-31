@@ -568,17 +568,23 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
  // Two-shots lean toward the aimed character (by default the speaker) so they stay in frame.
  if(s.camera==='duo'||s.camera==='wide')tgt=[aim==='center'?0:performerCoordinates[aim][0]*(s.camera==='duo'?.5:.35),tgt[1],tgt[2]];
  const ease=Math.max(0,Math.min(1,local/s.duration));
- const travel=move==='static'?0:(ease*ease*(3-2*ease)-.5)*amount*(move==='pull'?-1:1);
- const dolly=move==='drift'?0:travel,drift=move==='drift'?travel*.8:dolly*.14;
+ // A static move still breathes (M5.4): a sideways drift at a tenth of the default travel, so no hold is locked off.
+ // The path is 60% linear, 40% eased, so the camera never comes to a full stop at a shot's ends (M5.4).
+ const travel=(.6*ease+.4*ease*ease*(3-2*ease)-.5)*(move==='static'?.033:amount)*(move==='pull'?-1:1);
+ // Camera life (M5.4): a move covers the same share of the view at any distance, so wides and screen shots (18-21
+ // units away) push and drift as visibly as a close-up (4.7) instead of standing still.
+ const reach=wide?Math.max(1,distance/4.7):1;
+ const dolly=(move==='drift'||move==='static'?0:travel)*reach,drift=(move==='drift'||move==='static'?travel*.8:travel*.14)*reach;
  let pos=wide?[tgt[0]+offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance],aimAt=[tgt[0],tgt[1]+lookUp,tgt[2]];
  // Screen shots look at the story window in the set (M5.2), from in front of it and off to one side, so it is seen in
  // perspective and cropped by the frame: distance along its normal, offset sideways, up and lookUp along its height;
  // the aim sits a little under half way toward the camera's side. Their sway runs on shot time, so a screen shot looks
  // the same wherever it sits in the episode.
- if(s.camera==='screen'){const f=arena.storyFrame,at=(a,b,c)=>f.c.map((v,i)=>v+f.n[i]*a+f.u[i]*b+f.v[i]*c);pos=at(distance,offset,up);aimAt=at(0,offset*.45,lookUp);}
+ if(s.camera==='screen'){const f=arena.storyFrame,at=(a,b,c)=>f.c.map((v,i)=>v+f.n[i]*a+f.u[i]*b+f.v[i]*c);pos=at(distance-dolly,offset+drift,up);aimAt=at(0,offset*.45+drift*.5,lookUp);}
+ const [dx,dz]=s.camera==='screen'?[0,0]:[drift,dolly];
  const swayT=s.camera==='screen'?local:t;
  cam.fov=fov;cam.updateProjectionMatrix();
- cam.position.set(pos[0]+drift+Math.sin(swayT*.38)*sway*.14,pos[1]+Math.sin(swayT*.32)*sway*.08,pos[2]-dolly);
+ cam.position.set(pos[0]+dx+Math.sin(swayT*.38)*sway*.14*reach,pos[1]+Math.sin(swayT*.32)*sway*.08*reach,pos[2]-dz);
  if(s.camera==='dev'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.sub(look).multiplyScalar(DEV_FRAME).add(look);}
  // Robot close-ups: at the robot's eye level (its head sits lower or higher than DEV's), framed for the sheet head.
  if(s.camera==='blue'||s.camera==='orange'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.y=tgt[1]+.04+up;cam.position.sub(look).multiplyScalar(ROBOT_FRAME).add(look);}
@@ -587,7 +593,10 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
  // Listener reaction inserts are intentional editorial cuts, not camera jitter.
  const listenerCut=cinematicReaction(s,local);
  if(listenerCut){
-  cam.position.set(...listenerCut.camera);
+  // A slow push in and a small sideways drift over the cut (M5.4), so a reaction is never a locked-off frame.
+  const into=Math.min(1,Math.max(0,(local-(s.duration-s.reactionCut.seconds))/s.reactionCut.seconds)),e=into*into*(3-2*into);
+  const c=listenerCut.camera,sub=listenerCut.subject,k=1.02-.04*e,side=(e-.5)*.02*Math.hypot(c[0]-sub[0],c[1]-sub[1],c[2]-sub[2]);
+  cam.position.set(sub[0]+(c[0]-sub[0])*k+side,sub[1]+(c[1]-sub[1])*k,sub[2]+(c[2]-sub[2])*k);
   cam.lookAt(...listenerCut.subject);
   cam.fov=listenerCut.role==='dev'?34:31;
   cam.updateProjectionMatrix();
@@ -875,8 +884,10 @@ function snapshotProject(){
    intent:s.intent,cast:s.cast,framing:s.framing};
   // Timing is saved only where it differs from the defaults.
   const timing=Object.fromEntries(Object.entries(s.timing).filter(([k,v])=>v!=={lead:.15,pauseAfter:.35,pace:1}[k]));
-  for(const [key,value] of [['title',s.title||undefined],['reactionCut',s.reactionCut],['insert',s.insert],['voice',s.voice],['timing',Object.keys(timing).length?timing:undefined]])
-   if(value)out[key]=value;else delete out[key];
+  // Planned reaction cuts (M5.4) are not saved: the planner makes them again on load. An opted-out shot keeps false.
+  const reactionCut=s.reactionSource==='authored'?s.reactionCut:s.reactionSource==='off'?false:undefined;
+  for(const [key,value] of [['title',s.title||undefined],['reactionCut',reactionCut],['insert',s.insert],['voice',s.voice],['timing',Object.keys(timing).length?timing:undefined]])
+   if(value||value===false)out[key]=value;else delete out[key];
   delete out.acting;delete out.emotion;delete out.action;
   return out;
  });

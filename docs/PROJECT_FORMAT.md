@@ -36,13 +36,13 @@ Examples:
 | `cast.<id>.action` | no | `listen` `typing` `react` `question` `plead` `alarm` `surprise` `defeat` `announce` `explain` `celebrate` `shrug` `anticipate` | `explain` for the speaker, `listen` for everyone else |
 | `cast.<id>.emotion` | no | `neutral` `happy` `worried` `surprised` `angry` `sad` `thinking` | `neutral` (for `dev`: legacy `acting.devEmotion` if present). The speaker's emotion is also how the line is spoken (pace, pitch, tone, loudness: `src/voice-emotion.js`) |
 | `framing` | no | `distance` 1–30, `offset` −8..8, `up` −1..10, `fov` 15–75, `lookUp` −1..6. For `screen` shots they are measured from the set's story window: `distance` along its normal, `offset` sideways, `up` and `lookUp` along its height | from the camera preset |
-| `framing.move`, `framing.amount` | no | `push` `pull` `drift` `static`; travel 0–2 | `push`, 0.33 |
+| `framing.move`, `framing.amount` | no | `push` `pull` `drift` `static`; travel 0–2 (wides, two-shots and screen shots scale it by distance ÷ 4.7, so it covers the same share of the view as in a close-up) | `push`, 0.33 |
 | `framing.roll` | no | canted angle, −20..20 degrees | 0 |
 | `framing.aim` | no | `center` or a character id: which side a duo/wide shot favours | the speaker for `duo`, else `center` |
 | `timing` | no | `{lead, pauseAfter, pace}`: seconds before (0–2) and after (0–4) the spoken line, and how fast this line is spoken (×0.7–1.4, on top of the character's speed and the emotion's pace) | 0.15 / 0.35 / 1 (used by `tools/build-audio.mjs` and the studio's in-browser voices; edited in the Shot inspector) |
 | `sfx` | no | up to 8 `{cue, at, gain?}`, cue: `typing` `chime` `buzz` `zap` `scratch` `whoosh` `pop` | none |
 | `voice` | generated | `{file, seconds}` written by `tools/build-audio.mjs` | |
-| `reactionCut` | no | `{role, seconds, emotion?}`: cut to `role` for the last `seconds` of the shot, optionally changing their emotion | none |
+| `reactionCut` | no | `{role, seconds, emotion?}`: cut to `role` for the last `seconds` of the shot, optionally changing their emotion; `false`: no cut, not even a planned one | planned (see below) |
 | `insert` | no | What the set's story window shows on a `camera:"screen"` shot, and keeps showing until a later `wall` or insert (M5.2): `window`, `context`, `headline`, `value`, `caption`, `request`, `status`, `footer`, `label` (all text), `tone` `good`/`bad`, `graph` `drop`/`flat` | none (a plain 3D shot) |
 
 Older files that use `emotion`, `action` or `acting.devEmotion` on shots still open.
@@ -63,3 +63,15 @@ Older files that use `emotion`, `action` or `acting.devEmotion` on shots still o
 - Publish an episode by adding `{key, file, label}` to `projects/index.json`; the studio lists every entry. Or use **Import project** in the studio.
 - **Download episode JSON** saves the edits made in the studio.
 - Tests: `node tests/project-core.test.cjs` checks the format, and `node tests/episode-data-browser.cjs` checks that the renderer follows it.
+
+## Planned reaction cuts (M5.4)
+A close-up (`dev`, `blue`, `orange`) or `screen` shot of 2.4 s or more with no `reactionCut` ends on a listener's
+reaction, chosen from the shot alone, so moving the shot doesn't change it:
+- **Who:** a listener whose emotion the shot sets (not neutral), DEV first when a robot speaks, BLUE first when DEV
+  does. Never the speaker or the character already on screen.
+- **How long:** 30% of the shot, 0.6–0.9 s, leaving at least 1.4 s before the cut.
+- **What it carries:** the listener's emotion in that shot.
+
+Only the picture cuts: the shot's duration, voice, music and effects stay as they are. Planned cuts are made when the
+episode loads and aren't written into a downloaded file. Write `"reactionCut": false` to keep a shot uncut.
+

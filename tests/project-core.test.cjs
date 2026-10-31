@@ -104,3 +104,26 @@ invalid('bad insert tone',p=>p.shots[8].insert.tone='meh');
 invalid('empty title',p=>p.shots[0].title='');
 invalid('empty banner',p=>p.banner='');
 console.log('SHOT_DIRECTION_TESTS_PASS: order-independent shots, defaults, legacy acting, 12 invalid cases');
+
+// Shot planner (M5.4): long close-ups and screen shots end on a listener's reaction; authored cuts win; false opts out.
+{
+ const planned=comedyShots.filter(s=>s.reactionSource==='planned');
+ assert.deepEqual(planned.map(s=>s.id),['shot-01','shot-05','shot-07','shot-09','shot-11','shot-13']);
+ assert.deepEqual(comedyShots.find(s=>s.id==='shot-05').reactionCut,{role:'dev',seconds:.82,emotion:'worried'});
+ assert.deepEqual(comedyShots.find(s=>s.id==='shot-01').reactionCut,{role:'blue',seconds:.79});
+ for(const s of comedyShots){
+  if(!s.reactionCut)continue;
+  assert.ok(s.reactionCut.role!==s.camera,s.id+' never cuts to the character already on screen');
+  if(s.reactionSource==='planned'){assert.notEqual(s.reactionCut.role,s.speaker);assert.ok(s.duration-s.reactionCut.seconds>=1.4-1e-9,s.id+' keeps 1.4 s before its cut');}
+ }
+ assert.ok(comedyShots.filter(s=>s.camera==='wide'||s.camera==='duo').every(s=>s.reactionSource!=='planned'),'wides and two-shots are not cut by the planner');
+ assert.ok(comedyShots.filter(s=>s.duration<2.4).every(s=>s.reactionSource!=='planned'),'short shots are not cut');
+ assert.equal(comedyShots.find(s=>s.id==='shot-03').reactionSource,'authored');
+ const off=clone(comedy);off.shots[0].reactionCut=false;
+ const offShot=toTimelineShots(off)[0];assert.equal(offShot.reactionCut,null);assert.equal(offShot.reactionSource,'off');
+ assert.equal(validateProject(off).valid,true);
+ const bad=clone(comedy);bad.shots[0].reactionCut=true;assert.equal(validateProject(bad).valid,false);
+ // The film keeps its length: the planner only changes the picture.
+ assert.equal(comedyShots.reduce((a,s)=>a+s.duration,0),comedyTotal);
+ console.log('SHOT_PLANNER_TESTS_PASS: 6 planned cuts in Zero Latency, authored cuts kept, opt-out, timing unchanged');
+}
