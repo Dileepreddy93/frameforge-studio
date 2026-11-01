@@ -3,7 +3,7 @@ import {createProjectStore} from './hybrid-editor-storage.mjs';
 import {exportHybridFilm} from './hybrid-browser-export.mjs';
 const $=id=>document.getElementById(id),M=window.FrameForgeHybridEditor,C=window.FrameForgeHybridProjectCore;
 let editor=null,store=null,engine=null,selected='shot-01',play=false,last=0,animation=0;
-let busy=false,exportAbort=null,storageSequence=Promise.resolve(),rebuildGeneration=0,recoveryRaw=null,initialRecoveryCorrupt=false;
+let busy=false,exportAbort=null,storageSequence=Promise.resolve(),rebuildGeneration=0,recoveryRaw=null,initialRecoveryCorrupt=false,recoveryExportRequested=false;
 let audioContext=null,audioSource=null,audioTimelineStart=null;
 const text=(id,message)=>{$(id).textContent=message};
 function download(blob,name){
@@ -142,6 +142,10 @@ function rebuild(){
 }
 function changeProject(action){
  if(!editor||busy)return;
+ if(initialRecoveryCorrupt&&!recoveryExportRequested){
+   text('status','Export the damaged recovery copy before editing. Your earlier data will not be overwritten.');
+   renderUI({render3d:false});return;
+ }
  try{if(action()){initialRecoveryCorrupt=false;renderUI();queueSave()}}
  catch(e){text('status','Not saved: '+e.message);renderUI({render3d:false})}
 }
@@ -200,19 +204,33 @@ $('recovery-backup').onclick=()=>{
  if(!recoveryRaw)return;
  download(new Blob([recoveryRaw],{type:'text/plain'}),
    'frameforge-damaged-local-recovery.txt');
+ recoveryExportRequested=true;
+ text('storage-status','Recovery copy download requested. Your damaged browser record is still intact; saving a new edit or importing another project will replace it.');
 };
-$('open-project').onclick=()=>$('file').click();
+$('open-project').onclick=()=>{
+ if(initialRecoveryCorrupt&&!recoveryExportRequested){
+   text('status','Download the damaged recovery copy before replacing the saved project.');return;
+ }
+ $('file').click();
+};
 $('file').onchange=async()=>{
  const file=$('file').files?.[0];$('file').value='';if(!file)return;
+ if(initialRecoveryCorrupt&&!recoveryExportRequested){
+   text('status','Download the damaged recovery copy before loading another project.');return;
+ }
  try{
    if(file.size>1_048_576)throw Error('Project file exceeds 1 MB');
    const p=M.parseCreatorFile(await file.text());
-   editor.replace(p);selected=p.shots[0].id;initialRecoveryCorrupt=false;renderUI();queueSave();
+   editor.replace(p);selected=p.shots[0].id;initialRecoveryCorrupt=false;recoveryRaw=null;
+   $('recovery-backup').hidden=true;renderUI();queueSave();
    text('status','Validated project reopened. Generate current voices before export.');
  }catch(e){text('status','Project import refused: '+e.message)}
 };
 $('voice').onclick=async()=>{
  if(!engine||!editor||busy)return;
+ if(initialRecoveryCorrupt&&!recoveryExportRequested){
+   text('voice-status','Download the damaged recovery copy before producing new voice audio.');return;
+ }
  stop();setBusy(true);
  text('voice-status','Synthesizing current English dialogue with the local Kokoro model. Model download may be large.');
  try{
@@ -266,7 +284,7 @@ async function bootEditor(){
    if(saved){
      try{p=M.parseCreatorFile(saved)}
      catch(e){
-       recoveryRaw=saved;initialRecoveryCorrupt=true;
+       recoveryRaw=saved;initialRecoveryCorrupt=true;recoveryExportRequested=false;
        $('recovery-backup').hidden=false;
        text('storage-status','Damaged saved project preserved. Download the recovery copy before editing. '+e.message);
      }
