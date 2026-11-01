@@ -11,7 +11,7 @@ Production constraint: no main merge, tag overwrite, production redeploy or dele
 
 ## EXECUTION STATUS AND RESUME POINT — 2026-11-01
 
-**Current phase:** P2 actual Ember cast integration on the protected branch (source tests passed; graphics proof and release-wide acceptance still pending). **P1:** project contract / adapter video passed; original-film browser parity still needs resolution. **P0:** Windows/macOS final release certification remains open. **Next:** verify P2 proof before P3.
+**Current phase:** P2 actor-engine implementation and its independent art/video QA PASSED; overall release certification remains open. **P1:** project contract / adapter video passed; separate-browser legacy visual-parity comparator still needs diagnosis. **P0:** Windows/macOS complete release gate remains open. **Next:** P3 real rigged import after remaining release risks are tracked.
 **Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
 **Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
 
@@ -94,7 +94,7 @@ node tests/hybrid-legacy-film-frames.cjs
 
 ## P2 — Real Ember cast integration (2026-11-01)
 
-**Status: IMPLEMENTATION PUSHED; FINAL VIDEO/ART REGRESSION CI PENDING.** Read [P2 cast contract and testing](HYBRID_P2_CHARACTER_ENGINE.md). No production UI/deployment change.
+**Status: P2 DEDICATED ART + VIDEO CI PASS; FULL SUITE AND LEGACY RELEASE APPROVAL STILL PENDING.** Read [P2 cast contract and testing](HYBRID_P2_CHARACTER_ENGINE.md). No production UI/deployment change.
 
 - Source import: `src/ember-character-engine.mjs` (actual Ember source pinned to `22c745ffdc2d6411707f3a9bbe5bd70b10f9d9db`), `src/three-rounded-box.mjs` (Three.js r180 example, MIT).
 - Adaptor: `src/ember-actor-provider.mjs` registers the procedural ActorProvider; six real Ember presets `creator/human/robot/creature/bot/mascot`, appearance options, original IK, action gestures and eight emotional faces.
@@ -103,9 +103,11 @@ node tests/hybrid-legacy-film-frames.cjs
 - Movie proof: browser generates animated 360×640 frames, ffmpeg multiplexes **existing** V6 mastered audio into a two-second H.264/AAC P2 preview, then fully decodes/probes. This does **not** validate new character speech or lip sync: P6 owns that.
 - CI wiring: `.github/workflows/project-contract.yml` runs new module syntax checks and P2 browser/video acceptance in portable-video-export, uploading `frameforge-p2-ember-cast-proof`.
 - Relevant commits: `e163037`, `e6eb3dc`, `9556a6f`, `3060e38`, `2331120`, `0522320`, `ce3c9b8`, `03864e3`, `daccea7`. See commit history for precise full SHAs.
-- **CI:** [P2 acceptance run 41290152840](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290152840). Source-and-project tests **PASS** at last check; full P2 browser/video and remaining jobs **IN PROGRESS**. Do not mark complete until actual `HYBRID_P2_CAST_PASS` and `HYBRID_P2_VIDEO_PASS` appear in successful job logs.
+- **CI:** [P2 verified run 41290322745](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745). Source and project tests **PASS**, rigged-character import **PASS**, portable-video-export **PASS**. Portable job log explicitly reports `HYBRID_P2_CAST_PASS` with all six presets showing four distinct camera views, eight distinct acting/emotion images and deterministic rewind; `HYBRID_P2_VIDEO_PASS` for a 2-second H.264/AAC clip with complete ffmpeg decode. Other browser/voice jobs were still executing at this checkpoint.
 - **P0/P1 blocker still open:** side-by-side old-film frame-hash comparison failed intermittently in new browser instances even though the legacy scene source has not changed. No tolerance waiver or baseline overwrite is authorized. Diagnose, capture and compare pixel differences and ensure repeatable parity or approved bounded tolerance before promotion.
-- **Next action:** Inspect [P2 acceptance CI](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290152840). Fix any real runtime/rendering failures. If green, record artifact URL and exact metrics here, then begin P3 rigged import work behind the same provider. Do not merge to main or redeploy the existing production URL until P0/P1 release signoffs.
+- **P2 real failure / fix:** Earlier [run 41290152840](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290152840) failed because the *test page* applied actor camera-facing rotation **after** pose/IK evaluation, making rewind dependent on the prior view. Commit `ceaad73b9e6bb384277d679b1eb6601249e48254` applies actor facing before seeking. The corrected run 41290322745 passed the dedicated determinism and video tests. No original V6 renderer code was changed.
+- **Proof artifact:** [P2 real Ember cast images and short MP4](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745/artifacts/13076996727), with 6 × 4 view captures, 6 × 8 emotion captures, two-actor/custom-look previews and a saved report.
+- **Next action:** Review other jobs of [run 41290322745](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745) and unresolved P0/P1 cross-platform/visual parity, without relaxing comparison thresholds blindly. P3 may implement import adapters on the protected branch, but production promotion is blocked until release gates pass.
 
 ---
 
