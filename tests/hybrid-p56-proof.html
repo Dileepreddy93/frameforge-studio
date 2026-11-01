@@ -63,6 +63,7 @@ function prepareProject(variant){
 const scripts=variant=>[
  '# '+(variant===1?'The Instant Solution':'The Local Studio'),
  '> Two original characters discover the value of creating locally.',
+ '@mode '+(variant===2?'one-take':'cuts'),
  '',
  '@shot id=shot-01 duration=2.6333333333 camera=actor:luna move=push transition=cut intent=intro caption=WHO%20NEEDS%20THE%20CLOUD%3F',
  'Luna (worried) [think]: Our app takes twelve seconds to load.',
@@ -70,6 +71,7 @@ const scripts=variant=>[
  '@shot id=shot-02 duration=1.9333333333 camera='+encodeURIComponent(variant===1?'two:atlas,luna':'screen')+
   ' move=drift transition=blend blend=0.4 intent=reveal caption=BUILD%20IT%20HERE',
  'Atlas (happy) [wave]: I can make it instant.',
+ '@reaction actor=luna at=0.4 emotion=surprised action=nod',
  '@screen kind=terminal tone=success title=LOCAL%20BUILD%20STATUS',
  '| > npm run build',
  '| ** Export ready'
@@ -108,7 +110,12 @@ async function create(variant){
 }
 function frameAt(t){
  if(!session)throw Error('Not prepared');
- const state=session.seek(t),pose=D.cameraAt(project,t,state.anchors,state.worldAnchors);
+ const state=session.seek(t);
+ const performance=D.performanceAt(project,t);
+ for(const [id,actor] of session.instances())
+   actor.setPose(t,state.shot,performance.cast[id]||{emotion:'neutral',action:'listen'});
+ const alignedAnchors=Object.fromEntries([...session.instances()].map(([id,actor])=>[id,actor.getAnchors()]));
+ const pose=D.cameraAt(project,t,alignedAnchors,state.worldAnchors);
  const shot=state.shot,speech=speechAt(project,t,mix,FrameForgeSpeechCore);
  for(const [id,actor] of session.instances())
    actor.setSpeech(id===shot.speaker&&speech.voiced?speech:{mouthOpen:0,viseme:'rest'});
@@ -126,7 +133,8 @@ function frameAt(t){
  }
  return {image:overlay.toDataURL('image/png'),time:t,shot:shot.id,
    activeActor:shot.speaker,voiced:speech.voiced,mouthOpen:speech.mouthOpen,
-   viseme:speech.viseme,screen:screenPlane.visible,camera:pose,caption:shot.caption};
+   viseme:speech.viseme,screen:screenPlane.visible,camera:pose,caption:shot.caption,
+   reactions:performance.active};
 }
 function masterWav(){
  const L=mix.left,R=mix.right,n=Math.min(L.length,R.length);
