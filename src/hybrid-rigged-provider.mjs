@@ -23,7 +23,7 @@ export function auditRiggedAsset(bytes,filename='character.glb'){
  const info=inspectGLB(data);
  const report=validateCharacter(new Uint8Array(data),filename);
  if(!report.ok)throw Error('Unsupported humanoid: '+report.errors.join('; '));
- const json=JSON.parse(new TextDecoder().decode(new Uint8Array(data,20,new DataView(data).getUint32(12,true))).trim());
+ const json=JSON.parse(new TextDecoder().decode(new Uint8Array(data,20,new DataView(data).getUint32(12,true))).replace(/\u0000+$/,'').trimEnd());
  for(const extension of json.extensionsRequired||[]){
    if(!MIME_ALLOWED.has(extension))throw Error('GLB requires unconfigured extension '+extension+
      ' — re-export without compression before importing');
