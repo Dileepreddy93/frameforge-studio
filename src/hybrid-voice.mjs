@@ -58,7 +58,10 @@ export function createKokoroBridge({createWorker=()=>new Worker(new URL('./kokor
    init:()=>request('init'),
    speak:async params=>{
      const a=validateVoiceRequest(params);
-     const r=await request('speak',a);
+     // Ember acting emotions differ from the legacy Kokoro delivery vocabulary.
+     // Map only the speech-layer emotion; keep the original facial expression.
+     const delivery=a.emotion==='curious'?'thinking':a.emotion==='idea'?'happy':a.emotion;
+     const r=await request('speak',{...a,emotion:delivery});
      if(!(r.samples instanceof Float32Array)||r.rate!==RATE)
        throw Error('Kokoro returned unsupported or missing 48kHz PCM');
      if(!goodNum(r.seconds,.1,CLIPS.maxVoiceSeconds)||r.samples.length>RATE*CLIPS.maxVoiceSeconds||
