@@ -1,0 +1,128 @@
+name: FrameForge release test
+# M6.5: a new user's whole journey (tests/release-e2e-browser.cjs) on Windows in Chrome and Edge, a ~60 s film exported
+# at 1080x1920 and checked by the studio, then played by external players: ffmpeg (full decode) and mpv on Windows,
+# AVFoundation (QuickTime's engine) on macOS. With "publish", the Chrome film is released with its episode file,
+# script and report, and landing-page media are made from it.
+on:
+  # By hand once this file is on the default branch; until then, a push that changes the release test runs it, and
+  # "[publish-demo]" in that commit's message publishes.
+  push:
+    branches: ["claude/**", "feature/**"]
+    paths: [".github/workflows/release-e2e.yml", "tests/release-e2e-browser.cjs", "tests/fixtures/feature-freeze.script.txt"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the Chrome film as the demo episode (GitHub release + demo-assets branch)
+        type: boolean
+        default: false
+      model:
+        description: Voice model
+        type: choice
+        options: [full, light]
+        default: full
+permissions:
+  contents: read
+jobs:
+  windows:
+    name: Windows · ${{ matrix.browser }}
+    runs-on: windows-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, msedge]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Playwright (drives the installed Chrome and Edge), ffmpeg and mpv
+        shell: pwsh
+        run: |
+          npm install --no-save playwright@1.56.1
+          choco install ffmpeg mpv -y --no-progress
+          "Chrome " + (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe" -ErrorAction SilentlyContinue).VersionInfo.ProductVersion
+          "Edge " + (Get-Item "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ErrorAction SilentlyContinue).VersionInfo.ProductVersion
+      - name: A new user's journey, ending in a 1080x1920 export
+        shell: pwsh
+        env:
+          FRAMEFORGE_URL: http://127.0.0.1:8959/
+          FRAMEFORGE_CHANNEL: ${{ matrix.browser }}
+          FRAMEFORGE_VOICE_MODEL: ${{ inputs.model || 'full' }}
+          FRAMEFORGE_RELEASE_OUT: artifacts/release-${{ matrix.browser }}
+        run: |
+          Start-Process -FilePath python -ArgumentList '-m','http.server','8959','--bind','127.0.0.1' -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          node tests/release-e2e-browser.cjs
+      - name: External players (ffprobe, full ffmpeg decode, mpv)
+        shell: pwsh
+        run: |
+          $env:Path = "$env:ProgramData\chocolatey\bin;" + $env:Path
+          $f = (Get-ChildItem artifacts/release-${{ matrix.browser }}/*.mp4 | Select-Object -First 1).FullName
+          ffprobe -v error -count_frames -show_entries stream=codec_name,profile,width,height,r_frame_rate,nb_read_frames,channels,sample_rate:format=duration,size -of json $f
+          ffmpeg -v error -xerror -i $f -f null - ; if ($LASTEXITCODE) { throw "ffmpeg could not decode the whole file" }
+          mpv --no-config --vo=null --ao=null --speed=8 --msg-level=all=error $f ; if ($LASTEXITCODE) { throw "mpv could not play it" }
+          "PLAYERS_PASS $f"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-${{ matrix.browser }}
+          path: artifacts/release-${{ matrix.browser }}/
+          if-no-files-found: warn
+  macos:
+    name: macOS · QuickTime engine (AVFoundation)
+    needs: windows
+    runs-on: macos-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, msedge]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-${{ matrix.browser }}
+          path: release
+      - name: Open the Windows ${{ matrix.browser }} film with AVFoundation
+        run: swift tools/avfoundation-check.swift release/feature-freeze-1080x1920.mp4
+  publish:
+    name: Publish the demo episode
+    needs: [windows, macos]
+    if: ${{ inputs.publish || contains(github.event.head_commit.message, '[publish-demo]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-chrome
+          path: release
+      - name: Landing-page media from the 1080x1920 film (the M4.2 recipe)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          F=release/feature-freeze-1080x1920.mp4; O=media/demo; mkdir -p $O
+          ffmpeg -v error -y -i $F -vf scale=720:1280:flags=lanczos -c:v libx264 -preset slow -b:v 600k -pix_fmt yuv420p -c:a aac -b:a 128k -ar 48000 -movflags +faststart $O/ep03-feature-freeze.mp4
+          V="-vf scale=720:1280:flags=lanczos -c:v libvpx-vp9 -b:v 600k -deadline good -cpu-used 2 -row-mt 1 -pix_fmt yuv420p"
+          ffmpeg -v error -y -i $F $V -pass 1 -passlogfile /tmp/vp9 -an -f webm /dev/null
+          ffmpeg -v error -y -i $F $V -pass 2 -passlogfile /tmp/vp9 -c:a libopus -b:a 96k -ar 48000 $O/ep03-feature-freeze.webm
+          ffmpeg -v error -y -ss 0.8 -i $F -frames:v 1 -vf scale=720:1280:flags=lanczos -q:v 3 $O/ep03-poster.jpg
+          cp release/feature-freeze.frameforge.json projects/feature-freeze.frameforge.json
+          cp release/feature-freeze.script.txt release/summary.json release/feature-freeze-1080x1920.report.json $O/
+          ls -la $O
+      - name: Branch demo-assets with the media (the studio branch merges it after review)
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c demo-assets
+          git add media/demo projects/feature-freeze.frameforge.json
+          git commit -m "Demo episode Feature Freeze: landing media, episode file, script and report from release test run ${{ github.run_id }}"
+          git push --force origin demo-assets
+      - name: GitHub release with the full film
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete demo-feature-freeze --yes --cleanup-tag 2>/dev/null || true
+          gh release create demo-feature-freeze --target "$GITHUB_SHA" --title "Demo episode: Feature Freeze" --notes "Made from a new script in the FrameForge studio, voiced in the browser and exported at 1080x1920 by Chrome on Windows (release test run ${{ github.run_id }}). Files: the film, its episode file (open it in the studio), the script, and the studio's MP4 check report." \
+            release/feature-freeze-1080x1920.mp4 release/feature-freeze.frameforge.json release/feature-freeze.script.txt release/feature-freeze-1080x1920.report.json
