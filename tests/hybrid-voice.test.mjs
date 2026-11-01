@@ -32,6 +32,12 @@ const response=await b.speak({text:'Hello!',voice:'af_bella',speaker:'dev',langu
 assert.equal(response.samples.length,40320,'worker line trimmed by 60 ms lead and 100 ms tail');assert.equal(response.source,'kokoro-local');
 assert.equal(mock[0].type,'speak');assert.equal(mock[0].quality,'light');
 assert.equal(mock[0].voice,'af_bella');
+await b.speak({text:'Why did the screen change?',voice:'af_bella',speaker:'dev',
+ language:'en',emotion:'curious'});
+await b.speak({text:'I found the solution!',voice:'af_bella',speaker:'dev',
+ language:'en',emotion:'idea'});
+assert.equal(mock[1].emotion,'thinking','Ember curious maps to actual Kokoro thinking delivery');
+assert.equal(mock[2].emotion,'happy','Ember idea maps to actual Kokoro happy delivery');
 const freshlyVoiced=await synthesizeHybridProject(base,{bridge:b,music:false});
 assert.equal(freshlyVoiced.lines.size,2);
 assert.equal(freshlyVoiced.mix.markers.length,2);
