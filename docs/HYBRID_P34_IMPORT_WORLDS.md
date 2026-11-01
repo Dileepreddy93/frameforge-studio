@@ -14,7 +14,7 @@ P4 uses actual Ember procedural world builders (forest, meadow, snow) and studio
 - `src/ember-imported-rig.mjs`: Ember source `imported.js` with the same pinned Three.js, original IK/mouth drawing, rest-pose resets and dispose logic; not a simplified placeholder.
 - `src/hybrid-rigged-provider.mjs`: enforces FrameForge's 25 MiB GLB cap, self-contained assets, recognized humanoid bones, required-extension allowlist and triangle budget **before GLTFLoader**. `prepareRiggedCast()` loads each model asynchronously exactly once per project instance. `registerRiggedCharacters()` maps completed rigs into P1's synchronous `ActorProvider` with deterministic absolute-time motion and head/root anchors.
 - `src/vendor-gltf-loader.mjs` and `src/vendor-buffergeometry-utils.mjs`: official Three.js r180 MIT modules pinned locally to remove the CDN dependency.
-- `assets/rigged-samples/CesiumMan.glb` (existing Khronos/Cesium CC BY 4.0 technical sample) is the first known real skinned validation fixture. It is not redistributed as a creator marketplace avatar, and other rig types have **not yet** been certified.
+- **Real test decision from GitHub CI:** CesiumMan has 19 skinned joints but nonstandard names such as `Skeleton_torso_joint_1` and `Skeleton_arm_joint_L__4_`. It is correctly **rejected as a retargetable humanoid**; it is not proof of actor support. `assets/rigged-samples/AraAthleticMan.glb` is a test-only 69-bone humanoid with recognized hips/spine/head/arms/legs (Ara/MakeHuman-derived source, CC0 base plus CMU motion restrictions). It is used only for CI technical evidence, never as a commercial asset. Source model clips are not played or licensed for redistribution; see `assets/rigged-samples/AraAthleticMan.CREDITS.md`.
 
 **Explicit VRM limitations:** glTF geometry and VRM metadata can be parsed and supported humanoid bone maps evaluated. VRM MToon materials, VRM-specific spring physics and VRMC node constraints are **not implemented**; unsupported *required* extensions must be rejected, and no universal VRM support claim is permitted.
 
@@ -24,12 +24,12 @@ P4 uses actual Ember procedural world builders (forest, meadow, snow) and studio
 - `src/vendor-sky.mjs`, `src/vendor-groundedskybox.mjs`: pinned Three.js r180 MIT shader/world support.
 - `src/hybrid-world-provider.mjs`: uses the actual Ember `buildNature()` and `deskAtmosphere()`; world options are bounded for client rendering; `setTime(t)` calls the environment's pure absolute-time animations; scene state and GPU resources are released/cleaned on disposal. `auditWorldAsset` and `prepareImportedWorld` validate and load self-contained GLB worlds into `WorldProvider`.
 - Builder options currently cover forest, meadow, snow, desk, morning/golden/night, foliage, wind, and recognized ambient particles. No misleading claim that all Ember UI/theme settings have been implemented.
-- `tests/hybrid-p34-proof.html` creates a **single new v2** project using actual skinned CesiumMan and actual Ember world builds. The imported-world path uses the Khronos model **only as geometry-loading technical proxy**; it is not an original authored environment and cannot count toward final art acceptance.
+- `tests/hybrid-p34-proof.html` creates a **single new v2** project using actual 69-bone Ara human rig and actual Ember world builds. The imported-world path uses the Khronos model **only as geometry-loading technical proxy**; it is not an original authored environment and cannot count toward final art acceptance.
 
 ## Gates and exact evidence
 
 - P3 strict validation: required bones, skin, GLB bytes, extension and primitive bounds, no remote textures/buffers, no silent no-skin fallback. Existing `rigged-asset-core` and `asset-lab` tests remain in CI.
-- P3 real browser: skinned GLB loaded, animated across eight v2-directed emotions and multiple camera angles, anchored and seekable.
+- P3 real browser: recognized 69-bone Ara test GLB loaded, animated across eight v2-directed emotions and multiple camera angles, anchored and seekable. Unrecognized CesiumMan retargeting is a failure-closed negative test; this is a deliberately narrower support claim.
 - P4 nature: forest, meadow, snow, desk all render in Chromium, time-advanced and rewound, and scene cleanup works; imported world path validates and loads a locally contained GLB.
 - P3/P4 proof: H.264/AAC short MP4 fully decoded and probed for frame count; uses existing V6 master audio and is **not** a new voice/lip-sync demo.
 - Tests: `tests/hybrid-p34-policy.test.mjs` (source job), `tests/hybrid-p34-browser.cjs` (portable WebGL and video job), `tests/hybrid-p34-proof.html`.
