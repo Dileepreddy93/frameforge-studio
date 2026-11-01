@@ -54,7 +54,8 @@ function attachWorld(scene,source,descriptor,{stageOffset=[0,0,0]}={}){
      if(disposed)throw Error('World disposed');
      const vec=p=>p?.toArray?.()||null;
      const center=[stageOffset[0],worldY+1.5,stageOffset[2]];
-     const screen=vec(source.screenPoint)||[stageOffset[0],worldY+2.0,stageOffset[2]-3];
+     const rawScreen=vec(source.screenPoint);
+     const screen=rawScreen?rawScreen.map((v,i)=>v+stageOffset[i]):[stageOffset[0],worldY+2.0,stageOffset[2]-3];
      if(!v3(screen))throw Error('Invalid world screen anchor');
      return {center,screen,ground:[stageOffset[0],worldY,stageOffset[2]]};
    },
@@ -112,7 +113,7 @@ export function registerEmberWorlds(registry,{scene,renderer,preparedWorld=null,
      const light=new T.HemisphereLight('#c4dbff','#303044',1.5);atmo.group.add(light);
      // Use actual atmosphere animation, not a placeholder background; own only our additions.
      return attachWorld(scene,{...atmo,screenPoint:new T.Vector3(0,2,-3),
-       _owned:true,dispose(){atmo.dispose?.();floor.geometry.dispose();floor.material.dispose()}}
+       dispose(){atmo.dispose?.();floor.geometry.dispose();floor.material.dispose()}}
       ,o,{stageOffset});
    }
    // Ember's native procedural trees, grass, snow, light, sign, particles and sky.
