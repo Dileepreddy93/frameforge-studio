@@ -61,7 +61,13 @@ export function createKokoroBridge({createWorker=()=>new Worker(new URL('./kokor
      if(!goodNum(r.seconds,.1,CLIPS.maxVoiceSeconds)||r.samples.length>RATE*CLIPS.maxVoiceSeconds||
         r.samples.some(x=>!Number.isFinite(x)))
        throw Error('Kokoro generated invalid audio');
-     return {samples:r.samples,sampleRate:RATE,seconds:r.seconds,voiceStart:r.voiceStart||0,
+     // The existing Kokoro worker pads each line with 60ms lead and 100ms
+     // tail. Strip exactly that transport padding before project-level lead/tail
+     // is authored; otherwise every seek/mix adds a second unwanted silence.
+     const lead=Math.round((r.voiceStart??.06)*RATE),tail=Math.round(.10*RATE);
+     if(lead+tail>=r.samples.length)throw Error('Kokoro line contains no speech');
+     const pcm=r.samples.slice(lead,r.samples.length-tail);
+     return {samples:pcm,sampleRate:RATE,seconds:pcm.length/RATE,voiceStart:0,
        speaker:params.speaker,text:a.text,voice:a.voice,phonemes:r.phonemes||'',cached:Boolean(r.cached),
        language:a.language,source:'kokoro-local'};
    },
