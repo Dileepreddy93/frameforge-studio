@@ -11,7 +11,7 @@ Production constraint: no main merge, tag overwrite, production redeploy or dele
 
 ## EXECUTION STATUS AND RESUME POINT — 2026-11-01
 
-**Current phase:** P3/P4 dedicated real GLB, four-world and H.264/AAC proof PASSED; full compatibility and production release gates remain open. **P2:** six-character visual/video CI passed. **P1/P0:** independent-browser V6 parity and Windows/macOS certification remain unresolved.
+**Current phase:** P5/P6 director/voice contracts IMPLEMENTED and source tests PASSED; integrated two-film video evidence in progress. **P3/P4:** rig/world/video integration passed technical CI. **P1/P0:** independent-page V6 visual parity and Windows/macOS release signoff still unresolved.
 **Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
 **Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
 
@@ -140,6 +140,32 @@ Read [P3/P4 technical contract and licensing](HYBRID_P34_IMPORT_WORLDS.md).
 - Production `frameforge-v6.vercel.app` and `main` deliberately untouched. New custom characters/worlds are not yet wired to the normal editor (P7), original voice/lip sync and final film pipeline (P6/P8).
 
 **Next checkpoint:** continue P3/P4 compatibility hardening and future P5 director integration on the protected branch; do not promote production until all above release gates are independently verified.
+
+---
+
+## P5/P6 — One-timeline cinema direction and waveform-driven voice (2026-11-01)
+
+**Status: CODE + CONTRACT CI PASS, TWO-FILM RENDER AND RELEASE VERIFICATION IN PROGRESS.** See [P5/P6 contract, demo limitations and voice rights](HYBRID_P56_DIRECTION_VOICE.md).
+
+P5 implementation:
+- `src/hybrid-direction.js` is the V2 script round-trip, shot reorder, actor-independent camera geometry (wide, single actor, two actor, screen), push/pull/orbit/drift, constrained camera blends and one-take continuity. Expressions, secondary-actor reaction beats and on-set screen cues come from the same FrameForge timeline. Existing V6 `src/script-core.js` remains untouched.
+- `src/ember-screen-apps.mjs` is Ember's MIT screen-app renderer, wrapped by `src/hybrid-screen.mjs` as a frame-accurate editable monitor action, with audio cue mapping and a safe caption/screen layout.
+- V2 validator now validates direction, one-take, reactions, caption and screen text; legacy v1 delegates to original parser.
+
+P6 implementation:
+- `src/hybrid-voice.mjs` bridges the existing local Kokoro worker (English), imported legal/consented 48 kHz mono PCM, shot re-timing, actor-audio assignment, FrameForge's existing stereo `episode-mix` with original sound-kit/music ducking and safe peak/loudness, 20Hz acoustic speech envelope and the existing FrameForge approximate visemes.
+- `src/ember-actor-provider.mjs` and `src/hybrid-rigged-provider.mjs` now expose optional acoustic `setSpeech` mouth controls, without changing legacy V6 rendering.
+- Tamil, Telugu, Hindi or any unsupported language are **not** silently mapped onto English Kokoro. Import of licensed human recordings is supported; native language synthesis is not yet verified and remains a commercial release gap.
+- The worker bridge strips Kokoro's internal 60ms/100ms line padding before reapplying shot timing. The new voice transport's unit test uses a mock worker; new-original-dialogue Kokoro inference in an actual V2 scene still needs direct full-model testing.
+
+P5/P6 QA:
+- `tests/hybrid-director.test.cjs`, `tests/hybrid-voice.test.mjs`: script/one-take/reaction contracts and worker/PCM/mixing/consent; **source-and-project passed** in [run 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423).
+- `tests/hybrid-p56-proof.html`, `tests/hybrid-p56-browser.cjs`: 2 distinct Ember authored-story scenes with moving camera, live application screen, spoken-word mouth motion, original V6 Kokoro English speech segments placed in the **new** V2 mixer, 360×640 full-video H.264/AAC plus WAV and PNG screenshots, independent full ffmpeg decode. Voice clips are reused from the existing Zero Latency track and are **not newly synthesized dialogue**.
+- [Full P5/P6 acceptance run 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423) and art/video artifact **PENDING**. Do not mark complete until `HYBRID_P5_DIRECTOR_VIDEO_PASS` and `HYBRID_P6_AUDIO_VIDEO_PASS` appear in a successful portable-video-export job.
+- The existing unrelated independent-page legacy film visual-parity test may still fail; P0/Windows+macOS release signoff still open. New combined hybrid customer UI is P7; high-resolution consumer export, long-film and mobile perf P8.
+- Production V6 and main remain protected and unchanged.
+
+**Next:** Fix any P5/P6 browser/voice failures, record exact passing CI and downloadable artifact, and then expand newly synthesized speech and multilingual R&D without pretending pre-recorded voice segments are a verified new TTS language.
 
 ---
 
