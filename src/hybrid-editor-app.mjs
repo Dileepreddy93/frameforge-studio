@@ -4,6 +4,7 @@ import {exportHybridFilm} from './hybrid-browser-export.mjs';
 const $=id=>document.getElementById(id),M=window.FrameForgeHybridEditor,C=window.FrameForgeHybridProjectCore;
 let editor=null,store=null,engine=null,selected='shot-01',play=false,last=0,animation=0;
 let busy=false,exportAbort=null,storageSequence=Promise.resolve(),rebuildGeneration=0;
+let audioContext=null,audioSource=null,audioTimelineStart=null;
 const text=(id,message)=>{$(id).textContent=message};
 function download(blob,name){
  const url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -20,7 +21,24 @@ const fillSelect=(el,items,value)=>{
  }
  el.value=value;
 };
-const stop=()=>{play=false;cancelAnimationFrame(animation);$('play').textContent='Play'};
+const stopAudio=()=>{if(audioSource){try{audioSource.stop()}catch{}audioSource.disconnect();audioSource=null}};
+const stop=()=>{play=false;cancelAnimationFrame(animation);stopAudio();audioTimelineStart=null;$('play').textContent='Play'};
+async function startVoicePlayback(at){
+ if(!editor?.voiced)return false;
+ const mix=engine.getExportAudio();
+ if(mix.sampleRate!==48000||mix.left.length!==mix.right.length)
+   throw Error('Unsupported voice master');
+ audioContext??=new (window.AudioContext||window.webkitAudioContext)({sampleRate:48000});
+ await audioContext.resume();
+ const source=audioContext.createBufferSource();
+ const buf=audioContext.createBuffer(2,mix.left.length,mix.sampleRate);
+ buf.copyToChannel(mix.left,0);buf.copyToChannel(mix.right,1);
+ source.buffer=buf;source.connect(audioContext.destination);
+ audioSource=source;audioTimelineStart=audioContext.currentTime-at;
+ source.onended=()=>{if(audioSource===source){audioSource.disconnect();audioSource=null}};
+ source.start(0,at);
+ return true;
+}
 function frame(t){
  if(!engine||!editor)return;
  const duration=projectDuration(editor.project),safe=Math.min(Math.max(0,t),Math.max(0,duration-.02));
@@ -152,14 +170,21 @@ $('apply-script').onclick=()=>changeProject(()=>editor.script($('script').value)
 $('scrub').oninput=()=>{stop();try{frame(Number($('scrub').value))}catch(e){text('status',e.message)}};
 function tick(now){
  if(!play)return;if(!last)last=now;
- const next=Number($('scrub').value)+Math.min(.09,Math.max(0,(now-last)/1000));last=now;
+ const next=audioSource&&audioTimelineStart!==null?
+   audioContext.currentTime-audioTimelineStart:
+   Number($('scrub').value)+Math.min(.09,Math.max(0,(now-last)/1000));
+ last=now;
  if(next>=projectDuration(editor.project)-.02){stop();frame(0);return}
  try{frame(next)}catch(e){stop();text('status',e.message);return}
  animation=requestAnimationFrame(tick);
 }
-$('play').onclick=()=>{
+$('play').onclick=async()=>{
  if(!engine)return;if(play){stop();return}
- play=true;last=0;$('play').textContent='Pause';animation=requestAnimationFrame(tick);
+ const offset=Number($('scrub').value);
+ try{await startVoicePlayback(offset)}
+ catch(error){text('status','Audio preview unavailable: '+error.message+'. Visual preview still works.')}
+ play=true;last=0;$('play').textContent=editor?.voiced?'Pause film and voice':'Pause silent preview';
+ animation=requestAnimationFrame(tick);
 };
 $('still').onclick=()=>{
  if(!engine)return;
@@ -248,5 +273,5 @@ $('engine').addEventListener('load',async()=>{
  }
 });
 window.addEventListener('pagehide',()=>{
- stop();store?.close();try{engine?.dispose()}catch{}
+ stop();store?.close();try{engine?.dispose()}catch{}try{audioContext?.close()}catch{}
 });
