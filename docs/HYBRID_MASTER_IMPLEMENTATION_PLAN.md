@@ -143,6 +143,18 @@ Read [P3/P4 technical contract and licensing](HYBRID_P34_IMPORT_WORLDS.md).
 
 ---
 
+## P5/P6 — Additional fresh Kokoro dialogue and V2 movie verification (2026-11-01)
+
+**Implementation pushed; latest real-inference CI running, not yet certified.**
+- `tests/hybrid-p6-fresh-synthesis.cjs` is executed by the existing `tests/voice-model-browser.cjs` after the *real* Kokoro-82M model has loaded. It creates two new English sentences for two new V2 actor identities, requests voice audio through `FrameForgeVoiceQA.speakWav` (the actual original browser model), then feeds the real decoded PCM into `synthesizeHybridProject()` to verify independently authored shot retiming, source rights, two-speaker assignment and mastered WAV.
+- `tests/hybrid-p56-proof.html` now supports `loadFresh()`, which loads the actual generated V2 project, voice WAV and mastered stereo WAV into the real Ember actor/world director, rather than showing a static video.
+- `tests/hybrid-p6-fresh-film-browser.cjs` produces an additional 360×640 H.264/AAC original-dialogue film, checks real audio-driven facial movement, shot and screen interaction, deterministic re-seeking, independent `ffprobe`/full `ffmpeg` decoding, and uploads audio/video/frame evidence. This new proof is run in the same CI job as the original voice models to reduce duplicate 90/326 MB model downloads.
+- `src/hybrid-voice.mjs` now *ceil*-aligns generated voice lengths to the next 30 fps frame instead of rounding down (which could cut ~16 ms of real speech). `tests/hybrid-voice.test.mjs` includes a passing fractional-duration render regression case.
+- **Current verification:** [GitHub Actions run 41316274642](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41316274642); `source-and-project-tests` **PASSED**. Actual fresh English V2 synthesis and original-dialogue movie **PENDING/IN PROGRESS**; do not label it green until `HYBRID_P6_REAL_KOKORO_V2_PASS` and `HYBRID_P6_FRESH_FILM_PASS` appear in passing voice job logs and downloadable artifact.
+- **Strict limitations:** English Kokoro only for new first-party speech. Hindi/Telugu/other language TTS remains unsupported until an independently verified and appropriately licensed speech engine is integrated; acoustic mouth motion is not forced phoneme alignment. V2 editor connection and 1080×1920 customer exports are later phases. The original V6 cross-page parity test and full Windows/macOS release gates remain open.
+
+---
+
 ## P5/P6 — One-timeline cinema direction and waveform-driven voice (2026-11-01)
 
 **Status: DIRECTOR + AUDIO CONTRACTS AND TWO COMPLETE VIDEO PROOFS PASSED; FRESH-V2-TTS/MULTILINGUAL AND FULL RELEASE GATES OPEN.** See [P5/P6 contract, demo limitations and voice rights](HYBRID_P56_DIRECTION_VOICE.md).
