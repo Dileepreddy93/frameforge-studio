@@ -76,7 +76,7 @@ export function registerRiggedCharacters(registry,{scene,prepared,positions={},c
      scene.add(rig.root);
      activated.add(actor.id);
    }catch(err){if(rig){scene.remove(rig.root);disposeImported(rig)}throw err}
-   let disposed=false;
+   let disposed=false,lastFace=null;
    const verify=()=>{if(disposed)throw Error('Imported rig already disposed')};
    return {
      setPose(time,shot,performance){
@@ -92,6 +92,14 @@ export function registerRiggedCharacters(registry,{scene,prepared,positions={},c
          camera,look:camera,partner:camera,screen,key:screen};
        animateImported(rig,ctx);
        drawImportedFace(rig,{open:intensity,round:0,wide:1,teeth:talking?1:0,tongue:0},ctx.face,1);
+       lastFace=ctx.face;
+     },
+     setSpeech(cue){
+       verify();
+       if(!lastFace||!cue||typeof cue.mouthOpen!=='number'||!Number.isFinite(cue.mouthOpen)||
+           cue.mouthOpen<0||cue.mouthOpen>1)throw RangeError('Valid audio frame required after pose');
+       drawImportedFace(rig,{open:cue.mouthOpen,round:cue.viseme==='round'?1:0,
+         wide:cue.viseme==='wide'?1.3:1,teeth:cue.viseme==='teeth'?.5:0,tongue:0},lastFace,1);
      },
      getAnchors(){
        verify();
