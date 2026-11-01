@@ -108,6 +108,43 @@ async function create(variant){
   voices:mix.markers,lufs:mix.lufs,peakDb:mix.peakDb,audioSeconds:mix.duration,
   authoredScript:D.projectToScript(project)};
 }
+async function loadFresh(modelPrefix='/artifacts/voice-model-samples/fresh-v2-kokoro'){
+ const [metadata,masterBytes,voiceBytes]=await Promise.all([
+   fetch(modelPrefix+'.json').then(r=>{if(!r.ok)throw Error('Fresh V2 metadata missing');return r.json()}),
+   fetch(modelPrefix+'-master.wav').then(r=>{if(!r.ok)throw Error('Fresh stereo master missing');return r.arrayBuffer()}),
+   fetch(modelPrefix+'-voice.wav').then(r=>{if(!r.ok)throw Error('Fresh voice track missing');return r.arrayBuffer()})
+ ]);
+ if(!metadata?.project||metadata.project.schema!==H.schema||
+   metadata?.report?.rawModelInference!==true)
+   throw Error('Fresh proof requires genuine V2 Kokoro inference metadata');
+ const audioContext=new AudioContext({sampleRate:HYBRID_AUDIO_RATE});
+ let master,voice;
+ try{
+   [master,voice]=await Promise.all([
+     audioContext.decodeAudioData(masterBytes),audioContext.decodeAudioData(voiceBytes)
+   ]);
+ }finally{await audioContext.close()}
+ if(master.sampleRate!==HYBRID_AUDIO_RATE||master.numberOfChannels!==2||
+    voice.sampleRate!==HYBRID_AUDIO_RATE||voice.numberOfChannels!==1)
+   throw Error('V2 evidence PCM must be 48kHz stereo master and mono voice');
+ session?.dispose();
+ project=metadata.project;
+ D.verify(project);
+ mix={left:new Float32Array(master.getChannelData(0)),
+   right:new Float32Array(master.getChannelData(1)),
+   voice:new Float32Array(voice.getChannelData(0)),
+   markers:metadata.markers,duration:metadata.report.duration,
+   peakDb:metadata.report.peakDb,lufs:metadata.report.lufs};
+ mix.envelope=sampledEnvelope(mix.voice);
+ registry=P.createRegistry();
+ registerEmberCharacters(registry,{scene,positions:{luna:[-1,0,0],atlas:[1,0,0]}});
+ registerEmberWorlds(registry,{scene,renderer});
+ registry.lock();session=P.createSession(project,{registry});
+ film='fresh-kokoro';
+ return {newText:project.shots.map(x=>x.dialogue),
+   markers:mix.markers,duration:mix.duration,projectSchema:project.schema,
+   voices:metadata.report.voices,provenance:metadata.report.generator};
+}
 function frameAt(t){
  if(!session)throw Error('Not prepared');
  const state=session.seek(t);
@@ -151,7 +188,7 @@ function masterWav(){
  let result='';for(let i=0;i<u.length;i+=16384)result+=String.fromCharCode(...u.subarray(i,i+16384));
  return btoa(result);
 }
-window.HybridP56QA={create,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
+window.HybridP56QA={create,loadFresh,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
  cast:project?.characters.map(c=>c.id),world:project?.hybrid.world.template,
  generatedSpeech:false,modelSource:'existing V6 Kokoro speech segments, re-timed through P6'}),
  dispose:()=>{session?.dispose();screenTexture.dispose();screenPlane.geometry.dispose();screenPlane.material.dispose();renderer.dispose()}};
