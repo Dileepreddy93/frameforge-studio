@@ -54,3 +54,5 @@ FRAMEFORGE_DEPLOYED_URL=https://frameforge-v6.vercel.app/ node tests/browser-voi
 ```
 Deploying: **never run `vercel` in the repo folder** (it's linked to the protected project). Use the staged copy in
 `~/Desktop/Animate/deploy/frameforge-v6`, as described in `docs/releases/M4_5_DEPLOY_V6.md`.
+`tools/deploy-v6.sh` does that in one command (stage the committed files, check the link is `frameforge-v6`,
+`vercel deploy --prod`); `--stage` stages only. It refuses a dirty tree or a copy linked to any other project.
