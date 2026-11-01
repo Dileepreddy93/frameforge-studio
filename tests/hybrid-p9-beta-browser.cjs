@@ -29,7 +29,9 @@ const OUT=path.resolve(process.env.FRAMEFORGE_BETA_OUT||'artifacts/p9-beta-ux');
    assert.equal(await page.locator('#play').isEnabled(),true,'Real hybrid engine must be ready');
    const horiz=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth}));
    assert.ok(horiz.page<=horiz.viewport+2,'No horizontal overflow on '+viewport.width);
-   await page.locator('#timeline').fill('1.4');
+   await page.locator('#timeline').evaluate(el=>{
+     el.value='1.4';el.dispatchEvent(new Event('input',{bubbles:true}));
+   });
    assert.match(await page.locator('#time').textContent(),/1\.4/);
    assert.ok((await page.locator('#frame').getAttribute('src')).startsWith('data:image/png;base64,'));
    await page.locator('#story').selectOption('2');
