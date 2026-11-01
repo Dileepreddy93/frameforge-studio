@@ -1,6 +1,6 @@
 # FrameForge Ultimate — P3/P4 implementation contract
 
-Branch: `feature/hybrid-foundation`. Status: implementation present; release-wide CI pending. This is an engineering record and not an assertion that the hybrid UI is production ready.
+Branch: `feature/hybrid-foundation`. Status: targeted P3/P4 3D browser/video proof PASSED; full commercial/VRM/multimodel and V6 release gates remain OPEN. This is an engineering record and not an assertion that the hybrid UI is production ready.
 
 ## Integration design (not a blind source merger)
 
@@ -25,6 +25,20 @@ P4 uses actual Ember procedural world builders (forest, meadow, snow) and studio
 - `src/hybrid-world-provider.mjs`: uses the actual Ember `buildNature()` and `deskAtmosphere()`; world options are bounded for client rendering; `setTime(t)` calls the environment's pure absolute-time animations; scene state and GPU resources are released/cleaned on disposal. `auditWorldAsset` and `prepareImportedWorld` validate and load self-contained GLB worlds into `WorldProvider`.
 - Builder options currently cover forest, meadow, snow, desk, morning/golden/night, foliage, wind, and recognized ambient particles. No misleading claim that all Ember UI/theme settings have been implemented.
 - `tests/hybrid-p34-proof.html` creates a **single new v2** project using actual 69-bone Ara human rig and actual Ember world builds. The imported-world path uses the Khronos model **only as geometry-loading technical proxy**; it is not an original authored environment and cannot count toward final art acceptance.
+
+## Verified milestone (2026-11-01)
+
+[Run 41295668842](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842) successfully completed P3/P4 `portable-video-export` and logged:
+
+- `HYBRID_P3_IMPORT_PASS`: genuine rigged Ara technical model, 69 bones, 10,587,092 bytes, 48,820 triangles and eight directed acting beats.
+- `HYBRID_P4_WORLDS_PASS`: four Ember environments with three time presets, world/character anchors, view differences, frame seek/rewind and imported world loading.
+- `HYBRID_P34_VIDEO_PASS`: 24 frames, 300×500 H.264/AAC, complete ffmpeg decode and original V6 soundtrack used as a technical audio stub.
+- [P3/P4 original 3D frames, video and report artifact](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842/artifacts/13079385805).
+- The original V6 production renderer and critical `studio.html`/character/film/parser files have zero changes in the branch compare. The separate old-film cross-page pixel comparator is still failing and must be corrected without an arbitrary threshold waiver.
+
+Earlier red runs exposed **two real process improvements**: failing-closed rejection of CesiumMan nonstandard bones rather than treating any skinned mesh as a valid humanoid; and a test assertion typo `preset` vs the existing schema field `template`. These are recorded in the master plan.
+
+**Not verified:** fully correct VRM (MToon/physics), three independent rig conventions, a genuinely authored imported world, full editable studio UI, 1080p voiced film, mobile memory/performance and legal commercial rights to sample characters. These remain independent release gates.
 
 ## Gates and exact evidence
 
