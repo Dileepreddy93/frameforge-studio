@@ -1,6 +1,19 @@
 # FrameForge Ultimate — P5/P6 director, screen and voice engineering
 
-**Branch:** `feature/hybrid-foundation`. **Production:** untouched. **State:** implementation and targeted tests wired; all required CI jobs must pass before release signoff. Read `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md` first for the live phase ledger.
+**Branch:** `feature/hybrid-foundation`. **Production:** untouched. **State:** P5/P6 targeted source and two-film browser/video/audio QA PASSED; full V2 fresh-model/multilingual and legacy release gates remain OPEN. Read `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md` first for the live phase ledger.
+
+## Verified P5/P6 milestone — 2026-11-01
+
+[GitHub Actions 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423) passed the `source-and-project-tests`, `voice-and-mix-tests`, `rigged-character-import` and `portable-video-export` jobs. The latter explicitly logged:
+
+- `HYBRID_P5_DIRECTOR_VIDEO_PASS`: two separate scripted hybrid films with authored cameras, screens, one-take/reaction controls, in-order scrub-and-rewind pixel parity.
+- `HYBRID_P6_AUDIO_VIDEO_PASS`: each film **4.5667 s**, **36 frames**, **360×640 H.264/AAC**, 48 kHz WAV stereo mastering, full ffmpeg decode, calibrated loudness **−14.027 LUFS** and peaks **−2 dBFS**, voice-driven lip movement rather than timed mouth approximation.
+- [P5/P6 2 MP4s, 2 mastered WAVs, screenshot comparisons and report](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423/artifacts/13080990912).
+- Source and orchestration regression test after `synthesizeHybridProject()` was added: [run 41299701150](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299701150), source-and-project-tests **PASS**.
+
+This is **not proof of newly generated V2 dialogue**. The film audio intentionally reuses two existing first-party V6 Kokoro speech segments with matching authored transcripts. The original Kokoro worker's own full model generation was independently tested by the existing V6 voice-and-mix job, but the NEW orchestration path is only tested with an injected fake worker at this checkpoint. The next required proof is a V2 film rendered from two **freshly synthesized** original English lines by the actual Kokoro model.
+
+One existing broader CI job still fails the independent-page V6 visual comparator. Nothing in P5/P6 changes V6 film sources; the independent release gate is not waived.
 
 ## P5 — One authoritative FrameForge timeline
 
@@ -33,7 +46,7 @@ The screenplay is **not** arbitrary JavaScript. Metadata values containing space
 
 `src/hybrid-voice.mjs` reuses FrameForge's existing Kokoro 82M worker `src/kokoro-worker.js`, original `src/speech-performance-core.js`, and `src/episode-mix.mjs` (music, effects, ducking and loudness/limiting). It does **not** bundle another TTS model or establish paid cloud accounts.
 
-- `createKokoroBridge`: one worker, typed requests, bounded timeouts, error reporting, disposal and model choice. The existing English Kokoro model can synthesize authorized original lines. The response is normalized to remove the worker's internal 60 ms lead/100 ms tail before shot-timing padding is applied.
+- `createKokoroBridge`: one worker, typed requests, bounded timeouts, error reporting, disposal and model choice. The existing English Kokoro model can synthesize authorized original lines. The response is normalized to remove the worker's internal 60 ms lead/100 ms tail before shot-timing padding is applied. `synthesizeHybridProject()` coordinates two or more original English line requests, validates identity/source, re-times the entire V2 project and returns the mastered stereo and exact acoustic markers. Existing V6 `voice.kokoro.voice` IDs are reused correctly and Ember `curious/idea` emotions are mapped to supported Kokoro speaking styles.
 - `resamplePCM`: bounded decoded mono voice import (8–96 kHz) and normalized 48 kHz PCM, with no unknown network upload.
 - `validateVoiceRights`: imported speech requires recorded consent/licensing and source provenance. Without that documentation the mixer fails closed.
 - `retimeForVoice`: preserves scene/acting/screens while re-timing shots from actual waveform lengths, lead and trailing pause, with the existing maximum duration constraints.
