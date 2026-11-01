@@ -9,6 +9,58 @@ Source repository: Dileepreddy93/ember-take-studio, main @ 22c745ffd (inspect fu
 Original FrameForge main: 49c10c59f89b971666c8be3b1aa7efa18ade1774 (DO NOT replace)
 Production constraint: no main merge, tag overwrite, production redeploy or deletion before independent acceptance.
 
+## EXECUTION STATUS AND RESUME POINT — 2026-11-01
+
+**Current phase:** P0 (ACTIVE / NOT YET APPROVED). **Next phase:** P1 after every P0 release gate passes.
+**Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
+**Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
+
+| Gate | State at this checkpoint | Evidence or blocker |
+| --- | --- | --- |
+| Plan and resume pointer saved in GitHub | **DONE** | This document; `CONTINUE_HERE.md` updated to point to the active hybrid plan |
+| Safe feature branch from deployed V6 | **DONE** | `feature/hybrid-foundation`, starting at `2b78e60` |
+| Freeze original V6 episode project/audio/media inputs | **DONE** | `spec/hybrid-v6-baseline.json`; 2 projects (14 and 12 shots), 13 media assets with Git blob SHA-1 |
+| Enforce old project contract and checked-in fixture immutability | **DONE / UNIT PASS** | `tests/hybrid-baseline.test.cjs`; source-and-project job passed in [run 41287771443](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287771443) after a corrected manifest SHA |
+| Probe V6 reels and fully decode both MP4 films | **DONE / CI PASS** | `tests/hybrid-baseline.test.cjs --media`, portable-video-export job passed in [run 41287771443](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287771443) |
+| Test original film pixels against frozen M6.5 code in identical Chromium | **WIRED / RESULT PENDING** | `tests/hybrid-legacy-film-frames.cjs` compares 14 frames across 2 episodes using a git worktree; first run containing this test: [run 41288030520](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41288030520) |
+| Existing character, editing, mobile, voice and audio regressions | **PARTIALLY PASSING / SUITE PENDING** | [latest integration CI](https://github.com/Dileepreddy93/frameforge-studio/actions/workflows/project-contract.yml) includes source, browser, mix, rigged and portable video jobs; verify all jobs for the **latest head SHA** before approval |
+| Full Windows Chrome/Edge release-to-MP4 workflow | **RUNNING / NOT CERTIFIED** | Fixed verified old `mpv.exe` missing-PATH failure; [release run 41287333994](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287333994) is testing that change |
+| macOS AVFoundation compatibility of Windows release MP4 | **PENDING** | Downstream of successful Windows Chrome/Edge jobs in `release-e2e.yml` |
+| Publication is explicit and non-destructive | **IMPLEMENTED / CI PENDING** | Release job now requires manual dispatch on `main`, uses run-unique demo asset branches/tags and no force pushes or release deletion |
+| Manual full-film art, lip-sync and listening approval | **NOT DONE** | Exact final produced MP4 must be watched and heard; source tests alone cannot sign it off |
+| Production deployment/merge | **NOT DONE (intentional)** | Only after all P0 gates pass and the user authorizes production promotion |
+
+### P0 code changes committed so far
+
+- `4b0827b`: Windows `mpv.exe` resolution in full-film release validation.
+- `b699fb5`, `4045f11`, `e22484f`: original V6 asset/project SHA freeze, contract/media tests, CI wiring.
+- `95c8263`: correct one incomplete 40-character `.webm` Git blob SHA after a real red source test; later source and portable-media jobs passed.
+- `89fbd1d`: add safe new-chat entry point to `CONTINUE_HERE.md`.
+- `cadc029`: remove automated demo publication by commit message, force push and release deletion.
+- `889c91d`, `6de9964`: same-browser visual parity test (frozen baseline vs hybrid branch) wired into Chromium CI.
+- `4d657cd`: cancel superseded feature-branch CI runs and skip docs-only push workflows to limit expensive duplicate GitHub Actions minutes.
+
+### Commands to run at each P0 verification
+
+```bash
+git fetch origin --tags
+git switch feature/hybrid-foundation
+git pull --ff-only
+node tests/hybrid-baseline.test.cjs
+# With ffmpeg and ffprobe:
+node tests/hybrid-baseline.test.cjs --media
+# With Playwright Chromium installed and full git history:
+node tests/hybrid-legacy-film-frames.cjs
+# Existing unit/browser/voice/export suite is in .github/workflows/project-contract.yml
+# Full Windows/AVFoundation release is in .github/workflows/release-e2e.yml
+```
+
+**Required next action:** Read the latest commit and latest two workflow runs on `feature/hybrid-foundation`. Inspect any failed job logs; fix failures with precise repro, do not rewrite the baseline manifest to match a regression. Obtain full green runs and watch/listen acceptance before marking P0 complete or beginning P1. Existing `frameforge-v6.vercel.app` is intentionally not modified.
+
+**Update rule for all later phases:** Modify this section *in the same branch* after each phase or meaningful verification checkpoint. Keep: phase state, exact commit SHA, CI run URL, successful/failed commands, rendered-video/audio evidence, known regressions, next tasks and rollback reference. Never mark a gate PASS when it is merely queued/in progress.
+
+---
+
 ## Goal
 
 One product, using FrameForge's deterministic cinematic episode engine, cast identity, audio, browser voices, film export verification, and test infrastructure, extended with Ember's configurable characters, humanoid GLB/VRM characters, worlds, props, cameras, reactions, screen interactions, looks, and usable editing UI.
