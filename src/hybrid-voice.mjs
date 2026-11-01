@@ -163,11 +163,12 @@ export function sampledEnvelope(voice,rate=20){
 export function speechAt(project,time,master,core){
  if(!core||typeof core.evaluate!=='function')throw Error('FrameForgeSpeechCore is required');
  const f=(globalThis.FrameForgeHybridProjectCore?.timeAt||(()=>{throw Error('Hybrid core not loaded')}))(project,time);
- const line=master.markers.find(m=>m.shotId===f.shotId),active=!!line;
+ const line=master.markers.find(m=>m.shotId===f.shotId),active=Boolean(line&&time>=line.start&&time<line.end);
  const cue=core.evaluate({text:f.shot.dialogue,local:f.localTime,duration:f.shot.duration,
-   shotStart:master.markers.find(m=>m.shotId===f.shotId)?.start??0,
+   shotStart:time-f.localTime,
    samples:master.envelope??sampledEnvelope(master.voice),rate:20,
    audioEnergy:envelopeAt(master.voice,time),speaker:f.speaker});
- return {...cue,speaker:active?f.speaker:null,shotId:f.shotId};
+ return {...cue,speaker:active?f.speaker:null,shotId:f.shotId,
+   voiced:active&&cue.voiced,mouthOpen:active?cue.mouthOpen:0};
 }
 export const HYBRID_AUDIO_RATE=RATE;
