@@ -1,6 +1,7 @@
 // Original Ember Take Studio character engine: Dileepreddy93/ember-take-studio @ 22c745ffdc2d6411707f3a9bbe5bd70b10f9d9db.
 // Adaptations: use FrameForge-pinned Three.js, vendored rounded geometry, and local math utilities.
-// Engine remains separate; the legacy FrameForge V6 scene is not modified. MIT license (Ember LICENSE).
+// Engine remains separate; the legacy FrameForge V6 scene is not modified.
+// The cached hair geometry is cloned per use to avoid disposing one actor's GPU geometry while another still uses it. MIT license (Ember LICENSE).
 // Procedural characters in the studio's faceted low-poly style, all built on one rig:
 // root → hips → chest → neck → head, chest → shoulder → upper → fore → hand, hips → leg chains with planted feet.
 // Arms and legs are solved with two-bone IK, so gestures reach real targets (face, chin, monitor, partner)
@@ -51,7 +52,7 @@ function sculptedHead(r){
 }
 // A tapered hair lock: wide at the root (+y), pointed at the tip (−y).
 let lockGeometry=null;
-function lockGeo(){if(lockGeometry)return lockGeometry;const pts=[];for(let i=0;i<=16;i++){const t=i/16;pts.push(V2(Math.max(.0005,.5*Math.pow(Math.sin(PI*t),.7)*(.3+.7*t)),t-.5));}return lockGeometry=new THREE.LatheGeometry(pts,24);}
+function lockGeo(){if(lockGeometry)return lockGeometry.clone();const pts=[];for(let i=0;i<=16;i++){const t=i/16;pts.push(V2(Math.max(.0005,.5*Math.pow(Math.sin(PI*t),.7)*(.3+.7*t)),t-.5));}lockGeometry=new THREE.LatheGeometry(pts,24);return lockGeometry.clone();}
 function irisTexture(color){
   const {canvas,ctx:x,texture}=canvasTexture(256,256),c=new THREE.Color(color),dark='#'+c.clone().multiplyScalar(.45).getHexString(),light='#'+c.clone().lerp(new THREE.Color('#ffffff'),.35).getHexString();
   const g=x.createRadialGradient(128,128,10,128,128,128);g.addColorStop(0,'#050505');g.addColorStop(.3,'#050505');g.addColorStop(.33,dark);g.addColorStop(.62,light);g.addColorStop(.86,'#'+c.getHexString());g.addColorStop(.95,'#140d0b');g.addColorStop(1,'#140d0b');
