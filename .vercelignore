@@ -26,3 +26,6 @@ tests
 tools
 spec
 .github
+# Internal notes (AGENTS, STYLE, CONTINUE_HERE, README) never ship; the voice notice does.
+*.md
+!assets/voice/NOTICE.md

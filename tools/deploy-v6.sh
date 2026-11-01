@@ -16,7 +16,7 @@ grep -q "$V6_PROJECT" "$LINK" || { echo "refusing: $STAGE is not linked to frame
 
 cd "$REPO"
 [ -z "$(git status --porcelain)" ] || { echo "refusing: commit or stash your changes first (the deploy ships committed files)"; exit 1; }
-rsync -a --delete --exclude-from=<(grep -v '^#' .vercelignore | sed '/^$/d') --exclude=.git --exclude=.vercel \
+rsync -a --delete --exclude-from=<(grep -v '^[#!]' .vercelignore | sed '/^$/d') --exclude=.git --exclude=.vercel \
   --exclude=.github --exclude='*.md' ./ "$STAGE/"
 cp assets/voice/NOTICE.md "$STAGE/assets/voice/"
 echo "Staged $(git rev-parse --short HEAD) ($(git rev-parse --abbrev-ref HEAD)): $(find "$STAGE" -type f -not -path '*/.vercel/*' | wc -l | tr -d ' ') files, $(du -sh "$STAGE" | cut -f1)"
