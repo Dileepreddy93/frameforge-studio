@@ -50,6 +50,12 @@ Four sequential product hypotheses:
 
 Research instruments live in the beta form; exported responses are downloaded privately, not auto-collected. Public claims must exclude unverifiable revenue, active customers or market size. All 100-crore vision numbers are hypotheses until proven.
 
+### Isolated beta release evidence (actual, not inferred)
+
+[Hobby Vercel deployment `dpl_FirF2JeVp7jRrBAypEVfMWcAiAS1`](https://frameforge-hybrid-beta.vercel.app/beta.html) is READY from feature commit `904d934436480f3619e8bc0fb719094e42256b2c`. Vercel build logs explicitly report 228 ignored files (CI, docs, noncommercial Ara model, old review assets) stripped by `.vercelignore`. Git source and build completed without error. It is a wholly separate project from `frameforge-v6`. Vercel labeled the new beta project's first deployment `production` *inside the isolated beta project* despite requesting `preview`; no original V6 domains or deployment were affected. Project has Vercel Authentication / SSO protection for these domains; an unauthenticated external browser cannot yet be claimed as tested. No authenticated visual walkthrough of that final hosted deployment has been recorded, distinct from the green local-served browser test.
+
+The beta browser CI initially failed on two test-harness mistakes, not broken user behavior: typing into a range input via Playwright `.fill`, and expecting pre-consent scrub events to appear in an opt-in study report. Those tests were corrected to use a genuine slider input event and exercise consent only afterward. [Run 41318626453](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41318626453) `hybrid-beta-usability` is green. The renderer was refactored into `src/hybrid-preview-engine.mjs`, used by the CI QA page and the deployed beta, rather than shipping the ignored `tests/` route or duplicating expensive animation code. The existing `studio.html` remains untouched.
+
 ## P7 dependency, critical
 
 The unified responsive **Cast → World → Direction → Voice → Preview → Export → Reopen** customer workflow has **not** been shipped. P8's encoder tests, P9 beta preview, and P10 research instruments are necessary infrastructure but not substitutes for P7. It would be misleading to mark full P8/P9/P10 product exit criteria complete while first-time creators cannot perform that sequence.
@@ -58,11 +64,11 @@ The unified responsive **Cast → World → Direction → Voice → Preview → 
 
 | Gate | Required evidence | Initial state |
 | --- | --- | --- |
-| P8 native 1080×1920/30 short film | SHA-pinned CI job and MP4/frame artifacts | Pending CI |
+| P8 native 1080×1920/30 short film | [CI run 41318626453](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41318626453) | Source/contract PASS; native-HD job running at last check |
 | P8 full 30–60s film and real devices | Human watch/listen and browser tests | Open |
-| P9 beta rendering UX | Desktop/mobile browser screenshots and working link | Pending CI/deploy |
+| P9 beta rendering UX | [CI 41318626453](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41318626453), [screenshot evidence 13088660981](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41318626453/artifacts/13088660981), separate protected [beta page](https://frameforge-hybrid-beta.vercel.app/beta.html) | PASS: Chromium desktop/mobile viewports, Vercel deployment READY; actual public/hardware devices OPEN |
 | P9 beta user cohort | Real people tested, actual outcomes | Not yet recruited |
-| P10 private opt-in research | Source test and downloadable JSON | Pending CI |
+| P10 private opt-in research | Source test and downloadable local JSON | PASS in source CI and working beta; no human participants yet |
 | P10 willingness to pay | Independent creator evidence and paid conversion | Not validated |
 | V6 parity / Windows/macOS gates | Full green regression/release | Open |
 | Production launch | Written user authorization **after** green gates | Not authorized |
