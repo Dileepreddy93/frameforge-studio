@@ -282,7 +282,6 @@ jobs:
           name: frameforge-p7-creator-e2e
           path: artifacts/p7-creator/
           if-no-files-found: warn
-          if-no-files-found: warn
 
   rigged-character-import:
     runs-on: ubuntu-24.04
