@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hybrid P1 provider proof (test only)</title></head>
+<body style="margin:0;background:#111827;color:white">
+  <div style="font:12px system-ui">P1 engine adapter QA fixture — no user-facing features</div>
+  <script src="../src/project-core.js"></script>
+  <script src="../src/hybrid-project-core.js"></script>
+  <script src="../src/hybrid-providers.js"></script>
+  <script type="module">
+    import * as T from '../vendor/three@0.180.0/three.module.min.js';
+    const {createRegistry,createSession}=window.FrameForgeHybridProviders;
+    const root=document.createElement('div');
+    document.body.append(root);
+    const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+    renderer.setSize(360,640);renderer.setPixelRatio(1);root.append(renderer.domElement);
+    const scene=new T.Scene();
+    scene.background=new T.Color('#182f49');
+    scene.add(new T.HemisphereLight('#c2e8ff','#2c1b30',2));
+    const key=new T.DirectionalLight('#fff4db',2.5);key.position.set(3,8,5);scene.add(key);
+    const camera=new T.PerspectiveCamera(42,360/640,.1,100);
+    const source=await (await fetch('../projects/zero-latency.frameforge.json')).json();
+    const project=FrameForgeHybridProjectCore.upgradeLegacyProject(source);
+    for(const c of project.characters)project.hybrid.cast[c.id]={provider:'procedural',template:c.id==='dev'?'human':'robot'};
+    project.hybrid.world={provider:'procedural',template:'night-city'};
+    project.shots[0].camera={kind:'actor',target:'dev'};
+    const registry=createRegistry();
+    let actorNo=0,worldTime=0;
+    registry.registerWorld('procedural',()=>{
+      const floor=new T.Mesh(new T.BoxGeometry(9,.18,6),new T.MeshStandardMaterial({color:'#33445b',roughness:1}));
+      floor.position.set(0,-.1,0);scene.add(floor);
+      const props=[];
+      for(const x of [-3.7,3.7]){
+        const m=new T.Mesh(new T.BoxGeometry(.25,2.8,.25),new T.MeshStandardMaterial({color:'#4983ae'}));
+        m.position.set(x,1.4,-1.5);scene.add(m);props.push(m);
+      }
+      return {
+        setTime:(t)=>{worldTime=t;floor.rotation.y=Math.sin(t*.25)*.01;return{time:t}},
+        getStageAnchors:()=>({center:[0,1,0],screen:[0,1.8,-2]}),
+        dispose:()=>{scene.remove(floor);floor.geometry.dispose();floor.material.dispose();
+          for(const p of props){scene.remove(p);p.geometry.dispose();p.material.dispose();}}
+      };
+    });
+    registry.registerActor('procedural',({actor})=>{
+      const index=actorNo++,x=(index-1)*1.7;
+      const group=new T.Group();group.position.x=x;scene.add(group);
+      const mat=new T.MeshStandardMaterial({color:['#e6ac76','#5ac2ff','#f6a046'][index]});
+      const body=new T.Mesh(new T.BoxGeometry(.67,1.15,.42),mat);
+      body.position.y=.78;group.add(body);
+      const head=new T.Mesh(new T.SphereGeometry(.40,16,12),mat);
+      head.position.y=1.7;group.add(head);
+      let bob=0;
+      return{
+        setPose:t=>{bob=Math.sin(t*4+index)*.08;head.position.y=1.7+bob;body.rotation.z=Math.sin(t*2+index)*.07},
+        getAnchors:()=>({root:[x,0,0],head:[x,1.7+bob,0]}),
+        dispose:()=>{scene.remove(group);body.geometry.dispose();head.geometry.dispose();mat.dispose()}
+      };
+    });
+    registry.lock();
+    const session=createSession(project,{registry});
+    window.FrameForgeP1Proof={
+      ready:true,
+      summary:()=>({schema:project.schema,shots:project.shots.length,actors:project.characters.length,world:project.hybrid.world.provider,time:worldTime}),
+      frameAt(t){
+        const state=session.seek(t),focus=state.camera.focus??state.worldAnchors.center;
+        camera.position.set((focus?.[0]??0)+3.4,2.45,6.8);
+        camera.lookAt((focus?.[0]??0),1.05,0);
+        renderer.render(scene,camera);
+        return {png:renderer.domElement.toDataURL('image/png'),sample:state};
+      },
+      dispose:()=>{session.dispose();renderer.dispose()}
+    };
+  </script>
+</body>
+</html>
