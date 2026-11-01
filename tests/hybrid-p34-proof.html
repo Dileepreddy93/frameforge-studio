@@ -33,8 +33,10 @@ project.hybrid={version:1,cast:{hero:{provider:'rigged',assetId:'rig-one',filena
  assets:[{id:'rig-one',kind:'character',uri:'asset://rig-one'}]};
 const registry=R.createRegistry();
 const prepared=await prepareRiggedCast(project,store);
+const importWorldProject={...project,hybrid:{...project.hybrid,world:{provider:'imported',assetId:'world-one'}}};
+const preparedWorld=await prepareImportedWorld(importWorldProject,store);
 registerRiggedCharacters(registry,{scene,prepared,positions:{hero:[0,0,0]}});
-registerEmberWorlds(registry,{scene,renderer});
+registerEmberWorlds(registry,{scene,renderer,preparedWorld});
 registry.lock();
 const initial=project.hybrid.world;
 let session=null;
@@ -62,7 +64,7 @@ make();
 window.HybridP34QA={
  audit,options:validateWorldOptions,
  prepareWorld:async()=>{const temp={...project,hybrid:{...project.hybrid,world:{provider:'imported',assetId:'world-one'}}};
-   return await prepareImportedWorld(temp,store);},
+   return {ready:Boolean(preparedWorld.gltf.scene),meshes:preparedWorld.sceneInfo.meshes};},
  make,image,
  summary:()=>({source:'CesiumMan.glb (Khronos Cesium CC BY 4.0)',bytes:modelBytes.length,
   kind:audit.report.format,rigged:audit.report.ok,triangles:audit.report.triangles}),
