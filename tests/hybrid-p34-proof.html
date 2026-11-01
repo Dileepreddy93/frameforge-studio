@@ -17,14 +17,15 @@ renderer.setSize(300,500);renderer.setPixelRatio(1);document.body.append(rendere
 renderer.outputColorSpace=T.SRGBColorSpace;
 const scene=new T.Scene(),camera=new T.PerspectiveCamera(39,300/500,.1,120);
 const orig=await(await fetch('../projects/zero-latency.frameforge.json')).json();
-const modelBytes=new Uint8Array(await(await fetch('../assets/rigged-samples/CesiumMan.glb')).arrayBuffer());
+const modelBytes=new Uint8Array(await(await fetch('../assets/rigged-samples/AraAthleticMan.glb')).arrayBuffer());
+const worldBytes=new Uint8Array(await(await fetch('../assets/rigged-samples/CesiumMan.glb')).arrayBuffer());
 const store=R.createMemoryAssetStore();
 store.put({id:'rig-one',kind:'character',uri:'asset://rig-one'},modelBytes);
-store.put({id:'world-one',kind:'world',uri:'asset://world-one'},modelBytes);
-const audit=auditRiggedAsset(modelBytes,'CesiumMan.glb');
+store.put({id:'world-one',kind:'world',uri:'asset://world-one'},worldBytes);
+const audit=auditRiggedAsset(modelBytes,'AraAthleticMan.glb');
 let project=C.upgradeLegacyProject(orig);
 project.id='p3p4-rigged-world';
-project.characters=[{id:'hero',name:'CesiumMan',visualIdentity:'Third-party CC BY test rig',
+project.characters=[{id:'hero',name:'Ara Athletic Man',visualIdentity:'Noncommercial technical research rig only',
  voice:{profile:'test',voiceLock:'Audited test track'},expressions:['neutral','happy','sad','angry','surprised','worried','curious','idea'],
  sheetStatus:'draft'}];
 const emotions=['neutral','happy','sad','angry','surprised','worried','curious','idea'];
@@ -33,7 +34,7 @@ project.shots=emotions.map((e,i)=>({id:'shot-'+(i+1),speaker:'hero',dialogue:'Or
  cast:{hero:{emotion:e,action:['explain','wave','shrug','point','nod','think','wave','cheer'][i]}},
  firstFrameStatus:'draft'}));
 project.audio={state:'storyboard_only',masterUrl:null};
-project.hybrid={version:1,cast:{hero:{provider:'rigged',assetId:'rig-one',filename:'CesiumMan.glb'}},
+project.hybrid={version:1,cast:{hero:{provider:'rigged',assetId:'rig-one',filename:'AraAthleticMan.glb'}},
  world:{provider:'procedural',template:'forest',time:'golden',foliage:.07,particles:['dust']},
  assets:[{id:'rig-one',kind:'character',uri:'asset://rig-one'}]};
 const registry=R.createRegistry();
@@ -73,7 +74,7 @@ window.HybridP34QA={
  prepareWorld:async()=>{const temp={...project,hybrid:{...project.hybrid,world:{provider:'imported',assetId:'world-one'}}};
    return {ready:Boolean(preparedWorld.gltf.scene),meshes:preparedWorld.sceneInfo.meshes};},
  make,image,
- summary:()=>({source:'CesiumMan.glb (Khronos Cesium CC BY 4.0)',bytes:modelBytes.length,
+ summary:()=>({source:'AraAthleticMan.glb (noncommercial, internal rig QA only; CMU motion clips not used)',bytes:modelBytes.length,
   kind:audit.report.format,rigged:audit.report.ok,triangles:audit.report.triangles}),
  dispose:()=>{session?.dispose();renderer.dispose()}
 };
