@@ -21,7 +21,7 @@
  registry.registerWorld('procedural',()=>({
    setTime:t=>({t}),getStageAnchors:()=>({center:[0,1.4,0],screen:[0,1.5,-3]}),dispose:()=>{}
  }));
- registerEmberCharacters(registry,{scene,positions:{hero:[0,0,0]},cameraPosition:[0,2.8,7]});
+ registerEmberCharacters(registry,{scene,positions:{hero:[-1,0,0],partner:[1,0,0]},cameraPosition:[0,2.8,7]});
  registry.lock();
  const base=await(await fetch('../projects/zero-latency.frameforge.json')).json();
  let session=null,project=null;
@@ -33,6 +33,8 @@
    project.characters=[{id:'hero',name:'Hero',visualIdentity:template+' styled actor',
        voice:{profile:'actor',voiceLock:'Stable synthesized character voice'},
        expressions:[...EMOTIONS],sheetStatus:'draft'}];
+   if(second)project.characters.push({id:'partner',name:'Partner',visualIdentity:'Ember companion rig',
+       voice:{profile:'companion',voiceLock:'Stable companion voice'},expressions:[...EMOTIONS],sheetStatus:'draft'});
    project.shots=EMOTIONS.map((emotion,i)=>({
      id:'shot-'+String(i+1).padStart(2,'0'),dialogue:'Hello. This is the '+emotion+' performance.',
      speaker:'hero',camera:{kind:'actor',target:'hero'},duration:2.2,intent:'expression demo',
@@ -42,6 +44,7 @@
    project.audio={state:'storyboard_only',masterUrl:null};
    project.hybrid={version:1,cast:{hero:{provider:'procedural',template,
        look:{...look},style}},world:{provider:'procedural',template:'simple-stage'},assets:[]};
+   if(second)project.hybrid.cast.partner={provider:'procedural',template:'robot',style};
    const result=FrameForgeHybridProjectCore.validateProject(project);
    if(!result.valid)throw Error(JSON.stringify(result.errors));
    session=FrameForgeHybridProviders.createSession(project,{registry});
@@ -58,6 +61,7 @@
    camera.lookAt(0,1.35,0);
    renderer.render(scene,camera);
    return {image:renderer.domElement.toDataURL('image/png'),time:f.time,
+     actorCount:session.instances().size,actorIds:[...session.instances().keys()],
      emotion:f.shot.cast.hero.emotion,pose:session.instances().get('hero').getPose(),
      head:f.anchors.hero.head,root:f.anchors.hero.root,config:session.instances().get('hero').getConfig()};
  };
