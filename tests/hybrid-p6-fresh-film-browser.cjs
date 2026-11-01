@@ -36,8 +36,6 @@ const hash=image=>crypto.createHash('sha256').update(Buffer.from(image.split(','
   const start=await page.evaluate(()=>HybridP56QA.frameAt(0));
   assert.equal(start.mouthOpen,0);
   const first=await page.evaluate(t=>HybridP56QA.frameAt(t),.65);
-  const middle=await page.evaluate(t=>HybridP56QA.frameAt(t),t,
-     Math.min(info.duration-0.2,info.markers[1].start+.5));
   const rewind=await page.evaluate(t=>HybridP56QA.frameAt(t),.65);
   assert.equal(hash(first.image),hash(rewind.image),
     'Freshly synthesized voice and original actor direction must be deterministic');
