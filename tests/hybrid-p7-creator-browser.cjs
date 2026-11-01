@@ -106,6 +106,12 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
      await page.waitForFunction(()=>document.getElementById('play').disabled===false,
        null,{timeout:120000});
      assert.equal(await page.locator('#recovery-backup').isVisible(),true);
+     // A damaged record must never be discarded by a simple title edit.
+     await page.locator('#title').fill('Attempted unsafe replacement');
+     await page.locator('#title').press('Tab');
+     assert.notEqual(await page.locator('#title').inputValue(),'Attempted unsafe replacement',
+       'The editor must refuse edits before the original damaged record is exported');
+     assert.match(await page.locator('#status').textContent(),/Export the damaged recovery copy/);
      const recoveryDownload=page.waitForEvent('download');
      await page.locator('#recovery-backup').click();
      const damaged=await recoveryDownload;
