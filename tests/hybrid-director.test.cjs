@@ -26,6 +26,8 @@ base.shots=[
 ];
 base.hybrid.cast={luna:{provider:'procedural',template:'human'},atlas:{provider:'procedural',template:'robot'}};
 base.hybrid.world={provider:'procedural',template:'forest'};
+base.hybrid.director={oneTake:true};
+base.shots[1].reactions=[{actor:'luna',emotion:'surprised',action:'nod',at:.8}];
 assert.equal(core.validateProject(base).valid,true,JSON.stringify(core.validateProject(base).errors));
 direction.verify(base);
 const printed=direction.projectToScript(base);
@@ -40,6 +42,8 @@ assert.deepEqual(roundtrip.shots.map(s=>s.camera),base.shots.map(s=>s.camera));
 assert.deepEqual(roundtrip.shots.map(s=>s.cast),base.shots.map(s=>s.cast));
 assert.deepEqual(roundtrip.shots.map(s=>s.screen),base.shots.map(s=>s.screen));
 assert.deepEqual(roundtrip.shots.map(s=>s.direction),base.shots.map(s=>s.direction));
+assert.deepEqual(roundtrip.shots.map(s=>s.reactions),base.shots.map(s=>s.reactions));
+assert.equal(roundtrip.hybrid.director.oneTake,true);
 assert.equal(direction.projectToScript(roundtrip),printed,'script serializes deterministically');
 const reordered=direction.reorderShots(base,['shot-two','shot-one']);
 assert.equal(reordered.shots[0].speaker,'atlas');assert.equal(base.shots[0].speaker,'luna');
@@ -56,6 +60,8 @@ const c3=direction.cameraAt(base,2.4+.25,anchors,stage);
 assert.deepEqual(c2,c3,'cross-cut camera seek must be deterministic');
 assert.equal(c1.shotId,'shot-one');assert.equal(c2.shotId,'shot-two');
 assert.equal(c1.move,'push');assert.equal(c2.transition,'blend');
+assert.deepEqual(direction.performanceAt(base,2.4+.85).active,['luna']);
+assert.ok(direction.performanceAt(base,2.4+.3).active.length===0);
 assert.ok(c1.screenBounds.y+c1.screenBounds.height<c1.captionBounds.y,
  'authored monitor and captions must not collide');
 assert.equal(c2.screenBounds,null);
