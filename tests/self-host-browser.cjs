@@ -26,7 +26,8 @@ const failure=page=>page.waitForFunction(()=>getComputedStyle(document.getElemen
  .then(()=>page.textContent('#failure'));
 
 (async()=>{
- const browser=await chromium.launch({headless:true,args:ARGS});
+ // Google Chrome by default: Playwright's Chromium has no H.264 encoder, so it can't export an MP4.
+ const browser=await chromium.launch({headless:true,channel:process.env.FRAMEFORGE_CHANNEL||'chrome',args:ARGS});
  try{
   // 1. CDN unreachable: everything from our own site, and an MP4 still exports.
   {

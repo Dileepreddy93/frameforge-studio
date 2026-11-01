@@ -1320,7 +1320,9 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   await envPromise;
   if(!envReady)throw new Error('Voice timing analysis unavailable');
   const media=await loadLib('the MP4 writer','./vendor/mediabunny@1.62.1/mediabunny.mjs','https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/+esm');
-  const {Output,BufferTarget,Mp4OutputFormat,CanvasSource,AudioBufferSource,Quality,canEncodeAudio}=media;
+  const {Output,BufferTarget,Mp4OutputFormat,CanvasSource,AudioBufferSource,Quality,canEncodeAudio,canEncodeVideo}=media;
+  // H.264 first: some Chromium builds (e.g. on Linux, and Playwright's) have no H.264 encoder at all.
+  if(!await canEncodeVideo('avc',{width,height}))throw new Error('This browser can\'t encode H.264 video, so it can\'t make an MP4. Google Chrome and Microsoft Edge can (some Chromium builds, for example on Linux, can\'t).');
   // AAC where the browser encodes it (Chrome, Edge, Safari), else Opus in the MP4. No LGPL encoder is loaded:
   // the decision is recorded in docs/releases/M4_4_LICENCE_AUDIT.md.
   const audioCodec=await canEncodeAudio('aac')?'aac':await canEncodeAudio('opus')?'opus':null;
