@@ -53,10 +53,12 @@
  };
  const frame=({time=1,emotionIndex=null,view=0}={})=>{
    if(emotionIndex!==null)time=emotionIndex*2.2+.6;
-   const f=session.seek(time);
    const rig=session.instances().get('hero').getRig();
    const dir=[0,Math.PI/2,Math.PI,Math.PI*3/2][view];
+   // Set the camera-facing orientation BEFORE IK/performance evaluation.
+   // Otherwise the previous view angle changes the arm solver's world-space targets.
    rig.root.rotation.y=dir;
+   const f=session.seek(time);
    camera.position.set(0,2.05,6);
    camera.lookAt(0,1.35,0);
    renderer.render(scene,camera);
