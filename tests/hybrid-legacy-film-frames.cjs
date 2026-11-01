@@ -26,13 +26,14 @@ const hash=dataUrl=>crypto.createHash('sha256')
  .update(Buffer.from(dataUrl.split(',')[1],'base64')).digest('hex');
 function serve(root){
  return new Promise(resolve=>{
+  let activeRoot=root;
   const server=http.createServer((req,res)=>{
    let rel;
    try {rel=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}
    catch {res.writeHead(400);return res.end('Invalid URL');}
    const relative=rel==='/'?'index.html':rel.replace(/^\//,'');
-   const file=path.resolve(root,relative);
-   if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){
+   const file=path.resolve(activeRoot,relative);
+   if(!file.startsWith(activeRoot+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){
     res.writeHead(404);return res.end('Not found');
    }
    const size=fs.statSync(file).size;
@@ -52,11 +53,13 @@ function serve(root){
    res.writeHead(200,{...headers,'content-length':size});
    fs.createReadStream(file).pipe(res);
   });
+  server.setRoot=(next)=>{activeRoot=next};
   server.listen(0,'127.0.0.1',()=>resolve(server));
  });
 }
 async function snapshot(browser,server,episode){
- const page=await browser.newPage({viewport:{width:1140,height:860}});
+ const context=await browser.newContext({viewport:{width:1140,height:860},serviceWorkers:'block'});
+ const page=await context.newPage();
  const errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  try {
@@ -79,25 +82,37 @@ async function snapshot(browser,server,episode){
   const result=await page.evaluate(times=>times.map(t=>FrameForgeQA.renderFilmFrame(t,360,640)),episode.times);
   assert.deepEqual(errors,[],'page runtime errors');
   return result.map(hash);
- } finally {await page.close();}
+ } finally {await context.close();}
 }
 (async()=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'frameforge-v6-parity-'));
  const baseline=path.join(tmp,'frozen');
  const git=(args)=>cp.execFileSync('git',args,{cwd:ROOT,encoding:'utf8',timeout:60000});
- let checkedOut=false,browser,oldServer,newServer;
+ let checkedOut=false,browser,server,controlServer;
  try {
   git(['worktree','add','--detach',baseline,BASE]);checkedOut=true;
-  [oldServer,newServer]=await Promise.all([serve(baseline),serve(ROOT)]);
+  [server,controlServer]=await Promise.all([serve(baseline),serve(baseline)]);
   browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-webgl',
    '--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader',
    '--disable-dev-shm-usage']});
+  // A diagnostic negative control: the exact SAME baseline on different
+  // localhost ports. A cross-origin difference is not a source-code regression.
+  const one={...EPISODES[0],times:[EPISODES[0].times[0]]};
+  const portA=(await snapshot(browser,server,one))[0];
+  const portB=(await snapshot(browser,controlServer,one))[0];
+  console.log('HYBRID_PARITY_ORIGIN_CONTROL '+JSON.stringify({
+   sameBytesDifferentPorts:portA===portB,portA,portB
+  }));
+  await new Promise(resolve=>controlServer.close(resolve));controlServer=null;
   let checks=0;
   for(const episode of EPISODES){
-   // Use sequential snapshots to avoid two GPU contexts contending in a shared
-   // headless CI renderer; this test compares actual film output, not load races.
-   const oldFrames=await snapshot(browser,oldServer,episode);
-   const newFrames=await snapshot(browser,newServer,episode);
+   // Both builds are loaded at the SAME origin, in fresh, cache-free browser
+   // contexts. This removes origin-dependent rendering differences without
+   // relaxing ANY pixel assertions or replacing the frozen M6.5 baseline.
+   server.setRoot(baseline);
+   const oldFrames=await snapshot(browser,server,episode);
+   server.setRoot(ROOT);
+   const newFrames=await snapshot(browser,server,episode);
    for(let i=0;i<episode.times.length;i++){
     assert.equal(newFrames[i],oldFrames[i],
      episode.id+' at '+episode.times[i]+'s differs from frozen M6.5; review the pixel change before proceeding');
@@ -107,7 +122,7 @@ async function snapshot(browser,server,episode){
   console.log('HYBRID_LEGACY_VISUAL_PARITY_PASS '+checks+' frames, 2 films, frozen commit '+BASE);
  } finally {
   if(browser)await browser.close();
-  for(const srv of [oldServer,newServer])if(srv)await new Promise(resolve=>srv.close(resolve));
+  for(const srv of [server,controlServer])if(srv)await new Promise(resolve=>srv.close(resolve));
   if(checkedOut)git(['worktree','remove','--force',baseline]);
   fs.rmSync(tmp,{recursive:true,force:true});
  }
