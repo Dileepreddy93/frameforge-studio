@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {validateVoiceRequest,createKokoroBridge,retimeForVoice,renderHybridAudio,
+import {validateVoiceRequest,createKokoroBridge,synthesizeHybridProject,retimeForVoice,renderHybridAudio,
  resamplePCM,validateVoiceRights,sampledEnvelope,envelopeAt,HYBRID_AUDIO_RATE} from '../src/hybrid-voice.mjs';
 const require=createRequire(import.meta.url);
 const core=require('../src/hybrid-project-core.js');
@@ -10,6 +10,8 @@ base.shots=base.shots.slice(0,2);
 base.audio={state:'storyboard_only',masterUrl:null};
 assert.equal(HYBRID_AUDIO_RATE,48000);
 assert.equal(validateVoiceRequest({text:'Hello!',voice:'af_bella'}).language,'en');
+assert.equal(validateVoiceRequest({text:'Why?',voice:'am_puck',emotion:'curious'}).emotion,'thinking');
+assert.equal(validateVoiceRequest({text:'Aha!',voice:'am_puck',emotion:'idea'}).emotion,'happy');
 assert.throws(()=>validateVoiceRequest({text:'నమస్కారం',language:'te',voice:'af_bella'}),/does not support/);
 assert.throws(()=>validateVoiceRequest({text:'नमस्ते',language:'hi',voice:'af_bella'}),/does not support/);
 assert.throws(()=>validateVoiceRequest({text:'Hello',voice:'untrusted_model'}),/voice/);
@@ -30,6 +32,12 @@ const response=await b.speak({text:'Hello!',voice:'af_bella',speaker:'dev',langu
 assert.equal(response.samples.length,40320,'worker line trimmed by 60 ms lead and 100 ms tail');assert.equal(response.source,'kokoro-local');
 assert.equal(mock[0].type,'speak');assert.equal(mock[0].quality,'light');
 assert.equal(mock[0].voice,'af_bella');
+const freshlyVoiced=await synthesizeHybridProject(base,{bridge:b,music:false});
+assert.equal(freshlyVoiced.lines.size,2);
+assert.equal(freshlyVoiced.mix.markers.length,2);
+assert.ok(freshlyVoiced.mix.voice.some(x=>x>0));
+assert.ok(freshlyVoiced.project.shots[0].duration<base.shots[0].duration);
+assert.equal(mock[mock.length-1].voice,'af_heart','preserve distinct actor voice identity');
 b.dispose();assert.equal(worker.terminated,true);
 await assert.rejects(b.status(),/closed/);
 const tone=(rate,seconds)=>Float32Array.from({length:Math.round(rate*seconds)},(_,i)=>.20*Math.sin(i/rate*440*Math.PI*2));
