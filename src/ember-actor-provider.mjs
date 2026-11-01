@@ -91,7 +91,7 @@ export function registerEmberCharacters(registry,{scene,positions={},cameraPosit
     rig.root.position.set(...origin);
     rig.baseY=origin[1];scene.add(rig.root);
     const point=new T.Vector3();
-    let disposed=false,pose=null;
+    let disposed=false,pose=null,lastFrame=null;
     return {
       setPose(time,shot,performance){
         if(disposed)throw Error('Actor already disposed');
@@ -115,6 +115,18 @@ export function registerEmberCharacters(registry,{scene,positions={},cameraPosit
         drawFace(rig,{open:speech?intensity:0,wide:1,round:0,teeth:speech?.3:0,tongue:0},
           ctx.face,1,0,time);
         pose={time,emotion,action,speaking:speech};
+        lastFrame={time,face:ctx.face};
+      },
+      // P6 optional acoustic control. Applied after setPose() at the same
+      // absolute time; replaces the P2 demo's approximate mouth motion.
+      setSpeech(cue){
+        if(disposed||!lastFrame)throw Error('Set a valid actor pose before audio');
+        if(!cue||typeof cue.mouthOpen!=='number'||!Number.isFinite(cue.mouthOpen)||
+           cue.mouthOpen<0||cue.mouthOpen>1)throw RangeError('Invalid mouth control');
+        const round=cue.viseme==='round'?1:0,wide=cue.viseme==='wide'?1.3:1;
+        drawFace(rig,{open:cue.mouthOpen,wide,round,
+          teeth:cue.viseme==='teeth'?.5:0,tongue:0},lastFrame.face,1,0,lastFrame.time);
+        pose.audioDriven=true;pose.mouthOpen=cue.mouthOpen;
       },
       getAnchors(){
         if(disposed)throw Error('Actor already disposed');
