@@ -249,7 +249,9 @@ window.addEventListener('keydown',e=>{
    e.preventDefault();if(e.shiftKey?editor?.redo():editor?.undo()){renderUI();queueSave()}
  }
 });
-$('engine').addEventListener('load',async()=>{
+let booting=false;
+async function bootEditor(){
+ if(booting||editor)return;booting=true;
  try{
    const w=$('engine').contentWindow;let tries=0;
    while(!w.HybridP56Ready&&!w.HybridP56Error&&tries++<180)
@@ -281,8 +283,13 @@ $('engine').addEventListener('load',async()=>{
  }catch(e){
    text('status','Cannot open the hybrid creator: '+e.message+
     '. Your original V6 editor remains available.');
+   booting=false;
  }
-});
+}
+$('engine').addEventListener('load',bootEditor);
+// The iframe may finish before the editor module is evaluated, especially when
+// the media muxer module is already cached. Do not miss that event.
+if($('engine').contentWindow?.HybridP56Ready)bootEditor();
 window.addEventListener('pagehide',()=>{
  stop();store?.close();try{engine?.dispose()}catch{}try{audioContext?.close()}catch{}
 });
