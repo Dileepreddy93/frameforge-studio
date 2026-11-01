@@ -119,6 +119,21 @@
       if(!['not_created','draft','approved'].includes(s.firstFrameStatus))
         fail(at+'.firstFrameStatus','Required status');
       if(s.styleLock!==undefined&&s.styleLock!==p.style?.styleLock)fail(at+'.styleLock','Style lock drift');
+      if(s.direction!==undefined && (!OBJ(s.direction)||
+        !['static','push','pull','drift','orbit'].includes(s.direction.move)||
+        !['cut','blend'].includes(s.direction.transition)||
+        !FINITE(s.direction.blendSeconds??0,0,1.5)||
+        (s.direction.transition==='blend'&&s.direction.blendSeconds>s.duration/2)))
+        fail(at+'.direction','Invalid director camera movement/transition');
+      if(s.screen!==undefined && (!OBJ(s.screen)||
+        !['terminal','chat','code','inbox','browser','grid'].includes(s.screen.kind)||
+        !['info','calm','alert','success'].includes(s.screen.tone)||
+        !TEXT(s.screen.title,160)||!Array.isArray(s.screen.lines)||
+        s.screen.lines.length>16||s.screen.lines.some(x=>!TEXT(x,120))))
+        fail(at+'.screen','Screen app must contain safe authored text and supported kind');
+      if(s.caption!==undefined&&!TEXT(s.caption,140))
+        fail(at+'.caption','Caption exceeds safety limit');
+
       if(typeof s.camera==='string'){
         if(!LEGACY_CAMERAS.has(s.camera))fail(at+'.camera','Unknown legacy camera');
         if(['dev','blue','orange'].includes(s.camera)&&!charIds.has(s.camera))
