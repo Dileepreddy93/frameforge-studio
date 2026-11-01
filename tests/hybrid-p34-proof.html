@@ -1,5 +1,10 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>FrameForge P3 P4 validated model and worlds proof</title><style>body{background:#0c1527;color:white;font:14px system-ui}canvas{display:block;max-width:100%;margin:auto}</style></head><body>
 <div>P3/P4: real rigged GLB and Ember natural environments (engineering test only)</div>
+<script>
+window.HybridP34Error=null;
+window.addEventListener('error',event=>{window.HybridP34Error=event.message+' '+(event.filename||'')});
+window.addEventListener('unhandledrejection',event=>{window.HybridP34Error=String(event.reason?.stack||event.reason)});
+</script>
 <script src="../src/project-core.js"></script><script src="../src/hybrid-project-core.js"></script>
 <script src="../src/hybrid-providers.js"></script>
 <script type="module">
