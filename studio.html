@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FrameForge Studio — Director Preview</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;gap:12px;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.failure p{color:#d8dcf0;font-size:13px;line-height:1.5;margin:0}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}textarea.script{height:300px;font:12px/1.55 "Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace;white-space:pre;overflow-wrap:normal;overflow:auto}#scriptHelp summary{cursor:pointer;color:#b4c1dc;margin-top:8px}#scriptHelp code{color:#c5d5ff}#scriptStatus{margin-top:8px}#scriptStatus[data-state=error]{color:#ffb4b4}#scriptStatus[data-state=ok]{color:#9fe0b5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:flex;flex-direction:column}main{order:1}aside.right{order:2}.wrap>aside:not(.right){order:3}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;height:min(64vh,calc(100svh - 215px));min-height:300px}.shots{grid-template-columns:1fr 1fr}}
+:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;gap:12px;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.failure p{color:#d8dcf0;font-size:13px;line-height:1.5;margin:0}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}.editbar{display:flex;gap:8px;align-items:center;max-width:550px;margin:0 auto 10px}.editbar button{padding:6px 12px;font-size:12px}.editbar button:disabled{opacity:.45;cursor:default}.recovery{max-width:550px;margin:0 auto 12px;padding:10px 12px;border:1px solid #3f6f55;background:#173126;border-radius:10px;font-size:12px;color:#cfeedd;display:flex;gap:10px;align-items:center;justify-content:space-between}.recovery[hidden]{display:none}.recovery button{padding:6px 10px;font-size:12px;white-space:nowrap}textarea.script{height:300px;font:12px/1.55 "Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace;white-space:pre;overflow-wrap:normal;overflow:auto}#scriptHelp summary{cursor:pointer;color:#b4c1dc;margin-top:8px}#scriptHelp code{color:#c5d5ff}#scriptStatus{margin-top:8px}#scriptStatus[data-state=error]{color:#ffb4b4}#scriptStatus[data-state=ok]{color:#9fe0b5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:flex;flex-direction:column}main{order:1}aside.right{order:2}.wrap>aside:not(.right){order:3}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;height:min(64vh,calc(100svh - 215px));min-height:300px}.shots{grid-template-columns:1fr 1fr}}
 #stage>.frame-meta,#sceneTitle,#subtitle{display:none!important}
 .shottools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 2px}.shottools button{padding:7px 4px}
 .castgrid{display:grid;grid-template-columns:62px 1fr 1fr;gap:6px;align-items:center;margin-top:6px}.castgrid b{font-size:12px}
@@ -16,7 +16,7 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <label for="projectImport">Import a FrameForge JSON episode</label>
 <input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
 <div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">An episode is one file: its script, performances, cameras, music and sound cues. Fine-tune shots on the right; changed lines are voiced in your browser (Voices, below). Export the MP4 below, and download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><label>Pronunciations</label><p class="fine">For names the voices get wrong: write how the word sounds, the stressed syllable in capitals (koh-KOR-oh).</p><div class="prongrid" id="pronGrid"></div><button id="pronAdd" class="full">+ Add a pronunciation</button><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records the monitor in real time as it plays, with sound; WebM, not MP4. For the finished film, use Export MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Preview selected dialogue speaks the selected line in its character's voice, with the emotion set for the speaker in that shot. Voices are English, with American and British accents.</p></aside>
-<main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div>
+<main><div class="recovery" id="recovery" role="status" hidden></div><div class="editbar"><button id="undo" disabled title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" disabled title="Redo (Ctrl+Shift+Z)">↷ Redo</button><span id="saveState" class="fine" aria-live="polite">Your changes are saved in this browser as you work.</span></div><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div>
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">Each line is voiced separately and sets its shot length; music ducks under speech and the mouth follows each line. Play, scrub or click a shot: the monitor shows the exact frame that exports.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><div class="shottools"><button id="shotUp" title="Move this shot earlier">↑ Earlier</button><button id="shotDown" title="Move this shot later">↓ Later</button><button id="shotDup">Duplicate</button><button id="shotDel">Delete</button></div>
 <label for="shotTitle">Shot name <span class="fine">(in the shot list and on the monitor; not in the exported film)</span></label><input id="shotTitle" maxlength="60">
@@ -639,7 +639,7 @@ function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;fo
  b.root.position.y=.43;o.root.position.y=.43;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=KEY_INTENSITY*Number($('lighting').value)/1.3;setCharKey(Number($('lighting').value)/1.3);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
-$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=buildFromScript;$('preset').onchange=load;$('script').oninput=()=>{scriptDirty=true;};$('apply').onclick=()=>{
+$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=buildFromScript;$('preset').onchange=()=>history_.openFromMenu();$('script').oninput=()=>{scriptDirty=true;};$('apply').onclick=()=>{
  const s=shots[selected],text=$('dialogue').value.trim()||s.text,speaker=$('speaker').value,camera=$('camera').value;
  if(text!==s.text||speaker!==s.speaker){s.voice=null;markAudioStale();}
  if(camera!==s.camera){
@@ -839,6 +839,7 @@ async function voiceAllLines(){
   lastGuessed=guessed;
   $('recordStatus').textContent=lines.length+' scenes voiced in your browser';
   refresh();time=shotStart(selected);update();
+  history_.rebase();
   return true;
  }catch(e){if(run===voiceRun)status.textContent='Voicing failed: '+e.message;throw e;}
 }
@@ -957,12 +958,136 @@ function buildFromScript(){
   $('scriptStatus').textContent=errors.slice(0,4).map(e=>(e.line?'Line '+e.line+': ':'')+e.message).join(' · ')+(errors.length>4?` · and ${errors.length-4} more`:'');
   $('scriptStatus').dataset.state='error';return;
  }
- openProject(project,' — your script');
+ openProject(project,' — your script');history_.opened();
  const secs=project.shots.reduce((a,s)=>a+s.duration,0);
  $('scriptStatus').dataset.state='ok';
  $('scriptStatus').textContent=`Made ${project.shots.length} shots (about ${Math.round(secs)} s before voicing). `+
   (voiceEngine.state==='ready'?'Voicing every line now…':'Press “Voice every line” to hear it (the first time downloads the voices, 326 MB, once).');
 }
+// --- Autosave, undo and recovery (M6.2) -------------------------------------------------------------------------
+// Every change is saved in this browser (IndexedDB, written with strict durability so it is on disk before the write
+// completes; one slot per episode, the last one reopened on start), so a refresh, a crash or closing the tab loses at
+// most the last half second. (localStorage was not enough: Chrome writes it to disk seconds later, and a killed
+// browser lost the last edits.) Undo and redo step through the same
+// snapshots (the whole episode: shots, looks, voices, pronunciations). Voicing re-times shots by itself; that is not
+// an undo step. A typed but unmade script is kept too.
+const history_=(()=>{
+ const PREFIX='episode:',INDEX='index',MAX_STEPS=100,MAX_SLOTS=20;
+ let past=[],future=[],last=null,timer=0,applying=false,db=null;
+ const idb=()=>db??=new Promise((ok,no)=>{const r=indexedDB.open('frameforge-autosave',1);r.onupgradeneeded=()=>r.result.createObjectStore('slots');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);});
+ const tx=async(mode,fn)=>{const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('slots',mode,{durability:'strict'}),st=t.objectStore('slots');const out=fn(st);
+  t.oncomplete=()=>ok(out?.result);t.onerror=t.onabort=()=>no(t.error);});};
+ const read=k=>tx('readonly',st=>st.get(k)).catch(()=>null);
+ const write=(k,v)=>tx('readwrite',st=>st.put(v,k));
+ const remove=k=>tx('readwrite',st=>st.delete(k)).catch(()=>{});
+ let queue=Promise.resolve();   // writes happen in order
+ const serial=fn=>queue=queue.then(fn,fn);
+ const state=()=>{try{return JSON.stringify(snapshotProject())}catch{return null}};
+ const label=()=>$('preset').selectedOptions[0]?.textContent||'';
+ const clock=t=>new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ function buttons(){$('undo').disabled=!past.length;$('redo').disabled=!future.length;}
+ function store(st){
+  const p=window.FrameForgeCurrentProject;if(!p)return;
+  const rec={v:1,savedAt:Date.now(),id:p.id,label:label(),project:st??last,script:scriptDirty?$('script').value:null,selected,time};
+  return serial(async()=>{
+   try{
+    await write(PREFIX+p.id,rec);
+    const index=(await read(INDEX))||{ids:[]};index.last=p.id;index.ids=[p.id,...index.ids.filter(x=>x!==p.id)];
+    for(const old of index.ids.splice(MAX_SLOTS))await remove(PREFIX+old);
+    await write(INDEX,index);
+    $('saveState').textContent='Saved in this browser at '+clock(rec.savedAt)+'.';
+   }catch(e){$('saveState').textContent='Could not save in this browser ('+(e?.name||e)+'). Download the episode to keep it.';}
+  });
+ }
+ // After any change: one undo step if the episode differs, and a save either way (a typed script counts).
+ function checkpoint(){
+  clearTimeout(timer);timer=0;
+  if(applying||!window.FrameForgeCurrentProject)return;
+  const st=state();if(!st)return;
+  if(st!==last){if(last!==null){past.push(last);if(past.length>MAX_STEPS)past.shift();future=[];}last=st;store(st);buttons();}
+  else if(scriptDirty)store(st);
+ }
+ const soon=()=>{if(!applying){clearTimeout(timer);timer=setTimeout(checkpoint,500);}};
+ function apply(st){
+  applying=true;
+  const keep={selected,time,text:label()};
+  try{
+   openProject(JSON.parse(st),'');
+   const o=$('preset').selectedOptions[0];if(o)o.textContent=keep.text;
+   selected=Math.min(keep.selected,shots.length-1);time=Math.min(keep.time,Math.max(0,duration-.05));refresh();update();
+  }finally{applying=false;}
+  last=st;store(st);buttons();
+ }
+ function undo(){checkpoint();if(!past.length)return;future.push(last);apply(past.pop());}
+ function redo(){if(!future.length)return;past.push(last);apply(future.pop());}
+ // A freshly opened episode is the new baseline; earlier steps belong to the episode that was open.
+ function setLast(id){serial(async()=>{try{const index=(await read(INDEX))||{ids:[]};index.last=id;await write(INDEX,index);}catch{}});}
+ // A freshly opened episode is the new baseline; earlier steps belong to the episode that was open. A refresh comes
+ // back to it; episodes made from a script or imported are saved at once (they exist nowhere else).
+ function opened(){
+  past=[];future=[];last=state();buttons();
+  const p=window.FrameForgeCurrentProject;if(!p)return;
+  if($('preset').value==='custom')store(last);else setLast(p.id);
+ }
+ function banner(text,action,onAction){
+  const box=$('recovery');box.innerHTML='';const msg=document.createElement('span');msg.textContent=text;box.append(msg);
+  if(action){const b=document.createElement('button');b.textContent=action;b.onclick=async()=>{box.hidden=true;await onAction();};box.append(b);}
+  box.hidden=false;
+ }
+ function reopen(rec){
+  const project=JSON.parse(rec.project);
+  if(!window.FrameForgeProjectCore.validateProject(project).valid)return false;
+  openProject(project,'');
+  const o=$('preset').selectedOptions[0];if(o)o.textContent=rec.label||project.title+' — saved changes';
+  if(typeof rec.script==='string'){$('script').value=rec.script;scriptDirty=true;}
+  selected=Math.min(rec.selected||0,shots.length-1);time=Math.min(rec.time||0,Math.max(0,duration-.05));refresh();update();
+  return true;
+ }
+ const firstListed=()=>[...$('preset').options].map(o=>o.value).find(v=>v!=='custom')||'comedy';
+ // On start: the episode you were working on, as you left it.
+ async function recover(){
+  let index=null,rec=null;
+  try{index=await read(INDEX);rec=index?.last?await read(PREFIX+index.last):null;}catch{return false;}
+  if(!rec?.project){
+   // The last episode open was an unedited one from the menu: open it again.
+   const key=index?.last&&Object.keys(projectCatalog).find(k=>k!=='custom'&&projectCatalog[k].id===index.last);
+   if(key&&[...$('preset').options].some(o=>o.value===key)){$('preset').value=key;load();return true;}
+   return false;
+  }
+  try{if(!reopen(rec))return false;}catch(e){console.warn('Saved episode could not be reopened',e);return false;}
+  const template=Object.entries(projectCatalog).find(([k,p])=>k!=='custom'&&p.id===rec.id)?.[0];
+  banner(`Welcome back: “${JSON.parse(rec.project).title}” is as you left it (saved ${clock(rec.savedAt)}).`,
+   template?'Use the original instead':'Start from an episode',async()=>{
+    await serial(()=>remove(PREFIX+rec.id));$('preset').value=template&&[...$('preset').options].some(o=>o.value===template)?template:firstListed();load();opened();});
+  return true;
+ }
+ // Choosing an episode in the menu: your saved changes to it if there are any, the original one click away.
+ async function openFromMenu(){
+  checkpoint();
+  const key=$('preset').value,original=projectCatalog[key],rec=original&&key!=='custom'?await read(PREFIX+original.id):null;
+  $('recovery').hidden=true;
+  if(rec?.project&&rec.project!==JSON.stringify(original)&&reopen(rec)){
+   banner(`Opened your saved changes to “${original.title}” (saved ${clock(rec.savedAt)}).`,'Use the original instead',async()=>{
+    await serial(()=>remove(PREFIX+original.id));$('preset').value=key;load();opened();});
+  }else load();
+  opened();
+ }
+ function rebase(){if(applying)return;last=state();store(last);}
+ // Any edit in the page leads to a checkpoint shortly after; leaving the page saves at once.
+ for(const type of ['input','change','click'])document.addEventListener(type,e=>{if(!e.target.closest?.('#undo,#redo,#recovery'))soon();},true);
+ document.addEventListener('keydown',e=>{
+  if(!(e.ctrlKey||e.metaKey)||e.altKey)return;
+  const typing=e.target.closest?.('textarea,input[type=text],input:not([type])');
+  const k=e.key.toLowerCase();
+  if(k==='z'&&!typing){e.preventDefault();e.shiftKey?redo():undo();}
+  else if(k==='y'&&!typing){e.preventDefault();redo();}
+ });
+ addEventListener('pagehide',checkpoint);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')checkpoint();});
+ $('undo').onclick=undo;$('redo').onclick=redo;
+ return {checkpoint,undo,redo,opened,recover,openFromMenu,rebase,depth:()=>({undo:past.length,redo:future.length}),saved:()=>queue};
+})();
+window.FrameForgeHistoryQA=history_;
 function openProject(project,label=' — Imported project'){
  window.FrameForgeProjectCore.assertRendererCompatible(project);
  projectCatalog.custom=project;
@@ -978,7 +1103,7 @@ $('projectImport').onchange=async event=>{
  try{
   if(file.size>1048576)throw new Error('Maximum project file size is 1 MiB');
   const project=JSON.parse(await file.text());
-  openProject(project);
+  openProject(project);history_.opened();
   $('projectImportStatus').textContent='Loaded '+project.title+' ('+project.shots.length+' scenes). Save edits with Download episode JSON.';
  }catch(err){$('projectImportStatus').textContent='Import rejected: '+err.message;}
  finally{event.target.value='';}
@@ -1371,5 +1496,5 @@ window.FrameForgeVoiceQA=Object.freeze({
 // Offline: the studio keeps working without a connection once it has loaded (sw.js).
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Offline cache unavailable',e));
 
-projectReady.then(()=>{load();requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
+projectReady.then(async()=>{if(!await history_.recover())load();history_.opened();window.FrameForgeRecovered=true;requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
 </script></body></html>
