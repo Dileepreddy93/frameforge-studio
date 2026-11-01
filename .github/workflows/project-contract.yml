@@ -29,6 +29,10 @@ jobs:
           node tests/project-core.test.cjs
           node tests/hybrid-baseline.test.cjs
           node tests/hybrid-project-core.test.cjs
+          node --check src/ember-character-engine.mjs
+          node --check src/ember-actor-provider.mjs
+          node --check src/three-rounded-box.mjs
+          node --check tests/hybrid-p2-characters-browser.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
@@ -138,6 +142,15 @@ jobs:
         run: node tests/hybrid-baseline.test.cjs --media
       - name: P1 hybrid WebGL provider proof, deterministic seek and playable MP4
         run: node tests/hybrid-p1-video-browser.cjs
+      - name: P2 real Ember cast (six templates, 4 views, 8 emotions, customization and MP4)
+        run: node tests/hybrid-p2-characters-browser.cjs
+      - name: Preserve P2 cast proof images, report and video
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p2-ember-cast-proof
+          path: artifacts/p2-ember-cast/
+          if-no-files-found: warn
       - name: Preserve P1 adapter-only 3D video and probe report
         if: always()
         uses: actions/upload-artifact@v4
