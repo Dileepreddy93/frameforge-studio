@@ -40,7 +40,7 @@ registerEmberWorlds(registry,{scene,renderer,preparedWorld});
 registry.lock();
 const initial=project.hybrid.world;
 let session=null;
-const make=(template='forest',time='golden',imported=false)=>{
+const make=async(template='forest',time='golden',imported=false)=>{
  if(session)session.dispose();
  project.hybrid.world=imported?{provider:'imported',assetId:'world-one'}:
  {provider:'procedural',template,time,foliage:.07,particles:template==='snow'?['snow']:['dust']};
@@ -48,6 +48,8 @@ const make=(template='forest',time='golden',imported=false)=>{
   project.hybrid.assets.push({id:'world-one',kind:'world',uri:'asset://world-one'});
  const v=C.validateProject(project);
  if(!v.valid)throw Error('World project invalid '+JSON.stringify(v.errors));
+ const fresh=await prepareRiggedCast(project,store);
+ prepared.set('hero',fresh.get('hero'));
  session=R.createSession(project,{registry,assets:store});
  return {world:project.hybrid.world,actor:session.instances().get('hero').getReport()};
 };
@@ -60,7 +62,7 @@ const image=(t=0.5,view=0)=>{
  return {image:renderer.domElement.toDataURL('image/png'),frame,meshes:session.world().getGroup().children.length,
    actor:session.instances().get('hero').getReport()};
 };
-make();
+await make();
 window.HybridP34QA={
  audit,options:validateWorldOptions,
  prepareWorld:async()=>{const temp={...project,hybrid:{...project.hybrid,world:{provider:'imported',assetId:'world-one'}}};
