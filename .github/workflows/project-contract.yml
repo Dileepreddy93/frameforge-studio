@@ -41,6 +41,10 @@ jobs:
           node --check tests/hybrid-p34-browser.cjs
           node tests/hybrid-p34-policy.test.mjs
           node tests/hybrid-p34-diagnostics.test.mjs
+          node --check src/hybrid-direction.js
+          node --check src/hybrid-voice.mjs
+          node tests/hybrid-director.test.cjs
+          node tests/hybrid-voice.test.mjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
