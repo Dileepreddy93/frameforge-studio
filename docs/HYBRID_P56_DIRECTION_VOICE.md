@@ -15,6 +15,16 @@ This is **not proof of newly generated V2 dialogue**. The film audio intentional
 
 One existing broader CI job still fails the independent-page V6 visual comparator. Nothing in P5/P6 changes V6 film sources; the independent release gate is not waived.
 
+## Fresh-dialogue V2 milestone under verification (2026-11-01)
+
+**New code merged into `feature/hybrid-foundation`, CI verdict PENDING:** [run 41316274642](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41316274642). Source-and-project tests passed.
+
+Unlike the earlier two 4.57-second films that reused a preexisting speech track, `tests/hybrid-p6-fresh-synthesis.cjs` now instructs the **existing, real Kokoro model** to speak two original English sentences for distinct actors. It uses the first-party V6 browser worker via `FrameForgeVoiceQA.speakWav()`, decodes the true PCM and injects an actual speech bridge into `synthesizeHybridProject()`. It archives the complete new `frameforge.project/2`, two actor markers, actual mono voice and mastered stereo WAV. The new `tests/hybrid-p6-fresh-film-browser.cjs` reloads that audio and project via the P5 director and renders a third original animated Ember video using real acoustic mouth motion, fully verified with `ffprobe` and `ffmpeg` decode. This is tested in the already expensive voice-model job to avoid a second 90/326 MB download on separate CI jobs.
+
+`src/hybrid-voice.mjs` now rounds synthesized voice shot lengths **up** to the next 30fps boundary to prevent a real clip being truncated by a negative frame rounding error. The fractional-duration boundary test in `tests/hybrid-voice.test.mjs` passes.
+
+**Never claim fresh-generated English V2 film success until the combined voice job prints both `HYBRID_P6_REAL_KOKORO_V2_PASS` and `HYBRID_P6_FRESH_FILM_PASS` and has a downloadable artifact.** This is a real model-level test rather than arbitrary synthetic audio, but still uses FrameForge's existing first-party model; it is *not* a claim of native Telugu/Hindi support or precise phoneme alignment. If it fails, log and fix the actual cause instead of changing assertions to accept preexisting audio.
+
 ## P5 — One authoritative FrameForge timeline
 
 `src/hybrid-direction.js` is the only hybrid screenplay parser/camera director. It takes a fully validated `frameforge.project/2` and offers `scriptToProject`, `projectToScript`, `reorderShots`, `performanceAt` and `cameraAt`. The original `src/script-core.js` and V6 renderer/legacy projects are **untouched**.
