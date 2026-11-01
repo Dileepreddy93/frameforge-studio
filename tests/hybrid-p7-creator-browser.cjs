@@ -23,9 +23,17 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    const context=await browser.newContext({viewport,acceptDownloads:true});
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto('http://127.0.0.1:8996/creator.html',{waitUntil:'domcontentloaded',timeout:70000});
-   await page.waitForFunction(()=>document.getElementById('play').disabled===false||
-      document.getElementById('status').textContent.startsWith('Cannot open'),
-     null,{timeout:120000});
+   try{
+     await page.waitForFunction(()=>document.getElementById('play').disabled===false||
+       document.getElementById('status').textContent.startsWith('Cannot open')||
+       document.getElementById('status').textContent.startsWith('Scene unavailable'),
+       null,{timeout:35000});
+   }catch(e){
+     const state=await page.evaluate(()=>({status:document.getElementById('status')?.textContent,
+       engineReady:document.getElementById('engine')?.contentWindow?.HybridP56Ready,
+       engineError:document.getElementById('engine')?.contentWindow?.HybridP56Error}));
+     throw Error('Creator boot timed out: '+JSON.stringify(state)+'; JS exceptions: '+errors.join(' | '));
+   }
    assert.equal(await page.locator('#play').isEnabled(),true,
      'Real editor must open editable Ember WebGL scene: '+await page.locator('#status').textContent());
    const accessibility=await new AxeBuilder({page})
