@@ -127,10 +127,18 @@
      if(j<0||j>=p.shots.length)throw Error('Cannot move past the timeline edge');
      [p.shots[i],p.shots[j]]=[p.shots[j],p.shots[i]]}),
    script:source=>{
+     if(source===director.projectToScript(current))return false;
      const parsed=director.scriptToProject(source,current);
      if(!parsed.project)throw Error(parsed.errors.map(x=>x.message).join('; '));
-     return commit(p=>{p.title=parsed.project.title;p.logline=parsed.project.logline;
-       p.shots=clone(parsed.project.shots);p.hybrid.director=clone(parsed.project.hybrid.director||{oneTake:false})})
+     return commit(p=>{
+       const previous=new Map(p.shots.map(s=>[s.id,s]));
+       p.title=parsed.project.title;p.logline=parsed.project.logline;
+       p.shots=parsed.project.shots.map(s=>{
+         const old=previous.get(s.id);
+         return old?{...clone(old),...clone(s),timing:clone(old.timing||s.timing||{lead:.15,pauseAfter:.35})}:clone(s);
+       });
+       p.hybrid.director=clone(parsed.project.hybrid.director||{oneTake:false});
+     })
    },
    scriptText:()=>director.projectToScript(current),
    undo:()=>{if(!undo.length)return false;redo.push(current);current=undo.pop();voiceRevision=null;return true},
