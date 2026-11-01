@@ -13,7 +13,7 @@ const GL=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshade
 const ready=page=>page.waitForFunction(()=>window.FrameForgeRecovered&&window.FrameForgeQA?.shots().length>0,null,{timeout:120000});
 const line=(page,i=0)=>page.evaluate(i=>FrameForgeQA.shots()[i].text,i);
 // The autosave runs 0.5 s after the last change; then wait for its write to be on disk.
-const settle=async page=>{await page.waitForTimeout(700);await page.evaluate(()=>FrameForgeHistoryQA.saved());};
+const settle=async page=>{await page.waitForTimeout(700);await page.evaluate(async()=>{FrameForgeHistoryQA.checkpoint();await FrameForgeHistoryQA.saved();});};
 
 async function edit(page,text){
  await page.evaluate(()=>document.querySelectorAll('.shot')[0].click());
@@ -46,6 +46,11 @@ async function edit(page,text){
   await page.reload();await ready(page);
   assert.equal(await line(page),'Our app takes a whole minute to load.');
   assert.match(await page.textContent('#recovery'),/Welcome back: “Zero Latency” is as you left it/);
+  // 2b. An edit followed at once by a refresh (no pause for the autosave): the copy written while leaving brings it back.
+  await page.evaluate(()=>document.querySelectorAll('.shot')[1].click());
+  await page.fill('#dialogue','Refreshed straight after typing.');await page.click('#apply');
+  await page.reload();await ready(page);
+  assert.equal(await line(page,1),'Refreshed straight after typing.','an edit made just before a refresh is kept');
   // 3. Choosing another episode and back: your saved changes, the original one click away.
   await page.selectOption('#preset','darkmode');await page.waitForFunction(()=>FrameForgeCurrentProject.id==='dark-mode');
   await page.selectOption('#preset','comedy');await page.waitForFunction(()=>FrameForgeCurrentProject.id==='zero-latency');

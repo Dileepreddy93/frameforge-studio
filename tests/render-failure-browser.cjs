@@ -35,5 +35,10 @@ try{
  assert.equal(r3.status,0,r3.stdout+r3.stderr);
  const frames=spawnSync('ffprobe',['-v','error','-count_frames','-select_streams','v','-show_entries','stream=nb_read_frames','-of','csv=p=0',good],{encoding:'utf8'}).stdout.trim();
  assert.equal(frames,'12');
- console.log('RENDER_FAILURE_BROWSER_PASS: failed and missing ffmpeg exit non-zero with no file; a real render writes 12 frames');
+ // The validation report next to it (M6.3).
+ const report=JSON.parse(fs.readFileSync(path.join(dir,'good.report.json'),'utf8'));
+ assert.equal(report.ok,true,JSON.stringify(report.checks));
+ assert.equal(report.result.frames,12);assert.equal(report.result.width,180);assert.equal(report.result.fps,'30/1');
+ assert.ok(Number.isFinite(report.loudness.integratedLufs)&&Number.isFinite(report.loudness.truePeakDbfs),'loudness measured');
+ console.log('RENDER_FAILURE_BROWSER_PASS: failed and missing ffmpeg exit non-zero with no file; a real render writes 12 frames and a passing report');
 }finally{fs.rmSync(dir,{recursive:true,force:true})}

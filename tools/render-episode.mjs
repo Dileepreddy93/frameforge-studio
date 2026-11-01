@@ -117,5 +117,27 @@ const v=probe.streams?.find(s=>s.codec_type==='video');
 if(!v||Number(v.nb_read_frames)!==frames||v.width!==width||v.height!==height||v.r_frame_rate!=='30/1'||!probe.streams.some(s=>s.codec_type==='audio'))
  fail(`output check failed: ${v?.nb_read_frames} frames ${v?.width}x${v?.height} @ ${v?.r_frame_rate}, expected ${frames} frames ${width}x${height} @ 30/1 with audio`);
 fs.renameSync(partial,out);
+// The validation report (M6.3), written next to the film: what was asked for, what the file holds, and its loudness.
+const a=probe.streams.find(s=>s.codec_type==='audio');
+const audioSeconds=Number(execFileSync('ffprobe',['-v','error','-select_streams','a:0','-show_entries','stream=duration','-of','csv=p=0',out],{encoding:'utf8'}).trim());
+const loud=spawnSync('ffmpeg',['-hide_banner','-nostats','-i',out,'-map','0:a','-af','ebur128=peak=true','-f','null','-'],{encoding:'utf8'}).stderr;
+const num=re=>{const m=loud.match(re);return m?Number(m[1]):null};
+const seconds=frames/FPS,checks=[
+ ['Video codec',v.codec_name==='h264','h264',v.codec_name],
+ ['Size',v.width===width&&v.height===height,`${width}x${height}`,`${v.width}x${v.height}`],
+ ['Frames',Number(v.nb_read_frames)===frames,frames,Number(v.nb_read_frames)],
+ ['Frame rate',v.r_frame_rate==='30/1','30/1',v.r_frame_rate],
+ ['Audio track',!!a,'aac',a?.codec_name??'none'],
+ ['Audio not cut short',audioSeconds>=seconds-.05&&audioSeconds<=seconds+.15,`${seconds.toFixed(3)} s (−0.05 / +0.15)`,`${audioSeconds.toFixed(3)} s`],
+].map(([name,ok,expected,actual])=>({name,ok,expected,actual}));
+const report={ok:checks.every(c=>c.ok),checked:new Date().toISOString(),file:path.basename(out),episode:project.title,
+ requested:{width,height,frames,fps:FPS,seconds:+seconds.toFixed(3),from:+from.toFixed(3)},
+ result:{bytes:Number(probe.format.size),videoCodec:v.codec_name,width:v.width,height:v.height,frames:Number(v.nb_read_frames),fps:v.r_frame_rate,
+  seconds:+Number(probe.format.duration).toFixed(3),audioCodec:a?.codec_name,channels:a?.channels,sampleRate:Number(a?.sample_rate),audioSeconds},
+ loudness:{integratedLufs:num(/I:\s+(-?[\d.]+) LUFS/),rangeLu:num(/LRA:\s+(-?[\d.]+) LU/),truePeakDbfs:num(/Peak:\s+(-?[\d.]+) dBFS/)},
+ checks,renderSeconds:Math.round((Date.now()-started)/1000),renderer:gpu?'gpu':'software'};
+fs.writeFileSync(out.replace(/\.mp4$/i,'')+'.report.json',JSON.stringify(report,null,2)+'\n');
 console.log(`\n${out}\n${frames} frames, ${width}x${height} @ 30 fps, ${Number(probe.format.duration).toFixed(2)} s, `+
- `${(probe.format.size/1048576).toFixed(1)} MB, rendered in ${Math.round((Date.now()-started)/1000)} s`);
+ `${(probe.format.size/1048576).toFixed(1)} MB, rendered in ${Math.round((Date.now()-started)/1000)} s`+
+ `\n${report.ok?'checks out':'CHECK FAILED'}: ${report.loudness.integratedLufs} LUFS, true peak ${report.loudness.truePeakDbfs} dBFS; report ${path.basename(out).replace(/\.mp4$/i,'')}.report.json`);
+if(!report.ok){console.error('render-episode: the film failed its checks: '+checks.filter(c=>!c.ok).map(c=>c.name).join(', '));process.exit(1);}

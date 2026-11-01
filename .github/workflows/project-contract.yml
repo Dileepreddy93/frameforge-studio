@@ -78,6 +78,7 @@ jobs:
           node tests/script-browser.cjs
           node tests/self-host-browser.cjs
           node tests/autosave-browser.cjs
+          node tests/export-report-browser.cjs
   voice-and-mix-tests:
     # Downloads the Kokoro voice model (about 326 MB) from huggingface.co on every run.
     runs-on: ubuntu-24.04

@@ -9,6 +9,12 @@ The goal: a new user never loses work, whether to a refresh, a crash or closing 
   `durability: 'strict'`, so a save is on disk before it reports done.
   - **localStorage wasn't enough.** It was tried first: the crash test killed Chrome 0.5 s after an edit and the edit
     was gone, because Chrome writes localStorage to disk seconds later. With strict IndexedDB the same test passes.
+  - **IndexedDB alone wasn't enough either.** A page being refreshed or closed can be gone before its last
+    IndexedDB write commits. On a slow machine, an edit followed at once by a refresh was lost: this container renders
+    the 3D monitor in software, which delays the half-second timer. So leaving the page (`pagehide`, tab hidden) also
+    writes the unsaved state to localStorage, synchronously, and on start the newer of the two copies is reopened.
+    Together: IndexedDB survives a crash, localStorage survives a refresh or close. The test now covers an edit
+    followed immediately by a refresh.
 - **One saved copy per episode, up to 20.** The status line says "Saved in this browser at 14:02", or why it couldn't
   save.
 - **A typed script that hasn't been made yet is saved too.**

@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FrameForge Studio — Director Preview</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;gap:12px;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.failure p{color:#d8dcf0;font-size:13px;line-height:1.5;margin:0}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}.editbar{display:flex;gap:8px;align-items:center;max-width:550px;margin:0 auto 10px}.editbar button{padding:6px 12px;font-size:12px}.editbar button:disabled{opacity:.45;cursor:default}.recovery{max-width:550px;margin:0 auto 12px;padding:10px 12px;border:1px solid #3f6f55;background:#173126;border-radius:10px;font-size:12px;color:#cfeedd;display:flex;gap:10px;align-items:center;justify-content:space-between}.recovery[hidden]{display:none}.recovery button{padding:6px 10px;font-size:12px;white-space:nowrap}textarea.script{height:300px;font:12px/1.55 "Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace;white-space:pre;overflow-wrap:normal;overflow:auto}#scriptHelp summary{cursor:pointer;color:#b4c1dc;margin-top:8px}#scriptHelp code{color:#c5d5ff}#scriptStatus{margin-top:8px}#scriptStatus[data-state=error]{color:#ffb4b4}#scriptStatus[data-state=ok]{color:#9fe0b5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:flex;flex-direction:column}main{order:1}aside.right{order:2}.wrap>aside:not(.right){order:3}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;height:min(64vh,calc(100svh - 215px));min-height:300px}.shots{grid-template-columns:1fr 1fr}}
+:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;gap:12px;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.failure p{color:#d8dcf0;font-size:13px;line-height:1.5;margin:0}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}#mp4Progress{width:100%;margin-top:10px;accent-color:#9b6bff}.report{margin-top:10px;padding:10px;border:1px solid #394968;border-radius:10px;background:#141b2e;font-size:11px;line-height:1.5}.report b{display:block;font-size:12px;margin-bottom:4px}.report.ok b{color:#9fe0b5}.report.bad b{color:#ffb4b4}.report ul{margin:4px 0 6px;padding-left:16px}.report li.bad{color:#ffb4b4}.report li.skip{color:#8e9ebd}.report a{color:#c5d5ff}.editbar{display:flex;gap:8px;align-items:center;max-width:550px;margin:0 auto 10px}.editbar button{padding:6px 12px;font-size:12px}.editbar button:disabled{opacity:.45;cursor:default}.recovery{max-width:550px;margin:0 auto 12px;padding:10px 12px;border:1px solid #3f6f55;background:#173126;border-radius:10px;font-size:12px;color:#cfeedd;display:flex;gap:10px;align-items:center;justify-content:space-between}.recovery[hidden]{display:none}.recovery button{padding:6px 10px;font-size:12px;white-space:nowrap}textarea.script{height:300px;font:12px/1.55 "Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace;white-space:pre;overflow-wrap:normal;overflow:auto}#scriptHelp summary{cursor:pointer;color:#b4c1dc;margin-top:8px}#scriptHelp code{color:#c5d5ff}#scriptStatus{margin-top:8px}#scriptStatus[data-state=error]{color:#ffb4b4}#scriptStatus[data-state=ok]{color:#9fe0b5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:flex;flex-direction:column}main{order:1}aside.right{order:2}.wrap>aside:not(.right){order:3}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;height:min(64vh,calc(100svh - 215px));min-height:300px}.shots{grid-template-columns:1fr 1fr}}
 #stage>.frame-meta,#sceneTitle,#subtitle{display:none!important}
 .shottools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 2px}.shottools button{padding:7px 4px}
 .castgrid{display:grid;grid-template-columns:62px 1fr 1fr;gap:6px;align-items:center;margin-top:6px}.castgrid b{font-size:12px}
@@ -15,7 +15,7 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <div class="wrap"><aside><h3>Write an episode</h3><label for="preset">Start from</label><select id="preset"><option value="comedy">ZERO LATENCY — Episode 01</option></select><label for="script">Script</label><textarea id="script" class="script" spellcheck="true" rows="14" aria-describedby="scriptHelp scriptStatus"></textarea><details class="fine" id="scriptHelp"><summary>How to write it</summary><p>One line per shot: <code>DEV (worried): Our app is slow.</code> Speakers: DEV, BLUE, ORANGE. Emotions in brackets: happy, worried, surprised, angry, sad, thinking.</p><p>Story window: <code>[wall bad] p95 load = 12.0 s</code> above the lines it sits behind. A screen shot: <code>[screen good] Load time = 0 ms | Instant.</code> under the line spoken over it. <code># Title</code> and <code>&gt; one-line summary</code> at the top.</p><p>The studio picks the cameras, a wide, reaction cuts, acting, music and sound, then voices every line in your browser. Fine-tune any shot on the right.</p></details><button id="build" class="primary full">✦ Make the episode from this script</button><div class="fine" id="scriptStatus" role="status" aria-live="polite"></div>
 <label for="projectImport">Import a FrameForge JSON episode</label>
 <input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
-<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">An episode is one file: its script, performances, cameras, music and sound cues. Fine-tune shots on the right; changed lines are voiced in your browser (Voices, below). Export the MP4 below, and download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><label>Pronunciations</label><p class="fine">For names the voices get wrong: write how the word sounds, the stressed syllable in capitals (koh-KOR-oh).</p><div class="prongrid" id="pronGrid"></div><button id="pronAdd" class="full">+ Add a pronunciation</button><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records the monitor in real time as it plays, with sound; WebM, not MP4. For the finished film, use Export MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Preview selected dialogue speaks the selected line in its character's voice, with the emotion set for the speaker in that shot. Voices are English, with American and British accents.</p></aside>
+<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">An episode is one file: its script, performances, cameras, music and sound cues. Fine-tune shots on the right; changed lines are voiced in your browser (Voices, below). Export the MP4 below, and download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><label>Pronunciations</label><p class="fine">For names the voices get wrong: write how the word sounds, the stressed syllable in capitals (koh-KOR-oh).</p><div class="prongrid" id="pronGrid"></div><button id="pronAdd" class="full">+ Add a pronunciation</button><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><progress id="mp4Progress" max="1" value="0" hidden></progress><button id="exportCancel" class="full" hidden>✕ Cancel export</button><div class="fine" id="mp4Status" aria-live="polite">Frame-exact MP4 export in your browser (Chrome or Edge). Speed depends on your computer; every export is checked afterwards.</div><div class="report" id="exportReport" hidden></div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records the monitor in real time as it plays, with sound; WebM, not MP4. For the finished film, use Export MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Preview selected dialogue speaks the selected line in its character's voice, with the emotion set for the speaker in that shot. Voices are English, with American and British accents.</p></aside>
 <main><div class="recovery" id="recovery" role="status" hidden></div><div class="editbar"><button id="undo" disabled title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" disabled title="Redo (Ctrl+Shift+Z)">↷ Redo</button><span id="saveState" class="fine" aria-live="polite">Your changes are saved in this browser as you work.</span></div><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div>
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">Each line is voiced separately and sets its shot length; music ducks under speech and the mouth follows each line. Play, scrub or click a shot: the monitor shows the exact frame that exports.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><div class="shottools"><button id="shotUp" title="Move this shot earlier">↑ Earlier</button><button id="shotDown" title="Move this shot later">↓ Later</button><button id="shotDup">Duplicate</button><button id="shotDel">Delete</button></div>
@@ -967,8 +967,10 @@ function buildFromScript(){
 // --- Autosave, undo and recovery (M6.2) -------------------------------------------------------------------------
 // Every change is saved in this browser (IndexedDB, written with strict durability so it is on disk before the write
 // completes; one slot per episode, the last one reopened on start), so a refresh, a crash or closing the tab loses at
-// most the last half second. (localStorage was not enough: Chrome writes it to disk seconds later, and a killed
-// browser lost the last edits.) Undo and redo step through the same
+// most the last half second. (localStorage alone was not enough: Chrome writes it to disk seconds later, and a killed
+// browser lost the last edits. IndexedDB alone was not enough either: a page that is being refreshed or closed may be
+// gone before its last write commits. So leaving the page also writes a copy to localStorage, synchronously, and the
+// newer of the two is reopened.) Undo and redo step through the same
 // snapshots (the whole episode: shots, looks, voices, pronunciations). Voicing re-times shots by itself; that is not
 // an undo step. A typed but unmade script is kept too.
 const history_=(()=>{
@@ -986,9 +988,19 @@ const history_=(()=>{
  const label=()=>$('preset').selectedOptions[0]?.textContent||'';
  const clock=t=>new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  function buttons(){$('undo').disabled=!past.length;$('redo').disabled=!future.length;}
+ const UNLOAD='frameforge.autosave.unload';
+ const record=st=>{const p=window.FrameForgeCurrentProject;return p&&{v:1,savedAt:Date.now(),id:p.id,label:label(),project:st??last,script:scriptDirty?$('script').value:null,selected,time};};
+ // Leaving the page: whatever changed since the last save goes into localStorage at once (synchronous).
+ function leaving(){
+  if(applying||!window.FrameForgeCurrentProject)return;
+  const st=state();
+  if(st&&(st!==last||scriptDirty||timer)){try{localStorage.setItem(UNLOAD,JSON.stringify(record(st)));}catch{}}
+  checkpoint();
+ }
+ const dropUnload=id=>{try{if(JSON.parse(localStorage.getItem(UNLOAD)||'null')?.id===id)localStorage.removeItem(UNLOAD);}catch{}};
  function store(st){
   const p=window.FrameForgeCurrentProject;if(!p)return;
-  const rec={v:1,savedAt:Date.now(),id:p.id,label:label(),project:st??last,script:scriptDirty?$('script').value:null,selected,time};
+  const rec=record(st);
   return serial(async()=>{
    try{
     await write(PREFIX+p.id,rec);
@@ -1047,7 +1059,11 @@ const history_=(()=>{
  // On start: the episode you were working on, as you left it.
  async function recover(){
   let index=null,rec=null;
-  try{index=await read(INDEX);rec=index?.last?await read(PREFIX+index.last):null;}catch{return false;}
+  try{index=await read(INDEX);rec=index?.last?await read(PREFIX+index.last):null;}catch{}
+  // A copy written while the page was closing wins if it is newer.
+  try{const quick=JSON.parse(localStorage.getItem(UNLOAD)||'null');
+   if(quick?.project&&(!rec||quick.savedAt>rec.savedAt)){rec=quick;index={...(index||{ids:[]}),last:quick.id};serial(()=>write(PREFIX+quick.id,quick));}
+  }catch{}
   if(!rec?.project){
    // The last episode open was an unedited one from the menu: open it again.
    const key=index?.last&&Object.keys(projectCatalog).find(k=>k!=='custom'&&projectCatalog[k].id===index.last);
@@ -1058,7 +1074,7 @@ const history_=(()=>{
   const template=Object.entries(projectCatalog).find(([k,p])=>k!=='custom'&&p.id===rec.id)?.[0];
   banner(`Welcome back: “${JSON.parse(rec.project).title}” is as you left it (saved ${clock(rec.savedAt)}).`,
    template?'Use the original instead':'Start from an episode',async()=>{
-    await serial(()=>remove(PREFIX+rec.id));$('preset').value=template&&[...$('preset').options].some(o=>o.value===template)?template:firstListed();load();opened();});
+    dropUnload(rec.id);await serial(()=>remove(PREFIX+rec.id));$('preset').value=template&&[...$('preset').options].some(o=>o.value===template)?template:firstListed();load();opened();});
   return true;
  }
  // Choosing an episode in the menu: your saved changes to it if there are any, the original one click away.
@@ -1068,7 +1084,7 @@ const history_=(()=>{
   $('recovery').hidden=true;
   if(rec?.project&&rec.project!==JSON.stringify(original)&&reopen(rec)){
    banner(`Opened your saved changes to “${original.title}” (saved ${clock(rec.savedAt)}).`,'Use the original instead',async()=>{
-    await serial(()=>remove(PREFIX+original.id));$('preset').value=key;load();opened();});
+    dropUnload(original.id);await serial(()=>remove(PREFIX+original.id));$('preset').value=key;load();opened();});
   }else load();
   opened();
  }
@@ -1082,8 +1098,8 @@ const history_=(()=>{
   if(k==='z'&&!typing){e.preventDefault();e.shiftKey?redo():undo();}
   else if(k==='y'&&!typing){e.preventDefault();redo();}
  });
- addEventListener('pagehide',checkpoint);
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')checkpoint();});
+ addEventListener('pagehide',leaving);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')leaving();});
  $('undo').onclick=undo;$('redo').onclick=redo;
  return {checkpoint,undo,redo,opened,recover,openFromMenu,rebase,depth:()=>({undo:past.length,redo:future.length}),saved:()=>queue};
 })();
@@ -1219,7 +1235,56 @@ function composeFilmFrame(w,hh){
  outCtx.restore();
 }
 
-let offlineExportActive=false;
+let offlineExportActive=false,exportAbort=null;
+$('exportCancel').onclick=()=>exportAbort?.abort();
+// The export check (M6.3): the MP4 is opened again with Mediabunny and compared with what was asked for. The first
+// and last frames are decoded where the browser can decode H.264 (Chrome, Edge; Playwright's Chromium can't).
+async function validateMP4(media,blob,want){
+ const {Input,BlobSource,ALL_FORMATS,VideoSampleSink}=media,checks=[],fileInfo={bytes:blob.size};
+ const check=(name,ok,expected,actual,skip=false)=>checks.push({name,ok:skip?null:Boolean(ok),expected,actual});
+ const input=new Input({source:new BlobSource(blob),formats:ALL_FORMATS});
+ try{
+  const video=await input.getPrimaryVideoTrack(),audio=await input.getPrimaryAudioTrack();
+  check('Video track','yes'===(video?'yes':'no'),'H.264 video',video?await video.getCodec():'none');
+  if(video){
+   const [codec,w,h,stats,vDur]=await Promise.all([video.getCodec(),video.getDisplayWidth(),video.getDisplayHeight(),video.computePacketStats(),video.computeDuration()]);
+   Object.assign(fileInfo,{videoCodec:codec,width:w,height:h,frames:stats.packetCount,fps:+stats.averagePacketRate.toFixed(3),videoSeconds:+vDur.toFixed(3),videoKbps:Math.round(stats.averageBitrate/1000)});
+   check('Video codec',codec==='avc','avc (H.264)',codec);
+   check('Size',w===want.width&&h===want.height,want.width+'×'+want.height,w+'×'+h);
+   check('Frames',stats.packetCount===want.frames,want.frames,stats.packetCount);
+   check('Frame rate',Math.abs(stats.averagePacketRate-want.fps)<.05,want.fps+' fps',stats.averagePacketRate.toFixed(2)+' fps');
+   check('Video length',Math.abs(vDur-want.frames/want.fps)<=.5/want.fps,(want.frames/want.fps).toFixed(3)+' s',vDur.toFixed(3)+' s');
+   if(await video.canDecode()){
+    const sink=new VideoSampleSink(video),first=await sink.getSample(0),lastS=await sink.getSample(vDur-.5/want.fps);
+    check('First and last frames decode',first&&lastS,'both decode',(first?'first ✓':'first ✗')+' '+(lastS?'last ✓':'last ✗'));first?.close();lastS?.close();
+   }else check('First and last frames decode',null,'both decode','this browser can\'t decode H.264 to check',true);
+  }
+  check('Audio track',!!audio,want.audioCodec,audio?await audio.getCodec():'none');
+  if(audio){
+   const [codec,ch,rate,aDur]=await Promise.all([audio.getCodec(),audio.getNumberOfChannels(),audio.getSampleRate(),audio.computeDuration()]);
+   Object.assign(fileInfo,{audioCodec:codec,channels:ch,sampleRate:rate,audioSeconds:+aDur.toFixed(3)});
+   check('Audio codec',codec===want.audioCodec,want.audioCodec,codec);
+   check('Audio channels',ch===2,'stereo (2)',ch);
+   check('Audio sample rate',rate===48000,'48000 Hz',rate+' Hz');
+   const vLen=want.frames/want.fps;
+   check('Audio not cut short',aDur>=vLen-.05&&aDur<=vLen+.15,vLen.toFixed(3)+' s (−0.05 / +0.15)',aDur.toFixed(3)+' s');
+  }
+ }finally{input.dispose?.();}
+ const failed=checks.filter(c=>c.ok===false);
+ return {ok:failed.length===0,checked:new Date().toISOString(),file:want.file,episode:want.episode,requested:{width:want.width,height:want.height,frames:want.frames,fps:want.fps,seconds:+(want.frames/want.fps).toFixed(3),audioCodec:want.audioCodec},
+  result:fileInfo,audioLevels:want.audioLevels,checks,elapsedS:want.elapsedS,browser:want.browser};
+}
+function showExportReport(r){
+ const box=$('exportReport');box.innerHTML='';box.className='report '+(r.ok?'ok':'bad');
+ const head=document.createElement('b');head.textContent=r.ok?'✓ The MP4 checks out':'✗ The MP4 has problems: see below';
+ const sum=document.createElement('div');const f=r.result;
+ sum.textContent=`${f.width}×${f.height} · ${f.frames} frames · ${f.fps} fps · ${f.videoSeconds} s video, ${f.audioSeconds??'—'} s ${f.audioCodec??'no'} audio · ${(f.bytes/1048576).toFixed(1)} MB · peak ${r.audioLevels.peakDb} dBFS`;
+ const ul=document.createElement('ul');
+ for(const c of r.checks){const li=document.createElement('li');li.className=c.ok===false?'bad':c.ok===null?'skip':'';li.textContent=(c.ok===false?'✗ ':c.ok===null?'– ':'✓ ')+c.name+': '+c.actual+(c.ok===false?' (expected '+c.expected+')':'');ul.append(li);}
+ const a=document.createElement('a');a.textContent='Download this report (JSON)';a.download=r.file.replace(/\.mp4$/,'')+'-report.json';
+ a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}));
+ box.append(head,sum,ul,a);box.hidden=false;
+}
 async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,download=true,startTime=0}={}){
  if(offlineExportActive)throw new Error('Another export is already running');
  const project=window.FrameForgeCurrentProject;
@@ -1231,7 +1296,10 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
  if(!Number.isFinite(startTime)||startTime<0||startTime+frames/fps>duration+.05)throw new Error('Export segment outside the film duration');
  if(width%2||height%2)throw new Error('MP4 requires even output dimensions');
  offlineExportActive=true;const started=performance.now();const status=$('mp4Status');
- let sourceVideo=null,sourceAudio=null;
+ let sourceVideo=null,sourceAudio=null,output=null;
+ const abort=new AbortController();exportAbort=abort;
+ const bar=$('mp4Progress');bar.value=0;bar.hidden=false;$('exportCancel').hidden=false;$('exportReport').hidden=true;
+ const cancelled=()=>{if(abort.signal.aborted)throw new DOMException('Export cancelled','AbortError');};
  try{
   status.textContent='Initializing the MP4 encoders…';
   await envPromise;
@@ -1242,7 +1310,7 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   // the decision is recorded in docs/releases/M4_4_LICENCE_AUDIT.md.
   const audioCodec=await canEncodeAudio('aac')?'aac':await canEncodeAudio('opus')?'opus':null;
   if(!audioCodec)throw new Error('This browser cannot encode AAC or Opus audio: export from Chrome or Edge.');
-  const output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
+  output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
   sourceVideo=new CanvasSource(outCanvas,{codec:'avc',quality:new Quality({bitrate:width>=1080?6800000:width>=720?4200000:width>=480?2400000:1300000}),keyFrameInterval:2,hardwareAcceleration:'no-preference'});
   sourceAudio=new AudioBufferSource({codec:audioCodec,quality:new Quality({bitrate:160000})});
   output.addVideoTrack(sourceVideo);output.addAudioTrack(sourceAudio);
@@ -1266,23 +1334,42 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   await output.start();
   await sourceAudio.add(audioBuffer);
   sourceAudio.close();sourceAudio=null;
+  const loopStart=performance.now();
   for(let i=0;i<frames;i++){
+   cancelled();
    renderFilmFrame(startTime+i/fps,width,height,false);
    await sourceVideo.add(i/fps,1/fps);
-   if(i%15===0||i===frames-1){status.textContent='Rendering exact frames: '+(i+1)+' / '+frames+' ('+Math.floor((i+1)*100/frames)+'%)';await new Promise(r=>setTimeout(r,0))}
+   if(i%15===0||i===frames-1){
+    const done=i+1,rate=done/Math.max(.001,(performance.now()-loopStart)/1000),left=Math.round((frames-done)/rate);
+    bar.value=done/frames;
+    status.textContent=`Rendering frame ${done} of ${frames} (${Math.floor(done*100/frames)}%) · ${rate.toFixed(1)} frames/s · about ${left>=60?Math.floor(left/60)+' min '+left%60+' s':left+' s'} left`;
+    await new Promise(r=>setTimeout(r,0));
+   }
   }
+  cancelled();
   sourceVideo.close();sourceVideo=null;
   status.textContent='Finalizing H.264 video and '+(audioCodec==='aac'?'AAC':'Opus')+' audio…';
   await output.finalize();
   const raw=output.target.buffer;
   if(!raw||raw.byteLength<1000)throw new Error('MP4 unexpectedly empty');
   const blob=new Blob([raw],{type:'video/mp4'});
+  // Read the finished file back and check it (M6.3): what was asked for is what was written.
+  status.textContent='Checking the MP4…';
+  let peak=0,sum=0,count=0;for(let c=0;c<audioBuffer.numberOfChannels;c++){const d=audioBuffer.getChannelData(c);for(let k=0;k<d.length;k++){const a=Math.abs(d[k]);if(a>peak)peak=a;sum+=d[k]*d[k];}count+=d.length;}
+  const report=await validateMP4(media,blob,{width,height,frames,fps,audioCodec,file:'frameforge-'+project.id+'-'+width+'x'+height+'.mp4',episode:project.title,
+   audioLevels:{peakDb:+(20*Math.log10(peak||1e-9)).toFixed(1),rmsDb:+(10*Math.log10(sum/Math.max(1,count)||1e-12)).toFixed(1),mixLufs:audioMode==='browser'?browserVoice?.mix?.lufs??null:null,source:audioMode==='browser'?'voiced in the browser':'the episode master'},
+   elapsedS:Math.round((performance.now()-started)/1000),browser:navigator.userAgent});
+  showExportReport(report);
   status.textContent='MP4 complete · '+(blob.size/1024/1024).toFixed(2)+' MB · '+(frames/fps).toFixed(2)+' seconds · '+(width+'×'+height)+(audioCodec==='opus'?' · Opus audio (this browser has no AAC encoder; some Apple players need AAC: export from Chrome for those)':'');
   if(download){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='frameforge-'+project.id+'-'+width+'x'+height+'.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
-  return {blob,bytes:blob.size,duration:frames/fps,frames,width,height,audioCodec,elapsed:Math.round((performance.now()-started)/1000)};
- }catch(e){status.textContent='Export failed: '+e.message;throw e}
+  return {blob,bytes:blob.size,duration:frames/fps,frames,width,height,audioCodec,elapsed:Math.round((performance.now()-started)/1000),report};
+ }catch(e){
+  if(e?.name==='AbortError'){await output?.cancel().catch(()=>{});status.textContent='Export cancelled. Nothing was saved.';}
+  else status.textContent='Export failed: '+e.message+' Nothing was saved; try again.';
+  throw e;
+ }
  finally{
-  sourceVideo?.close();sourceAudio?.close();offlineMode=false;offlineExportActive=false;
+  sourceVideo?.close();sourceAudio?.close();offlineMode=false;offlineExportActive=false;exportAbort=null;$('exportCancel').hidden=true;$('mp4Progress').hidden=true;
   renderer.setSize(720,1280,false);running=false;time=0;update();
  }
 }
