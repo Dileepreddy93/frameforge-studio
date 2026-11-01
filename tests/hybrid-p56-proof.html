@@ -145,6 +145,17 @@ async function loadFresh(modelPrefix='/artifacts/voice-model-samples/fresh-v2-ko
    markers:mix.markers,duration:mix.duration,projectSchema:project.schema,
    voices:metadata.report.voices,provenance:metadata.report.generator};
 }
+function setOutputResolution(width=360,height=640){
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<180||height<320||
+    width>1080||height>1920||width*16!==height*9)
+    throw RangeError('Output must be portrait 9:16, 180×320 through 1080×1920');
+ renderer.setPixelRatio(1);
+ renderer.setSize(width,height,false);
+ camera.aspect=width/height;camera.updateProjectionMatrix();
+ overlay.width=width;overlay.height=height;
+ return {width:renderer.domElement.width,height:renderer.domElement.height,
+   surfacePixels:renderer.domElement.width*renderer.domElement.height};
+}
 function frameAt(t){
  if(!session)throw Error('Not prepared');
  const state=session.seek(t);
@@ -161,12 +172,15 @@ function frameAt(t){
  camera.position.fromArray(pose.position);camera.lookAt(...pose.target);
  camera.fov=pose.fov;camera.updateProjectionMatrix();
  renderer.render(scene,camera);
- overlayCtx.drawImage(renderer.domElement,0,0,360,640);
+ overlayCtx.drawImage(renderer.domElement,0,0,overlay.width,overlay.height);
  if(shot.caption){
+   const scale=overlay.width/360;
+   overlayCtx.save();overlayCtx.scale(scale,scale);
    overlayCtx.fillStyle='rgba(12,17,24,.88)';
    overlayCtx.fillRect(24,545,312,69);
    overlayCtx.fillStyle='#fff';overlayCtx.font='bold 19px Arial';overlayCtx.textAlign='center';
    overlayCtx.fillText(shot.caption,180,584,294);
+   overlayCtx.restore();
  }
  return {image:overlay.toDataURL('image/png'),time:t,shot:shot.id,
    activeActor:shot.speaker,voiced:speech.voiced,mouthOpen:speech.mouthOpen,
@@ -188,7 +202,7 @@ function masterWav(){
  let result='';for(let i=0;i<u.length;i+=16384)result+=String.fromCharCode(...u.subarray(i,i+16384));
  return btoa(result);
 }
-window.HybridP56QA={create,loadFresh,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
+window.HybridP56QA={create,loadFresh,setOutputResolution,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
  cast:project?.characters.map(c=>c.id),world:project?.hybrid.world.template,
  generatedSpeech:false,modelSource:'existing V6 Kokoro speech segments, re-timed through P6'}),
  dispose:()=>{session?.dispose();screenTexture.dispose();screenPlane.geometry.dispose();screenPlane.material.dispose();renderer.dispose()}};
