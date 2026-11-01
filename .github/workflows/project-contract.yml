@@ -46,6 +46,8 @@ jobs:
           node tests/hybrid-director.test.cjs
           node tests/hybrid-voice.test.mjs
           node tests/hybrid-p8-readiness.test.mjs
+          node tests/hybrid-p10-research.test.mjs
+          node --check tests/hybrid-p9-beta-browser.cjs
           node --check tests/hybrid-p8-master-browser.cjs
           node --check tests/hybrid-p6-fresh-synthesis.cjs
           node --check tests/hybrid-p6-fresh-film-browser.cjs
@@ -242,6 +244,29 @@ jobs:
         with:
           name: frameforge-p8-native-hd-certification
           path: artifacts/p8-master-cert/
+          if-no-files-found: warn
+
+  hybrid-beta-usability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    needs: source-and-project-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install actual Chromium and browser dependencies
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Operate working beta on desktop and mobile viewports
+        run: node tests/hybrid-p9-beta-browser.cjs
+      - name: Archive real interface screenshots, UX and privacy test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p9-beta-usability
+          path: artifacts/p9-beta-ux/
           if-no-files-found: warn
 
   rigged-character-import:
