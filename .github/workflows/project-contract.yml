@@ -45,6 +45,8 @@ jobs:
           node --check src/hybrid-voice.mjs
           node tests/hybrid-director.test.cjs
           node tests/hybrid-voice.test.mjs
+          node --check src/hybrid-screen.mjs
+          node --check tests/hybrid-p56-browser.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
@@ -158,6 +160,15 @@ jobs:
         run: node tests/hybrid-p2-characters-browser.cjs
       - name: P3 P4 imported humanoid and Ember worlds (WebGL / H264+Aac)
         run: node tests/hybrid-p34-browser.cjs
+      - name: P5 P6 authored screenplay, screen app, voice-guided actor and two complete MP4s
+        run: node tests/hybrid-p56-browser.cjs
+      - name: Preserve P5 P6 independently decoded voiced Ember scene films and audio evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p56-cameras-screen-voice-proof
+          path: artifacts/p56-director-voice/
+          if-no-files-found: warn
       - name: Preserve P3 P4 model/world frames, full decode MP4 and report
         if: always()
         uses: actions/upload-artifact@v4
