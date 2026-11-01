@@ -3,6 +3,7 @@
 const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs'),
 cp=require('node:child_process');
 const {chromium}=require('playwright');
+const {AxeBuilder}=require('@axe-core/playwright');
 const OUT=path.resolve(process.env.FRAMEFORGE_BETA_OUT||'artifacts/p9-beta-ux');
 (async()=>{
  fs.mkdirSync(OUT,{recursive:true});
@@ -64,6 +65,17 @@ const OUT=path.resolve(process.env.FRAMEFORGE_BETA_OUT||'artifacts/p9-beta-ux');
    await page.locator('#consent').uncheck();
    await page.locator('#feedback-save').click();
    assert.match(await page.locator('#feedback-status').textContent(),/consent/);
+   const axe=await new AxeBuilder({page})
+     .withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
+   fs.writeFileSync(path.join(OUT,'axe-'+viewport.width+'.json'),JSON.stringify({
+     viewport,violations:axe.violations.map(v=>({id:v.id,impact:v.impact,
+       description:v.description,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))}))
+   },null,2));
+   assert.deepEqual(axe.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)})),[],
+     'WCAG 2.2 A/AA violations must be resolved, not hidden');
+   const smallTargets=await page.locator('button').evaluateAll(buttons=>buttons.filter(b=>
+     !b.disabled&&b.getBoundingClientRect().height<44).map(b=>b.id));
+   assert.deepEqual(smallTargets,[],'Tap targets must be at least 44 CSS px tall');
    await page.screenshot({path:path.join(OUT,'beta-'+viewport.width+'.png'),fullPage:true});
    assert.deepEqual(errors,[],'No app exceptions on '+viewport.width);
    report.push({viewport,engine:true,timeline:true,downloadPNG:true,consentedStudy:true,
