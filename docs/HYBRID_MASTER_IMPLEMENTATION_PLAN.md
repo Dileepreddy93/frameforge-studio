@@ -11,8 +11,8 @@ Production constraint: no main merge, tag overwrite, production redeploy or dele
 
 ## EXECUTION STATUS AND RESUME POINT — 2026-11-01
 
-**Current phase:** P8 native 1080×1920/30 real-WebGL H.264/AAC two-second export proof PASSED; P9 real-scene desktop/mobile beta UX and separate Vercel deployment PASSED initial acceptance; P10 opt-in research infrastructure PASSED but market demand untested. **Still not production certified:** P7 unified editor, real device/long-film export, human creator testing and V6 parity remain open. Earlier P1–P6 targeted film/voice proofs passed. **P3/P4:** rig/world/video integration passed targeted CI. **P1/P0:** independent-page original V6 visual parity and Windows/macOS release signoff still unresolved.
-**Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
+**Current phase:** P7 interactive V2 Creator now implemented and **PASSING desktop/mobile-viewport Chrome CI** for cast/world/script/shot edits, actual 3D pixel changes, undo/redo, PNG, downloadable JSON and browser autosave/reopen, plus automated WCAG 2.2 A/AA and corrupted-project recovery. P8 native **1080×1920/30** two-second FFmpeg-packed proof passed, browser-native H264/AAC exporter added but **not yet tested end-to-end on real supported hardware**. P9 separate SSO-protected Hobby staging **READY**, not original V6 production. P10 consent-first research tests pass; actual buyers untested. **Release is NOT certified:** extended 30–60s voiced customer export, physical device compatibility, V6 baseline image nondeterminism and Windows/macOS release remain open.
+**Work branch:** `feature/hybrid-foundation`. **Main/original V6 production:** untouched. **Separate authenticated hybrid beta staging deployment** [Creator route](https://frameforge-hybrid-beta-awoj27lno-dileepreddys-projects.vercel.app/creator.html), built READY from commit `baafcdec` in isolated project `frameforge-hybrid-beta`; beta's original production domain remains separate. Production launch remains unauthorized.
 **Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
 
 | Gate | State at this checkpoint | Evidence or blocker |
@@ -204,6 +204,26 @@ P5/P6 QA:
 - **No customer interviews, paid conversion, retention or traction are claimed**. Hypothetical $7/$12/$20 does not establish demand. Run first-time creator usability and opt-in WTP after P7 working customer journey exists.
 
 **Global no-launch blocker:** Original independent-browser V6 side-by-side pixel comparator still fails intermittently, although Git compare shows no changes to the original renderer/modules. P7 complete story-to-export-to-reopen flow, real customer long-film validation and mobile hardware certification remain open. Neither `main` nor original production is changed.
+
+---
+
+## P7 — Implemented Creator interface and latest production gates (2026-11-01)
+
+P7 is no longer just a demo plan. **Latest all-branch CI run 41322641272: SIX of SEVEN jobs PASS.** The original V6 cross-page visual-parity job is the only failure; see the targeted regression diagnostic below. [Actual P7 verified Chromium desktop/mobile-viewport screenshots and test report](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41322641272/artifacts/13090051342).
+
+- `creator.html` is a responsive authoring surface with editable two-actor cast, English voices, four procedural Ember worlds, timeline and shot inspector, emotions, blocking, camera movements, captions, integrated on-set screens and advanced screenplay.
+- `src/hybrid-editor-core.js` handles strictly validated `frameforge.project/2` editing with undo/redo, safe file import/export, atomic changes, shot reorder and stale-speech invalidation. `tests/hybrid-p7-editor.test.cjs` green.
+- `src/hybrid-editor-app.mjs` binds actual 3D preview, world/cast changes, saved PNG, play/pause, speech audio playback, recovery, and export. `src/hybrid-editor-storage.mjs` implements IndexedDB or explicit limited localStorage fallback and file download; if recovery JSON is malformed, the exact damaged bytes remain downloadable rather than silently overwritten on startup. **Follow-up hardening:** require confirmed recovery download before a later editor edit can overwrite that original corrupted record.
+- `src/hybrid-preview-engine.mjs` creates native Three.js frames for the actual authored project, retains the original Ember character/world providers, draws authored captions and derives lip motion from saved 48kHz Kokoro PCM. A local English Kokoro worker is used for new dialogue; original V6 model retained.
+- `src/hybrid-browser-export.mjs` implements actual on-device H.264/AAC WebCodecs/Mediabunny, progress and cancellation, frame/codec verification and first/last decode where supported. **Code is added; full 30–60 second end-to-end Creator voice → browser MP4 test remains unverified on real desktop Chrome/Edge.** Native 1080×1920/30 FFmpeg-backed **2s proof** was independently passed previously, not consumer browser export.
+- `tests/hybrid-p7-creator-browser.cjs` in CI exercises desktop and 390px mobile viewport, real preview pixel changes, cast/world/dialogue/shot edits, undo/redo, save/reopen and original PNG download; newer tests also cover automated A/AA scan and damaged-data recovery. No physical mobile devices are claimed.
+- **SSO-protected staging**: [feature Creator build](https://frameforge-hybrid-beta-awoj27lno-dileepreddys-projects.vercel.app/creator.html) on separate Vercel Hobby project, target **staging**, explicit feature SHA `baafcdec4f9953a3b4ead0655b06a773af2463d7`; Ready verified. This did not overwrite `frameforge-v6.vercel.app`.
+
+### Frozen V6 visual-parity diagnostic
+
+Previous full CI had a failed exact screenshot comparison between frozen V6 and the identical original V6 files within the feature branch. A new **negative control** in [run 41328407840](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41328407840) demonstrated that **the frozen baseline compared against itself at different localhost ports yields two different exact image hashes** (`e6be815e...` vs `daa2bb8b...`). This is evidence of **browser/capture nondeterminism**, not proof that distinct origin alone caused it. New [paired-control test](https://github.com/Dileepreddy93/frameforge-studio/blob/feature/hybrid-foundation/tests/hybrid-legacy-film-frames.cjs) captures old/old and new/new on the same origin with service workers disabled, then requires two independent **exact-pixel** matched old/new comparisons per frame. Pending CI verdict at this checkpoint. Never mark legacy parity green until both matched captures pass on current HEAD. Preserve the frozen baseline hashes and every assertion.
+
+P7 is an engineering beta. Consumer readiness still requires robust full-length HD browser exports, real mobile devices, licensed assets, manual art/audio review and an evidence-backed usability cohort; do not claim paid SaaS launch readiness.
 
 ---
 
