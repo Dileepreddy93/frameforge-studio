@@ -47,6 +47,7 @@ function stats(wav){const b=Buffer.from(wav,'base64'),n=(b.length-44)/2;let s=0,
   // The light model is much smaller, and says the same lines in about the same time.
   if(summary.light.modelMB&&summary.full.modelMB){assert.ok(summary.light.modelMB<summary.full.modelMB/2.5,JSON.stringify(summary));}
   summary.light.lines.forEach((l,i)=>assert.ok(Math.abs(l.seconds-summary.full.lines[i].seconds)<=Math.max(.6,summary.full.lines[i].seconds*.25),'similar timing '+l.who));
+  summary.hybridFresh=await require('./hybrid-p6-fresh-synthesis.cjs')(page,URL_,OUT);
   assert.deepEqual(errors,[]);
   fs.writeFileSync(path.join(OUT,'summary.json'),JSON.stringify(summary,null,2));
   console.log('VOICE_MODEL_BROWSER_PASS',JSON.stringify(summary));
