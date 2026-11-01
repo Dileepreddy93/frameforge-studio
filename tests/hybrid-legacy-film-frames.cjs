@@ -70,7 +70,12 @@ async function snapshot(browser,server,episode){
    await page.locator('#preset').selectOption(episode.key);
    await page.waitForFunction(id=>window.FrameForgeCurrentProject?.id===id,
      episode.id,{timeout:30000});
+   // Switching episodes asynchronously reloads the speech envelope. Without this
+   // wait, two otherwise identical films can differ solely due to stale timing.
+   await page.waitForFunction(()=>FrameForgeQA.envelopeReady(),null,{timeout:120000});
   }
+  // Match caption layout before recording pixel hashes, regardless of cached fonts.
+  await page.evaluate(()=>document.fonts.ready);
   const result=await page.evaluate(times=>times.map(t=>FrameForgeQA.renderFilmFrame(t,360,640)),episode.times);
   assert.deepEqual(errors,[],'page runtime errors');
   return result.map(hash);
@@ -89,9 +94,10 @@ async function snapshot(browser,server,episode){
    '--disable-dev-shm-usage']});
   let checks=0;
   for(const episode of EPISODES){
-   const [oldFrames,newFrames]=await Promise.all([
-    snapshot(browser,oldServer,episode),snapshot(browser,newServer,episode)
-   ]);
+   // Use sequential snapshots to avoid two GPU contexts contending in a shared
+   // headless CI renderer; this test compares actual film output, not load races.
+   const oldFrames=await snapshot(browser,oldServer,episode);
+   const newFrames=await snapshot(browser,newServer,episode);
    for(let i=0;i<episode.times.length;i++){
     assert.equal(newFrames[i],oldFrames[i],
      episode.id+' at '+episode.times[i]+'s differs from frozen M6.5; review the pixel change before proceeding');
