@@ -46,7 +46,7 @@ const save=(file,d)=>fs.writeFileSync(path.join(OUT,file),Buffer.from(d.split(',
    const images=[];
    for(const t of [0.6,3.5,0.6]){
     const frame=await page.evaluate(t=>HybridP34QA.image(t),t);
-    assert.equal(frame.frame.world.preset,preset);
+    assert.equal(frame.frame.world.template,preset,'v2 world descriptor must preserve the selected Ember template');
     assert.ok(frame.actor.geometry.skinnedMeshes>0);
     assert.ok(frame.frame.anchors.hero.head.every(Number.isFinite));
     assert.ok(frame.meshes>0);
