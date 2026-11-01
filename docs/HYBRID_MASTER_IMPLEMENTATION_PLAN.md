@@ -11,7 +11,7 @@ Production constraint: no main merge, tag overwrite, production redeploy or dele
 
 ## EXECUTION STATUS AND RESUME POINT — 2026-11-01
 
-**Current phase:** P1 core implementation and proof delivered (source/video jobs PASSED; final whole-suite signoff pending). **P0:** original legacy CI passed, but Windows/macOS end-to-end release certification remains open. **Next:** complete all release gates before P2.
+**Current phase:** P2 actual Ember cast integration on the protected branch (source tests passed; graphics proof and release-wide acceptance still pending). **P1:** project contract / adapter video passed; original-film browser parity still needs resolution. **P0:** Windows/macOS final release certification remains open. **Next:** verify P2 proof before P3.
 **Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
 **Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
 
@@ -89,6 +89,23 @@ node tests/hybrid-legacy-film-frames.cjs
 **Latest P1 regression finding:** [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137) failed the new *test-only visual parity assertion* on Dark Mode at 0.5 seconds. Other P1 checks and old deterministic-frame tests passed. The test was switching from Zero Latency to Dark Mode without waiting for `FrameForgeQA.envelopeReady()` for the selected film, and capturing the frozen and integration versions concurrently in one headless GPU. The v1 scene/renderer code was not edited. In commit `5786557`, `tests/hybrid-legacy-film-frames.cjs` now waits for switched-episode voice timing and fonts, and renders pages sequentially. **This is an unverified suspected test-race fix until the full rerun passes**, not a waiver of visual compatibility. See [rerun 41289431575](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289431575).
 
 **Next checks:** Verify all jobs of run 41289099137, especially the real-character-render and voice/mix jobs, and complete the P0 Windows + macOS release tests. Do not promote to `main` or production, and do not claim P1 fully release-certified while these remain pending. If all gates pass, proceed to P2 vertical slice: one Ember actor and one Ember world inside the FrameForge rendering system with an independently verified voiced final MP4.
+
+---
+
+## P2 — Real Ember cast integration (2026-11-01)
+
+**Status: IMPLEMENTATION PUSHED; FINAL VIDEO/ART REGRESSION CI PENDING.** Read [P2 cast contract and testing](HYBRID_P2_CHARACTER_ENGINE.md). No production UI/deployment change.
+
+- Source import: `src/ember-character-engine.mjs` (actual Ember source pinned to `22c745ffdc2d6411707f3a9bbe5bd70b10f9d9db`), `src/three-rounded-box.mjs` (Three.js r180 example, MIT).
+- Adaptor: `src/ember-actor-provider.mjs` registers the procedural ActorProvider; six real Ember presets `creator/human/robot/creature/bot/mascot`, appearance options, original IK, action gestures and eight emotional faces.
+- Character safety: dispose-owned geometry per model, including independent copies of the original shared hair-lock geometry (prevents shared mesh disposal between simultaneous rigs).
+- Browser QA: `tests/hybrid-p2-character-proof.html`, `tests/hybrid-p2-characters-browser.cjs`; tests all templates, four views, eight expressions, look presets/customization, seek determinism, two simultaneous actors and cleanup.
+- Movie proof: browser generates animated 360×640 frames, ffmpeg multiplexes **existing** V6 mastered audio into a two-second H.264/AAC P2 preview, then fully decodes/probes. This does **not** validate new character speech or lip sync: P6 owns that.
+- CI wiring: `.github/workflows/project-contract.yml` runs new module syntax checks and P2 browser/video acceptance in portable-video-export, uploading `frameforge-p2-ember-cast-proof`.
+- Relevant commits: `e163037`, `e6eb3dc`, `9556a6f`, `3060e38`, `2331120`, `0522320`, `ce3c9b8`, `03864e3`, `daccea7`. See commit history for precise full SHAs.
+- **CI:** [P2 acceptance run 41290152840](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290152840). Source-and-project tests **PASS** at last check; full P2 browser/video and remaining jobs **IN PROGRESS**. Do not mark complete until actual `HYBRID_P2_CAST_PASS` and `HYBRID_P2_VIDEO_PASS` appear in successful job logs.
+- **P0/P1 blocker still open:** side-by-side old-film frame-hash comparison failed intermittently in new browser instances even though the legacy scene source has not changed. No tolerance waiver or baseline overwrite is authorized. Diagnose, capture and compare pixel differences and ensure repeatable parity or approved bounded tolerance before promotion.
+- **Next action:** Inspect [P2 acceptance CI](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290152840). Fix any real runtime/rendering failures. If green, record artifact URL and exact metrics here, then begin P3 rigged import work behind the same provider. Do not merge to main or redeploy the existing production URL until P0/P1 release signoffs.
 
 ---
 
