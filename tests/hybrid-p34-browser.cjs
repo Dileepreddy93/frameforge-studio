@@ -27,7 +27,14 @@ const save=(file,d)=>fs.writeFileSync(path.join(OUT,file),Buffer.from(d.split(',
   const resp=await page.goto('http://127.0.0.1:8994/tests/hybrid-p34-proof.html',
     {waitUntil:'domcontentloaded',timeout:120000});
   assert.equal(resp.status(),200);
-  await page.waitForFunction(()=>window.HybridP34Ready===true,null,{timeout:120000});
+  try{
+   await page.waitForFunction(()=>window.HybridP34Ready===true || Boolean(window.HybridP34Error),
+     null,{timeout:30000});
+   const reason=await page.evaluate(()=>window.HybridP34Error||null);
+   if(reason)throw Error('P34 browser setup failed: '+reason);
+  }catch(err){
+   throw Error(err.message+'; page errors: '+errors.join(' | '));
+  }
   const info=await page.evaluate(()=>HybridP34QA.summary());
   assert.ok(info.rigged,'preloaded GLB must have a real mapped skin');
   assert.ok(info.bytes>100000);
