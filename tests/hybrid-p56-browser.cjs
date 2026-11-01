@@ -54,6 +54,8 @@ const digest=x=>crypto.createHash('sha256').update(Buffer.from(x.split(',')[1],'
    assert.equal(digest(first.image),digest(rewind.image),'replaying absolute-time hybrid film must match pixel-for-pixel');
    assert.notEqual(digest(first.image),digest(second.image),'camera and new actor performances must differ');
    assert.equal(second.screen,true,'authored Ember interactive screen visible');
+   assert.deepEqual(second.reactions,['luna'],'other character performs authored reaction beat');
+   if(variant===2)assert.equal(second.camera.transition,'blend','one-take maintains cross-shot camera continuity');
    assert.ok(first.camera.position.every(Number.isFinite));
    assert.ok(first.camera.captionBounds);
    assert.ok(second.camera.screenBounds.y+second.camera.screenBounds.height <
