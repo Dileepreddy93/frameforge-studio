@@ -68,6 +68,19 @@ const EMOTIONS=['neutral','happy','sad','angry','surprised','worried','curious',
    assert.equal(hash(rewind.a),hash(rewind.b),template+' must be deterministic on rewind');
    proof.push({template,views:new Set(views).size,emotions:new Set(feelings).size,rewind:true});
   }
+  // Multi-actor creation must not accidentally share disposable geometry or cast identity.
+  const paired=await page.evaluate(()=>HybridP2QA.create({template:'human',second:true,
+    look:{height:1.1,top:'#7554a9'}}));
+  assert.equal(paired.project.characters.length,2);
+  assert.deepEqual(Object.keys(paired.project.hybrid.cast).sort(),['hero','partner']);
+  const pairFrame=await page.evaluate(()=>HybridP2QA.frame({time:.8,view:0}));
+  assert.equal(pairFrame.actorCount,2);
+  assert.deepEqual(pairFrame.actorIds,['hero','partner']);
+  save('two-custom-actors.png',pairFrame.image);
+  await page.evaluate(()=>HybridP2QA.create({template:'robot'}));
+  const afterDispose=await page.evaluate(()=>HybridP2QA.frame({time:.8,view:0}));
+  assert.equal(afterDispose.actorCount,1);
+  save('after-two-actor-disposal.png',afterDispose.image);
   const custom=await page.evaluate(()=>HybridP2QA.create({template:'human',style:'lowpoly',
     look:{height:1.18,head:1.16,build:1.2,glasses:'round',topStyle:'hoodie',
           prop:'book',hat:'beanie',skin:'#ddaa88',top:'#334f78'}}));
