@@ -44,7 +44,12 @@ const OUT=path.resolve(process.env.FRAMEFORGE_BETA_OUT||'artifacts/p9-beta-ux');
    await page.locator('#check-export').click();
    await page.waitForFunction(()=>!document.getElementById('export-status').textContent.includes('Testing actual browser'));
    assert.match(await page.locator('#export-status').textContent(),/H\.264|H264/i);
+   // Before consent, timeline actions must NOT be recorded; exercise one more
+   // intentional scrub after consent and require that only this action appears.
    await page.locator('#consent').check();
+   await page.locator('#timeline').evaluate(el=>{
+     el.value='2.1';el.dispatchEvent(new Event('input',{bubbles:true}));
+   });
    await page.locator('#outcome').selectOption('partial');
    await page.locator('#ease').selectOption('2');
    await page.locator('#quality').selectOption('4');
