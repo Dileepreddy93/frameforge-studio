@@ -28,6 +28,7 @@ jobs:
           node tests/rigged-asset-core.test.mjs
           node tests/project-core.test.cjs
           node tests/hybrid-baseline.test.cjs
+          node tests/hybrid-project-core.test.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
