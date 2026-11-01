@@ -5,7 +5,7 @@ import * as T from '../vendor/three@0.180.0/three.module.min.js';
 import {registerEmberCharacters} from '../src/ember-actor-provider.mjs';
 import {registerEmberWorlds} from '../src/hybrid-world-provider.mjs';
 import {createOnSetScreen,buildScreenShot} from '../src/hybrid-screen.mjs';
-import {resamplePCM,retimeForVoice,renderHybridAudio,HYBRID_AUDIO_RATE,speechAt,sampledEnvelope} from '../src/hybrid-voice.mjs';
+import {resamplePCM,retimeForVoice,renderHybridAudio,HYBRID_AUDIO_RATE,speechAt,sampledEnvelope,createKokoroBridge,synthesizeHybridProject} from '../src/hybrid-voice.mjs';
 const H=FrameForgeHybridProjectCore,D=FrameForgeHybridDirector,P=FrameForgeHybridProviders;
 const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 renderer.setPixelRatio(1);renderer.setSize(360,640,false);document.body.append(renderer.domElement);
@@ -139,6 +139,52 @@ async function loadFresh(modelPrefix='/artifacts/voice-model-samples/fresh-v2-ko
    markers:mix.markers,duration:mix.duration,projectSchema:project.schema,
    voices:metadata.report.voices,provenance:metadata.report.generator};
 }
+// P7 editor: never reuse prior movie audio after ANY project edit.
+let editableVoiceReady=false,voiceBusy=false;
+function loadEditable(source){
+ const p=JSON.parse(JSON.stringify(source));
+ H.assertProject(p);D.verify(p);
+ if(p.schema!==H.schema||p.hybrid.world.provider!=='procedural'||
+    p.characters.some(c=>p.hybrid.cast[c.id]?.provider!=='procedural'))
+   throw Error('This editor supports built-in Ember cast/world projects. Imported rigs require Asset Lab and are not silently downgraded.');
+ if(p.characters.length>6)throw Error('Editor preview currently supports a maximum of six active characters');
+ // Explicitly dispose all old assets/sessions before taking control.
+ session?.dispose();
+ project=p;
+ mix=renderHybridAudio(project,new Map(),{music:false});
+ mix.envelope=sampledEnvelope(mix.voice);
+ registry=P.createRegistry();
+ const positionIds=project.characters.map(c=>c.id);
+ const positions=Object.fromEntries(positionIds.map((id,i)=>[id,[(i-(positionIds.length-1)/2)*1.8,0,0]]));
+ registerEmberCharacters(registry,{scene,positions});
+ registerEmberWorlds(registry,{scene,renderer});
+ registry.lock();session=P.createSession(project,{registry});
+ film='editable';editableVoiceReady=false;
+ return {duration:session.duration,shots:project.shots.length,voicesGenerated:false};
+}
+async function generateEditableVoices(){
+ if(voiceBusy)throw Error('Voice synthesis already active');
+ if(!session||film!=='editable')throw Error('Open an editable V2 project first');
+ const snapshot=JSON.stringify(project);
+ voiceBusy=true;
+ const bridge=createKokoroBridge({timeoutMs:180000});
+ try{
+   const output=await synthesizeHybridProject(project,{bridge,music:false});
+   if(JSON.stringify(project)!==snapshot)throw Error('Project changed during voice generation; output discarded');
+   // Synthesis may alter shot lengths; rebuild every provider with its new V2 source.
+   loadEditable(output.project);
+   mix=output.mix;editableVoiceReady=true;
+   return {duration:mix.duration,markers:mix.markers,language:'en',
+     voicesGenerated:true,provenance:output.provenance,
+     project:JSON.parse(JSON.stringify(project))};
+ }finally{bridge.dispose();voiceBusy=false}
+}
+function getEditableProject(){return JSON.parse(JSON.stringify(project))}
+function getExportAudio(){
+ if(!editableVoiceReady)throw Error('Generate current dialogue before MP4 export. Silent storyboards cannot be sold as voiced films.');
+ return {left:new Float32Array(mix.left),right:new Float32Array(mix.right),
+   sampleRate:HYBRID_AUDIO_RATE,duration:mix.duration,peakDb:mix.peakDb,lufs:mix.lufs};
+}
 function setOutputResolution(width=360,height=640){
  if(!Number.isInteger(width)||!Number.isInteger(height)||width<180||height<320||
     width>1080||height>1920||width*16!==height*9)
@@ -196,7 +242,7 @@ function masterWav(){
  let result='';for(let i=0;i<u.length;i+=16384)result+=String.fromCharCode(...u.subarray(i,i+16384));
  return btoa(result);
 }
-window.HybridP56QA={create,loadFresh,setOutputResolution,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
+window.HybridP56QA={create,loadFresh,loadEditable,generateEditableVoices,getEditableProject,getExportAudio,getSurface:()=>overlay,setOutputResolution,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
  cast:project?.characters.map(c=>c.id),world:project?.hybrid.world.template,
  generatedSpeech:false,modelSource:'existing V6 Kokoro speech segments, re-timed through P6'}),
  dispose:()=>{session?.dispose();screenTexture.dispose();screenPlane.geometry.dispose();screenPlane.material.dispose();renderer.dispose()}};
