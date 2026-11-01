@@ -47,6 +47,12 @@ jobs:
           node tests/hybrid-voice.test.mjs
           node tests/hybrid-p8-readiness.test.mjs
           node tests/hybrid-p10-research.test.mjs
+          node --check src/hybrid-editor-core.js
+          node --check src/hybrid-editor-storage.mjs
+          node --check src/hybrid-browser-export.mjs
+          node --check src/hybrid-editor-app.mjs
+          node --check tests/hybrid-p7-creator-browser.cjs
+          node tests/hybrid-p7-editor.test.cjs
           node --check tests/hybrid-p9-beta-browser.cjs
           node --check tests/hybrid-p8-master-browser.cjs
           node --check tests/hybrid-p6-fresh-synthesis.cjs
@@ -261,12 +267,21 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Operate working beta on desktop and mobile viewports
         run: node tests/hybrid-p9-beta-browser.cjs
+      - name: Author, revise, save, reopen and preview original V2 films in actual creator UI
+        run: node tests/hybrid-p7-creator-browser.cjs
       - name: Archive real interface screenshots, UX and privacy test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: frameforge-p9-beta-usability
           path: artifacts/p9-beta-ux/
+      - name: Archive real desktop/mobile creator workflow evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p7-creator-e2e
+          path: artifacts/p7-creator/
+          if-no-files-found: warn
           if-no-files-found: warn
 
   rigged-character-import:
