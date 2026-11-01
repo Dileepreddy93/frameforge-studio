@@ -4,8 +4,8 @@ name: FrameForge release test
 # AVFoundation (QuickTime's engine) on macOS. With "publish", the Chrome film is released with its episode file,
 # script and report, and landing-page media are made from it.
 on:
-  # By hand once this file is on the default branch; until then, a push that changes the release test runs it, and
-  # "[publish-demo]" in that commit's message publishes.
+  # A push on integration branches runs tests only. Publishing a demo requires an explicit
+  # manual dispatch from the protected main branch; ordinary commits cannot publish.
   push:
     branches: ["claude/**", "feature/**"]
     paths: [".github/workflows/release-e2e.yml", "tests/release-e2e-browser.cjs", "tests/static-server.cjs", "tests/fixtures/feature-freeze.script.txt"]
@@ -107,7 +107,7 @@ jobs:
   publish:
     name: Publish the demo episode
     needs: [windows, macos]
-    if: ${{ inputs.publish || contains(github.event.head_commit.message, '[publish-demo]') }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -130,17 +130,16 @@ jobs:
           cp release/feature-freeze.frameforge.json projects/feature-freeze.frameforge.json
           cp release/feature-freeze.script.txt release/summary.json release/feature-freeze-1080x1920.report.json $O/
           ls -la $O
-      - name: Branch demo-assets with the media (the studio branch merges it after review)
+      - name: Stage demo media on a unique non-overwriting review branch
         run: |
           git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c demo-assets
+          git switch -c demo-assets-${{ github.run_id }}
           git add media/demo projects/feature-freeze.frameforge.json
           git commit -m "Demo episode Feature Freeze: landing media, episode file, script and report from release test run ${{ github.run_id }}"
-          git push --force origin demo-assets
+          git push origin demo-assets-${{ github.run_id }}
       - name: GitHub release with the full film
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release delete demo-feature-freeze --yes --cleanup-tag 2>/dev/null || true
-          gh release create demo-feature-freeze --target "$GITHUB_SHA" --title "Demo episode: Feature Freeze" --notes "Made from a new script in the FrameForge studio, voiced in the browser and exported at 1080x1920 by Chrome on Windows (release test run ${{ github.run_id }}). Files: the film, its episode file (open it in the studio), the script, and the studio's MP4 check report." \
+          gh release create demo-feature-freeze-${{ github.run_id }} --target "$GITHUB_SHA" --title "Demo episode: Feature Freeze" --notes "Made from a new script in the FrameForge studio, voiced in the browser and exported at 1080x1920 by Chrome on Windows (release test run ${{ github.run_id }}). Files: the film, its episode file (open it in the studio), the script, and the studio's MP4 check report." \
             release/feature-freeze-1080x1920.mp4 release/feature-freeze.frameforge.json release/feature-freeze.script.txt release/feature-freeze-1080x1920.report.json
