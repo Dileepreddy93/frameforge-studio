@@ -11,7 +11,7 @@ Production constraint: no main merge, tag overwrite, production redeploy or dele
 
 ## EXECUTION STATUS AND RESUME POINT — 2026-11-01
 
-**Current phase:** P5/P6 director/voice contracts IMPLEMENTED and source tests PASSED; integrated two-film video evidence in progress. **P3/P4:** rig/world/video integration passed technical CI. **P1/P0:** independent-page V6 visual parity and Windows/macOS release signoff still unresolved.
+**Current phase:** P5/P6 targeted director/script/screen/voice contracts and TWO audible H264/AAC animated scene-film proofs PASSED. **Still not commercial P6 certification:** actual newly generated V2 dialogue, Indic model voices and unified UI/high-resolution export remain untested. **P3/P4:** rig/world/video integration passed targeted CI. **P1/P0:** independent-page original V6 visual parity and Windows/macOS release signoff still unresolved.
 **Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
 **Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
 
@@ -145,7 +145,7 @@ Read [P3/P4 technical contract and licensing](HYBRID_P34_IMPORT_WORLDS.md).
 
 ## P5/P6 — One-timeline cinema direction and waveform-driven voice (2026-11-01)
 
-**Status: CODE + CONTRACT CI PASS, TWO-FILM RENDER AND RELEASE VERIFICATION IN PROGRESS.** See [P5/P6 contract, demo limitations and voice rights](HYBRID_P56_DIRECTION_VOICE.md).
+**Status: DIRECTOR + AUDIO CONTRACTS AND TWO COMPLETE VIDEO PROOFS PASSED; FRESH-V2-TTS/MULTILINGUAL AND FULL RELEASE GATES OPEN.** See [P5/P6 contract, demo limitations and voice rights](HYBRID_P56_DIRECTION_VOICE.md).
 
 P5 implementation:
 - `src/hybrid-direction.js` is the V2 script round-trip, shot reorder, actor-independent camera geometry (wide, single actor, two actor, screen), push/pull/orbit/drift, constrained camera blends and one-take continuity. Expressions, secondary-actor reaction beats and on-set screen cues come from the same FrameForge timeline. Existing V6 `src/script-core.js` remains untouched.
@@ -156,16 +156,17 @@ P6 implementation:
 - `src/hybrid-voice.mjs` bridges the existing local Kokoro worker (English), imported legal/consented 48 kHz mono PCM, shot re-timing, actor-audio assignment, FrameForge's existing stereo `episode-mix` with original sound-kit/music ducking and safe peak/loudness, 20Hz acoustic speech envelope and the existing FrameForge approximate visemes.
 - `src/ember-actor-provider.mjs` and `src/hybrid-rigged-provider.mjs` now expose optional acoustic `setSpeech` mouth controls, without changing legacy V6 rendering.
 - Tamil, Telugu, Hindi or any unsupported language are **not** silently mapped onto English Kokoro. Import of licensed human recordings is supported; native language synthesis is not yet verified and remains a commercial release gap.
-- The worker bridge strips Kokoro's internal 60ms/100ms line padding before reapplying shot timing. The new voice transport's unit test uses a mock worker; new-original-dialogue Kokoro inference in an actual V2 scene still needs direct full-model testing.
+- The worker bridge strips Kokoro's internal 60ms/100ms line padding before reapplying shot timing. `synthesizeHybridProject()` now runs each authored speaker through the existing Kokoro worker and creates a fully re-timed mastered V2 project; original FrameForge character `voice.kokoro.voice` ID takes precedence over a human-readable profile. Ember `curious` maps to supported Kokoro `thinking` delivery, and `idea` to `happy`, while the original facial emotions remain intact. This orchestration has a passing injected-worker unit test; fresh-original-dialogue V2 model inference still requires a dedicated full-model run.
 
 P5/P6 QA:
 - `tests/hybrid-director.test.cjs`, `tests/hybrid-voice.test.mjs`: script/one-take/reaction contracts and worker/PCM/mixing/consent; **source-and-project passed** in [run 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423).
 - `tests/hybrid-p56-proof.html`, `tests/hybrid-p56-browser.cjs`: 2 distinct Ember authored-story scenes with moving camera, live application screen, spoken-word mouth motion, original V6 Kokoro English speech segments placed in the **new** V2 mixer, 360×640 full-video H.264/AAC plus WAV and PNG screenshots, independent full ffmpeg decode. Voice clips are reused from the existing Zero Latency track and are **not newly synthesized dialogue**.
-- [Full P5/P6 acceptance run 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423) and art/video artifact **PENDING**. Do not mark complete until `HYBRID_P5_DIRECTOR_VIDEO_PASS` and `HYBRID_P6_AUDIO_VIDEO_PASS` appear in a successful portable-video-export job.
+- **VERIFIED:** [run 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423) `portable-video-export` **PASS**, logging `HYBRID_P5_DIRECTOR_VIDEO_PASS` for two shot/screen/reaction and deterministic-seek films and `HYBRID_P6_AUDIO_VIDEO_PASS` for two **36-frame, 360×640, 4.567-second** H.264/AAC films with independent full ffmpeg decode, acoustic mouth behavior and mastered stereo near **−14.027 LUFS / −2.0 dBFS**. Artifact [13080990912](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423/artifacts/13080990912) holds both MP4s, mastered WAVs, stills and `report.json`. This run's source, original voice/mix and rigged-import jobs passed; its independent legacy screenshot-comparison job failed on the pre-existing V6 comparator.
+- **Latest source-contract test after new V2 Kokoro orchestration:** [run 41299701150](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299701150), source-and-project-tests **PASS**. The first two-film proof uses original V6 Kokoro speech segments intentionally; `synthesizeHybridProject()` fresh-output mode itself has NOT yet been confirmed on actual downloaded model in the V2 environment.
 - The existing unrelated independent-page legacy film visual-parity test may still fail; P0/Windows+macOS release signoff still open. New combined hybrid customer UI is P7; high-resolution consumer export, long-film and mobile perf P8.
 - Production V6 and main remain protected and unchanged.
 
-**Next:** Fix any P5/P6 browser/voice failures, record exact passing CI and downloadable artifact, and then expand newly synthesized speech and multilingual R&D without pretending pre-recorded voice segments are a verified new TTS language.
+**Next:** Keep the original V6 parity/Windows/macOS gates explicit and unwaived. Test `synthesizeHybridProject()` with the **actual downloaded Kokoro model** for two original English hybrid lines, listen to the two new performances, measure word-level alignment, verify mobile audio and GPU behavior, then independently evaluate licence-safe Hindi/Telugu local models. P7 editor and P8 full-res commercial export are distinct gates; do not deploy or merge production yet.
 
 ---
 
