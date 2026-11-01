@@ -45,6 +45,8 @@ jobs:
           node --check src/hybrid-voice.mjs
           node tests/hybrid-director.test.cjs
           node tests/hybrid-voice.test.mjs
+          node --check tests/hybrid-p6-fresh-synthesis.cjs
+          node --check tests/hybrid-p6-fresh-film-browser.cjs
           node --check src/hybrid-screen.mjs
           node --check tests/hybrid-p56-browser.cjs
           node tests/project-integration.test.mjs
@@ -127,7 +129,8 @@ jobs:
           node tests/episode-mix-browser.cjs
           FRAMEFORGE_VOICE=1 node tests/self-host-browser.cjs
           FRAMEFORGE_SAMPLES_OUT=artifacts/voice-model-samples node tests/voice-model-browser.cjs
-      - name: Keep the voice samples (full and light model) for listening
+          FRAMEFORGE_SAMPLES_OUT=artifacts/voice-model-samples node tests/hybrid-p6-fresh-film-browser.cjs
+      - name: Archive full/light Kokoro voice models and NEW two-speaker V2 film evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
