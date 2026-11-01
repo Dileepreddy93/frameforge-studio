@@ -109,7 +109,7 @@
          if(!active.screen)throw Error('Screen row must follow @screen');
          active.screen.lines.push(line.slice(2));continue;
        }
-       const match=/^([^:]{1,80})(?:\s+\(([^)]+)\))?(?:\s+\[([^\]]+)\])?:\s*(.+)$/.exec(line);
+       const match=/^([^:]{1,80}?)(?:\s+\(([^)]+)\))?(?:\s+\[([^\]]+)\])?:\s*(.+)$/.exec(line);
        if(!match)throw Error('Expected ACTOR (emotion) [action]: dialogue');
        if(active.speaker)throw Error('Only one spoken line per @shot');
        const actor=actors.get(match[1].trim().toLowerCase());
