@@ -35,7 +35,7 @@ const failure=page=>page.waitForFunction(()=>getComputedStyle(document.getElemen
    assert.ok(requests.some(u=>u.includes('/vendor/three@0.180.0/three.module.min.js')));
    assert.ok(!requests.some(u=>u.includes('cdn.jsdelivr.net')&&!/\/npm\/mediabunny|onnxruntime/.test(u)),'three.js came from our site');
    await page.waitForFunction(()=>FrameForgeQA.envelopeReady(),null,{timeout:60000});
-   const r=await page.evaluate(async()=>{const r=await FrameForgeMP4Test({frameLimit:6,width:180,height:320,download:false});return {bytes:r.blob.size,codec:r.audioCodec}});
+   const r=await page.evaluate(async()=>{const r=await FrameForgeMP4Test({frameLimit:6,width:360,height:640,download:false});return {bytes:r.blob.size,codec:r.audioCodec}});
    assert.ok(r.bytes>2000,'an MP4 was written with our copy of Mediabunny');
    assert.ok(requests.some(u=>u.includes('/vendor/mediabunny@1.62.1/mediabunny.mjs')));
    // The voice runtime's files are served (the worker loads them when voices start).
