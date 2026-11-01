@@ -33,6 +33,13 @@ jobs:
           node --check src/ember-actor-provider.mjs
           node --check src/three-rounded-box.mjs
           node --check tests/hybrid-p2-characters-browser.cjs
+          node --check src/ember-import-validator.mjs
+          node --check src/ember-imported-rig.mjs
+          node --check src/hybrid-rigged-provider.mjs
+          node --check src/ember-world-engine.mjs
+          node --check src/hybrid-world-provider.mjs
+          node --check tests/hybrid-p34-browser.cjs
+          node tests/hybrid-p34-policy.test.mjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
@@ -144,6 +151,15 @@ jobs:
         run: node tests/hybrid-p1-video-browser.cjs
       - name: P2 real Ember cast (six templates, 4 views, 8 emotions, customization and MP4)
         run: node tests/hybrid-p2-characters-browser.cjs
+      - name: P3 P4 imported humanoid and Ember worlds (WebGL / H264+Aac)
+        run: node tests/hybrid-p34-browser.cjs
+      - name: Preserve P3 P4 model/world frames, full decode MP4 and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p34-hybrid-proof
+          path: artifacts/p34-hybrid/
+          if-no-files-found: warn
       - name: Preserve P2 cast proof images, report and video
         if: always()
         uses: actions/upload-artifact@v4
