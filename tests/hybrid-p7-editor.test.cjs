@@ -15,7 +15,7 @@ assert.equal(state.world('snow','night'),true);
 state.addShot();assert.equal(state.project.shots.length,3);
 const last=state.project.shots[2].id;
 state.moveShot(last,-1);assert.equal(state.project.shots[1].id,last);
-state.shot(last,{screenKind:'terminal',screenTitle:'Local rendering',screenLines:'> build\\nDone',caption:'RENDER COMPLETE'});
+state.shot(last,{screenKind:'terminal',screenTitle:'Local rendering',screenLines:'> build\nDone',caption:'RENDER COMPLETE'});
 assert.equal(state.project.shots[1].screen.lines.length,2);
 assert.equal(state.project.shots[1].caption,'RENDER COMPLETE');
 const snap=state.serialize(),p2=ed.parseCreatorFile(snap);
