@@ -89,7 +89,7 @@ export async function synthesizeHybridProject(project,{bridge,voiceByActor={},la
  for(const shot of project.shots){
    const actor=actors.get(shot.speaker);
    if(!actor)throw Error('Shot references an unknown speaker');
-   const voice=voiceByActor[shot.speaker]||actor.voice?.profile;
+   const voice=voiceByActor[shot.speaker]||actor.voice?.kokoro?.voice||actor.voice?.profile;
    const line=await bridge.speak({
      text:shot.dialogue,voice,language:languageByActor[shot.speaker]||'en',
      emotion:shot.cast?.[shot.speaker]?.emotion||'neutral',
