@@ -16,10 +16,13 @@ export function validateVoiceRequest({text,voice,emotion='neutral',language='en'
  if(!ENGLISH.test(language))throw Error('Kokoro English model does not support '+language+
    '; select a separately verified Indic-language speech provider or import consented recordings');
  if(!VOICE.test(voice||''))throw Error('Unsupported Kokoro voice identifier');
- if(!['neutral','happy','sad','angry','surprised','worried','curious','idea'].includes(emotion))
-   throw Error('Unknown voice emotion');
+ const allowed=['neutral','happy','sad','angry','surprised','worried','curious','idea','thinking'];
+ if(!allowed.includes(emotion))throw Error('Unknown voice emotion');
+ // FrameForge's actual Kokoro worker supports "thinking" but not Ember's
+ // "curious"/"idea" acting emotions. Keep the facial expression separate.
+ const workerEmotion=emotion==='curious'?'thinking':emotion==='idea'?'happy':emotion;
  if(!goodNum(speed,.7,1.4))throw RangeError('Voice speed must be .7–1.4');
- return {text,voice,emotion,speed,language};
+ return {text,voice,emotion:workerEmotion,speed,language};
 }
 export function createKokoroBridge({createWorker=()=>new Worker(new URL('./kokoro-worker.js',import.meta.url),{type:'module'}),
  timeoutMs=180000,quality='light'}={}){
@@ -73,6 +76,34 @@ export function createKokoroBridge({createWorker=()=>new Worker(new URL('./kokor
    },
    dispose:()=>{closed=true;failAll(Error('Voice bridge disposed'));worker?.terminate?.();worker=null}
  });
+}
+// End-to-end V2 orchestration: fresh English dialogue -> existing Kokoro worker
+// -> exact line lengths -> original FrameForge mastered stereo -> actor mouth data.
+// No implicit model/provider fallback or silent synthetic placeholders.
+export async function synthesizeHybridProject(project,{bridge,voiceByActor={},languageByActor={},
+  music=true,screenSounds=[]}={}){
+ if(project?.schema!=='frameforge.project/2')throw Error('New voices require a V2 project');
+ if(!bridge||typeof bridge.speak!=='function')throw Error('A real Kokoro bridge is required');
+ const actors=new Map(project.characters.map(a=>[a.id,a]));
+ const lines=new Map();
+ for(const shot of project.shots){
+   const actor=actors.get(shot.speaker);
+   if(!actor)throw Error('Shot references an unknown speaker');
+   const voice=voiceByActor[shot.speaker]||actor.voice?.profile;
+   const line=await bridge.speak({
+     text:shot.dialogue,voice,language:languageByActor[shot.speaker]||'en',
+     emotion:shot.cast?.[shot.speaker]?.emotion||'neutral',
+     speed:shot.timing?.pace||1,speaker:shot.speaker
+   });
+   if(line.speaker!==shot.speaker||line.text!==shot.dialogue)
+     throw Error('Kokoro response lacks the expected speaker/dialogue identity');
+   lines.set(shot.id,{...line,rights:{source:'kokoro-local',consent:true}});
+ }
+ const timed=retimeForVoice(project,lines);
+ const mixed=renderHybridAudio(timed,lines,{music,screenSounds});
+ mixed.envelope=sampledEnvelope(mixed.voice);
+ return {project:timed,lines,mix:mixed,language:'en',
+   provenance:'Existing FrameForge Kokoro-82M worker; all rendered speech newly synthesized'};
 }
 export function resamplePCM(samples,sampleRate){
  if(!(samples instanceof Float32Array)||!goodNum(sampleRate,8000,96000))
