@@ -5,7 +5,7 @@
 //   5. refresh: the episode comes back            6. offline: a line is voiced with no network
 //   7. export the whole film at 1080x1920 and pass the studio's own MP4 check; keep the MP4, the episode file, the
 //      report and a summary in FRAMEFORGE_RELEASE_OUT.
-//   python3 -m http.server 8959 & FRAMEFORGE_URL=http://127.0.0.1:8959/ node tests/release-e2e-browser.cjs
+//   node tests/static-server.cjs 8959 & FRAMEFORGE_URL=http://127.0.0.1:8959/ node tests/release-e2e-browser.cjs
 // Needs the network (Hugging Face) for the first voice download. FRAMEFORGE_VOICE_MODEL=light uses the light model;
 // FRAMEFORGE_EXPORT_SIZE=720 exports smaller.
 const assert=require('node:assert/strict');
@@ -33,6 +33,14 @@ const step=async(name,fn)=>{const t=Date.now();process.stdout.write(`… ${name}
  const page=context.pages()[0]||await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const ready=()=>page.waitForFunction(()=>window.FrameForgeRecovered&&window.FrameForgeQA?.shots().length>0,null,{timeout:180000});
  const voiceAll=()=>page.evaluate(async()=>{await FrameForgeVoiceQA.voiceAll();return document.getElementById('voiceStatus').textContent;});
+ // The studio voices a new or changed episode by itself; wait for that run rather than starting a second one.
+ const voiced=async()=>{await page.waitForTimeout(1500);
+  if(/^Voicing line|^Mixing/.test(await page.textContent('#voiceStatus')))
+   await page.waitForFunction(()=>/^Voiced \d+ lines|^Voicing failed/.test(document.getElementById('voiceStatus').textContent),null,{timeout:3*3600e3,polling:1000});
+  else return voiceAll();
+  return page.textContent('#voiceStatus');};
+ // Seconds each new line took to voice (cached lines excluded).
+ const lineTimes=()=>page.evaluate(()=>(FrameForgeVoiceQA.status().lines||[]).filter(l=>!l.cached).map(l=>+(l.ms/1000).toFixed(1)));
  const edit=async(i,text)=>{await page.evaluate(i=>document.querySelectorAll('.shot')[i].click(),i);await page.fill('#dialogue',text);await page.click('#apply');
   await page.waitForTimeout(700);await page.evaluate(async()=>{FrameForgeHistoryQA.checkpoint();await FrameForgeHistoryQA.saved();});};
  const line=i=>page.evaluate(i=>FrameForgeQA.shots()[i].text,i);
@@ -44,24 +52,25 @@ const step=async(name,fn)=>{const t=Date.now();process.stdout.write(`… ${name}
    if(MODEL==='light')await page.evaluate(()=>FrameForgeVoiceQA.useModel('light'));
    const e=await page.evaluate(()=>FrameForgeVoiceQA.ensure());assert.equal(e.state,'ready');
    const files=await page.evaluate(()=>FrameForgeVoiceQA.downloaded());
-   return {model:e.model,device:e.device,modelMB:+((files.model?.total||0)/1e6).toFixed(1),runtimeMB:+((files.runtime?.total||0)/1e6).toFixed(1)};
+   return {model:e.model,device:e.device,threads:e.threads,modelMB:+((files.model?.total||0)/1e6).toFixed(1),runtimeMB:+((files.runtime?.total||0)/1e6).toFixed(1)};
   });
 
   const made=await step('2. write a new script and make the episode',async()=>{
    await page.fill('#script',SCRIPT);await page.click('#build');
    await page.waitForFunction(()=>FrameForgeCurrentProject?.id==='feature-freeze',null,{timeout:30000});
-   const status=await voiceAll();
+   const status=await voiced();
+   const perLine=await lineTimes();
    const s=await page.evaluate(()=>({shots:FrameForgeQA.shots().length,seconds:+FrameForgeQA.shots().reduce((a,s)=>a+s.duration,0).toFixed(2),
     cams:FrameForgeQA.shots().map(s=>s.camera).join(' '),mix:FrameForgeVoiceQA.status().mix}));
    assert.match(status,/^Voiced 21 lines in your browser/);
    assert.ok(s.seconds>=45&&s.seconds<=90,'a ~60 s episode: '+s.seconds);
    assert.ok(Math.abs(s.mix.lufs+14)<1.5,'mastered near −14 LUFS: '+s.mix.lufs);
-   return {...s,status};
+   return {...s,status,perLineSeconds:perLine,meanLineSeconds:+(perLine.reduce((a,b)=>a+b,0)/Math.max(1,perLine.length)).toFixed(1)};
   });
 
   await step('3. change a line: only it is voiced again',async()=>{
    await edit(2,'No. No new features. Not one. We need a feature freeze.');
-   const status=await voiceAll();
+   const status=await voiced();
    assert.match(status,/\(1 new, 20 from the cache\)/);
    return {status};
   });
@@ -88,7 +97,7 @@ const step=async(name,fn)=>{const t=Date.now();process.stdout.write(`… ${name}
    await page.reload();await ready();
    await page.evaluate(()=>FrameForgeVoiceQA.ensure());
    await edit(20,'Ship it. Quickly, before it melts.');
-   const status=await voiceAll();assert.match(status,/\(1 new, 20 from the cache\)/);
+   const status=await voiced();assert.match(status,/\(1 new, 20 from the cache\)/);
    await page.click('#undo');assert.equal(await line(20),'Ship it.');
    const back=await voiceAll();assert.match(back,/\(0 new, 21 from the cache\)/);
    await context.setOffline(false);

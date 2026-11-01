@@ -8,7 +8,7 @@ on:
   # "[publish-demo]" in that commit's message publishes.
   push:
     branches: ["claude/**", "feature/**"]
-    paths: [".github/workflows/release-e2e.yml", "tests/release-e2e-browser.cjs", "tests/fixtures/feature-freeze.script.txt"]
+    paths: [".github/workflows/release-e2e.yml", "tests/release-e2e-browser.cjs", "tests/static-server.cjs", "tests/fixtures/feature-freeze.script.txt"]
   workflow_dispatch:
     inputs:
       publish:
@@ -51,8 +51,12 @@ jobs:
           FRAMEFORGE_VOICE_MODEL: ${{ inputs.model || 'full' }}
           FRAMEFORGE_RELEASE_OUT: artifacts/release-${{ matrix.browser }}
         run: |
-          Start-Process -FilePath python -ArgumentList '-m','http.server','8959','--bind','127.0.0.1' -WindowStyle Hidden
-          Start-Sleep -Seconds 3
+          # Node, not Python's http.server: on Windows that takes content types from the registry and can serve .mjs as
+          # text/plain, which stops the studio's mixer worker from loading (the live site sends text/javascript).
+          Start-Process -FilePath node -ArgumentList 'tests/static-server.cjs','8959' -WindowStyle Hidden
+          Start-Sleep -Seconds 2
+          $t = (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8959/src/episode-mix.mjs).Headers['Content-Type']; "episode-mix.mjs: $t"
+          if ($t -notmatch 'javascript') { throw "the test server sends .mjs as $t" }
           node tests/release-e2e-browser.cjs
       - name: External players (ffprobe, full ffmpeg decode, mpv)
         shell: pwsh
