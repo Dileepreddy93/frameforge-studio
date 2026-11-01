@@ -45,6 +45,8 @@ jobs:
           node --check src/hybrid-voice.mjs
           node tests/hybrid-director.test.cjs
           node tests/hybrid-voice.test.mjs
+          node tests/hybrid-p8-readiness.test.mjs
+          node --check tests/hybrid-p8-master-browser.cjs
           node --check tests/hybrid-p6-fresh-synthesis.cjs
           node --check tests/hybrid-p6-fresh-film-browser.cjs
           node --check src/hybrid-screen.mjs
@@ -217,6 +219,30 @@ jobs:
           name: frameforge-v5-3-audio-guided-motion-3sec
           path: artifacts/v5-3-audio-guided-3s.mp4
           if-no-files-found: error
+
+  hybrid-native-hd-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    needs: source-and-project-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser and H264/AAC encoder
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Native 1080x1920 30fps WebGL render, audio and full MP4 decode
+        run: node tests/hybrid-p8-master-browser.cjs
+      - name: Archive true full-resolution frames and independent codec evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p8-native-hd-certification
+          path: artifacts/p8-master-cert/
+          if-no-files-found: warn
 
   rigged-character-import:
     runs-on: ubuntu-24.04
