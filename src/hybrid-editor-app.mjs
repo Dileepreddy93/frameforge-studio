@@ -3,7 +3,7 @@ import {createProjectStore} from './hybrid-editor-storage.mjs';
 import {exportHybridFilm} from './hybrid-browser-export.mjs';
 const $=id=>document.getElementById(id),M=window.FrameForgeHybridEditor,C=window.FrameForgeHybridProjectCore;
 let editor=null,store=null,engine=null,selected='shot-01',play=false,last=0,animation=0;
-let busy=false,exportAbort=null,storageSequence=Promise.resolve(),rebuildGeneration=0;
+let busy=false,exportAbort=null,storageSequence=Promise.resolve(),rebuildGeneration=0,recoveryRaw=null,initialRecoveryCorrupt=false;
 let audioContext=null,audioSource=null,audioTimelineStart=null;
 const text=(id,message)=>{$(id).textContent=message};
 function download(blob,name){
@@ -119,7 +119,7 @@ function renderUI({render3d=true}={}){
  if(render3d&&engine)rebuild();
 }
 function queueSave(){
- if(!store)return;
+ if(!store||initialRecoveryCorrupt)return;
  const json=editor.serialize();
  storageSequence=storageSequence.catch(()=>{}).then(async()=>{
    try{await store.save(json);
@@ -142,7 +142,7 @@ function rebuild(){
 }
 function changeProject(action){
  if(!editor||busy)return;
- try{if(action()){renderUI();queueSave()}}
+ try{if(action()){initialRecoveryCorrupt=false;renderUI();queueSave()}}
  catch(e){text('status','Not saved: '+e.message);renderUI({render3d:false})}
 }
 for(const id of ['title','logline'])$(id).onchange=()=>changeProject(()=>editor[id]($(id).value));
@@ -196,13 +196,18 @@ $('save-project').onclick=()=>{
  if(!editor)return;download(new Blob([editor.serialize()],{type:'application/json'}),
    'frameforge-'+editor.project.id+'.json');
 };
+$('recovery-backup').onclick=()=>{
+ if(!recoveryRaw)return;
+ download(new Blob([recoveryRaw],{type:'text/plain'}),
+   'frameforge-damaged-local-recovery.txt');
+};
 $('open-project').onclick=()=>$('file').click();
 $('file').onchange=async()=>{
  const file=$('file').files?.[0];$('file').value='';if(!file)return;
  try{
    if(file.size>1_048_576)throw Error('Project file exceeds 1 MB');
    const p=M.parseCreatorFile(await file.text());
-   editor.replace(p);selected=p.shots[0].id;renderUI();queueSave();
+   editor.replace(p);selected=p.shots[0].id;initialRecoveryCorrupt=false;renderUI();queueSave();
    text('status','Validated project reopened. Generate current voices before export.');
  }catch(e){text('status','Project import refused: '+e.message)}
 };
@@ -258,15 +263,21 @@ $('engine').addEventListener('load',async()=>{
    let p;
    if(saved){
      try{p=M.parseCreatorFile(saved)}
-     catch(e){text('storage-status','Saved project was invalid; it was not overwritten: '+e.message)}
+     catch(e){
+       recoveryRaw=saved;initialRecoveryCorrupt=true;
+       $('recovery-backup').hidden=false;
+       text('storage-status','Damaged saved project preserved. Download the recovery copy before editing. '+e.message);
+     }
    }
    if(!p){
      const fixture=await fetch('./projects/zero-latency.frameforge.json').then(r=>{
        if(!r.ok)throw Error('Original FrameForge project fixture unavailable');return r.json()});
      p=M.fromLegacy(fixture);
    }
-   editor=M.createEditor(p);selected=p.shots[0].id;renderUI();queueSave();
-   text('storage-status',saved?'Recovered a locally saved project.':'Created new project with local autosave.');
+   editor=M.createEditor(p);selected=p.shots[0].id;renderUI();
+   if(!initialRecoveryCorrupt)queueSave();
+   if(!initialRecoveryCorrupt)
+     text('storage-status',saved?'Recovered a locally saved project.':'Created new project with local autosave.');
  }catch(e){
    text('status','Cannot open the hybrid creator: '+e.message+
     '. Your original V6 editor remains available.');
