@@ -22,12 +22,12 @@ const b=createKokoroBridge({timeoutMs:5000,createWorker:()=>{
    postMessage(data){mock.push(data);
      queueMicrotask(()=>worker.onmessage({data:{id:data.id,
        type:data.type,samples:new Float32Array(48000).fill(.11),
-       rate:48000,seconds:1,voiceStart:.1,phonemes:'hɛlˌoʊ'}}))},
+       rate:48000,seconds:1,voiceStart:.06,phonemes:'hɛlˌoʊ'}}))},
    terminate(){this.terminated=true}};
   return worker;
 }});
 const response=await b.speak({text:'Hello!',voice:'af_bella',speaker:'dev',language:'en'});
-assert.equal(response.samples.length,48000);assert.equal(response.source,'kokoro-local');
+assert.equal(response.samples.length,40320,'worker line trimmed by 60 ms lead and 100 ms tail');assert.equal(response.source,'kokoro-local');
 assert.equal(mock[0].type,'speak');assert.equal(mock[0].quality,'light');
 assert.equal(mock[0].voice,'af_bella');
 b.dispose();assert.equal(worker.terminated,true);
