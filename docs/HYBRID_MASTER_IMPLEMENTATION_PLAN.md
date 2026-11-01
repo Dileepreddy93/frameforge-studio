@@ -11,7 +11,7 @@ Production constraint: no main merge, tag overwrite, production redeploy or dele
 
 ## EXECUTION STATUS AND RESUME POINT — 2026-11-01
 
-**Current phase:** P3 real skinned character importer and P4 Ember world adapters IMPLEMENTED, CI integration proving/skipping status recorded below; neither production approved. **P2:** six-actor dedicated visual/video tests passed. **P1/P0:** separate-browser V6 parity and Windows/macOS full release certification remain blockers.
+**Current phase:** P3/P4 dedicated real GLB, four-world and H.264/AAC proof PASSED; full compatibility and production release gates remain open. **P2:** six-character visual/video CI passed. **P1/P0:** independent-browser V6 parity and Windows/macOS certification remain unresolved.
 **Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
 **Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
 
@@ -111,31 +111,35 @@ node tests/hybrid-legacy-film-frames.cjs
 
 ---
 
-## P3 + P4 — Imported characters and original Ember environments (2026-11-01)
+## P3 + P4 — Real imported humanoids and Ember environments (2026-11-01)
 
-**Status: IMPLEMENTATION PUSHED; P3/P4 FINAL VIDEO AND WORLD CERTIFICATION PENDING.** Reference: [P3/P4 engineering, source lineage and limitations](HYBRID_P34_IMPORT_WORLDS.md).
+**Targeted engineering proof: PASSED. Full P3/P4 production acceptance: NOT YET APPROVED.**
+Read [P3/P4 technical contract and licensing](HYBRID_P34_IMPORT_WORLDS.md).
 
-P3 real humanoid model pipeline:
-- `src/ember-import-validator.mjs`: Ember's actual GLB/VRM bone and blendshape inspector.
-- `src/ember-imported-rig.mjs`: Ember original humanoid bone retargeting, skeleton IK, absolute-time body and facial animation, morph-based mouth and eye behavior.
-- `src/hybrid-rigged-provider.mjs`: FrameForge strict preflight of GLB bytes, 25 MiB limit, local-only image/buffer assets, humanoid bone validation and required-extension allowlist, async preloading before P1 synchronous actor contract.
-- `src/vendor-gltf-loader.mjs` and `src/vendor-buffergeometry-utils.mjs`: official **Three.js r180 MIT** files, local dependencies; runtime CDN removed on this path.
-- GLB test: existing **Khronos CesiumMan CC BY 4.0** technical character, real skin/bones/triangles. Do not claim that a single rig proves 100% compatibility with VRoid/Mixamo/Blender formats; P3 still needs multiple source models and mobile memory profiling.
+### Delivered code (protected hybrid branch only)
+- P3: `src/ember-import-validator.mjs` (Ember's original rig/face inspector), `src/ember-imported-rig.mjs` (true skinned humanoid/IK/viseme code), `src/hybrid-rigged-provider.mjs` (GLB preflight, 25 MiB cap, self-contained asset policy, required bone/extension checks, async preload, disposable absolute-time actor).
+- P3 runtime libraries: locally pinned official Three.js r180 MIT `src/vendor-gltf-loader.mjs`, `src/vendor-buffergeometry-utils.mjs`.
+- P4: `src/ember-world-engine.mjs` (actual Ember foliage, atmospheric light, snow, particles, scenes), `src/hybrid-world-provider.mjs` (bound options, world-time, safe anchors, scene restoration, GPU disposal, imported world validation).
+- P4 runtime libraries: locally pinned official Three.js r180 MIT `src/vendor-sky.mjs`, `src/vendor-groundedskybox.mjs`.
+- V6 `studio.html`, `src/project-core.js`, existing character engines, main and production remain unchanged, verified by actual GitHub compare against commit `2b78e60`.
 
-P4 original world integration:
-- `src/ember-world-engine.mjs`: original Ember nature and atmosphere implementation, preserving procedural foliage, environmental shaders, 3D scenery and deterministic time animation.
-- `src/vendor-sky.mjs`, `src/vendor-groundedskybox.mjs`: pinned Three.js r180 MIT world dependencies.
-- `src/hybrid-world-provider.mjs`: explicit world construction/cleanup and previous-scene restoration; procedural `forest`, `meadow`, `snow`, `desk`; bounded foliage, wind and particles; stage center/screen/ground anchors and safe local GLB world import.
-- Imported world browser proof uses a **Khronos GLB asset only as geometry-load test proxy**, not a customer-quality custom environment.
+### Verified CI and evidence
+- [Code quality run 41295668842](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842) `portable-video-export` **PASSED**, and the source and rigged-import jobs passed.
+- Log `HYBRID_P3_IMPORT_PASS`: real `AraAthleticMan.glb`, **69 named humanoid bones**, 10,587,092 bytes, 48,820 triangles, 8 directed emotions, actual skinning/animations. Existing CC0/MakeHuman-derived test asset, CMU-derived bundled motion with **separate no-resale restrictions**: technical CI only, never commercial cast distribution; these clips are not used by proof.
+- Log `HYBRID_P4_WORLDS_PASS`: original Ember `forest` morning, `meadow` golden, `snow` night, `desk` golden, deterministic state and rewind; imported-world GLB loading using **Khronos CesiumMan as a geometry proxy only**, not an artistically validated environment.
+- Log `HYBRID_P34_VIDEO_PASS`: **24-frame, 300×500, H.264/AAC** test film, fully decoded by ffmpeg using the old V6 mastered audio. Not full-res new voiced/lip-synced output.
+- [P3/P4 actual screenshot/film/report artifact](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842/artifacts/13079385805).
+- P0 media checks, P1 hybrid video, and P2 six-character browser/video proof **also passed in the same portable job**.
 
-QA and gating:
-- `tests/hybrid-p34-policy.test.mjs`: blocks malformed GLBs, external remote textures, invalid world configuration, unsupported input.
-- `tests/hybrid-p34-proof.html` + `tests/hybrid-p34-browser.cjs`: one actual skinned GLB in all four actual Ember worlds, character acting/4 views/rewind, imported GLB world, 24-frame H.264/AAC proof using existing V6 audio, verified with ffmpeg.
-- [CI run 41294681160](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41294681160): **rigged-character-import and source-and-project passed** at initial check; full portable-video/browser/voice jobs still in progress. Do not mark P3/P4 passed without seeing `HYBRID_P3_IMPORT_PASS`, `HYBRID_P4_WORLDS_PASS` and `HYBRID_P34_VIDEO_PASS` in a successful CI job.
-- Known P0/P1 separate-page visual-parity issue is **not resolved**. Existing V6 renderer remains unmodified; failure of parity should be investigated, not masked.
-- The normal production editor does not yet display imported custom casts or these four world options. This is P7 UI work. Audio is not newly synthesized for imported actors; P6. Browser MP4 from a code test is not yet 1080×1920 consumer cinematic export; P8. No production deployment or branch merge.
+### Failure history and unresolved gates
+- First P34 browser run timed out: strict humanoid preflight correctly rejected **Khronos CesiumMan** because its 19 joints use nonstandard names (e.g. Skeleton_torso_joint_1) and lacked the required mapping. Real model diagnosis at [run 41295412244](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295412244) confirmed Ara's recognized 69-joint mapping; we did **not** weaken safety to make CesiumMan pass.
+- Second browser run failed on a test typo expecting `world.preset`, when the correct v2 property is `world.template`; fixed in commit `c1251982` and verified green.
+- Full **P3 acceptance still open**: independent VRM and Mixamo/Blender assets, MToon/spring-bone and facial morph limitations, multi-rig handling, mobile GPU/memory and commercial licence checks.
+- Full **P4 acceptance still open**: one truly authored imported world, complete desk furniture/prop editing, HDRI/backdrop/360 options and real-device visual/performance tests.
+- **P0/P1 whole product release gate still open:** existing independent-browser baseline screenshot comparator periodically fails even though original V6 rendering code is unchanged; Windows/macOS full-film release gate is not certified. Do not weaken thresholds without baseline-variance evidence.
+- Production `frameforge-v6.vercel.app` and `main` deliberately untouched. New custom characters/worlds are not yet wired to the normal editor (P7), original voice/lip sync and final film pipeline (P6/P8).
 
-**Next:** Inspect the P3/P4 CI job logs and fix runtime errors before advancing further. For full P3 acceptance, additionally test independent VRM rigs and explicit unsupported extension handling; for P4, measure actual mobile GPU performance, texture ownership and imported world behavior. Update this section with exact green run/artifact IDs and residual limitations.
+**Next checkpoint:** continue P3/P4 compatibility hardening and future P5 director integration on the protected branch; do not promote production until all above release gates are independently verified.
 
 ---
 
