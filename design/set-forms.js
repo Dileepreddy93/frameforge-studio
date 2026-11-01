@@ -97,13 +97,16 @@
    {c:[106,35,11],fill:SCREEN.green},tx(title,142,47,30,SCREEN.title,{bold:1}),{r:[0,70,1000,5],fill:rule}];
  }
  const spark=(x,y,w,h,n,fall,seed)=>Array.from({length:n+1},(_,i)=>[x+i*w/n,y+h*(fall?(i/n)*.25-.75+hash(i,seed)*.6:.35-(i/n)*.3+hash(i,seed)*.35)]);
+ // The size at which a mono bold value fills at most `width` of the 1000-px frame (a character is ~0.6 em wide), so
+ // a long value ("4,000 km") shrinks to stay in the readable part of a window instead of running off it.
+ const fitMono=(text,width)=>width/(.6*Math.max(1,String(text).length));
  const APPS={
   // The story screen: a metric that is bad (or good) right now.
   dashboard(H,o={}){
    const t=o.tone==='good'?{ink:SCREEN.good,rule:SCREEN.goodRule,tint:SCREEN.goodTint}:{ink:SCREEN.bad,rule:SCREEN.badRule,tint:SCREEN.badTint};
    const badge=o.badge??'SLOW',bw=badge.length*24+70;
    return[...chrome(o.title||'Dashboard · /home',t.rule,H),tx(o.label||'p95 page load',56,170,46,SCREEN.label),
-    ...(badge?[rr(950-bw,118,bw,72,12,t.tint),tx(badge,950-bw/2,168,40,t.ink,{bold:1,anchor:'middle'})]:[]),tx(o.value||'12.0 s',46,Math.min(H-150,430),Math.min(230,H*.42),t.ink,{bold:1}),
+    ...(badge?[rr(950-bw,118,bw,72,12,t.tint),tx(badge,950-bw/2,168,40,t.ink,{bold:1,anchor:'middle'})]:[]),tx(o.value||'12.0 s',46,Math.min(H-150,430),Math.min(230,H*.42,fitMono(o.value||'12.0 s',900)),t.ink,{bold:1}),
     {line:spark(30,H-40,940,Math.min(150,H*.22),26,o.tone!=='good',3),stroke:t.ink,w:7}];
   },
   inbox(H){
@@ -156,7 +159,7 @@
    const bad=o.tone==='bad',ink=bad?SCREEN.bad:SCREEN.good,rule=bad?SCREEN.badRule:SCREEN.goodRule,tint=bad?SCREEN.badRow:SCREEN.goodTint;
    const y=v=>v*H/675,graph=Array.from({length:10},(_,i)=>[690+i*30,y(o.graph==='flat'?580:582-50*Math.exp(-i*.6))]);
    return[...chrome(o.window||'',rule,H),tx(o.context||'',56,y(128),28,SCREEN.label),tx(o.headline||'',56,y(200),40,ink,{bold:1}),
-    tx(o.value||'',46,y(420),190,ink,{bold:1}),tx(o.caption||'',56,y(480),32,SCREEN.title),
+    tx(o.value||'',46,y(420),Math.min(190,fitMono(o.value||'',600)),ink,{bold:1}),tx(o.caption||'',56,y(480),32,SCREEN.title),
     rr(40,y(510),600,100,12,tint),tx(o.request||'',66,y(552),28,SCREEN.code),tx(o.status||'',66,y(592),26,ink,{bold:1}),
     {r:[690,y(600),270,2],fill:'#2A2442'},{line:graph,stroke:ink,w:6},tx(o.footer||'',56,y(652),24,SCREEN.label)];
   },

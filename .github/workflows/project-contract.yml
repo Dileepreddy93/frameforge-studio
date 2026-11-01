@@ -30,6 +30,7 @@ jobs:
           node tests/robot-character.test.cjs
           node tests/robot-acting.test.cjs
           node tests/kokoro-g2p.test.cjs
+          node tests/script-core.test.cjs
       - name: Engine module parses
         run: node tests/engine-syntax.test.mjs
   real-character-render-tests:
@@ -74,6 +75,7 @@ jobs:
           node tests/project-import-export-browser.cjs
           node tests/offline-episode-browser.cjs
           node tests/render-failure-browser.cjs
+          node tests/script-browser.cjs
   voice-and-mix-tests:
     # Downloads the Kokoro voice model (about 326 MB) from huggingface.co on every run.
     runs-on: ubuntu-24.04
