@@ -287,9 +287,9 @@ async function bootEditor(){
  }
 }
 $('engine').addEventListener('load',bootEditor);
-// The iframe may finish before the editor module is evaluated, especially when
-// the media muxer module is already cached. Do not miss that event.
-if($('engine').contentWindow?.HybridP56Ready)bootEditor();
+// Always begin checking readiness, even if iframe load already fired before
+// this module executed. The guard prevents duplicate startup on a later load.
+bootEditor();
 window.addEventListener('pagehide',()=>{
  stop();store?.close();try{engine?.dispose()}catch{}try{audioContext?.close()}catch{}
 });
