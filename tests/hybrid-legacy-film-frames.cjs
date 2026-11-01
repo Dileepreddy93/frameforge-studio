@@ -100,26 +100,37 @@ async function snapshot(browser,server,episode){
   const one={...EPISODES[0],times:[EPISODES[0].times[0]]};
   const portA=(await snapshot(browser,server,one))[0];
   const portB=(await snapshot(browser,controlServer,one))[0];
-  console.log('HYBRID_PARITY_ORIGIN_CONTROL '+JSON.stringify({
+  console.log('HYBRID_PARITY_IDENTICAL_BASELINE_DIFFERENT_PORTS '+JSON.stringify({
    sameBytesDifferentPorts:portA===portB,portA,portB
   }));
   await new Promise(resolve=>controlServer.close(resolve));controlServer=null;
   let checks=0;
   for(const episode of EPISODES){
-   // Both builds are loaded at the SAME origin, in fresh, cache-free browser
-   // contexts. This removes origin-dependent rendering differences without
-   // relaxing ANY pixel assertions or replacing the frozen M6.5 baseline.
+   // The negative control above can differ despite IDENTICAL baseline bytes.
+   // Discover whether that difference is caused by capture sequence: record
+   // each build twice in the same local origin, in otherwise fresh contexts.
+   // Both old→new pairs MUST still match EXACTLY, not approximately.
    server.setRoot(baseline);
-   const oldFrames=await snapshot(browser,server,episode);
+   const referenceA=await snapshot(browser,server,episode);
+   const referenceB=await snapshot(browser,server,episode);
    server.setRoot(ROOT);
-   const newFrames=await snapshot(browser,server,episode);
+   const candidateA=await snapshot(browser,server,episode);
+   const candidateB=await snapshot(browser,server,episode);
+   console.log('HYBRID_PARITY_REPEATED_BASELINE '+JSON.stringify({
+     episode:episode.id,baselineRepeatSame:referenceA.every((h,i)=>h===referenceB[i]),
+     candidateRepeatSame:candidateA.every((h,i)=>h===candidateB[i]),
+     baselineFirst:referenceA[0],baselineSecond:referenceB[0],
+     candidateFirst:candidateA[0],candidateSecond:candidateB[0]
+   }));
    for(let i=0;i<episode.times.length;i++){
-    assert.equal(newFrames[i],oldFrames[i],
-     episode.id+' at '+episode.times[i]+'s differs from frozen M6.5; review the pixel change before proceeding');
-    checks++;
+    assert.equal(candidateA[i],referenceA[i],
+     episode.id+' at '+episode.times[i]+'s (first matched capture) differs from frozen M6.5; investigate source or capture nondeterminism');
+    assert.equal(candidateB[i],referenceB[i],
+     episode.id+' at '+episode.times[i]+'s (second matched capture) differs from frozen M6.5; investigate source or capture nondeterminism');
+    checks+=2;
    }
   }
-  console.log('HYBRID_LEGACY_VISUAL_PARITY_PASS '+checks+' frames, 2 films, frozen commit '+BASE);
+  console.log('HYBRID_LEGACY_VISUAL_PARITY_PASS '+checks+' exact checks, two captures per film, frozen commit '+BASE);
  } finally {
   if(browser)await browser.close();
   for(const srv of [server,controlServer])if(srv)await new Promise(resolve=>srv.close(resolve));
