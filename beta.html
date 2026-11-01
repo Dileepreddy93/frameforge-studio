@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><meta name="theme-color" content="#10131a">
+<meta name="description" content="FrameForge Hybrid beta workshop: explore real locally rendered characters, capture a frame, check export readiness, and share opt-in feedback.">
+<title>FrameForge / Hybrid Beta Workshop</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4efe8;background:#10131a;accent-color:#ecab7a}
+*{box-sizing:border-box}body{margin:0;min-width:320px;line-height:1.48}a{color:inherit}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #ffc88e;outline-offset:3px}
+a,button,input,select,textarea{font:inherit}button,a.cta{min-height:44px;cursor:pointer}button{border:1px solid #525461;background:#292e39;color:#f8f5f0;border-radius:12px;padding:9px 15px;font-weight:650}button:hover:not(:disabled){background:#3a424f}button:disabled{opacity:.5;cursor:not-allowed}button.primary,a.cta{background:#f5b88d;color:#271a15;border:1px solid #ffcb9e}button.primary:hover:not(:disabled),a.cta:hover{background:#ffd0ab}a.cta{display:inline-flex;align-items:center;justify-content:center;border-radius:12px;padding:10px 17px;text-decoration:none;font-weight:700}
+header{border-bottom:1px solid #303540;padding:15px max(20px,calc((100% - 1260px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-size:17px;font-weight:850;letter-spacing:-.65px}.brand b{display:inline-grid;place-items:center;background:#efae80;color:#211913;width:31px;height:31px;border-radius:9px;margin-right:8px;font-size:19px}
+.tag{border:1px solid #665b50;color:#f6d3b9;padding:6px 11px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+main{max-width:1280px;margin:auto;padding:28px 22px 48px}
+h1{letter-spacing:-1.8px;font-size:clamp(31px,4vw,52px);line-height:1.09;margin:10px 0 15px;max-width:760px}
+.eyebrow{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#e8b996;font-weight:800}
+.lead{color:#b9bfc9;max-width:740px;font-size:16px;margin:0 0 23px}
+.notice{padding:13px 16px;border-radius:11px;background:#1d212a;border:1px solid #43424a;color:#ddd2c5;max-width:960px;font-size:13px;margin-bottom:25px}
+.layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(310px,.85fr);gap:25px;align-items:start}
+.panel{background:#1b2029;border:1px solid #363d48;border-radius:18px;padding:22px;min-width:0}
+.panel h2{font-size:20px;letter-spacing:-.5px;margin:0 0 5px}
+.muted{color:#b6c0cc;font-size:13px}.small{font-size:12px}
+.steps{display:flex;gap:9px;margin:19px 0 22px;flex-wrap:wrap}
+.step{display:flex;gap:8px;align-items:center;padding:7px 11px;border:1px solid #454a53;border-radius:9px;font-size:12px;color:#ccc}
+.step strong{background:#313847;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;color:#f2c29f}
+label{display:block;font-size:13px;font-weight:690;margin:16px 0 7px}
+input[type=range]{width:100%;min-height:40px;cursor:pointer}
+select,textarea{background:#111720;color:#fff;border:1px solid #505967;border-radius:10px;padding:11px;width:100%;min-height:44px}
+textarea{resize:vertical;min-height:78px}
+.control-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.status{min-height:29px;font-size:13px;color:#f1c9ae;margin-top:10px}
+.preview-wrap{background:radial-gradient(ellipse at 50% 30%,#313f57,#10141e 75%);border:1px solid #4e5461;border-radius:20px;padding:19px;display:grid;place-items:center;position:relative;min-height:525px}
+.preview-wrap img{width:min(100%,242px);max-height:470px;aspect-ratio:9/16;object-fit:contain;background:#0b121c;border:1px solid #515f77;border-radius:13px;box-shadow:0 22px 60px #0009}
+.watermark{position:absolute;top:18px;left:20px;background:#121822ba;border:1px solid #626c79;border-radius:8px;font-size:10px;padding:5px 8px;text-transform:uppercase;letter-spacing:1px}
+#engine{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;top:0}
+.nopreview{width:225px;aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;background:#151d2a;border-radius:10px;border:1px dashed #6b7180;padding:18px;text-align:center;font-size:14px;color:#bcc8d3}
+.tips{border-top:1px solid #373c47;margin-top:18px;padding-top:16px}
+.kicker{color:#f7ba8e;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.quick a{border:1px solid #505461;background:#252b36;border-radius:11px;padding:12px;text-decoration:none;min-height:76px;font-weight:700;font-size:13px}
+.quick a span{display:block;color:#b9bfcb;font-weight:450;font-size:12px;margin-top:4px}
+section.bottom{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+.data{font-variant-numeric:tabular-nums}.readiness{background:#111821;border:1px solid #414a58;padding:14px;border-radius:12px;font-size:13px;white-space:pre-line;min-height:65px}
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.option-grid label{margin-top:8px}
+.consent{display:flex;align-items:flex-start;gap:12px;margin:15px 0}
+.consent input{width:20px;height:20px;flex-shrink:0}
+.consent label{font-weight:450;margin:0;font-size:13px}
+footer{margin-top:28px;border-top:1px solid #3b424c;padding-top:17px;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;color:#acb8c6;font-size:12px}
+@media(max-width:820px){.layout,section.bottom{grid-template-columns:1fr}main{padding:18px 14px 32px}.panel{padding:16px}.preview-wrap{min-height:405px}.preview-wrap img{max-height:420px}.notice{margin-bottom:16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style></head>
+<body><header><div class="brand"><b aria-hidden="true">F</b>FrameForge <span style="color:#f0b78e">Hybrid</span></div><span class="tag">PRIVATE ENGINEERING BETA</span></header>
+<main>
+<div class="eyebrow">Local-first 3D storytelling / hands-on preview</div>
+<h1>Tell a story.<br>Watch your characters bring it to life.</h1>
+<p class="lead">Explore two real FrameForge + Ember film scenes, scrub the timeline, save a frame, and check whether your browser can handle export. No account, no credits, no hidden analytics.</p>
+<div class="notice"><strong>What this beta really is:</strong> This page previews an actual working hybrid film engine and its tested scene templates. The unified project editor, arbitrary uploads and customer-ready HD video export are <strong>not yet available here</strong>. For full current movie editing, use the established V6 studio below.</div>
+<div class="layout">
+<section class="panel" aria-labelledby="create-title">
+  <div class="kicker">01 / Guided preview</div>
+  <h2 id="create-title">Start with a story, not a settings maze.</h2>
+  <p class="muted">Pick a completed sample scene. Every scrub renders an actual 3D frame through the hybrid camera, world and actor systems.</p>
+  <div class="steps" aria-label="Preview steps"><div class="step"><strong>1</strong> Choose</div><div class="step"><strong>2</strong> Preview</div><div class="step"><strong>3</strong> Save a still</div></div>
+  <label for="story">Choose a story style</label>
+  <select id="story"><option value="1">The Instant Solution — forest, two actors</option><option value="2">The Local Studio — meadow, continuous camera</option></select>
+  <label for="timeline">Explore the scene <output id="time" class="data" for="timeline">0.00s</output></label>
+  <input id="timeline" type="range" min="0" max="4.5" step=".0333333" value="0" aria-label="Scrub the 3D scene timeline">
+  <div class="control-row">
+    <button id="play" type="button" class="primary" disabled>Play preview</button>
+    <button id="still" type="button" disabled>Save this frame (PNG)</button>
+  </div>
+  <div id="status" class="status" role="status" aria-live="polite">Loading real 3D scene assets…</div>
+  <div class="tips"><span class="kicker">01 / Continue creating</span>
+    <div class="quick">
+     <a href="./studio.html">Open the original V6 editor<span>Working script, voice, film export and project recovery</span></a>
+     <a href="./character-lab.html">Explore the character lab<span>Current character and expression testing tools</span></a>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="watch-title">
+ <div class="kicker">Rendered output / actual hybrid scene</div><h2 id="watch-title">Scene monitor</h2>
+ <p class="muted">Vertical 9:16 · locally rendered frame · no AI-generated thumbnail pretending to be footage.</p>
+ <div class="preview-wrap"><span class="watermark">Engineering preview</span><div id="placeholder" class="nopreview">Preparing 3D renderer…</div><img id="frame" alt="Rendered hybrid animation frame, updating when the timeline moves" hidden><iframe id="engine" src="./tests/hybrid-p56-proof.html" title="Offscreen rendering engine" tabindex="-1" aria-hidden="true"></iframe></div>
+ <p class="muted small">No autoplay audio. The editor preview is a real 3D frame sequence; the separate verified video/audio files are in the beta evidence report.</p>
+</section>
+</div>
+<section class="bottom">
+ <div class="panel"><div class="kicker">02 / Responsible export</div><h2>Check your device before exporting</h2>
+ <p class="muted">Browsers differ. We check WebGL2, native H.264 and AAC encoders, storage quota and HTTPS. We will not tell you a WebM is a real MP4.</p>
+ <label for="export-quality">Target export quality</label>
+ <select id="export-quality"><option value="master">Master · 1080 × 1920 / 30 fps</option><option value="social">Social · 720 × 1280 / 30 fps</option><option value="preview">Preview · 360 × 640 / 15 fps</option></select>
+ <div class="control-row"><button id="check-export" type="button">Check browser support</button></div>
+ <div id="export-status" class="readiness" role="status" aria-live="polite">Not checked yet. Existing V6 export can be used independently of this beta.</div>
+ </div>
+ <div class="panel"><div class="kicker">03 / Build with real creator feedback</div><h2>Tell us where the experience fails</h2>
+ <p class="muted">No sign-in or trackers. Research only starts if you opt in. You download the report and choose whether to share it; nothing is uploaded automatically.</p>
+ <div class="consent"><input type="checkbox" id="consent"><label for="consent">I agree to record my button/timeline actions locally in this browser session for a voluntary usability test.</label></div>
+ <div class="option-grid">
+  <div><label for="outcome">Could you complete the task?</label><select id="outcome"><option value="not-tried">Not tried</option><option value="complete">Yes, completely</option><option value="partial">Partially</option><option value="blocked">No, blocked</option></select></div>
+  <div><label for="monthly">Hypothetical monthly value</label><select id="monthly"><option value="unsure">Not sure</option><option value="none">Would not pay</option><option value="3">$3</option><option value="7">$7</option><option value="12">$12</option><option value="20">$20+</option></select></div>
+  <div><label for="ease">Ease (1 hard → 5 easy)</label><select id="ease"><option value="3">3 · Neutral</option><option value="1">1 · Very hard</option><option value="2">2 · Hard</option><option value="4">4 · Easy</option><option value="5">5 · Very easy</option></select></div>
+  <div><label for="quality">Visual quality (1 → 5)</label><select id="quality"><option value="3">3 · Neutral</option><option value="1">1 · Poor</option><option value="2">2 · Needs work</option><option value="4">4 · Good</option><option value="5">5 · Excellent</option></select></div>
+ </div>
+ <label for="feedback">What is the one thing you would fix first? (Optional)</label><textarea id="feedback" maxlength="360" placeholder="e.g. I couldn't find a way to replace a character…"></textarea>
+ <div class="control-row"><button id="feedback-save" type="button" class="primary">Download private study report</button></div>
+ <div id="feedback-status" class="status" role="status" aria-live="polite"></div>
+ </div>
+</section>
+<footer><span>FrameForge Hybrid · No backend tracking · Production V6 remains independent</span><span>Early access preview is not an offer to purchase or a guarantee of commercial rights.</span></footer>
+</main>
+<script type="module">
+import {inspectBrowserExport} from './src/hybrid-export-readiness.mjs';
+import {createResearchSession} from './src/beta-research.mjs';
+const $=id=>document.getElementById(id),research=createResearchSession();
+let frameUrl=null,engine=null,ready=false,playing=false,raf=0,last=0,duration=4.5;
+const report=(txt)=>{$('status').textContent=txt};
+const record=(type,details={})=>{try{research.record(type,details)}catch{}};
+const setFrame=time=>{
+ if(!ready)return;
+ const t=Math.max(0,Math.min(time,duration-.015));
+ const output=engine.frameAt(t);
+ if(output?.image?.startsWith('data:image/png;base64,')){
+   frameUrl=output.image;$('frame').src=frameUrl;$('frame').hidden=false;$('placeholder').hidden=true;
+ }
+ $('time').value=t.toFixed(2)+'s';$('timeline').value=String(t);
+};
+const stop=()=>{playing=false;cancelAnimationFrame(raf);$('play').textContent='Play preview'};
+const playStep=stamp=>{
+ if(!playing)return;
+ if(!last)last=stamp;
+ const step=Math.max(0,Math.min(.09,(stamp-last)/1000));last=stamp;
+ const now=Number($('timeline').value)+step;
+ if(now>=duration-.015){setFrame(0);stop();return}
+ setFrame(now);raf=requestAnimationFrame(playStep);
+};
+$('play').onclick=()=>{
+ if(!ready)return;
+ if(playing){stop();return}
+ playing=true;last=0;$('play').textContent='Pause preview';raf=requestAnimationFrame(playStep);
+};
+$('timeline').oninput=e=>{stop();setFrame(Number(e.target.value));record('scrub-success',{task:'scrub'})};
+$('story').onchange=async e=>{
+ stop();$('play').disabled=true;$('still').disabled=true;report('Loading selected cast and world…');
+ try{const result=await engine.create(Number(e.target.value));
+   duration=result.audioSeconds; $('timeline').max=String(duration-.015);
+   setFrame(0);report('Scene ready. Scrub the timeline or play the preview.');
+   $('play').disabled=false;$('still').disabled=false;record('preview-ready',{task:'preview'});
+ }catch(error){report('Could not load this scene: '+error.message)}
+};
+$('still').onclick=()=>{
+ if(!frameUrl)return;
+ const a=document.createElement('a');a.download='frameforge-hybrid-preview.png';a.href=frameUrl;a.click();
+ record('still-saved',{task:'save-still'});report('PNG frame saved locally. No server upload.');
+};
+$('check-export').onclick=async()=>{
+ $('export-status').textContent='Testing actual browser encoders and storage limits…';
+ const profile=$('export-quality').value;
+ try{
+  const result=await inspectBrowserExport({profile,seconds:30});
+  const output=result.ready?'Compatible for this codec profile (not a guarantee of full export speed).':
+   'Not certified on this device — use a compatible browser or the current V6 editor.';
+  $('export-status').textContent=output+'\n'+
+   ['Video H264: '+(result.browser.codecH264?'available':'unavailable'),
+    'Audio AAC: '+(result.browser.codecAAC?'available':'unavailable'),
+    'WebGL2: '+(result.browser.webgl2?'available':'unavailable'),
+    ...result.errors,...result.warnings].join('\n');
+  if(!result.ready)record('error',{task:'export',reason:'Unsupported encoding environment'});
+ }catch(e){$('export-status').textContent='Unable to assess export: '+e.message}
+};
+$('consent').onchange=e=>{research.consent(e.target.checked);
+ $('feedback-status').textContent=e.target.checked?'Session-only research enabled. No data leaves this page.':
+  'Research disabled and collected events cleared.';if(e.target.checked)record('session-start')};
+$('feedback-save').onclick=()=>{
+ if(!research.enabled){$('feedback-status').textContent='Check the consent box to create a local study report.';return}
+ try{
+  research.respond({outcome:$('outcome').value,monthlyPrice:$('monthly').value,
+    ease:Number($('ease').value),quality:Number($('quality').value),blocker:$('feedback').value});
+  record('session-end');
+  const blob=new Blob([JSON.stringify(research.export(),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.download='frameforge-creator-study.json';a.href=url;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  $('feedback-status').textContent='Your study report was saved locally. You decide whether to share it.';
+ }catch(e){$('feedback-status').textContent='Could not save feedback: '+e.message}
+};
+$('engine').addEventListener('load',async()=>{
+ try{
+   const w=$('engine').contentWindow;
+   let attempts=0;
+   while(!w.HybridP56Ready&&!w.HybridP56Error&&attempts++<100)
+      await new Promise(resolve=>setTimeout(resolve,300));
+   if(w.HybridP56Error)throw Error(String(w.HybridP56Error).slice(0,220));
+   if(!w.HybridP56Ready)throw Error('Renderer timed out.');
+   engine=w.HybridP56QA;const result=await engine.create(Number($('story').value));
+   duration=result.audioSeconds;ready=true;$('timeline').max=String(duration-.015);
+   setFrame(0);$('play').disabled=false;$('still').disabled=false;
+   report('Live 3D scene ready. Preview, scrub and save a frame.');
+   record('preview-ready',{task:'preview'});
+ }catch(e){report('3D preview unavailable: '+e.message+' Use the original V6 editor or try desktop Chrome.')}
+});
+window.addEventListener('pagehide',()=>{stop();try{engine?.dispose()}catch{}});
+</script></body></html>
