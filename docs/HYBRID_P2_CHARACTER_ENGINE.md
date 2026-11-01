@@ -1,6 +1,6 @@
 # FrameForge Ultimate — P2: Ember built-in cast integration
 
-**Status:** implementation pushed; final CI/artifact review pending. **Production:** untouched. **Branch:** `feature/hybrid-foundation`. Read `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md` for the authoritative phase status and known blockers.
+**Status:** dedicated six-character, expression, look, deterministic rewind and H.264/AAC video QA PASSED in CI [run 41290322745](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745). Full cross-platform release approval and legacy side-by-side visual comparator remain OPEN. **Production:** untouched. **Branch:** `feature/hybrid-foundation`. Read `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md` for the authoritative phase status and known blockers.
 
 ## Provenance and preserved implementation
 
@@ -21,7 +21,7 @@ The actual MIT-licensed Ember Take Studio procedural rig source was imported fro
 - `tests/hybrid-p2-characters-browser.cjs` verifies all six templates, four camera views of each, eight emotions, deterministic rewind, appearance changes, invalid configuration rejection, two-actor creation and disposal.
 - It writes image evidence and a **2-second H.264/AAC MP4**, fully decoded with ffmpeg. The audio comes from the existing V6 Zero Latency mastered track; **this is not new speech or phoneme-accurate lip synchronization**. The test therefore validates animated graphics and playable audio-video packaging, but it does not assert final voice performance.
 - `.github/workflows/project-contract.yml` performs ESM syntax tests and runs the P2 browser proof in the existing Chromium/FFmpeg portable video job; uploads `frameforge-p2-ember-cast-proof`.
-- Latest test run: https://github.com/Dileepreddy93/frameforge-studio/actions/workflows/project-contract.yml (verify the commit SHA and job conclusions before marking green).
+- Passing dedicated run: https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745. Its portable-video-export job logged `HYBRID_P2_CAST_PASS` for all six templates (four distinct views, eight distinct emotion/acting frames, deterministic rewind), and `HYBRID_P2_VIDEO_PASS` for complete MP4 decode. Evidence: https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745/artifacts/13076996727.
 
 ## Acceptance criteria
 
@@ -44,4 +44,4 @@ The actual MIT-licensed Ember Take Studio procedural rig source was imported fro
 
 ## Safe resume point
 
-Fetch `feature/hybrid-foundation` and read both this file and `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md`. Inspect the newest `FrameForge code quality` workflow. If the P2 browser proof fails, inspect its GitHub Actions output and fix the exact source/test issue; do not mark P2 done because earlier syntax tests pass. If P2 passes, record exact CI run/job IDs, preview frame hashes and video proof in the master log. Leave `main` and `frameforge-v6.vercel.app` untouched.
+Fetch `feature/hybrid-foundation` and read both this file and `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md`. Inspect the newest `FrameForge code quality` workflow. P2 browser/art proof passed after fixing test-stage actor orientation before pose/IK evaluation (commit `ceaad73b9`). Read the master plan for remaining P0/P1 visual parity and release blockers, then implement P3 independently on this branch. Do not claim a deployed custom-character editor or synced custom speech yet. Leave `main` and `frameforge-v6.vercel.app` untouched.
