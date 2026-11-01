@@ -65,6 +65,10 @@
         fail(at+'.look','Look colors must be six-digit hex values');
     });
     const hybrid=p.hybrid;
+    if(hybrid?.director!==undefined&&(!OBJ(hybrid.director)||
+      typeof hybrid.director.oneTake!=='boolean'))
+      fail('hybrid.director','Only explicit oneTake mode is supported');
+
     if(!OBJ(hybrid)||hybrid.version!==1)fail('hybrid','Expected hybrid version 1');
     const cast=hybrid?.cast;
     if(!OBJ(cast))fail('hybrid.cast','Expected an actor descriptor for every character');
@@ -133,6 +137,10 @@
         fail(at+'.screen','Screen app must contain safe authored text and supported kind');
       if(s.caption!==undefined&&!TEXT(s.caption,140))
         fail(at+'.caption','Caption exceeds safety limit');
+      if(s.reactions!==undefined&&(!Array.isArray(s.reactions)||
+        s.reactions.length>6||s.reactions.some(r=>!OBJ(r)||!charIds.has(r.actor)||
+          !EMOTIONS.has(r.emotion)||!ACTIONS.has(r.action)||!FINITE(r.at,0,s.duration))))
+        fail(at+'.reactions','Reaction requires registered actor, safe action and in-shot time');
 
       if(typeof s.camera==='string'){
         if(!LEGACY_CAMERAS.has(s.camera))fail(at+'.camera','Unknown legacy camera');
