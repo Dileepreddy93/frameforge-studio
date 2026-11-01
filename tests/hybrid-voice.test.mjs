@@ -47,6 +47,15 @@ const clips=new Map(base.shots.map((s,i)=>[s.id,{
   samples:tone(i?16000:48000,.8),sampleRate:i?16000:48000,seconds:.8,
   speaker:s.speaker,text:s.dialogue,rights:{source:'original-recording',consent:true}
 }]));
+const fractional=new Map(clips);
+fractional.set(base.shots[0].id,{...clips.get(base.shots[0].id),
+ seconds:.817,samples:new Float32Array(Math.round(48000*.817)).fill(.01),
+ sampleRate:48000});
+const frameSafe=retimeForVoice(base,fractional);
+assert.ok(frameSafe.shots[0].duration>=.15+.817+.35,
+ 'newly generated audio must never be cut short by frame rounding');
+assert.doesNotThrow(()=>renderHybridAudio(frameSafe,fractional,{music:false}),
+ 'fractional Kokoro line must fit in its own shot without bleeding across cuts');
 const timed=retimeForVoice(base,clips);
 assert.ok(timed.shots.every(s=>s.duration>=1.2&&s.duration<=1.35));
 assert.equal(base.shots[0].duration>timed.shots[0].duration,true);
