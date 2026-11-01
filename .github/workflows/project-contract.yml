@@ -21,6 +21,7 @@ jobs:
           node tests/git-blame-reference-contract.mjs
           node tests/rigged-asset-core.test.mjs
           node tests/project-core.test.cjs
+          node tests/hybrid-baseline.test.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
@@ -125,6 +126,8 @@ jobs:
           sudo apt-get install -y -qq ffmpeg
           ffmpeg -hide_banner -encoders | grep -w libx264
           ffprobe -version | head -1
+      - name: Verify original V6 assets and decode complete MP4 films
+        run: node tests/hybrid-baseline.test.cjs --media
       - name: Verify actual V4 archived full-film bytes and decode
         run: node tools/verify-phase0.mjs
       - name: Extract five real V4 frames with timestamped hashes
