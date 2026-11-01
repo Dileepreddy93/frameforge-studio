@@ -36,7 +36,7 @@ jobs:
         run: node tests/engine-syntax.test.mjs
   real-character-render-tests:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,6 +64,7 @@ jobs:
           node tests/performance-browser.cjs
           node tests/speech-performance-browser.cjs
           node tests/determinism-browser.cjs
+          node tests/hybrid-legacy-film-frames.cjs
           node tests/episode-data-browser.cjs
           node tests/studio-editor-browser.cjs
           node tests/landing-browser.cjs
