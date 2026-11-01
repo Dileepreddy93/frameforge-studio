@@ -24,6 +24,8 @@
  function verify(p){
    core.assertProject(p);
    if(p.schema!==core.schema)throw Error('P5 director requires v2; legacy V6 film remains independent');
+   if(p.hybrid.director!==undefined && (!obj(p.hybrid.director)||typeof p.hybrid.director.oneTake!=='boolean'))
+     throw Error('One-take camera setting must be explicit boolean');
    for(let i=0;i<p.shots.length;i++){
      const s=p.shots[i],where='shot '+s.id;
      if(s.direction!==undefined){
@@ -38,6 +40,10 @@
          s.screen.lines.some(x=>!safe(x)||x.length>120))
          throw Error(where+' contains invalid screen application');
      }
+     if(s.reactions!==undefined&&(!Array.isArray(s.reactions)||s.reactions.length>6||
+       s.reactions.some(r=>!obj(r)||!p.characters.some(c=>c.id===r.actor)||
+         !EMOTIONS.has(r.emotion)||!ACTIONS.has(r.action)||!finite(r.at,0,s.duration))))
+       throw Error(where+' contains invalid reaction beats');
      if(s.caption!==undefined&&(!safe(s.caption)||s.caption.length>140))
        throw Error(where+' contains invalid caption');
    }
@@ -81,6 +87,10 @@
        if(!line||line.startsWith('//'))continue;
        if(line.startsWith('# ')){p.title=line.slice(2).trim().slice(0,120);continue}
        if(line.startsWith('> ')){p.logline=line.slice(2).trim().slice(0,1024);continue}
+       if(line.startsWith('@mode ')){
+         if(!['@mode cuts','@mode one-take'].includes(line))throw Error('Use @mode cuts or one-take');
+         p.hybrid.director={oneTake:line==='@mode one-take'};continue;
+       }
        if(line.startsWith('@shot ')){
          const a=readAttrs(line,'@shot');
          if(!SLUG.test(a.id||'')||seen.has(a.id))throw Error('Unique shot id required');
@@ -100,6 +110,13 @@
          p.shots.push(active);continue;
        }
        if(!active)throw Error('First declare @shot before dialogue');
+       if(line.startsWith('@reaction ')){
+         const a=readAttrs(line,'@reaction');
+         if(!p.characters.some(c=>c.id===a.actor))throw Error('Reaction references missing actor');
+         (active.reactions??=[]).push({actor:a.actor,at:Number(a.at||0),
+           emotion:a.emotion||'neutral',action:a.action||'nod'});
+         continue;
+       }
        if(line.startsWith('@screen ')){
          const a=readAttrs(line,'@screen');
          active.screen={kind:a.kind,tone:a.tone||'info',title:a.title||'On screen',lines:[]};
@@ -128,7 +145,7 @@
  function projectToScript(p){
    verify(p);
    const names=Object.fromEntries(p.characters.map(x=>[x.id,x.name]));
-   const out=['# '+p.title,'> '+p.logline,''];
+   const out=['# '+p.title,'> '+p.logline,'@mode '+(p.hybrid.director?.oneTake?'one-take':'cuts'),''];
    for(const s of p.shots){
      const d=s.direction||{move:'static',transition:'cut',blendSeconds:0};
      const parts=['@shot','id='+encode(s.id),'duration='+s.duration,
@@ -140,6 +157,8 @@
      const acting=s.cast?.[s.speaker]||{emotion:'neutral',action:'explain'};
      out.push((names[s.speaker]||s.speaker)+' ('+(acting.emotion||'neutral')+
        ') ['+(acting.action||'explain')+']: '+s.dialogue);
+     for(const r of s.reactions||[])out.push('@reaction actor='+r.actor+' at='+r.at+
+       ' emotion='+r.emotion+' action='+r.action);
      if(s.screen){
        out.push('@screen kind='+s.screen.kind+' tone='+s.screen.tone+
         ' title='+encode(s.screen.title));
@@ -162,6 +181,18 @@
  const v3=(a)=>Array.isArray(a)&&a.length===3&&a.every(Number.isFinite);
  const lerp=(a,b,k)=>a+(b-a)*k;
  const smooth=t=>{const k=Math.max(0,Math.min(1,t));return k*k*(3-2*k)};
+ function performanceAt(p,time){
+   verify(p);
+   const frame=core.timeAt(p,time),cast=clone(frame.shot.cast||{});
+   const active=[];
+   for(const reaction of frame.shot.reactions||[]){
+     if(frame.localTime>=reaction.at){
+       cast[reaction.actor]={emotion:reaction.emotion,action:reaction.action};
+       active.push(reaction.actor);
+     }
+   }
+   return {cast,active,shotId:frame.shotId};
+ }
  function cameraAt(p,time,anchors,stage){
    verify(p);
    const f=core.timeAt(p,time),s=f.shot,d=s.direction||{move:'static',transition:'cut',blendSeconds:0};
@@ -182,19 +213,21 @@
    const raw={position:[focus[0]+Math.sin(azimuth)*distance,
      focus[1]+.48+Math.sin(progress*Math.PI)*.04,focus[2]+Math.cos(azimuth)*distance],
      target:[...focus],fov};
-   if(d.transition==='blend'&&f.index>0&&f.localTime<d.blendSeconds&&d.blendSeconds>0){
+   const transition=p.hybrid.director?.oneTake&&f.index>0?'blend':d.transition;
+   const blendSeconds=p.hybrid.director?.oneTake&&f.index>0?Math.min(.7,s.duration/3):d.blendSeconds;
+   if(transition==='blend'&&f.index>0&&f.localTime<blendSeconds&&blendSeconds>0){
      const prior=p.shots[f.index-1],priorCamera=typeof prior.camera==='string'?{kind:prior.camera}:prior.camera;
      const pastFocus=priorCamera.kind==='actor'?head(priorCamera.target):priorCamera.kind==='two'?
        head(priorCamera.target).map((v,i)=>(v+head(priorCamera.secondary)[i])/2):
        priorCamera.kind==='screen'?stage.screen:stage.center;
-     const k=smooth(f.localTime/d.blendSeconds),oldDist=prior.framing?.distance??5.4;
+     const k=smooth(f.localTime/blendSeconds),oldDist=prior.framing?.distance??5.4;
      raw.position=raw.position.map((v,i)=>lerp(
        [pastFocus[0]+Math.sin(.15)*oldDist,pastFocus[1]+.48,pastFocus[2]+Math.cos(.15)*oldDist][i],v,k));
      raw.target=raw.target.map((v,i)=>lerp(pastFocus[i],v,k));
    }
    return {...raw,shotId:s.id,localTime:f.localTime,move:d.move,
-     transition:d.transition,captionBounds:s.caption?{x:24,y:547,width:312,height:67}:null,
+     transition,captionBounds:s.caption?{x:24,y:547,width:312,height:67}:null,
      screenBounds:s.screen?{x:30,y:133,width:300,height:310}:null};
  }
- return Object.freeze({verify,scriptToProject,projectToScript,reorderShots,cameraAt});
+ return Object.freeze({verify,scriptToProject,projectToScript,reorderShots,cameraAt,performanceAt});
 });
