@@ -11,7 +11,7 @@ Production constraint: no main merge, tag overwrite, production redeploy or dele
 
 ## EXECUTION STATUS AND RESUME POINT — 2026-11-01
 
-**Current phase:** P0 (ACTIVE / NOT YET APPROVED). **Next phase:** P1 after every P0 release gate passes.
+**Current phase:** P1 core implementation and proof delivered (source/video jobs PASSED; final whole-suite signoff pending). **P0:** original legacy CI passed, but Windows/macOS end-to-end release certification remains open. **Next:** complete all release gates before P2.
 **Work branch:** `feature/hybrid-foundation`. **Main/production:** untouched. **No hybrid deployment has been made.**
 **Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
 
@@ -58,6 +58,35 @@ node tests/hybrid-legacy-film-frames.cjs
 **Required next action:** Read the latest commit and latest two workflow runs on `feature/hybrid-foundation`. Inspect any failed job logs; fix failures with precise repro, do not rewrite the baseline manifest to match a regression. Obtain full green runs and watch/listen acceptance before marking P0 complete or beginning P1. Existing `frameforge-v6.vercel.app` is intentionally not modified.
 
 **Update rule for all later phases:** Modify this section *in the same branch* after each phase or meaningful verification checkpoint. Keep: phase state, exact commit SHA, CI run URL, successful/failed commands, rendered-video/audio evidence, known regressions, next tasks and rollback reference. Never mark a gate PASS when it is merely queued/in progress.
+
+---
+
+## P1 — Versioned project and provider adapters (2026-11-01)
+
+**Development state: CORE CODE + WEBGL VIDEO PROOF PASSED; release-wide acceptance pending.** P1 code lives only on `feature/hybrid-foundation`, and does not alter the existing `studio.html`, original `src/project-core.js`, characters, soundtrack, or production export code.
+
+| Item | Evidence | State |
+| --- | --- | --- |
+| `frameforge.project/2` contract | `src/hybrid-project-core.js`; validates project, cast, cameras, assets, reference constraints, shot durations and film duration | **PASS** |
+| Frozen `frameforge.project/1` compatibility | Both real films v1 → v2 → v1 deep-equal, v1 legacy timeline and project validation delegated to unmodified core | **PASS** |
+| Deterministic timeline | `timeAt` / `toTimelineShots`, seek/rewind and shot-order independence tests | **PASS** |
+| Provider contracts | `src/hybrid-providers.js`: actor/world factory registry, camera/audio directors, asset-store bounds and copy isolation; lifecycle and disposal tests | **PASS** |
+| Malformed/untrusted v2 validation | 21 negative tests for invalid fields, provider types, references, timings, unsafe asset URIs, cameras and identities | **PASS** |
+| Source contract and unit suite | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137), `source-and-project-tests`; `HYBRID_P1_CONTRACT_PASS` log | **PASS** |
+| Actual WebGL provider proof | `tests/hybrid-p1-proof.html`, `tests/hybrid-p1-video-browser.cjs`; 24-frame 360×640 at 12 fps test-only H.264/AAC file decoded by ffmpeg, deterministic same-time frame hashes | **PASS** |
+| Browser/media video CI | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137), `portable-video-export`; `HYBRID_P1_WEBGL_VIDEO_PASS`, `HYBRID_P0_MEDIA_PASS` | **PASS** |
+| Video proof artifact | [P1 hybrid adapter proof](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137/artifacts/13075629883) | **UPLOADED** |
+| Legacy original-film parity | [run 41288071162](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41288071162) including visual parity test | **PASS** |
+| Latest complete source/browser/voice CI | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137): source, rigged, portable video passed; browser and voice in progress at latest check | **PENDING FINAL** |
+| Windows/macOS full release certification | [release run 41287859898](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287859898) | **P0 GATE OPEN** |
+
+**P1 commits:** `98fed858` (v2 contract), `e695b039` (provider registry/session/storage), `4bba8b46` (negative and compatibility tests), `4d949408` (source CI), `263a8fec` (real Three.js proof scene), `6222d1a5` (real playable proof film), `618cb4ca` (video CI and artifact), `a0166fa3` (interface specification).
+
+**Contract documentation:** [docs/HYBRID_V2_CONTRACT.md](HYBRID_V2_CONTRACT.md).
+
+**Limitations, not hidden:** The P1 proof uses synthetic QA geometry and intentionally silent test audio. It proves providers can drive Three.js graphics and a decodable short film; it does not prove Ember cast quality, working imported rigs, multilingual speech, real 1080×1920 custom episode exports, or public UI support. All new custom actors and worlds remain **opt-in v2** and are NOT routed into production. Those are P2–P8 tasks.
+
+**Next checks:** Verify all jobs of run 41289099137, especially the real-character-render and voice/mix jobs, and complete the P0 Windows + macOS release tests. Do not promote to `main` or production, and do not claim P1 fully release-certified while these remain pending. If all gates pass, proceed to P2 vertical slice: one Ember actor and one Ember world inside the FrameForge rendering system with an independently verified voiced final MP4.
 
 ---
 
