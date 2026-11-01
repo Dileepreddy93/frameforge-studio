@@ -104,9 +104,9 @@ const save=(file,d)=>fs.writeFileSync(path.join(OUT,file),Buffer.from(d.split(',
      {stdio:['ignore','pipe','pipe'],timeout:120000});
   }finally{fs.rmSync(tmp,{recursive:true,force:true})}
   assert.deepEqual(errors,[]);
-  const report={result:'HYBRID_P34_PASS',model:'Khronos CesiumMan CC BY 4.0 (technical sample)',
-   sourceGitBlob:'8586c4e6a59bf8ef585c2a685c50a80d28503216',
-   p3:{realSkinned:info.rigged,bytes:info.bytes,triangles:info.triangles,expressions:8},
+  const report={result:'HYBRID_P34_PASS',model:'Ara Athletic Man (internal-only technical rig; CMU clips not used)',
+   sourceGitBlob:'1747281c0e7e10c4fe364d99a43c18bcb140bdb1',
+   p3:{realSkinned:info.rigged,bytes:info.bytes,triangles:info.triangles,expressions:8,source:'Ara GLB technical QA only'},
    p4:{worlds:checks,importedWorld:'Khronos geometry used as import-path proxy only'},
    video:{seconds:2,width:300,height:500,fps:12,videoCodec:'H264',audioCodec:'AAC',
     originalV6Audio:true,fullDecode:true},
