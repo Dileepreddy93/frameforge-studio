@@ -52,6 +52,7 @@ jobs:
           node --check src/hybrid-browser-export.mjs
           node --check src/hybrid-editor-app.mjs
           node --check tests/hybrid-p7-creator-browser.cjs
+          node --check tests/hybrid-p7-real-creator-voice.cjs
           node tests/hybrid-p7-editor.test.cjs
           node --check tests/hybrid-p9-beta-browser.cjs
           node --check tests/hybrid-p8-master-browser.cjs
