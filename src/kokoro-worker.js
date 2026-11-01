@@ -5,7 +5,10 @@
 // and no server after the first download.
 // ONNX Runtime from our own site (M6.1), the same pinned version on the CDN if ours fails.
 const ORT_OWN=new URL('../vendor/onnxruntime-web@1.30.0/',import.meta.url).href,ORT_CDN='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/';
-const ort=await import(ORT_OWN+'ort.webgpu.bundle.min.mjs').catch(e=>{console.warn('ONNX Runtime: our copy failed ('+e.message+'), using the CDN');return import(ORT_CDN+'ort.webgpu.bundle.min.mjs');});
+// Loaded without a top-level await: the message handler below must be attached at once, or Chrome can deliver the
+// studio's first message before it exists and drop it (the studio then waits on "Checking for the voice model…").
+let ort=null;
+const ortReady=import(ORT_OWN+'ort.webgpu.bundle.min.mjs').catch(e=>{console.warn('ONNX Runtime: our copy failed ('+e.message+'), using the CDN');return import(ORT_CDN+'ort.webgpu.bundle.min.mjs');}).then(m=>ort=m);
 import './kokoro-g2p.js';
 import './voice-emotion.js';
 
@@ -74,6 +77,7 @@ function init(){
  if(ready)return ready;
  ready=(async()=>{
   const started=performance.now();
+  await ortReady;
   source=await pickSource();
   const [,tokenizer]=await Promise.all([loadG2P(),cachedBytes(source+'tokenizer.json','tokenizer').then(b=>JSON.parse(new TextDecoder().decode(b)))]);
   vocab=tokenizer.model.vocab;
