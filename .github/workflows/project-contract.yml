@@ -136,6 +136,15 @@ jobs:
           ffprobe -version | head -1
       - name: Verify original V6 assets and decode complete MP4 films
         run: node tests/hybrid-baseline.test.cjs --media
+      - name: P1 hybrid WebGL provider proof, deterministic seek and playable MP4
+        run: node tests/hybrid-p1-video-browser.cjs
+      - name: Preserve P1 adapter-only 3D video and probe report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-hybrid-adapter-proof
+          path: artifacts/p1-hybrid-proof/
+          if-no-files-found: warn
       - name: Verify actual V4 archived full-film bytes and decode
         run: node tools/verify-phase0.mjs
       - name: Extract five real V4 frames with timestamped hashes
