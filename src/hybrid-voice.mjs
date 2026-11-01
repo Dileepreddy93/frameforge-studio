@@ -135,7 +135,9 @@ export function retimeForVoice(project,lines){
      if(a.speaker!==s.speaker||a.text!==s.dialogue)throw Error('Voice identity or text mismatches shot '+s.id);
      if(!goodNum(a.seconds,.1,CLIPS.maxVoiceSeconds))throw Error('Invalid voice duration');
      const lead=s.timing?.lead??.15,tail=s.timing?.pauseAfter??.35;
-     s.duration=Math.round((lead+a.seconds+tail)*PACE)/PACE;
+     // Ceil to the next video frame: rounding down can make a valid
+     // newly generated Kokoro line overrun its allocated shot by 16.7 ms.
+     s.duration=Math.ceil((lead+a.seconds+tail)*PACE-1e-8)/PACE;
      if(s.duration>15)throw Error('Voiced shot exceeds 15-second film safety limit');
    }
    seconds+=s.duration;
