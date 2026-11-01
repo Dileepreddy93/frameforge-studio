@@ -16,7 +16,13 @@ const REVISION='1939ad2a8e416c0acfeecc08a694d14ef25f2231';
 // pinned Hugging Face copy, which costs us nothing per buyer.
 const SOURCES=[new URL('../models/kokoro-82m-v1.0/',import.meta.url).href,
  `https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/${REVISION}/`];
-const MODEL_FILE='onnx/model.onnx',MODEL_ID='kokoro-82m-v1.0-fp32@'+REVISION.slice(0,8);
+// Two models (M6.4): the full-precision original (326 MB; WebGPU or WebAssembly) and its 8-bit quantized version
+// (about 90 MB; WebAssembly only, as WebGPU runs quantized models poorly). The studio picks one per browser; a worker
+// keeps the model it started with. Voiced lines are cached per model, so the two never mix.
+const MODELS={full:{file:'onnx/model.onnx',id:'kokoro-82m-v1.0-fp32',gpu:true},light:{file:'onnx/model_quantized.onnx',id:'kokoro-82m-v1.0-q8',gpu:false}};
+let quality='full';
+const model_=()=>MODELS[quality];
+const MODEL_FILE_=()=>model_().file,MODEL_ID_=()=>model_().id+'@'+REVISION.slice(0,8);
 const FILES='frameforge-voice-model-v1',LINES='frameforge-voice-lines-v1';
 const MODEL_RATE=24000,RATE=48000,LUFS=-18,TRUE_PEAK=-2,LEAD_IN=.06,TAIL=.1;
 const post=(msg,transfer=[])=>self.postMessage(msg,transfer);
@@ -41,7 +47,7 @@ async function cachedBytes(url,label){
 }
 async function cachedSource(){
  const cache=await caches.open(FILES);
- for(const base of SOURCES)if(await cache.match(base+MODEL_FILE))return base;
+ for(const base of SOURCES)if(await cache.match(base+MODEL_FILE_()))return base;
  return null;
 }
 async function pickSource(){
@@ -74,15 +80,15 @@ function init(){
   ort.env.logLevel='error';
   ort.env.wasm.wasmBinary=await cachedBytes(ORT_OWN+ORT_WASM_FILE,'runtime').catch(e=>{console.warn('Voice runtime: our copy failed ('+e.message+'), using the CDN');return cachedBytes(ORT_CDN+ORT_WASM_FILE,'runtime');});
   ort.env.wasm.numThreads=self.crossOriginIsolated?Math.min(8,navigator.hardwareConcurrency||4):1;
-  let model=await cachedBytes(source+MODEL_FILE,'model');
-  if(await webgpu()){try{session=await open(model,'webgpu');device='webgpu';}catch(e){console.warn('WebGPU voice model failed; using WebAssembly',e);}}
+  let model=await cachedBytes(source+MODEL_FILE_(),'model');
+  if(model_().gpu&&await webgpu()){try{session=await open(model,'webgpu');device='webgpu';}catch(e){console.warn('WebGPU voice model failed; using WebAssembly',e);}}
   if(!session){session=await open(model,'wasm');device='wasm';}
   // Some GPUs return NaN for this model: check one short line and fall back to WebAssembly.
   if(device==='webgpu'&&!(await run('hˈI.','af_heart',1)).every(Number.isFinite)){
    await session.release();session=await open(model,'wasm');device='wasm';
   }
   model=null;
-  return {device,source:source===SOURCES[0]?'local':'huggingface',model:MODEL_ID,threads:ort.env.wasm.numThreads,ms:Math.round(performance.now()-started)};
+  return {device,source:source===SOURCES[0]?'local':'huggingface',model:MODEL_ID_(),threads:ort.env.wasm.numThreads,ms:Math.round(performance.now()-started)};
  })();
  ready.catch(()=>{ready=null;session=null;});
  return ready;
@@ -160,7 +166,7 @@ function finishLine(raw,offset=0){
 // and pronunciation lists, so lines already voiced stay cached. (British lines voiced before M2.3 were read
 // with American pronunciation; their old keys are never asked for again.)
 async function lineKey(text,voice,speed,emotion,own){
- const parts=[MODEL_ID,G2P.version,voice,speed,text];
+ const parts=[MODEL_ID_(),G2P.version,voice,speed,text];
  if(!EMOTION.isNeutral(emotion))parts.push(emotion,EMOTION.version);
  if(G2P.dialectOf(voice)==='gb')parts.push('en-gb');
  if(own.length)parts.push(own.map(p=>[String(p.word).trim().toLowerCase(),String(p.sayAs).trim()]));
@@ -200,9 +206,10 @@ async function speak({text,voice,speed=1,emotion='neutral',pronunciations=[]}){
 let queue=Promise.resolve();
 self.onmessage=({data})=>{
  const {id,type}=data;
+ if(!session&&!ready&&(data.quality==='light'||data.quality==='full'))quality=data.quality;
  queue=queue.then(async()=>{
   try{
-   if(type==='status'){const s=await cachedSource();post({id,type,modelCached:Boolean(s),source:s===SOURCES[0]?'local':s?'huggingface':null,model:MODEL_ID,g2p:G2P.version});}
+   if(type==='status'){const s=await cachedSource();post({id,type,modelCached:Boolean(s),source:s===SOURCES[0]?'local':s?'huggingface':null,model:MODEL_ID_(),g2p:G2P.version});}
    else if(type==='init')post({id,type,...await init()});
    else if(type==='speak'){const r=await speak(data);post({id,type,...r},[r.samples.buffer]);}
    else if(type==='phonemize'){

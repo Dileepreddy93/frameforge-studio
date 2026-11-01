@@ -99,6 +99,14 @@ jobs:
           export FRAMEFORGE_URL=http://127.0.0.1:8959/
           node tests/episode-mix-browser.cjs
           FRAMEFORGE_VOICE=1 node tests/self-host-browser.cjs
+          FRAMEFORGE_SAMPLES_OUT=artifacts/voice-model-samples node tests/voice-model-browser.cjs
+      - name: Keep the voice samples (full and light model) for listening
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-voice-model-samples
+          path: artifacts/voice-model-samples/
+          if-no-files-found: warn
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
