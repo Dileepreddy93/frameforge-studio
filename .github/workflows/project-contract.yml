@@ -76,6 +76,7 @@ jobs:
           node tests/offline-episode-browser.cjs
           node tests/render-failure-browser.cjs
           node tests/script-browser.cjs
+          node tests/self-host-browser.cjs
   voice-and-mix-tests:
     # Downloads the Kokoro voice model (about 326 MB) from huggingface.co on every run.
     runs-on: ubuntu-24.04
@@ -95,6 +96,7 @@ jobs:
           python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
           export FRAMEFORGE_URL=http://127.0.0.1:8959/
           node tests/episode-mix-browser.cjs
+          FRAMEFORGE_VOICE=1 node tests/self-host-browser.cjs
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

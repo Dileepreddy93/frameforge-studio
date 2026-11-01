@@ -3,13 +3,12 @@
 // cache-first. Each finished episode's audio (its mastered mix and voice track) is kept too, and the audio
 // element's range requests for it are answered from the cache when offline.
 // The voice model is not cached here: the voice worker keeps it (src/kokoro-worker.js).
-const CACHE='frameforge-shell-v4';
+const CACHE='frameforge-shell-v5';
 const SHELL=['studio.html','src/project-core.js','src/script-core.js','src/performance-core.js','src/speech-performance-core.js','src/dev-acting-core.js','src/robot-acting-core.js','design/robot-forms.js','design/robot-character.js',
  'src/kokoro-g2p.js','src/voice-emotion.js','src/kokoro-worker.js','src/sound-kit.mjs','src/episode-mix.mjs','src/mix-worker.js','design/dev-forms.js','design/dev-character.js','design/set-forms.js','design/set-arena.js','src/arena-set.js','assets/voice/en-us-lexicon.json','assets/voice/en-gb-lexicon.json',
  'projects/index.json','projects/zero-latency.frameforge.json','projects/dark-mode.frameforge.json','projects/mountain-mystery.frameforge.json',
- 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js',
- 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.bundle.min.mjs',
- 'https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/+esm','credits.html'];
+ 'vendor/three@0.180.0/three.module.min.js','vendor/three@0.180.0/three.core.min.js',
+ 'vendor/onnxruntime-web@1.30.0/ort.webgpu.bundle.min.mjs','vendor/mediabunny@1.62.1/mediabunny.mjs','credits.html'];
 
 // The audio of every finished episode listed in projects/index.json.
 async function episodeAudio(){
@@ -78,6 +77,8 @@ self.addEventListener('fetch',event=>{
  // The voice model and voiced lines are left alone.
  if(url.origin===location.origin){
   if(url.pathname.includes('/models/')||url.pathname.includes('/__voice-lines/'))return;
+  // Pinned, versioned libraries (M6.1) never change: the cache first. The voice runtime's .wasm is kept by the worker.
+  if(url.pathname.includes('/vendor/')){if(!url.pathname.endsWith('.wasm'))event.respondWith(cacheFirst(request));return;}
   event.respondWith(networkFirst(request));
  }else if(url.hostname==='cdn.jsdelivr.net'&&/@\d/.test(url.pathname))event.respondWith(cacheFirst(request));
 });

@@ -34,6 +34,8 @@
 built on are listed below with their licences. Videos you make with FrameForge are yours.</p>
 
 <h2>Runs in your browser</h2>
+<p class="note">These libraries are served from this site, unmodified; if one can't be loaded, the studio uses the
+same version from the jsDelivr CDN.</p>
 <div class="table"><table>
 <thead><tr><th>What</th><th>Used for</th><th>Licence</th></tr></thead>
 <tbody>
@@ -46,10 +48,13 @@ built on are listed below with their licences. Videos you make with FrameForge a
  <a href="assets/voice/NOTICE.md">Notice</a> · <a href="assets/voice/LICENSE-misaki.txt">licence text</a>.</td>
  <td>Apache-2.0</td></tr>
 <tr><td>ONNX Runtime Web 1.30.0</td><td>Runs the voice model (WebGPU or WebAssembly).
- <a href="https://github.com/microsoft/onnxruntime">microsoft/onnxruntime</a></td><td><a href="https://github.com/microsoft/onnxruntime/blob/main/LICENSE">MIT</a></td></tr>
-<tr><td>three.js 0.180.0</td><td>3D rendering. <a href="https://github.com/mrdoob/three.js">mrdoob/three.js</a></td>
+ <a href="https://github.com/microsoft/onnxruntime">microsoft/onnxruntime</a>; served from this site
+ (<a href="vendor/onnxruntime-web@1.30.0/LICENSE">licence</a>).</td><td><a href="https://github.com/microsoft/onnxruntime/blob/main/LICENSE">MIT</a></td></tr>
+<tr><td>three.js 0.180.0</td><td>3D rendering. <a href="https://github.com/mrdoob/three.js">mrdoob/three.js</a>; served from this site
+ (<a href="vendor/three@0.180.0/LICENSE">licence</a>).</td>
  <td><a href="https://github.com/mrdoob/three.js/blob/dev/LICENSE">MIT</a></td></tr>
-<tr><td>Mediabunny 1.62.1</td><td>Writes the MP4 file. Loaded unmodified from jsDelivr; its source is at
+<tr><td>Mediabunny 1.62.1</td><td>Writes the MP4 file and checks it after export. An unmodified copy is served from
+ this site (<a href="vendor/mediabunny@1.62.1/LICENSE">licence</a>); its source is at
  <a href="https://github.com/Vanilagy/mediabunny">Vanilagy/mediabunny</a>.</td>
  <td><a href="https://www.mozilla.org/en-US/MPL/2.0/">MPL-2.0</a></td></tr>
 <tr><td>Your browser's encoders</td><td>MP4 video is H.264 and audio is AAC, both encoded by your browser (WebCodecs).

@@ -3,12 +3,14 @@
 // (voice-emotion.js) -> a finished 48 kHz line. The model downloads once into the Cache API, and every voiced
 // line is cached by its text, voice, speed and emotion, so the studio voices lines with no network, no keys
 // and no server after the first download.
-import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.bundle.min.mjs';
+// ONNX Runtime from our own site (M6.1), the same pinned version on the CDN if ours fails.
+const ORT_OWN=new URL('../vendor/onnxruntime-web@1.30.0/',import.meta.url).href,ORT_CDN='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/';
+const ort=await import(ORT_OWN+'ort.webgpu.bundle.min.mjs').catch(e=>{console.warn('ONNX Runtime: our copy failed ('+e.message+'), using the CDN');return import(ORT_CDN+'ort.webgpu.bundle.min.mjs');});
 import './kokoro-g2p.js';
 import './voice-emotion.js';
 
 const G2P=globalThis.FrameForgeG2P,EMOTION=globalThis.FrameForgeVoiceEmotion;
-const ORT_WASM='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort-wasm-simd-threaded.asyncify.wasm';
+const ORT_WASM_FILE='ort-wasm-simd-threaded.asyncify.wasm';
 const REVISION='1939ad2a8e416c0acfeecc08a694d14ef25f2231';
 // A models/ folder next to the studio (a downloadable kit, or our test server) wins; otherwise the
 // pinned Hugging Face copy, which costs us nothing per buyer.
@@ -70,7 +72,7 @@ function init(){
   const [,tokenizer]=await Promise.all([loadG2P(),cachedBytes(source+'tokenizer.json','tokenizer').then(b=>JSON.parse(new TextDecoder().decode(b)))]);
   vocab=tokenizer.model.vocab;
   ort.env.logLevel='error';
-  ort.env.wasm.wasmBinary=await cachedBytes(ORT_WASM,'runtime');
+  ort.env.wasm.wasmBinary=await cachedBytes(ORT_OWN+ORT_WASM_FILE,'runtime').catch(e=>{console.warn('Voice runtime: our copy failed ('+e.message+'), using the CDN');return cachedBytes(ORT_CDN+ORT_WASM_FILE,'runtime');});
   ort.env.wasm.numThreads=self.crossOriginIsolated?Math.min(8,navigator.hardwareConcurrency||4):1;
   let model=await cachedBytes(source+MODEL_FILE,'model');
   if(await webgpu()){try{session=await open(model,'webgpu');device='webgpu';}catch(e){console.warn('WebGPU voice model failed; using WebAssembly',e);}}
