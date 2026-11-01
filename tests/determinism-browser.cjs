@@ -35,8 +35,8 @@ const sha=dataUrl=>crypto.createHash('sha256').update(dataUrl.split(',')[1]).dig
  for(const t of TIMES){
   const page=await browser.newPage({viewport:{width:1140,height:860}});
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:35000});
-  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgeQA?.shots().length>0&&window.FrameForgeQA.envelopeReady(),null,{timeout:60000});
+  await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+  await page.waitForFunction(()=>window.FrameForgeProjectsLoaded&&window.FrameForgeQA?.shots().length>0&&window.FrameForgeQA.envelopeReady(),null,{timeout:120000});
   const frames=await page.evaluate(([t,other])=>{
    const r=x=>FrameForgeQA.renderFilmFrame(x,360,640);
    const fresh=r(t),repeated=r(t);r(other);const afterJump=r(t);

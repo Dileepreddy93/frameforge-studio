@@ -54,5 +54,7 @@ FRAMEFORGE_DEPLOYED_URL=https://frameforge-v6.vercel.app/ node tests/browser-voi
 ```
 Deploying: **never run `vercel` in the repo folder** (it's linked to the protected project). Use the staged copy in
 `~/Desktop/Animate/deploy/frameforge-v6`, as described in `docs/releases/M4_5_DEPLOY_V6.md`.
-`tools/deploy-v6.sh` does that in one command (stage the committed files, check the link is `frameforge-v6`,
+Since 2026-11-01 a deploy can also be made without the Mac: Vercel builds a pushed commit straight from GitHub
+(`create_deployment` with `gitSource`, project `frameforge-v6`); `.vercelignore` applies to it (the build log lists
+the removed files). `tools/deploy-v6.sh` does the Mac route in one command (stage the committed files, check the link is `frameforge-v6`,
 `vercel deploy --prod`); `--stage` stages only. It refuses a dirty tree or a copy linked to any other project.

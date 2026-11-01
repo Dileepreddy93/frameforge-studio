@@ -73,6 +73,13 @@ Also:
 - Both new tests run in CI.
 - Unit tests (13) and the full browser list pass.
 
+## CI
+- **What failed:** run 153 (commit 072a65c on `feature/m5-close-the-look-gap`) failed once. `determinism-browser`
+  timed out after 60 s waiting for the studio to load on a slow runner, while the same commit passed on the other
+  branch (run 152).
+- **Fix:** its waits now match the other browser tests (page 60 s, readiness 120 s). It's still a real failure if the
+  studio never loads.
+
 ## Proof (`proof/v6/e2e/`)
 `control-audit.txt`, `studio-script.png` (the new panel with the help open), `script-episode-frames.jpg` (one frame per
 shot of the typed episode), `landing.png`, `template-*.jpg` and `env-*.jpg` (the template and set-design findings).

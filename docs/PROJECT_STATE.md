@@ -12,6 +12,10 @@ a 1080×1920 MP4. Buyers use it alone: no keys, no server, nothing paid per vide
   code is tag `v3.0-stable`.
 
 ## Built and verified
+- **Write an episode (M5.7):** a script box in the studio, one line per shot (`DEV (worried): ...`). The planner
+  picks the cameras, acting, reactions, screens, music and sound, then the lines are voiced in the browser
+  (`docs/releases/M5_7_SCRIPT_AND_CLEANUP.md`). Every studio control was audited; the ones that did nothing are
+  gone.
 | Area | State | Evidence |
 |---|---|---|
 | Characters | DEV, BLUE and ORANGE: 2D model sheets approved by the user, built in 3D, acting on springs and key poses | `design/*-model-sheet.html`, `docs/releases/M3_*` |
