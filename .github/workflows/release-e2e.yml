@@ -65,7 +65,21 @@ jobs:
           $f = (Get-ChildItem artifacts/release-${{ matrix.browser }}/*.mp4 | Select-Object -First 1).FullName
           ffprobe -v error -count_frames -show_entries stream=codec_name,profile,width,height,r_frame_rate,nb_read_frames,channels,sample_rate:format=duration,size -of json $f
           ffmpeg -v error -xerror -i $f -f null - ; if ($LASTEXITCODE) { throw "ffmpeg could not decode the whole file" }
-          mpv --no-config --vo=null --ao=null --speed=8 --msg-level=all=error $f ; if ($LASTEXITCODE) { throw "mpv could not play it" }
+          # Chocolatey mpvio.install may install mpv.exe without updating this PowerShell process's PATH.
+          # Resolve the executable by location instead of treating a PATH lookup failure as video corruption.
+          $mpvExe = (Get-Command mpv.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Source)
+          if (-not $mpvExe) {
+            $roots = @("$env:ProgramData\chocolatey\lib\mpvio.install\tools", "$env:ProgramData\chocolatey\lib\mpv\tools")
+            foreach ($root in $roots) {
+              if (Test-Path $root) {
+                $candidate = Get-ChildItem -LiteralPath $root -Filter mpv.exe -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+                if ($candidate) { $mpvExe = $candidate; break }
+              }
+            }
+          }
+          if (-not $mpvExe) { throw "mpv.exe not found after Chocolatey installation; video decode was not tested by mpv" }
+          & $mpvExe --no-config --vo=null --ao=null --speed=8 --msg-level=all=error $f
+          if ($LASTEXITCODE -ne 0) { throw "mpv could not play the exported film (exit $LASTEXITCODE)" }
           "PLAYERS_PASS $f"
       - uses: actions/upload-artifact@v4
         if: always()
