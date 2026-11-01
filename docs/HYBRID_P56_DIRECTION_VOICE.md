@@ -1,6 +1,6 @@
 # FrameForge Ultimate — P5/P6 director, screen and voice engineering
 
-**Branch:** `feature/hybrid-foundation`. **Production:** untouched. **State:** P5/P6 targeted source and two-film browser/video/audio QA PASSED; full V2 fresh-model/multilingual and legacy release gates remain OPEN. Read `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md` first for the live phase ledger.
+**Branch:** `feature/hybrid-foundation`. **Production:** untouched. **State:** P5/P6 scripted/voice QA and three short H.264/AAC films PASSED, including one newly synthesized V2 Kokoro-English two-speaker movie; Indic voice, high-resolution release and V6 parity gates remain OPEN. Read `docs/HYBRID_MASTER_IMPLEMENTATION_PLAN.md` first for the live phase ledger.
 
 ## Verified P5/P6 milestone — 2026-11-01
 
@@ -23,7 +23,16 @@ Unlike the earlier two 4.57-second films that reused a preexisting speech track,
 
 `src/hybrid-voice.mjs` now rounds synthesized voice shot lengths **up** to the next 30fps boundary to prevent a real clip being truncated by a negative frame rounding error. The fractional-duration boundary test in `tests/hybrid-voice.test.mjs` passes.
 
-**Never claim fresh-generated English V2 film success until the combined voice job prints both `HYBRID_P6_REAL_KOKORO_V2_PASS` and `HYBRID_P6_FRESH_FILM_PASS` and has a downloadable artifact.** This is a real model-level test rather than arbitrary synthetic audio, but still uses FrameForge's existing first-party model; it is *not* a claim of native Telugu/Hindi support or precise phoneme alignment. If it fails, log and fix the actual cause instead of changing assertions to accept preexisting audio.
+**ACTUAL CI PASSED:** [run 41316274642](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41316274642) has both `HYBRID_P6_REAL_KOKORO_V2_PASS` and `HYBRID_P6_FRESH_FILM_PASS` in the successful voice-and-mix job, and [artifact 13087274112](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41316274642/artifacts/13087274112) contains the original-dialogue MP4, mono source WAV, mastered stereo WAV, screenshots, film report and persisted V2 project. This is a real model-level test rather than arbitrary synthetic audio, but still uses FrameForge's existing first-party model; it is *not* a claim of native Telugu/Hindi support or precise phoneme alignment. If it fails, log and fix the actual cause instead of changing assertions to accept preexisting audio.
+
+### New original-English dialogue and movie — verified
+
+- Characters and authentic Kokoro model voices: **Luna** `af_heart`, **Atlas** `am_michael`.
+- New dialogues: “Our studio makes a new story right here.” and “And these words are spoken for the first time.”
+- Real first-party browser model inference, not preexisting sound samples; existing V6 model's worker reused through `FrameForgeVoiceQA.speakWav`, with `synthesizeHybridProject` carrying out the new V2 shot retime and stereo mastering.
+- Report: **5.5667 seconds**, **−14.007 LUFS**, **−2.0 dBFS**, **44 independently decoded 360×640 H.264/AAC frames at 8 fps**, speech-driven facial mouth control peak `0.97` and deterministic seek.
+- The existing P5/P6 pair of 4.57-second camera/screen films still passes the same branch's portable video job. Source, rig and voice jobs green; separate cross-page V6 visual parity job remains red.
+- **Limitations:** This is an engineering film, not a final 30–60 second polished customer film. English only. Kokoro transport is proven via the existing first-party worker interface, but a dedicated *direct new V2 worker* release test and precise forced phoneme alignment are additional release-hardening work. Indic models and commercial-grade character likeness/licensing need separate acceptance.
 
 ## P5 — One authoritative FrameForge timeline
 
