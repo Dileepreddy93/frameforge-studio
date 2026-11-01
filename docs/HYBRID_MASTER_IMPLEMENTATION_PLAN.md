@@ -77,7 +77,7 @@ node tests/hybrid-legacy-film-frames.cjs
 | Browser/media video CI | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137), `portable-video-export`; `HYBRID_P1_WEBGL_VIDEO_PASS`, `HYBRID_P0_MEDIA_PASS` | **PASS** |
 | Video proof artifact | [P1 hybrid adapter proof](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137/artifacts/13075629883) | **UPLOADED** |
 | Legacy original-film parity | [run 41288071162](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41288071162) including visual parity test | **PASS** |
-| Latest complete source/browser/voice CI | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137): source, rigged, portable video passed; browser and voice in progress at latest check | **PENDING FINAL** |
+| Latest complete source/browser/voice CI | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137): source, rigged, voice-and-mix, and portable video passed; real-character browser suite in progress at latest check | **PENDING FINAL** |
 | Windows/macOS full release certification | [release run 41287859898](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287859898) | **P0 GATE OPEN** |
 
 **P1 commits:** `98fed858` (v2 contract), `e695b039` (provider registry/session/storage), `4bba8b46` (negative and compatibility tests), `4d949408` (source CI), `263a8fec` (real Three.js proof scene), `6222d1a5` (real playable proof film), `618cb4ca` (video CI and artifact), `a0166fa3` (interface specification).
