@@ -54,6 +54,8 @@ jobs:
           node --check tests/hybrid-p7-creator-browser.cjs
           node --check tests/hybrid-p7-real-creator-voice.cjs
           node tests/hybrid-p7-editor.test.cjs
+          node --check tools/verify-hybrid-delivery.cjs
+          node tests/hybrid-delivery-analyzer.test.cjs
           node --check tests/hybrid-p9-beta-browser.cjs
           node --check tests/hybrid-p8-master-browser.cjs
           node --check tests/hybrid-p6-fresh-synthesis.cjs
