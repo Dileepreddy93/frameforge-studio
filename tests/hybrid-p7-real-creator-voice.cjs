@@ -4,7 +4,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),
  cp=require('node:child_process');
-module.exports=async function testCreatorVoice(page,base,out){
+module.exports=async function testCreatorVoice(page,base,out,{width=360,requireCodec=false}={}){
  const errors=[];const onError=e=>errors.push(e.message);
  page.on('pageerror',onError);
  try{
@@ -21,7 +21,7 @@ module.exports=async function testCreatorVoice(page,base,out){
     const e=document.getElementById('voice-status');
     return e?.textContent.includes('Real English speech generated')||
       e?.textContent.includes('No speech was saved');
-  },null,{timeout:210000});
+  },null,{timeout:requireCodec?360000:210000});
   const msg=await page.locator('#voice-status').textContent();
   assert.match(msg,/Real English speech generated for 2 shots/, 'Actual Kokoro model must speak the newly authored V2 film: '+msg);
   assert.equal(await page.locator('#export').isEnabled(),true,'Export allowed only for freshly voiced V2 project');
@@ -56,14 +56,16 @@ module.exports=async function testCreatorVoice(page,base,out){
   await page.screenshot({path:path.join(out,'p7-actual-kokoro-creator.png'),fullPage:true});
   const browserCodec=await page.evaluate(async()=>{
     const m=await import('/vendor/mediabunny@1.62.1/mediabunny.mjs');
-    return {h264:await m.canEncodeVideo('avc',{width:360,height:640}),
+    return {h264:await m.canEncodeVideo('avc',{width,height:width*16/9}),
       aac:await m.canEncodeAudio('aac')};
   });
+  if(requireCodec&&(!browserCodec.h264||!browserCodec.aac))
+    throw Error('Windows customer release gate: native H264/AAC MP4 encoders unavailable '+JSON.stringify(browserCodec));
   let exportCheck='unsupported-encoder-fail-closed';
-  await page.locator('#resolution').selectOption('360');
+  await page.locator('#resolution').selectOption(String(width));
   await page.locator('#seconds').selectOption('2');
   if(browserCodec.h264&&browserCodec.aac){
-    const downloaded=page.waitForEvent('download',{timeout:120000});
+    const downloaded=page.waitForEvent('download',{timeout:requireCodec?600000:120000});
     await page.locator('#export').click();
     const movie=await downloaded;
     const source=await movie.path(),dest=path.join(out,'p7-original-Kokoro-browser-native.mp4');
@@ -73,7 +75,7 @@ module.exports=async function testCreatorVoice(page,base,out){
      '-of','json',dest],{encoding:'utf8',timeout:60000}));
     const v=probe.streams.find(s=>s.codec_type==='video'),a=probe.streams.find(s=>s.codec_type==='audio');
     assert.equal(v.codec_name,'h264');assert.equal(a.codec_name,'aac');
-    assert.equal(v.width,360);assert.equal(v.height,640);
+    assert.equal(v.width,width);assert.equal(v.height,width*16/9);
     assert.equal(Number(v.nb_read_frames),60);
     cp.execFileSync('ffmpeg',['-v','error','-xerror','-i',dest,'-f','null','-'],
      {stdio:['ignore','pipe','pipe'],timeout:150000});
@@ -87,7 +89,7 @@ module.exports=async function testCreatorVoice(page,base,out){
   const result={status:'HYBRID_P7_REAL_ENGLISH_KOKORO_CREATOR_PASS',
     originalV2:true,newModelInferenceThroughCreator:true,actors:info.shots.map(s=>s.speaker),
     duration:info.duration,rate:info.rate,lufs:info.lufs,peakDb:info.peakDb,
-    screenshot:true,playbackTo200ms,video:exportCheck,codecProbe:browserCodec,
+    screenshot:true,playbackTo200ms,width,video:exportCheck,codecProbe:browserCodec,
     limits:['Linux Chromium may have no H264 encoder; unsupported codec is correctly rejected',
       'Browser model preload benefits from earlier real Kokoro source tests',
       'Native Telugu/Hindi TTS is not tested']};
