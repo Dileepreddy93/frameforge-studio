@@ -16,6 +16,8 @@ module.exports=async function testCreatorVoice(page,base,out,{width=360,requireC
   const initial=await page.locator('#status').textContent();
   assert.equal(await page.locator('#play').isEnabled(),true,'V2 Creator must render real WebGL before voicing: '+initial);
   assert.equal(await page.locator('#export').isEnabled(),false,'Unvoiced film is never presented as export-ready');
+  await page.locator('#soundtrack').selectOption('groove');
+  await page.locator('#shot-sound').selectOption('chime');
   await page.locator('#voice').click();
   await page.waitForFunction(()=>{
     const e=document.getElementById('voice-status');
@@ -33,12 +35,15 @@ module.exports=async function testCreatorVoice(page,base,out,{width=360,requireC
       peak=Math.max(peak,Math.abs(mix.left[i]),Math.abs(mix.right[i]));
     }
     return {schema:p.schema,shots:p.shots.map(s=>({speaker:s.speaker,text:s.dialogue,duration:s.duration})),
-     duration:mix.duration,lufs:mix.lufs,peakDb:mix.peakDb,sourcePeak:peak,rate:mix.sampleRate};
+     duration:mix.duration,lufs:mix.lufs,peakDb:mix.peakDb,sourcePeak:peak,rate:mix.sampleRate,
+     music:mix.music,effects:mix.effects};
   });
   assert.equal(info.schema,'frameforge.project/2');
   assert.equal(info.shots.length,2);
   assert.equal(info.rate,48000);assert.ok(info.sourcePeak>.01);
   assert.ok(Number.isFinite(info.lufs)&&info.peakDb<0);
+  assert.equal(info.music,true,'Original procedural soundtrack must really be mixed into Creator audio');
+  assert.ok(info.effects>=1,'Configured shot SFX must survive rendering and mastering');
   const playbackStartedAt=Date.now();
   await page.locator('#play').click();
   try{
@@ -89,6 +94,7 @@ module.exports=async function testCreatorVoice(page,base,out,{width=360,requireC
   const result={status:'HYBRID_P7_REAL_ENGLISH_KOKORO_CREATOR_PASS',
     originalV2:true,newModelInferenceThroughCreator:true,actors:info.shots.map(s=>s.speaker),
     duration:info.duration,rate:info.rate,lufs:info.lufs,peakDb:info.peakDb,
+    proceduralScore:info.music,authoredSoundEffects:info.effects,
     screenshot:true,playbackTo200ms,width,video:exportCheck,codecProbe:browserCodec,
     limits:['Linux Chromium may have no H264 encoder; unsupported codec is correctly rejected',
       'Browser model preload benefits from earlier real Kokoro source tests',
