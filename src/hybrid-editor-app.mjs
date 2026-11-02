@@ -82,8 +82,41 @@ function renderUI({render3d=true}={}){
    grid.append(column('Character model',type),column('English voice',voice));
    const wrapper=document.createElement('div');
    const l=document.createElement('label');l.textContent='Character name';l.htmlFor=name.id;
-   wrapper.append(l,name);area.append(head,wrapper,grid);cast.append(area);
+   wrapper.append(l,name);area.append(head,wrapper,grid);
+   // Real Ember model properties; no asset downloads or fake customization.
+   const presetColors={
+     creator:{top:'#2e3a55',accent:'#c9b8a4'},
+     human:{top:'#b5543f',accent:'#f0d9b5'},
+     robot:{top:'#8aa1ad',accent:'#3d4650'},
+     creature:{top:'#3f6b58',accent:'#f2e2c9'},
+     bot:{top:'#4f8fd6',accent:'#2e3440'},
+     mascot:{top:'#e8743c',accent:'#c9572e'}
+   };
+   const descriptor=p.hybrid.cast[character.id],palette=presetColors[descriptor.template]||presetColors.creator;
+   const appearance=document.createElement('div');appearance.className='cols';
+   const control=(id,label,element)=>{
+     element.id=id;const box=document.createElement('div'),l=document.createElement('label');
+     l.textContent=label;l.htmlFor=id;box.append(l,element);return box;
+   };
    const change=patch=>changeProject(()=>editor.cast(character.id,patch));
+   for(const key of ['top','accent']){
+     const input=document.createElement('input');input.type='color';
+     input.value=descriptor.look?.[key]||palette[key];
+     input.setAttribute('aria-label',key+' color for '+character.name);
+     input.onchange=()=>change({look:{[key]:input.value}});
+     appearance.append(control('cast-'+key+'-'+character.id,key==='top'?'Clothing color':'Accent color',input));
+   }
+   const hairstyle=document.createElement('select');
+   fillSelect(hairstyle,['shaggy','chunky','short','curly','long','bun','mohawk','bald'],
+     descriptor.look?.hairStyle||'shaggy');
+   hairstyle.onchange=()=>change({look:{hairStyle:hairstyle.value}});
+   appearance.append(control('cast-hair-'+character.id,'Hairstyle',hairstyle));
+   const artstyle=document.createElement('select');
+   fillSelect(artstyle,[['smooth','Smooth stylized'],['lowpoly','Faceted low-poly']],
+     descriptor.style||'smooth');
+   artstyle.onchange=()=>change({style:artstyle.value});
+   appearance.append(control('cast-style-'+character.id,'Rendering style',artstyle));
+   area.append(appearance);cast.append(area);
    name.onchange=()=>change({name:name.value});
    type.onchange=()=>change({template:type.value});
    voice.onchange=()=>change({voice:voice.value});
