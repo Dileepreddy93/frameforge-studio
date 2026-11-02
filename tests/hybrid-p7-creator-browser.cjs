@@ -20,6 +20,7 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
     '--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
   const findings=[];
   for(const viewport of [{width:1330,height:930},{width:390,height:844}]){
+   const mobile=viewport.width<=730;
    const context=await browser.newContext({viewport,acceptDownloads:true});
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto('http://127.0.0.1:8996/creator.html',{waitUntil:'domcontentloaded',timeout:70000});
@@ -36,6 +37,15 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    }
    assert.equal(await page.locator('#play').isEnabled(),true,
      'Real editor must open editable Ember WebGL scene: '+await page.locator('#status').textContent());
+   if(mobile){
+     assert.equal(await page.locator('#mobile-workspace').isVisible(),true,
+       'A mobile author has a fixed one-tap workspace switcher');
+     for(const view of ['shot','preview','story']){
+       await page.locator('#mobile-workspace [data-view="'+view+'"]').click();
+       assert.equal(await page.locator('#pane-'+view).isVisible(),true);
+       assert.equal(await page.locator('#mobile-workspace [data-view="'+view+'"]').getAttribute('aria-pressed'),'true');
+     }
+   }
    const accessibility=await new AxeBuilder({page})
      .withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
    fs.writeFileSync(path.join(OUT,'axe-'+viewport.width+'.json'),JSON.stringify({
@@ -60,11 +70,14 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
 
    await page.locator('#world').selectOption('meadow');
    await page.locator('#timeofday').selectOption('night');
+   if(mobile)await page.locator('#mobile-workspace [data-view="shot"]').click();
    await page.locator('#dialogue').fill('This dialogue was edited by the creator.');
    await page.locator('#dialogue').press('Tab');
    await page.locator('#emotion').selectOption('happy');
    await page.locator('#action').selectOption('wave');
+   if(mobile)await page.locator('#mobile-workspace [data-view="preview"]').click();
    await page.locator('#soundtrack').selectOption('groove');
+   if(mobile)await page.locator('#mobile-workspace [data-view="shot"]').click();
    await page.locator('#shot-sound').selectOption('chime');
    const changed=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
    assert.ok(changed.startsWith('data:image/png;base64,'));
@@ -84,6 +97,7 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.ok(faceReadability.mean>48&&faceReadability.visibleFraction>.35,
      'Night-scene actor face must remain readable after lighting changes: '+JSON.stringify(faceReadability));
 
+   if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
    await page.locator('#add-shot').click();
    assert.equal(await page.locator('#shot-list li').count(),3);
    await page.locator('#undo').click();
@@ -115,10 +129,13 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    await page.locator('#file').setInputFiles({name:'my-film.json',mimeType:'application/json',buffer:Buffer.from(source)});
    await page.waitForFunction(()=>document.getElementById('world').value==='meadow');
    assert.equal(await page.locator('#export').isEnabled(),false);
+   if(mobile)await page.locator('#mobile-workspace [data-view="preview"]').click();
    const stillDownload=page.waitForEvent('download');
    await page.locator('#still').click();const png=await stillDownload;
    assert.equal(fs.readFileSync(await png.path()).toString('hex',0,4),'89504e47');
    await page.screenshot({path:path.join(OUT,'creator-'+viewport.width+'.png'),fullPage:true});
+   if(mobile)assert.ok((await page.evaluate(()=>document.documentElement.scrollHeight))<2300,
+     'Mobile preview tab should not force a 4,000px scroll through every editor panel');
    // Corrupt browser data must remain recoverable, not silently overwritten.
    if(viewport.width===390){
      await page.evaluate(()=>new Promise((resolve,reject)=>{
