@@ -13,6 +13,23 @@ function download(blob,name){
 }
 const projectDuration=p=>p.shots.reduce((sum,s)=>sum+s.duration,0);
 const byId=(p,id)=>p.shots.find(s=>s.id===id)||p.shots[0];
+const panes={story:'pane-story',shot:'pane-shot',preview:'pane-preview'};
+function showWorkspace(view){
+ if(!(view in panes))throw Error('Unknown mobile Creator workspace');
+ for(const [name,id] of Object.entries(panes)){
+   $(id).dataset.mobileActive=String(name===view);
+ }
+ for(const button of document.querySelectorAll('#mobile-workspace button')){
+   button.setAttribute('aria-pressed',String(button.dataset.view===view));
+ }
+ if(view==='preview'&&engine&&editor){
+   try{frame(Number($('scrub').value))}catch(error){text('status','Preview: '+error.message)}
+ }
+}
+for(const button of document.querySelectorAll('#mobile-workspace button')){
+ button.onclick=()=>showWorkspace(button.dataset.view);
+}
+
 const fillSelect=(el,items,value)=>{
  el.replaceChildren();
  for(const item of items){
@@ -134,6 +151,7 @@ function renderUI({render3d=true}={}){
      selected=s.id;renderUI({render3d:false});
      let elapsed=0;for(const x of p.shots){if(x.id===selected)break;elapsed+=x.duration}
      stop();frame(elapsed+.05);
+     if(window.matchMedia('(max-width:730px)').matches)showWorkspace('shot');
    };
  }
  const current=byId(p,selected);selected=current.id;
