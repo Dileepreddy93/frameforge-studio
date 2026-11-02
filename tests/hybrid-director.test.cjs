@@ -72,6 +72,23 @@ const portraitHorizontalHalfWidth=Math.tan(fullTwo.fov*Math.PI/360)*
 assert.ok(portraitHorizontalHalfWidth>1.65,
   'A real portrait two-shot must not crop an actor when heads are about ±1 unit from center');
 
+// Real monitor geometry in hybrid-preview-engine.mjs is 3.8 units wide.
+// With a 9:16 output and a push toward its end, the complete monitor plus
+// 0.1-unit margin per side must stay in frame by default, not just its middle.
+const screenProject=structuredClone(base);
+screenProject.shots[0].camera={kind:'screen'};
+screenProject.shots[0].direction.move='push';
+const fullScreen=direction.cameraAt(screenProject,2.3,anchors,stage);
+const screenDistance=Math.hypot(...fullScreen.position.map((v,i)=>v-stage.screen[i]));
+const screenPortraitHalfWidth=Math.tan(fullScreen.fov*Math.PI/360)*screenDistance*9/16;
+assert.ok(screenPortraitHalfWidth>=2.0,
+  'Portrait screen insert must show full 3.8-unit monitor and 0.1-unit horizontal margin');
+const authoredCloseScreen=structuredClone(screenProject);
+authoredCloseScreen.shots[0].framing={distance:4.8,fov:38};
+const close=direction.cameraAt(authoredCloseScreen,2.3,anchors,stage);
+assert.ok(Math.hypot(...close.position.map((v,i)=>v-stage.screen[i]))<screenDistance,
+  'Explicit artist camera overrides remain authoritative');
+
 const malformed=structuredClone(base);malformed.shots[0].screen.lines=['x'.repeat(250)];
 assert.throws(()=>direction.verify(malformed));
 const malformed2=structuredClone(base);malformed2.shots[1].direction.move='executeJavascript';

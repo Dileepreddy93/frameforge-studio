@@ -208,7 +208,11 @@
    // Portrait aspect cuts horizontal field of view to only ~21° at 38° vertical.
    // The old 6.5-unit two-shot cropped a full actor's head; two actors at
    // x≈±1 each need >1.65 units half-width including facial silhouettes.
-   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:4.8);
+   // A 3.8-unit wide in-world monitor cannot fit a portrait shot at the old
+   // actor-close-up distance (4.8): over half the authored text was cropped.
+   // Preserve intentional user framing overrides, but fit the full screen by
+   // default (including the .9-unit push move) with a little side breathing room.
+   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?11.8:4.8);
    const mod={push:-.9,pull:.9,drift:0,orbit:0,static:0}[d.move]||0;
    const distance=baseDist+mod*smooth(progress);
    if(d.move==='orbit')azimuth+=.5*progress;
