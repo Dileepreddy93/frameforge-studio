@@ -11,6 +11,22 @@ const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 renderer.setPixelRatio(1);renderer.setSize(360,640,false);document.body.append(renderer.domElement);
 const scene=new T.Scene();
 const camera=new T.PerspectiveCamera(38,360/640,.1,150);
+// The original night set left brown faces in deep shadow; expressive eyes and
+// mouth were indistinguishable in actual P7 screenshots. Give the authored cast
+// a soft, non-shadowing cinematic key/fill/rim without removing the world's
+// time-of-day identity. Intensity is deterministic and derived from the project.
+const characterKey=new T.DirectionalLight(0xffe1c9,1.15);
+characterKey.position.set(3.5,6.8,7.5);characterKey.castShadow=false;
+const characterRim=new T.DirectionalLight(0x9bbcff,.55);
+characterRim.position.set(-4.5,5.2,-3.3);characterRim.castShadow=false;
+const characterFill=new T.HemisphereLight(0xb9caff,0x34334d,.28);
+scene.add(characterKey,characterRim,characterFill);
+function setArtLighting(world){
+ const isNight=world?.time==='night';
+ characterKey.intensity=isNight?2.15:1.10;
+ characterFill.intensity=isNight?.48:.25;
+ characterRim.intensity=isNight?.83:.55;
+}
 const overlay=document.createElement('canvas');overlay.width=360;overlay.height=640;
 const overlayCtx=overlay.getContext('2d',{alpha:false});
 const onSet=createOnSetScreen();
@@ -73,7 +89,7 @@ const scripts=variant=>[
 async function create(variant){
  if(![1,2].includes(variant))throw Error('Unknown proof variant');
  session?.dispose();
- project=prepareProject(variant);
+ project=prepareProject(variant);setArtLighting(project.hybrid.world);
  const parsed=D.scriptToProject(scripts(variant),project);
  if(parsed.errors.length)throw Error('P5 script invalid '+JSON.stringify(parsed.errors));
  project=parsed.project;
@@ -151,6 +167,7 @@ function loadEditable(source){
  // Explicitly dispose all old assets/sessions before taking control.
  session?.dispose();
  project=p;
+ setArtLighting(project.hybrid.world);
  mix=renderHybridAudio(project,new Map(),{music:false});
  mix.envelope=sampledEnvelope(mix.voice);
  registry=P.createRegistry();
