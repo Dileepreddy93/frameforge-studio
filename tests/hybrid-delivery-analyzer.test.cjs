@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {analyzeGray,verifyFilm}=require('../tools/verify-hybrid-delivery.cjs');
+const blank=analyzeGray(Buffer.alloc(144*256));
+assert.equal(blank.std,0);
+assert.equal(blank.visibleFraction,0);
+assert.equal(blank.blackFraction,1);
+const gradient=Buffer.from({length:144*256},(_,i)=>i%256);
+const varied=analyzeGray(gradient);
+assert.ok(varied.std>60,'Real visual signal has measurable dynamic range');
+assert.ok(varied.visibleFraction>.7);
+assert.notEqual(varied.hash,blank.hash);
+assert.throws(()=>analyzeGray(Buffer.alloc(0)),/Empty decoded video frame/);
+assert.throws(()=>verifyFilm('/file-that-does-not-exist.mp4'),/Film does not exist/);
+console.log('HYBRID_FINAL_FILM_SIGNAL_ANALYZER_PASS: silence/flat-image and signal detection');
