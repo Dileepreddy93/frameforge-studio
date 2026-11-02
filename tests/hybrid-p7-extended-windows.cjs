@@ -41,12 +41,23 @@ const LINES=[
    for(let i=0;i<lines.length;i++){
      if(i>=2)e.addShot();
      const p=e.project,shot=p.shots[i].id;
+     const screenInsert=i===5||i===8;
      e.shot(shot,{speaker:i%2?'atlas':'luna',dialogue:lines[i],
        emotion:['curious','idea','happy','surprised','worried'][i%5],
        action:['wave','explain','think','point','nod'][i%5],
-       camera:i%3===2?'two':'actor',
+       camera:screenInsert?'screen':i%3===2?'two':'actor',
        move:i%2?'drift':'push',duration:4.5,
        caption:i%3===0?'OUR STORY, MADE HERE':''});
+     if(!screenInsert&&i%3!==2){
+       // Allow breathing room around the expressive face on a vertical film.
+       e.shot(shot,{cameraDistance:6.2,cameraFov:42});
+     }
+     if(screenInsert){
+       e.shot(shot,{screenKind:'terminal',
+         screenTitle:i===5?'CONNECTION LOST':'EXPORT VERIFIED',
+         screenLines:i===5?'Network offline\nLocal project safe':
+           'H264 1080p ready\nStereo AAC mastered\nStory ready to share'});
+     }
    }
    e.shotSound(e.project.shots[5].id,'buzz');
    e.shotSound(e.project.shots[7].id,'chime');
@@ -126,6 +137,17 @@ const LINES=[
   assert.ok(Number(probe.format.duration)>=audio.duration-.05);
   cp.execFileSync('ffmpeg',['-v','error','-xerror','-i',movie,'-f','null','-'],
     {stdio:['ignore','pipe','pipe'],timeout:400000});
+  // Independent delivered-file examination: detect silent AAC, blank or
+  // frozen frames, codec/container mismatch, and truncated full-film audio.
+  const {verifyFilm}=require('../tools/verify-hybrid-delivery.cjs');
+  const finalAudit=verifyFilm(movie);
+  fs.writeFileSync(path.join(OUT,'independent-delivery-report.json'),JSON.stringify(finalAudit,null,2));
+  assert.equal(finalAudit.verdict,'FRAMEFORGE_FULL_DELIVERY_VERIFIED');
+  assert.equal(finalAudit.framesSampled,5);
+  console.log('HYBRID_LONG_FILM_INDEPENDENT_SIGNAL_PASS '+JSON.stringify({
+    frames:finalAudit.frames,seconds:finalAudit.seconds,
+    audio:finalAudit.soundtrack,brightness:finalAudit.samples.map(f=>f.mean)
+  }));
   for(const [label,t] of [['first',.1],['middle',audio.duration/2],['last',audio.duration-.2]]){
     cp.execFileSync('ffmpeg',['-v','error','-y','-ss',t.toFixed(3),
       '-i',movie,'-frames:v','1',path.join(OUT,label+'.png')],
