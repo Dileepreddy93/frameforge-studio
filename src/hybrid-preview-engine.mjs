@@ -196,7 +196,7 @@ function setOutputResolution(width=360,height=640){
  return {width:renderer.domElement.width,height:renderer.domElement.height,
    surfacePixels:renderer.domElement.width*renderer.domElement.height};
 }
-function frameAt(t){
+function frameAt(t,encode=true){
  if(!session)throw Error('Not prepared');
  const state=session.seek(t);
  const performance=D.performanceAt(project,t);
@@ -222,7 +222,7 @@ function frameAt(t){
    overlayCtx.fillText(shot.caption,180,584,294);
    overlayCtx.restore();
  }
- return {image:overlay.toDataURL('image/png'),time:t,shot:shot.id,
+ return {image:encode?overlay.toDataURL('image/png'):null,time:t,shot:shot.id,
    activeActor:shot.speaker,voiced:speech.voiced,mouthOpen:speech.mouthOpen,
    viseme:speech.viseme,screen:screenPlane.visible,camera:pose,caption:shot.caption,
    reactions:performance.active};
