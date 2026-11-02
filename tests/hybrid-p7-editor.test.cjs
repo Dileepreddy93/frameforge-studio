@@ -9,6 +9,13 @@ assert.equal(state.canUndo,false);
 assert.equal(state.voiced,false);
 assert.equal(state.cast('luna',{template:'creator',voice:'af_bella',name:'Nova'}),true);
 assert.equal(state.project.characters[0].name,'Nova');
+assert.equal(state.cast('luna',{look:{top:'#258ba6',accent:'#e1bf83',hairStyle:'bun'},style:'lowpoly'}),true);
+assert.deepEqual(state.project.hybrid.cast.luna.look,{top:'#258ba6',accent:'#e1bf83',hairStyle:'bun'});
+assert.equal(state.project.hybrid.cast.luna.style,'lowpoly');
+assert.throws(()=>state.cast('luna',{look:{top:'red'}}),/RRGGBB/);
+assert.throws(()=>state.cast('luna',{look:{head:100}}),/supported range/);
+assert.throws(()=>state.cast('luna',{look:{unknown:'yes'}}),/Unknown appearance field/);
+
 assert.equal(state.shot('shot-01',{dialogue:'We are creating a new original movie.'}),true);
 assert.equal(state.shot('shot-01',{emotion:'surprised',action:'wave',move:'push'}),true);
 assert.equal(state.world('snow','night'),true);
