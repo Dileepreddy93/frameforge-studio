@@ -1,0 +1,46 @@
+name: FrameForge long-film customer release acceptance
+on:
+  push:
+    branches: ["feature/hybrid-foundation"]
+    paths:
+      - ".github/workflows/hybrid-creator-extended.yml"
+      - "tests/hybrid-p7-extended-windows.cjs"
+  workflow_dispatch:
+concurrency:
+  group: frameforge-extended-release-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  windows-chrome-full-film:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install actual Chrome automation and external MP4 decoder
+        shell: pwsh
+        run: |
+          npm install --no-save playwright@1.56.1
+          choco install ffmpeg -y --no-progress
+          & "C:\Program Files\Google\Chrome\Application\chrome.exe" --version
+      - name: Create and export a complete original 30 to 60 second film
+        shell: pwsh
+        env:
+          FRAMEFORGE_URL: http://127.0.0.1:8959/
+          FRAMEFORGE_EXTENDED_OUT: artifacts/hybrid-long-film
+        run: |
+          $env:Path = "$env:ProgramData\chocolatey\bin;" + $env:Path
+          Start-Process -FilePath node -ArgumentList 'tests/static-server.cjs','8959' -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          node tests/hybrid-p7-extended-windows.cjs
+          if ($LASTEXITCODE) { throw "Full native customer film failed certification; do not publish or promote" }
+      - name: Archive actual completed MP4, full decode verification and three frame samples
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p7-windows-full-30-60-second-movie
+          path: artifacts/hybrid-long-film/
+          if-no-files-found: warn
