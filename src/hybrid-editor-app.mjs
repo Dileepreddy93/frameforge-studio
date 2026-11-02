@@ -39,14 +39,19 @@ async function startVoicePlayback(at){
  source.start(0,at);
  return true;
 }
+// Live preview draws the genuine engine canvas directly. PNG encoding on
+// every animation tick used to stall both playback and the UI on software GPUs.
 function frame(t){
  if(!engine||!editor)return;
  const duration=projectDuration(editor.project),safe=Math.min(Math.max(0,t),Math.max(0,duration-.02));
- const result=engine.frameAt(safe);
- if(result?.image?.startsWith('data:image/png;base64,')){
-   $('frame').src=result.image;$('frame').hidden=false;$('placeholder').hidden=true;
- }
  $('time').value=safe.toFixed(2)+'s';$('scrub').value=String(safe);
+ engine.frameAt(safe,false);
+ const live=$('live-frame'),source=engine.getSurface();
+ if(live.width!==source.width||live.height!==source.height){
+   live.width=source.width;live.height=source.height;
+ }
+ live.getContext('2d',{alpha:false}).drawImage(source,0,0);
+ live.hidden=false;$('frame').hidden=true;$('placeholder').hidden=true;
 }
 function setBusy(value){busy=value;
  for(const id of ['voice','render','still','play','export','add-shot','save-project','open-project'])
@@ -174,9 +179,9 @@ $('apply-script').onclick=()=>changeProject(()=>editor.script($('script').value)
 $('scrub').oninput=()=>{stop();try{frame(Number($('scrub').value))}catch(e){text('status',e.message)}};
 function tick(now){
  if(!play)return;if(!last)last=now;
- const next=audioSource&&audioTimelineStart!==null?
+ const next=audioSource&&audioTimelineStart!==null&&audioContext?.state==='running'?
    audioContext.currentTime-audioTimelineStart:
-   Number($('scrub').value)+Math.min(.09,Math.max(0,(now-last)/1000));
+   Number($('scrub').value)+Math.min(.12,Math.max(0,(now-last)/1000));
  last=now;
  if(next>=projectDuration(editor.project)-.02){stop();frame(0);return}
  try{frame(next)}catch(e){stop();text('status',e.message);return}
