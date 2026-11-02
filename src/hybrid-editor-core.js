@@ -13,6 +13,32 @@
  const EMOTIONS=Object.freeze(['neutral','happy','sad','angry','surprised','worried','curious','idea']);
  const MOVES=Object.freeze(['static','push','pull','drift','orbit']);
  const VOICES=Object.freeze(['af_heart','af_bella','am_michael','am_puck']);
+ const LOOK_COLORS=Object.freeze(['top','accent','skin','hair','eyes','bottom','shoes','screen']);
+ const LOOK_CHOICES=Object.freeze({
+   hairStyle:['shaggy','chunky','short','curly','long','bun','mohawk','bald'],
+   topStyle:['hoodie','tshirt','jacket','suit'],
+   glasses:['none','round','square'],hat:['none','cap','beanie','headphones'],
+   eyeStyle:['glossy','classic'],species:['fox','cat','dragon','bear','bunny'],
+   facialHair:['none','stubble','beard','mustache'],shape:['block','round','bean'],
+   prop:['none','phone','mug','book','tablet','coffee'],stance:['stand','sit']
+ });
+ const LOOK_RANGES=Object.freeze({height:[.8,1.2],build:[.75,1.35],head:[.85,1.3]});
+ function validateLook(patch){
+   if(!patch||typeof patch!=='object'||Array.isArray(patch))throw Error('Appearance patch must be an object');
+   const out={};
+   for(const [key,v] of Object.entries(patch)){
+     if(LOOK_COLORS.includes(key)){
+       if(typeof v!=='string'||!/^#[a-fA-F0-9]{6}$/.test(v))throw Error('Appearance color '+key+' must be #RRGGBB');
+       out[key]=v.toLowerCase();
+     }else if(key in LOOK_CHOICES){out[key]=match(v,LOOK_CHOICES[key],key)}
+     else if(key in LOOK_RANGES){
+       const [min,max]=LOOK_RANGES[key];
+       if(typeof v!=='number'||!Number.isFinite(v)||v<min||v>max)throw Error('Appearance '+key+' outside supported range');
+       out[key]=v;
+     }else throw Error('Unknown appearance field '+key);
+   }
+   return out;
+ }
  const match=(v,list,name)=>{if(!list.includes(v))throw Error('Unsupported '+name);return v};
  const safeString=(v,len,name)=>{if(typeof v!=='string'||!v.trim()||v.length>len)throw Error(name+' must be 1–'+len+' characters');return v.trim()};
  const slug=v=>String(v||'').toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,38);
@@ -74,11 +100,14 @@
    world:(template,time='golden')=>commit(p=>{
      p.hybrid.world={provider:'procedural',template:match(template,WORLDS,'world'),
        time:match(time,['morning','golden','night'],'time'),foliage:.07,wind:.5,particles:[]}}),
-   cast:(id,{template,name,voice}={})=>commit(p=>{
+   cast:(id,{template,name,voice,look,style}={})=>commit(p=>{
      const c=actor(p,id),d=p.hybrid.cast[id];
      if(template!==undefined)d.template=match(template,TEMPLATES,'character');
      if(name!==undefined)c.name=safeString(name,80,'Character name');
-     if(voice!==undefined)c.voice={...c.voice,profile:match(voice,VOICES,'voice')}}),
+     if(voice!==undefined)c.voice={...c.voice,profile:match(voice,VOICES,'voice')};
+     if(look!==undefined)d.look={...(d.look||{}),...validateLook(look)};
+     if(style!==undefined)d.style=match(style,['smooth','lowpoly'],'art style');
+   }),
    shot:(id,patch)=>commit(p=>{
      const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,move,caption,duration,screenKind,screenTitle,screenLines}=patch;
      if(speaker!==undefined){actor(p,speaker);s.speaker=speaker}
