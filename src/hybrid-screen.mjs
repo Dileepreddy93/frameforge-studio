@@ -26,6 +26,15 @@ export function createOnSetScreen({width=1600,height=900}={}){
  const ctx=canvas.getContext('2d',{alpha:false});
  return Object.freeze({
   canvas,
+  // The in-world display must never become a huge blank black slab in ordinary
+  // two-shots. Keep a quiet diegetic studio storyboard visible when the author
+  // did not script an interactive screen; no fake external app or telemetry.
+  drawAmbient:(title,elapsed)=>{
+    const name=String(title||'FrameForge original story').trim().slice(0,60)||'FrameForge original story';
+    const t=Number.isFinite(elapsed)?Math.max(0,elapsed):0;
+    drawAppScreen(ctx,{kind:'idle',tone:'calm',title:name,lines:[]},t,name,8);
+    return true;
+  },
   draw:(shot,elapsed)=>{
     const frame=buildScreenShot(shot,elapsed);
     if(!frame)return false;
