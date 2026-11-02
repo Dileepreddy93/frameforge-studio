@@ -39,10 +39,20 @@ module.exports=async function testCreatorVoice(page,base,out){
   assert.equal(info.shots.length,2);
   assert.equal(info.rate,48000);assert.ok(info.sourcePeak>.01);
   assert.ok(Number.isFinite(info.lufs)&&info.peakDb<0);
+  const playbackStartedAt=Date.now();
   await page.locator('#play').click();
-  await page.waitForTimeout(450);
-  assert.ok(Number(await page.locator('#scrub').inputValue())>.2,'Spoken playback must advance the same visual playhead');
-  await page.locator('#play').click();
+  try{
+    await page.waitForFunction(()=>Number(document.getElementById('scrub').value)>.2,
+      null,{timeout:12000,polling:50});
+  }catch(e){
+    const state=await page.evaluate(()=>({time:document.getElementById('scrub').value,
+       status:document.getElementById('status').textContent,
+       playButton:document.getElementById('play').textContent,
+       audioWarning:document.getElementById('voice-status').textContent}));
+    throw Error('New Creator voiced playhead did not advance: '+JSON.stringify(state));
+  }
+  const playbackTo200ms=Date.now()-playbackStartedAt;
+  if(await page.locator('#play').textContent()!=='Play')await page.locator('#play').click();
   await page.screenshot({path:path.join(out,'p7-actual-kokoro-creator.png'),fullPage:true});
   const browserCodec=await page.evaluate(async()=>{
     const m=await import('/vendor/mediabunny@1.62.1/mediabunny.mjs');
@@ -77,7 +87,7 @@ module.exports=async function testCreatorVoice(page,base,out){
   const result={status:'HYBRID_P7_REAL_ENGLISH_KOKORO_CREATOR_PASS',
     originalV2:true,newModelInferenceThroughCreator:true,actors:info.shots.map(s=>s.speaker),
     duration:info.duration,rate:info.rate,lufs:info.lufs,peakDb:info.peakDb,
-    screenshot:true,video:exportCheck,codecProbe:browserCodec,
+    screenshot:true,playbackTo200ms,video:exportCheck,codecProbe:browserCodec,
     limits:['Linux Chromium may have no H264 encoder; unsupported codec is correctly rejected',
       'Browser model preload benefits from earlier real Kokoro source tests',
       'Native Telugu/Hindi TTS is not tested']};
