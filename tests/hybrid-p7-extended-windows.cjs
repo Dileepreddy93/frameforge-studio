@@ -7,7 +7,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),
  fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const OUT=path.resolve(process.env.FRAMEFORGE_EXTENDED_OUT||'artifacts/hybrid-long-film');
 const ROOT=process.env.FRAMEFORGE_URL||'http://127.0.0.1:8959/';
-const LINES=[
+const SCENARIO=process.env.FRAMEFORGE_FILM_SCENARIO||'original';
+assert.ok(['original','lantern'].includes(SCENARIO),'Unknown film scenario');
+const ALTERNATE=SCENARIO==='lantern';
+const ORIGINAL_LINES=[
  'Morning arrived, and our little studio had one big question.',
  'Could two unlikely friends make an entire movie from scratch?',
  'I drew our characters, then gave each a unique voice.',
@@ -19,6 +22,21 @@ const LINES=[
  'We heard the voices, checked the film, and pressed export.',
  'Then we smiled, already imagining the next great adventure.'
 ];
+// Independent second original episode; cast IDs and local voice profiles are
+// explicitly cross-checked against the first delivered 35.7-second movie.
+const LANTERN_LINES=[
+ 'The snow had swallowed every light around our little workshop.',
+ 'I could hear a tiny signal calling from beneath the ice.',
+ 'We followed it slowly, listening between each gust of wind.',
+ 'The old map showed a lantern, still blinking after midnight.',
+ 'I reached for the lantern, but its glow began to fade.',
+ 'Then I realized it needed a story, not another battery.',
+ 'We told it about the stars, the river, and the way home.',
+ 'One by one, the missing lights returned across the valley.',
+ 'The lantern was never lost. It had been waiting for us.',
+ 'And now the night could finally tell its own story.'
+];
+const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
 (async()=>{
  fs.mkdirSync(OUT,{recursive:true});
  const browser=await chromium.launch({channel:'chrome',headless:true});
@@ -31,38 +49,72 @@ const LINES=[
   assert.equal(response.status(),200);
   await page.waitForFunction(()=>document.getElementById('play').disabled===false,
     null,{timeout:100000});
-  const raw=await page.evaluate(async(lines)=>{
+  const raw=await page.evaluate(async({lines,alternate})=>{
    const base=await(await fetch('/projects/zero-latency.frameforge.json')).json();
    const e=FrameForgeHybridEditor.createEditor(FrameForgeHybridEditor.fromLegacy(base));
-   e.title('The Story We Made Together');
-   e.logline('Two friends discover a self-contained creative studio in a living forest.');
-   e.world('forest','golden');
-   e.soundtrack('groove');
+   e.title(alternate?'The Lantern That Learned to Listen':'The Story We Made Together');
+   e.logline(alternate?
+     'Two friends trace a fading light through a snowy valley and give it a story.':
+     'Two friends discover a self-contained creative studio in a living forest.');
+   e.world(alternate?'snow':'forest',alternate?'night':'golden');
+   e.soundtrack(alternate?'tension':'groove');
    for(let i=0;i<lines.length;i++){
      if(i>=2)e.addShot();
      const p=e.project,shot=p.shots[i].id;
-     const screenInsert=i===5||i===8;
+     const screenInsert=alternate?(i===3||i===7):(i===5||i===8);
+     const alternateCamera=['actor','two','wide','screen','actor',
+       'actor','two','screen','actor','wide'][i];
      e.shot(shot,{speaker:i%2?'atlas':'luna',dialogue:lines[i],
-       emotion:['curious','idea','happy','surprised','worried'][i%5],
-       action:['wave','explain','think','point','nod'][i%5],
-       camera:screenInsert?'screen':i%3===2?'two':'actor',
-       move:i%2?'drift':'push',duration:4.5,
-       caption:i%3===0?'OUR STORY, MADE HERE':''});
-     if(!screenInsert&&i%3!==2){
-       // Allow breathing room around the expressive face on a vertical film.
-       e.shot(shot,{cameraDistance:6.2,cameraFov:42});
+       emotion:alternate?
+         ['worried','curious','worried','surprised','sad','idea','happy','happy','curious','happy'][i]:
+         ['curious','idea','happy','surprised','worried'][i%5],
+       action:alternate?
+         ['think','point','listen','press','plead','raise','explain','cheer','nod','wave'][i]:
+         ['wave','explain','think','point','nod'][i%5],
+       camera:alternate?alternateCamera:screenInsert?'screen':i%3===2?'two':'actor',
+       move:alternate?(screenInsert?'pull':i%2?'drift':'push'):i%2?'drift':'push',duration:4.5,
+       caption:alternate?({0:'WHERE DID THE LIGHT GO?',7:'THE VALLEY WAKES',
+         9:'THE NIGHT REMEMBERS'}[i]||''):i%3===0?'OUR STORY, MADE HERE':''});
+     if(!screenInsert&&(alternate?![1,2,6,9].includes(i):i%3!==2)){
+       // Different portrait distances for emotional reactions, with headroom.
+       e.shot(shot,{cameraDistance:alternate&&i===4?6.8:6.2,cameraFov:42});
      }
      if(screenInsert){
        e.shot(shot,{screenKind:'terminal',
-         screenTitle:i===5?'CONNECTION LOST':'EXPORT VERIFIED',
-         screenLines:i===5?'Network offline\nLocal project safe':
-           'H264 1080p ready\nStereo AAC mastered\nStory ready to share'});
+         screenTitle:alternate?(i===3?'BEACON SIGNAL':'VALLEY LIGHTS'):
+           (i===5?'CONNECTION LOST':'EXPORT VERIFIED'),
+         screenLines:alternate?(i===3?'Signal: weak\nMap: northern ridge':
+           'Village lights: online\nSignal stable\nThe valley wakes'):
+           (i===5?'Network offline\nLocal project safe':
+           'H264 1080p ready\nStereo AAC mastered\nStory ready to share')});
      }
    }
-   e.shotSound(e.project.shots[5].id,'buzz');
+   e.shotSound(e.project.shots[alternate?3:5].id,'buzz');
    e.shotSound(e.project.shots[7].id,'chime');
+   if(alternate){
+     // Author three listening/reaction beats; persist them in the original V2
+     // project so the same cast can reopen and repeat the performance.
+     const p=e.project;
+     p.shots[1].reactions=[{actor:'luna',at:.9,emotion:'curious',action:'listen'}];
+     p.shots[4].reactions=[{actor:'atlas',at:.8,emotion:'worried',action:'think'}];
+     p.shots[8].reactions=[{actor:'atlas',at:.9,emotion:'happy',action:'nod'}];
+     e.replace(p);
+   }
    return e.serialize();
-  },LINES);
+  },{lines:LINES,alternate:ALTERNATE});
+  const episode=JSON.parse(raw).project;
+  assert.equal(episode.shots.length,10);
+  assert.equal(episode.hybrid.world.template,ALTERNATE?'snow':'forest');
+  assert.equal(episode.shots.filter(s=>s.screen).length,2);
+  assert.deepEqual(episode.characters.map(c=>[c.id,c.voice.profile]),
+    [['luna','af_heart'],['atlas','am_michael']],
+    'Both independently authored episodes must preserve the original character and voice locks');
+  if(ALTERNATE){
+    assert.equal(episode.shots.filter(s=>s.caption).length,3);
+    assert.equal(episode.shots.filter(s=>s.reactions?.length).length,3);
+    assert.ok(episode.shots.some(s=>s.camera.kind==='wide'));
+    assert.equal(episode.audio.music.cues[0].style,'tension');
+  }
   fs.writeFileSync(path.join(OUT,'ten-shot-source.frameforge.json'),raw);
   await page.locator('#file').setInputFiles({name:'ten-shot-source.json',
     mimeType:'application/json',buffer:Buffer.from(raw)});
@@ -154,6 +206,8 @@ const LINES=[
       {stdio:['ignore','pipe','pipe'],timeout:40000});
   }
   const report={verdict:'HYBRID_P7_30_TO_60_SECOND_WINDOWS_HD_PASS',
+    scenario:SCENARIO,title:episode.title,world:episode.hybrid.world.template,
+    identitySignature:episode.characters.map(c=>c.id+':'+c.voice.profile).join(','),
     filmDuration:audio.duration,shots:audio.shots,frames:expected,
     width:1080,height:1920,fps:30,fullDecode:true,codec:'H264+AAC',
     source:'original user-editable V2 project imported through real Creator UI',
