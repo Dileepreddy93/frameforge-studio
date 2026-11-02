@@ -164,6 +164,7 @@ function renderUI({render3d=true}={}){
  $('camera-distance').value=String(current.framing?.distance??cameraDefault);
  $('camera-fov').value=String(current.framing?.fov??38);
  $('caption').value=current.caption||'';$('shot-duration').value=current.duration.toFixed(2);
+ $('visual-prop').value=current.visualProp||'none';
  $('shot-sound').value=current.sfx?.[0]?.cue||'none';
  $('screenKind').value=current.screen?.kind||'none';
  $('screenTitle').disabled=!current.screen;$('screenLines').disabled=!current.screen;
@@ -215,10 +216,11 @@ for(const id of ['title','logline'])$(id).onchange=()=>changeProject(()=>editor[
 for(const id of ['world','timeofday'])$(id).onchange=()=>changeProject(()=>editor.world($('world').value,$('timeofday').value));
 $('soundtrack').onchange=()=>changeProject(()=>editor.soundtrack($('soundtrack').value));
 $('shot-sound').onchange=()=>changeProject(()=>editor.shotSound(selected,$('shot-sound').value));
-for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','screenKind','screenTitle','screenLines'])
+for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','visual-prop','screenKind','screenTitle','screenLines'])
  $(id).onchange=()=>{
    const patchKey=id==='shot-duration'?'duration':
-      id==='camera-distance'?'cameraDistance':id==='camera-fov'?'cameraFov':id;
+      id==='camera-distance'?'cameraDistance':id==='camera-fov'?'cameraFov':
+      id==='visual-prop'?'visualProp':id;
    const numeric=['shot-duration','camera-distance','camera-fov'].includes(id);
    const patch={ [patchKey]:numeric?Number($(id).value):$(id).value};
    // Screen camel-case as expected by the V2 editor model.

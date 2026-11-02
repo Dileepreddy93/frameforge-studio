@@ -122,7 +122,7 @@
      if(style!==undefined)d.style=match(style,['smooth','lowpoly'],'art style');
    }),
    shot:(id,patch)=>commit(p=>{
-     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,cameraDistance,cameraFov,move,caption,duration,screenKind,screenTitle,screenLines}=patch;
+     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,cameraDistance,cameraFov,move,caption,duration,screenKind,screenTitle,screenLines,visualProp}=patch;
      if(speaker!==undefined){
        actor(p,speaker);s.speaker=speaker;
        // An actor close-up follows the current speaking character, not a
@@ -170,6 +170,11 @@
      }
      if(move!==undefined)s.direction={...(s.direction||{}),move:match(move,MOVES,'camera movement'),
        transition:s.direction?.transition||'cut',blendSeconds:s.direction?.blendSeconds||0};
+     if(visualProp!==undefined){
+       if(visualProp==='none')delete s.visualProp;
+       else if(visualProp==='lantern')s.visualProp='lantern';
+       else throw Error('Unsupported original 3D prop');
+     }
      if(caption!==undefined){if(caption){s.caption=safeString(caption,140,'Caption')}else delete s.caption}
      if(duration!==undefined){if(!Number.isFinite(duration)||duration<.5||duration>15)throw Error('Shot must be 0.5–15s');
        s.duration=duration;}
@@ -191,7 +196,7 @@
      const last=p.shots[p.shots.length-1],shot=clone(last);shot.id='shot-'+String(count).padStart(2,'0');
      shot.dialogue='Here is the next moment in our story.';shot.duration=3;
      shot.direction={move:'static',transition:'cut',blendSeconds:0};
-     delete shot.screen;delete shot.caption;p.shots.push(shot)
+     delete shot.screen;delete shot.caption;delete shot.visualProp;p.shots.push(shot)
    }),
    removeShot:id=>commit(p=>{if(p.shots.length<=1)throw Error('Keep at least one shot');
      const i=index(p,id),removed=p.shots[i];
@@ -210,7 +215,10 @@
        p.title=parsed.project.title;p.logline=parsed.project.logline;
        p.shots=parsed.project.shots.map(s=>{
          const old=previous.get(s.id);
-         return old?{...clone(old),...clone(s),timing:clone(old.timing||s.timing||{lead:.15,pauseAfter:.35})}:clone(s);
+         if(!old)return clone(s);
+         const merged={...clone(old),...clone(s),timing:clone(old.timing||s.timing||{lead:.15,pauseAfter:.35})};
+         if(!s.visualProp)delete merged.visualProp;
+         return merged;
        });
        p.hybrid.director=clone(parsed.project.hybrid.director||{oneTake:false});
      })

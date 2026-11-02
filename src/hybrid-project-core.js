@@ -135,6 +135,8 @@
         !TEXT(s.screen.title,160)||!Array.isArray(s.screen.lines)||
         s.screen.lines.length>16||s.screen.lines.some(x=>!TEXT(x,120))))
         fail(at+'.screen','Screen app must contain safe authored text and supported kind');
+      if(s.visualProp!==undefined&&s.visualProp!=='lantern')
+        fail(at+'.visualProp','Unsupported on-set visual prop');
       if(s.caption!==undefined&&!TEXT(s.caption,140))
         fail(at+'.caption','Caption exceeds safety limit');
       if(s.reactions!==undefined&&(!Array.isArray(s.reactions)||

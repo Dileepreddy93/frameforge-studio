@@ -79,6 +79,7 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
        // Different portrait distances for emotional reactions, with headroom.
        e.shot(shot,{cameraDistance:alternate&&i===4?6.8:6.2,cameraFov:42});
      }
+     if(alternate&&!screenInsert&&i>=3)e.shot(shot,{visualProp:'lantern'});
      if(screenInsert){
        e.shot(shot,{screenKind:'terminal',
          screenTitle:alternate?(i===3?'BEACON SIGNAL':'VALLEY LIGHTS'):
@@ -112,6 +113,8 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
   if(ALTERNATE){
     assert.equal(episode.shots.filter(s=>s.caption).length,3);
     assert.equal(episode.shots.filter(s=>s.reactions?.length).length,3);
+    assert.ok(episode.shots.filter(s=>s.visualProp==='lantern').length>=4,
+      'The narrated lantern must exist as a persisted, original 3D prop');
     assert.ok(episode.shots.some(s=>s.camera.kind==='wide'));
     assert.equal(episode.audio.music.cues[0].style,'tension');
   }

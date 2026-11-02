@@ -44,6 +44,8 @@
        s.reactions.some(r=>!obj(r)||!p.characters.some(c=>c.id===r.actor)||
          !EMOTIONS.has(r.emotion)||!ACTIONS.has(r.action)||!finite(r.at,0,s.duration))))
        throw Error(where+' contains invalid reaction beats');
+     if(s.visualProp!==undefined&&s.visualProp!=='lantern')
+       throw Error(where+' has unsupported visual prop');
      if(s.caption!==undefined&&(!safe(s.caption)||s.caption.length>140))
        throw Error(where+' contains invalid caption');
    }
@@ -110,6 +112,12 @@
          p.shots.push(active);continue;
        }
        if(!active)throw Error('First declare @shot before dialogue');
+       if(line.startsWith('@prop ')){
+         const a=readAttrs(line,'@prop');
+         if(Object.keys(a).length!==1||a.name!=='lantern')
+           throw Error('Supported visual prop: lantern');
+         active.visualProp=a.name;continue;
+       }
        if(line.startsWith('@reaction ')){
          const a=readAttrs(line,'@reaction');
          if(!p.characters.some(c=>c.id===a.actor))throw Error('Reaction references missing actor');
@@ -157,6 +165,7 @@
      const acting=s.cast?.[s.speaker]||{emotion:'neutral',action:'explain'};
      out.push((names[s.speaker]||s.speaker)+' ('+(acting.emotion||'neutral')+
        ') ['+(acting.action||'explain')+']: '+s.dialogue);
+     if(s.visualProp)out.push('@prop name='+encode(s.visualProp));
      for(const r of s.reactions||[])out.push('@reaction actor='+r.actor+' at='+r.at+
        ' emotion='+r.emotion+' action='+r.action);
      if(s.screen){

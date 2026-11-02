@@ -34,6 +34,31 @@ const screenTexture=new T.CanvasTexture(onSet.canvas);screenTexture.colorSpace=T
 const screenPlane=new T.Mesh(new T.PlaneGeometry(3.8,2.14),
   new T.MeshBasicMaterial({map:screenTexture,side:T.DoubleSide,roughness:1}));
 screenPlane.position.set(0,2.1,-2.9);screenPlane.visible=false;scene.add(screenPlane);
+
+// Authored procedural story object, not a guessed object or an imported asset.
+// Keep one shared mesh/geometry instance and toggle visibility per V2 shot.
+const storyLantern=new T.Group();
+const lanternMetal=new T.MeshStandardMaterial({color:0x324455,roughness:.68,metalness:.35});
+const lanternGlass=new T.MeshStandardMaterial({color:0xffcd69,emissive:0xf2942d,
+  emissiveIntensity:1.3,transparent:true,opacity:.82,roughness:.2});
+function addLanternPart(geometry,material,y){
+ const part=new T.Mesh(geometry,material);part.position.y=y;storyLantern.add(part);
+}
+addLanternPart(new T.CylinderGeometry(.34,.39,.13,8),lanternMetal,.27);
+addLanternPart(new T.CylinderGeometry(.28,.30,.65,8),lanternGlass,.66);
+addLanternPart(new T.CylinderGeometry(.34,.32,.12,8),lanternMetal,1.05);
+addLanternPart(new T.SphereGeometry(.1,8,6),lanternMetal,1.19);
+const lanternHandle=new T.Mesh(new T.TorusGeometry(.22,.05,7,12,Math.PI),lanternMetal);
+lanternHandle.position.y=1.31;storyLantern.add(lanternHandle);
+for(const x of [-.25,.25])for(const z of [-.25,.25]){
+ const bar=new T.Mesh(new T.CylinderGeometry(.025,.025,.72,6),lanternMetal);
+ bar.position.set(x,.66,z);storyLantern.add(bar);
+}
+const lanternLight=new T.PointLight(0xffbb57,1.25,5,2);
+lanternLight.position.set(0,.8,0);lanternLight.castShadow=false;
+storyLantern.add(lanternLight);
+storyLantern.position.set(0,0,1.2);storyLantern.visible=false;scene.add(storyLantern);
+
 const original=await(await fetch('../projects/zero-latency.frameforge.json')).json();
 const speechResponse=await fetch('../audio/zero-latency/voice.mp3');
 if(!speechResponse.ok)throw Error('Existing V6 synthesized voice track unavailable');
@@ -227,6 +252,8 @@ function frameAt(t,encode=true){
  const alignedAnchors=Object.fromEntries([...session.instances()].map(([id,actor])=>[id,actor.getAnchors()]));
  const pose=D.cameraAt(project,t,alignedAnchors,state.worldAnchors);
  const shot=state.shot,speech=speechAt(project,t,mix,FrameForgeSpeechCore);
+ storyLantern.visible=shot.visualProp==='lantern';
+ if(storyLantern.visible)lanternLight.intensity=1.2+.12*Math.sin(t*2.4);
  for(const [id,actor] of session.instances())
    actor.setSpeech(id===shot.speaker&&speech.voiced?speech:{mouthOpen:0,viseme:'rest'});
  const authoredScreen=onSet.draw(shot,state.localTime);
@@ -268,6 +295,7 @@ function masterWav(){
 window.HybridP56QA={create,loadFresh,loadEditable,generateEditableVoices,getEditableProject,getExportAudio,getSurface:()=>overlay,setOutputResolution,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
  cast:project?.characters.map(c=>c.id),world:project?.hybrid.world.template,
  generatedSpeech:false,modelSource:'existing V6 Kokoro speech segments, re-timed through P6'}),
- dispose:()=>{session?.dispose();screenTexture.dispose();screenPlane.geometry.dispose();screenPlane.material.dispose();renderer.dispose()}};
+ dispose:()=>{session?.dispose();screenTexture.dispose();screenPlane.geometry.dispose();screenPlane.material.dispose();
+ storyLantern.traverse(o=>{o.geometry?.dispose?.()});lanternMetal.dispose();lanternGlass.dispose();renderer.dispose()}};
 await create(1);
 window.HybridP56Ready=true;

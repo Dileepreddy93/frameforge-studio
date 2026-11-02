@@ -18,6 +18,19 @@ assert.throws(()=>state.cast('luna',{look:{unknown:'yes'}}),/Unknown appearance 
 
 assert.equal(state.shot('shot-01',{dialogue:'We are creating a new original movie.'}),true);
 assert.equal(state.shot('shot-01',{emotion:'surprised',action:'wave',move:'push'}),true);
+const propEditor=ed.createEditor(p);
+assert.equal(propEditor.shot('shot-01',{visualProp:'lantern'}),true);
+assert.equal(propEditor.project.shots[0].visualProp,'lantern');
+assert.equal(ed.parseCreatorFile(propEditor.serialize()).shots[0].visualProp,'lantern');
+const propScript=propEditor.scriptText();
+assert.match(propScript,/@prop name=lantern/);
+assert.equal(ed.createEditor(propEditor.project).script(propScript),false);
+assert.throws(()=>propEditor.shot('shot-01',{visualProp:'unlicensed-model'}),/Unsupported original 3D prop/);
+const unsafe=structuredClone(propEditor.project);unsafe.shots[0].visualProp='unsafe';
+assert.throws(()=>ed.parseCreatorFile(JSON.stringify(unsafe)),/Invalid hybrid project/);
+assert.equal(propEditor.shot('shot-01',{visualProp:'none'}),true);
+assert.equal(propEditor.project.shots[0].visualProp,undefined);
+
 const cameraTest=ed.createEditor(state.project);
 assert.equal(cameraTest.shot('shot-01',{cameraDistance:6.2,cameraFov:42}),true);
 assert.equal(cameraTest.project.shots[0].framing.distance,6.2);
