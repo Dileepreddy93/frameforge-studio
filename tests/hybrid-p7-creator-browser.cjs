@@ -46,8 +46,8 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
      'New Creator must pass WCAG A/AA automated scans');
    const h=await page.evaluate(()=>({doc:document.documentElement.scrollWidth,view:innerWidth}));
    assert.ok(h.doc<=h.view+2,'Creator must not overflow horizontally');
-   const before=await page.locator('#frame').getAttribute('src');
-   assert.ok(before.startsWith('data:image/png;base64,'));
+   const before=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
+   assert.ok(before.startsWith('data:image/png;base64,'),'Live preview must contain actual 3D frame pixels');
    await page.locator('#title').fill('My authentic hybrid story');
    await page.locator('#title').press('Tab');
    assert.equal(await page.locator('#title').inputValue(),'My authentic hybrid story');
@@ -58,7 +58,7 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    await page.locator('#dialogue').press('Tab');
    await page.locator('#emotion').selectOption('happy');
    await page.locator('#action').selectOption('wave');
-   const changed=await page.locator('#frame').getAttribute('src');
+   const changed=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
    assert.ok(changed.startsWith('data:image/png;base64,'));
    assert.notEqual(before,changed,'World and actor edits must change real rendered pixels');
    await page.locator('#add-shot').click();
