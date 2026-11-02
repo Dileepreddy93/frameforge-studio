@@ -66,6 +66,12 @@ assert.ok(c1.screenBounds.y+c1.screenBounds.height<c1.captionBounds.y,
  'authored monitor and captions must not collide');
 assert.equal(c2.screenBounds,null);
 assert.ok(c2.position.every(Number.isFinite));
+const fullTwo=direction.cameraAt(base,2.4+1.5,anchors,stage);
+const portraitHorizontalHalfWidth=Math.tan(fullTwo.fov*Math.PI/360)*
+  Math.hypot(fullTwo.position[0],fullTwo.position[2])*9/16;
+assert.ok(portraitHorizontalHalfWidth>1.65,
+  'A real portrait two-shot must not crop an actor when heads are about ±1 unit from center');
+
 const malformed=structuredClone(base);malformed.shots[0].screen.lines=['x'.repeat(250)];
 assert.throws(()=>direction.verify(malformed));
 const malformed2=structuredClone(base);malformed2.shots[1].direction.move='executeJavascript';
