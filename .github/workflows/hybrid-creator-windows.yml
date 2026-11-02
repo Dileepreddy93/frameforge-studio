@@ -4,6 +4,9 @@ on:
     branches: ["feature/hybrid-foundation"]
     paths: [".github/workflows/hybrid-creator-windows.yml"]
   workflow_dispatch:
+concurrency:
+  group: hybrid-windows-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

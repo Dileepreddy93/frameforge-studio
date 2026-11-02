@@ -54,11 +54,11 @@ module.exports=async function testCreatorVoice(page,base,out,{width=360,requireC
   const playbackTo200ms=Date.now()-playbackStartedAt;
   if(await page.locator('#play').textContent()!=='Play')await page.locator('#play').click();
   await page.screenshot({path:path.join(out,'p7-actual-kokoro-creator.png'),fullPage:true});
-  const browserCodec=await page.evaluate(async()=>{
+  const browserCodec=await page.evaluate(async(width)=>{
     const m=await import('/vendor/mediabunny@1.62.1/mediabunny.mjs');
     return {h264:await m.canEncodeVideo('avc',{width,height:width*16/9}),
       aac:await m.canEncodeAudio('aac')};
-  });
+  },width);
   if(requireCodec&&(!browserCodec.h264||!browserCodec.aac))
     throw Error('Windows customer release gate: native H264/AAC MP4 encoders unavailable '+JSON.stringify(browserCodec));
   let exportCheck='unsupported-encoder-fail-closed';
