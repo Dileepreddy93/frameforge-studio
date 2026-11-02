@@ -120,7 +120,7 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     mimeType:'application/json',buffer:Buffer.from(raw)});
   await page.waitForFunction(()=>document.querySelectorAll('#shot-list li').length===10,
     null,{timeout:60000});
-  assert.equal(await page.locator('#soundtrack').inputValue(),'groove');
+  assert.equal(await page.locator('#soundtrack').inputValue(),ALTERNATE?'tension':'groove');
   assert.equal(await page.locator('#export').isEnabled(),false,'No stale speech can export');
   console.log('HYBRID_LONG_FILM_AUTHOR_PASS '+JSON.stringify({shots:LINES.length,bytes:raw.length}));
   await page.locator('#voice').click();
