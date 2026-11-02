@@ -13,6 +13,8 @@
  const EMOTIONS=Object.freeze(['neutral','happy','sad','angry','surprised','worried','curious','idea']);
  const MOVES=Object.freeze(['static','push','pull','drift','orbit']);
  const VOICES=Object.freeze(['af_heart','af_bella','am_michael','am_puck']);
+ const MUSIC=Object.freeze(['off','groove','tension','stop','sting']);
+ const SFX=Object.freeze(['none','typing','chime','buzz','zap','scratch','whoosh','pop']);
  const LOOK_COLORS=Object.freeze(['top','accent','skin','hair','eyes','bottom','shoes','screen']);
  const LOOK_CHOICES=Object.freeze({
    hairStyle:['shaggy','chunky','short','curly','long','bun','mohawk','bald'],
@@ -100,6 +102,17 @@
    world:(template,time='golden')=>commit(p=>{
      p.hybrid.world={provider:'procedural',template:match(template,WORLDS,'world'),
        time:match(time,['morning','golden','night'],'time'),foliage:.07,wind:.5,particles:[]}}),
+   soundtrack:style=>commit(p=>{
+     match(style,MUSIC,'soundtrack');
+     if(style==='off')delete p.audio.music;
+     else p.audio.music={bpm:104,cues:[{shot:p.shots[0].id,style}]};
+   }),
+   shotSound:(id,cue)=>commit(p=>{
+     match(cue,SFX,'shot sound');
+     const s=p.shots[index(p,id)];
+     if(cue==='none')delete s.sfx;
+     else s.sfx=[{cue,at:.2,gain:-12}];
+   }),
    cast:(id,{template,name,voice,look,style}={})=>commit(p=>{
      const c=actor(p,id),d=p.hybrid.cast[id];
      if(template!==undefined)d.template=match(template,TEMPLATES,'character');
@@ -151,7 +164,10 @@
      delete shot.screen;delete shot.caption;p.shots.push(shot)
    }),
    removeShot:id=>commit(p=>{if(p.shots.length<=1)throw Error('Keep at least one shot');
-     p.shots.splice(index(p,id),1)}),
+     const i=index(p,id),removed=p.shots[i];
+     p.shots.splice(i,1);
+     for(const cue of p.audio.music?.cues||[])if(cue.shot===removed.id)cue.shot=p.shots[0].id;
+   }),
    moveShot:(id,dir)=>commit(p=>{const i=index(p,id),j=i+dir;
      if(j<0||j>=p.shots.length)throw Error('Cannot move past the timeline edge');
      [p.shots[i],p.shots[j]]=[p.shots[j],p.shots[i]]}),
@@ -181,5 +197,5 @@
   const data=JSON.parse(raw);const p=data?.format==='frameforge.creator/1'?data.project:data;
   return clone(ensure(p));
  }
- return Object.freeze({TEMPLATES,WORLDS,EMOTIONS,MOVES,VOICES,fromLegacy,createEditor,parseCreatorFile});
+ return Object.freeze({TEMPLATES,WORLDS,EMOTIONS,MOVES,VOICES,MUSIC,SFX,fromLegacy,createEditor,parseCreatorFile});
 });
