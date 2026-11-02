@@ -105,6 +105,17 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    const afterLens=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
    assert.notEqual(beforeLens,afterLens,'Creator lens and camera distance must physically change 3D pixels');
 
+   // The on-screen framing control must agree with the actual camera model:
+   // monitor-wide default is 11.8, not the actor close-up 4.8.
+   await page.locator('#camera').selectOption('screen');
+   assert.equal(await page.locator('#camera-distance').inputValue(),'11.8',
+     'Creator inspector must not lie about the portrait-safe screen camera distance');
+   await page.locator('#camera').selectOption('actor');
+   await page.locator('#camera-distance').fill('6.2');
+   await page.locator('#camera-distance').press('Tab');
+   await page.locator('#camera-fov').fill('42');
+   await page.locator('#camera-fov').press('Tab');
+
    if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
    await page.locator('#add-shot').click();
    assert.equal(await page.locator('#shot-list li').count(),3);

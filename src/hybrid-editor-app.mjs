@@ -159,7 +159,8 @@ function renderUI({render3d=true}={}){
  $('dialogue').value=current.dialogue;$('emotion').value=current.cast?.[current.speaker]?.emotion||'neutral';
  $('action').value=current.cast?.[current.speaker]?.action||'explain';
  $('camera').value=current.camera?.kind||'actor';$('move').value=current.direction?.move||'static';
- const cameraDefault=current.camera?.kind==='two'?9.4:current.camera?.kind==='wide'?11.2:4.8;
+ const cameraDefault=current.camera?.kind==='screen'?11.8:
+   current.camera?.kind==='two'?9.4:current.camera?.kind==='wide'?11.2:4.8;
  $('camera-distance').value=String(current.framing?.distance??cameraDefault);
  $('camera-fov').value=String(current.framing?.fov??38);
  $('caption').value=current.caption||'';$('shot-duration').value=current.duration.toFixed(2);
