@@ -64,6 +64,7 @@ function renderUI({render3d=true}={}){
  $('title').value=p.title;$('logline').value=p.logline;
  $('world').value=p.hybrid.world.template;
  $('timeofday').value=p.hybrid.world.time||'golden';
+ $('soundtrack').value=p.audio.music?.cues?.[0]?.style||'off';
  const cast=$('cast');cast.replaceChildren();
  for(const character of p.characters){
    const area=document.createElement('section'),head=document.createElement('h3');
@@ -141,6 +142,7 @@ function renderUI({render3d=true}={}){
  $('action').value=current.cast?.[current.speaker]?.action||'explain';
  $('camera').value=current.camera?.kind||'actor';$('move').value=current.direction?.move||'static';
  $('caption').value=current.caption||'';$('shot-duration').value=current.duration.toFixed(2);
+ $('shot-sound').value=current.sfx?.[0]?.cue||'none';
  $('screenKind').value=current.screen?.kind||'none';
  $('screenTitle').disabled=!current.screen;$('screenLines').disabled=!current.screen;
  $('screenTitle').value=current.screen?.title||'';$('screenLines').value=current.screen?.lines.join('\n')||'';
@@ -151,7 +153,7 @@ function renderUI({render3d=true}={}){
  $('scrub').max=String(Math.max(.5,projectDuration(p)-.015));
  $('export').disabled=!editor.voiced||busy;
  $('voice-status').textContent=editor.voiced?
-   'Current English dialogue is voiced and ready for MP4. Reopening requires voice regeneration.':
+   'Current English dialogue, music and sounds are mastered. Reopening requires new voice generation.':
    'Storyboard only — changed text/cast/world has no valid spoken soundtrack. Generate English voice again.';
  if(!$('script-pane').hidden)$('script').value=editor.scriptText();
  if(render3d&&engine)rebuild();
@@ -189,6 +191,8 @@ function changeProject(action){
 }
 for(const id of ['title','logline'])$(id).onchange=()=>changeProject(()=>editor[id]($(id).value));
 for(const id of ['world','timeofday'])$(id).onchange=()=>changeProject(()=>editor.world($('world').value,$('timeofday').value));
+$('soundtrack').onchange=()=>changeProject(()=>editor.soundtrack($('soundtrack').value));
+$('shot-sound').onchange=()=>changeProject(()=>editor.shotSound(selected,$('shot-sound').value));
 for(const id of ['speaker','dialogue','emotion','action','camera','move','caption','shot-duration','screenKind','screenTitle','screenLines'])
  $(id).onchange=()=>{
    const patchKey=id==='shot-duration'?'duration':id;
