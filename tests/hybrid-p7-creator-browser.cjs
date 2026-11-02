@@ -67,6 +67,21 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    const changed=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
    assert.ok(changed.startsWith('data:image/png;base64,'));
    assert.notEqual(before,changed,'World and actor edits must change real rendered pixels');
+   // Fixed 360x640 scene composition: face occupies this central upper region
+   // after selecting creator + night + close-up. Old screenshots measured <25
+   // luma here; require the expressive face to remain actually readable.
+   const faceReadability=await page.locator('#live-frame').evaluate(canvas=>{
+     const pixels=canvas.getContext('2d').getImageData(80,145,210,200).data;
+     let brightness=0,visible=0;
+     for(let i=0;i<pixels.length;i+=4){
+       const l=.2126*pixels[i]+.7152*pixels[i+1]+.0722*pixels[i+2];
+       brightness+=l;if(l>60)visible++;
+     }
+     return {mean:brightness/(pixels.length/4),visibleFraction:visible/(pixels.length/4)};
+   });
+   assert.ok(faceReadability.mean>48&&faceReadability.visibleFraction>.35,
+     'Night-scene actor face must remain readable after lighting changes: '+JSON.stringify(faceReadability));
+
    await page.locator('#add-shot').click();
    assert.equal(await page.locator('#shot-list li').count(),3);
    await page.locator('#undo').click();
@@ -137,7 +152,7 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
      assert.equal(persisted,'{"corrupted":','Damaged recovery is never overwritten automatically');
    }
    assert.deepEqual(errors,[],'No unhandled error in creator UI');
-   findings.push({viewport,originalPixelsChanged:true,castWorldShotEditing:true,
+   findings.push({viewport,faceReadability,originalPixelsChanged:true,castWorldShotEditing:true,
      undoRedo:true,reopenJSON:true,IndexedDBRecovery:true,staleAudioRefused:true,PNG:true});
    await context.close();
   }
