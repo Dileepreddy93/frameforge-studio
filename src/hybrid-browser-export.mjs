@@ -46,7 +46,7 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
    await track.add(audioBuffer);track.close();track=null;
    for(let i=0;i<frames;i++){
      if(signal?.aborted)throw signal.reason||new DOMException('Export cancelled','AbortError');
-     engine.frameAt(i/FPS);
+     engine.frameAt(i/FPS,false);
      await video.add(i/FPS,1/FPS);
      if(i%5===0||i===frames-1){
        onProgress({done:i+1,total:frames,progress:(i+1)/frames});
