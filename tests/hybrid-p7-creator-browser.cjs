@@ -64,6 +64,8 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    await page.locator('#dialogue').press('Tab');
    await page.locator('#emotion').selectOption('happy');
    await page.locator('#action').selectOption('wave');
+   await page.locator('#soundtrack').selectOption('groove');
+   await page.locator('#shot-sound').selectOption('chime');
    const changed=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
    assert.ok(changed.startsWith('data:image/png;base64,'));
    assert.notEqual(before,changed,'World and actor edits must change real rendered pixels');
@@ -97,6 +99,8 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.equal(project.project.shots.length,3);
    assert.equal(project.project.hybrid.world.template,'meadow');
    assert.equal(project.project.hybrid.cast.luna.template,'creator');
+   assert.equal(project.project.audio.music.cues[0].style,'groove');
+   assert.equal(project.project.shots[0].sfx[0].cue,'chime');
    assert.equal(project.project.hybrid.cast.luna.look.top,'#268fbb');
    assert.equal(project.project.hybrid.cast.luna.look.hairStyle,'bun');
    assert.equal(project.project.hybrid.cast.luna.style,'lowpoly');
