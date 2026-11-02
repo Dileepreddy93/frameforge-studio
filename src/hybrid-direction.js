@@ -205,7 +205,10 @@
    else {if(!v3(stage.center))throw Error('No stage center');focus=stage.center}
    const progress=f.localTime/s.duration;
    const fov=s.framing?.fov??38;
-   const baseDist=s.framing?.distance??(src.kind==='wide'?8:src.kind==='two'?6.5:4.8);
+   // Portrait aspect cuts horizontal field of view to only ~21° at 38° vertical.
+   // The old 6.5-unit two-shot cropped a full actor's head; two actors at
+   // x≈±1 each need >1.65 units half-width including facial silhouettes.
+   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:4.8);
    const mod={push:-.9,pull:.9,drift:0,orbit:0,static:0}[d.move]||0;
    const distance=baseDist+mod*smooth(progress);
    if(d.move==='orbit')azimuth+=.5*progress;
