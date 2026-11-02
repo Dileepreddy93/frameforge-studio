@@ -18,6 +18,18 @@ assert.throws(()=>state.cast('luna',{look:{unknown:'yes'}}),/Unknown appearance 
 
 assert.equal(state.shot('shot-01',{dialogue:'We are creating a new original movie.'}),true);
 assert.equal(state.shot('shot-01',{emotion:'surprised',action:'wave',move:'push'}),true);
+const cameraTest=ed.createEditor(state.project);
+assert.equal(cameraTest.shot('shot-01',{cameraDistance:6.2,cameraFov:42}),true);
+assert.equal(cameraTest.project.shots[0].framing.distance,6.2);
+assert.equal(cameraTest.project.shots[0].framing.fov,42);
+assert.throws(()=>cameraTest.shot('shot-01',{cameraDistance:100}),/3–20/);
+assert.throws(()=>cameraTest.shot('shot-01',{cameraFov:10}),/25–60/);
+cameraTest.shot('shot-01',{speaker:'atlas'});
+assert.equal(cameraTest.project.shots[0].camera.target,'atlas','Actor camera follows selected speaker');
+cameraTest.shot('shot-01',{camera:'two'});
+assert.notEqual(cameraTest.project.shots[0].camera.secondary,'atlas');
+assert.equal(cameraTest.project.shots[0].framing,undefined,'Changing shot type resets unrelated custom zoom');
+
 assert.equal(state.world('snow','night'),true);
 state.addShot();assert.equal(state.project.shots.length,3);
 const last=state.project.shots[2].id;
