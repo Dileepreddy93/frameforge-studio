@@ -12,6 +12,7 @@ const cp=require('node:child_process');
 const crypto=require('node:crypto');
 const {chromium}=require('playwright');
 const ROOT=path.resolve(__dirname,'..');
+const OUT=path.join(ROOT,'artifacts/p0-visual-parity');
 const BASE=JSON.parse(fs.readFileSync(path.join(ROOT,'spec/hybrid-v6-baseline.json'),'utf8')).baseline_commit;
 const MIME={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript',
  '.json':'application/json','.css':'text/css','.wasm':'application/wasm',
@@ -81,7 +82,7 @@ async function snapshot(browser,server,episode){
   await page.evaluate(()=>document.fonts.ready);
   const result=await page.evaluate(times=>times.map(t=>FrameForgeQA.renderFilmFrame(t,360,640)),episode.times);
   assert.deepEqual(errors,[],'page runtime errors');
-  return result.map(hash);
+  const hashes=result.map(hash);hashes.frames=result;return hashes;
  } finally {await context.close();}
 }
 (async()=>{
@@ -123,6 +124,27 @@ async function snapshot(browser,server,episode){
      candidateFirst:candidateA[0],candidateSecond:candidateB[0]
    }));
    for(let i=0;i<episode.times.length;i++){
+    if(candidateA[i]!==referenceA[i]||candidateB[i]!==referenceB[i]){
+      // Preserve every source image for actual pixel-level forensic review.
+      // A hash-only failure is not evidence of a material art regression when
+      // the frozen baseline also varies between supposedly identical captures.
+      fs.mkdirSync(OUT,{recursive:true});
+      const format=(n)=>String(n).replace(/[^a-z0-9.]+/ig,'-');
+      const prefix=episode.id+'-'+format(episode.times[i])+'s';
+      for(const [tag,series] of [
+        ['baseline-a',referenceA],['baseline-b',referenceB],
+        ['candidate-a',candidateA],['candidate-b',candidateB]]){
+        const frame=series.frames[i];
+        fs.writeFileSync(path.join(OUT,prefix+'-'+tag+'.jpg'),
+          Buffer.from(frame.split(',')[1],'base64'));
+      }
+      fs.writeFileSync(path.join(OUT,prefix+'-hashes.json'),JSON.stringify({
+        episode:episode.id,time:episode.times[i],
+        hashes:{baselineA:referenceA[i],baselineB:referenceB[i],
+          candidateA:candidateA[i],candidateB:candidateB[i]},
+        originalV6BaselineCommit:BASE
+      },null,2));
+    }
     assert.equal(candidateA[i],referenceA[i],
      episode.id+' at '+episode.times[i]+'s (first matched capture) differs from frozen M6.5; investigate source or capture nondeterminism');
     assert.equal(candidateB[i],referenceB[i],

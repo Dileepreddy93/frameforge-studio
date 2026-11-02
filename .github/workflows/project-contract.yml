@@ -119,6 +119,13 @@ jobs:
           node tests/self-host-browser.cjs
           node tests/autosave-browser.cjs
           node tests/export-report-browser.cjs
+      - name: Archive unmodified frozen/candidate V6 screenshots for true pixel inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p0-v6-exact-pixel-forensics
+          path: artifacts/p0-visual-parity/
+          if-no-files-found: ignore
   voice-and-mix-tests:
     # Downloads the Kokoro voice model (about 326 MB) from huggingface.co on every run.
     runs-on: ubuntu-24.04
