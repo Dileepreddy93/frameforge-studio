@@ -35,6 +35,21 @@ const EMOTIONS=['neutral','happy','sad','angry','surprised','worried','curious',
     {waitUntil:'domcontentloaded',timeout:90000});
   assert.equal(resp.status(),200);
   await page.waitForFunction(()=>window.HybridP2Ready&&window.HybridP2QA,null,{timeout:120000});
+  const micro=await page.evaluate(async()=>{
+    const {facialMicroPerformance:f}=await import('/src/ember-actor-provider.mjs');
+    return {open:f(0,0,0),blink:f(1.18,0,0),recovered:f(1.5,0,0),
+      next:f(3.9,0,0),gazeA:f(.1,2,-.8),gazeB:f(.1,2,.8),
+      glanceStart:f(1,0,0),glanceLater:f(3,0,0),
+      repeat:f(1.18,0,0)};
+  });
+  assert.ok(micro.open.blink>.98,'A character starts the film with open, readable eyes');
+  assert.ok(micro.blink.blink<.15,'The original rig performs an actual short blink');
+  assert.ok(micro.recovered.blink>.98,'Eyes reopen fully after the micro-blink');
+  assert.ok(micro.gazeA.gaze<micro.gazeB.gaze,
+    'Listener gaze naturally follows the speaking partner rather than remaining dead center');
+  assert.ok(Math.abs(micro.glanceStart.gaze-micro.glanceLater.gaze)>.05,
+    'Eyes change their fixation on a deterministic micro-saccade timeline');
+  assert.deepEqual(micro.blink,micro.repeat,'Absolute-time eye animation must rewind exactly');
   const s=await page.evaluate(()=>HybridP2QA.summary());
   assert.deepEqual(s.templates,TEMPLATES);assert.deepEqual(s.emotions,EMOTIONS);
   assert.deepEqual(await page.evaluate(()=>HybridP2QA.renderSize()),[360,640]);
