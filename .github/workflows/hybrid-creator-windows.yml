@@ -2,7 +2,7 @@ name: Hybrid Creator native Windows HD acceptance
 on:
   push:
     branches: ["feature/hybrid-foundation"]
-    paths: [".github/workflows/hybrid-creator-windows.yml"]
+    paths: [".github/workflows/hybrid-creator-windows.yml", "tests/hybrid-p7-real-creator-voice.cjs", "tests/hybrid-p7-windows-browser.cjs", "src/hybrid-browser-export.mjs"]
   workflow_dispatch:
 concurrency:
   group: hybrid-windows-${{ github.ref }}
