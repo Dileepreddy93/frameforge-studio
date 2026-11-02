@@ -97,6 +97,14 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.ok(faceReadability.mean>48&&faceReadability.visibleFraction>.35,
      'Night-scene actor face must remain readable after lighting changes: '+JSON.stringify(faceReadability));
 
+   const beforeLens=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
+   await page.locator('#camera-distance').fill('6.2');
+   await page.locator('#camera-distance').press('Tab');
+   await page.locator('#camera-fov').fill('42');
+   await page.locator('#camera-fov').press('Tab');
+   const afterLens=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
+   assert.notEqual(beforeLens,afterLens,'Creator lens and camera distance must physically change 3D pixels');
+
    if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
    await page.locator('#add-shot').click();
    assert.equal(await page.locator('#shot-list li').count(),3);
@@ -118,6 +126,8 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.equal(project.project.hybrid.cast.luna.look.top,'#268fbb');
    assert.equal(project.project.hybrid.cast.luna.look.hairStyle,'bun');
    assert.equal(project.project.hybrid.cast.luna.style,'lowpoly');
+   assert.equal(project.project.shots[0].framing.distance,6.2,'Saved original camera dolly');
+   assert.equal(project.project.shots[0].framing.fov,42,'Saved original lens FOV');
    assert.equal(await page.locator('#export').isEnabled(),false,
      'Must never export an unvoiced screenplay as if voice mixing was complete');
    await page.reload({waitUntil:'domcontentloaded'});
