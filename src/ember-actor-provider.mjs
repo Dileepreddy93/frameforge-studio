@@ -46,6 +46,27 @@ const OPTIONS={
 const COLOR_KEYS=new Set(['skin','hair','eyes','top','accent','bottom','shoes','screen']);
 const RANGE={height:[.8,1.2],build:[.75,1.35],head:[.85,1.3]};
 const copy=x=>JSON.parse(JSON.stringify(x));
+// Original, deterministic facial micro-performance. Derived ONLY from film
+// time and stable character identity: seek/replay/export are pixel repeatable.
+// A blink takes ~180 ms, occurring every ~3-4 seconds, with no state or RNG.
+export function facialMicroPerformance(time,seed=0,listenerDirection=0){
+  if(!Number.isFinite(time)||time<0||!Number.isFinite(seed)||
+     !Number.isFinite(listenerDirection)||Math.abs(listenerDirection)>1)
+    throw RangeError('Facial micro-performance requires valid absolute time and direction');
+  const identity=Math.abs(Math.floor(seed)),cycle=3.05+(identity%5)*.21;
+  const first=1.18+(identity%4)*.14;
+  const phase=((time-first)%cycle+cycle)%cycle;
+  const distance=Math.min(phase,cycle-phase);
+  const pulse=Math.max(0,1-distance/.11);
+  const blink=1-.93*(pulse*pulse*(3-2*pulse));
+  const period=1.85+(identity%3)*.13;
+  const scaled=time/period,n=Math.floor(scaled),blend=Math.min(1,(scaled-n)/.12);
+  const ease=blend*blend*(3-2*blend);
+  const prev=Math.sin((n-1)*2.43+identity*.71)*.2;
+  const next=Math.sin(n*2.43+identity*.71)*.2;
+  const gaze=Math.max(-.65,Math.min(.65,listenerDirection*.36+prev*(1-ease)+next*ease));
+  return {blink,gaze};
+}
 const isObj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const safeText=s=>typeof s==='string'&&s.length>0&&s.length<=80;
 export function normalizeLook(input={}){
@@ -112,10 +133,13 @@ export function registerEmberCharacters(registry,{scene,positions={},cameraPosit
           baseY:origin[1],cueIndex:0,nod:0,walk:0,sit:config.look.stance==='sit'?1:0,
           look:eye,partner:eye,screen:scenePoint,key:scenePoint,camera:eye};
         animateCharacter(rig,ctx);
+        const other=positions[shot.speaker]?.[0]??origin[0];
+        const direction=speech?0:Math.sign(other-origin[0]);
+        const micro=facialMicroPerformance(time,rig.seed,direction);
         drawFace(rig,{open:speech?intensity:0,wide:1,round:0,teeth:speech?.3:0,tongue:0},
-          ctx.face,1,0,time);
+          ctx.face,micro.blink,micro.gaze,time);
         pose={time,emotion,action,speaking:speech};
-        lastFrame={time,face:ctx.face};
+        lastFrame={time,face:ctx.face,...micro};
       },
       // P6 optional acoustic control. Applied after setPose() at the same
       // absolute time; replaces the P2 demo's approximate mouth motion.
@@ -125,7 +149,8 @@ export function registerEmberCharacters(registry,{scene,positions={},cameraPosit
            cue.mouthOpen<0||cue.mouthOpen>1)throw RangeError('Invalid mouth control');
         const round=cue.viseme==='round'?1:0,wide=cue.viseme==='wide'?1.3:1;
         drawFace(rig,{open:cue.mouthOpen,wide,round,
-          teeth:cue.viseme==='teeth'?.5:0,tongue:0},lastFrame.face,1,0,lastFrame.time);
+          teeth:cue.viseme==='teeth'?.5:0,tongue:0},
+          lastFrame.face,lastFrame.blink,lastFrame.gaze,lastFrame.time);
         pose.audioDriven=true;pose.mouthOpen=cue.mouthOpen;
       },
       getAnchors(){
