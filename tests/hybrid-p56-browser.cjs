@@ -49,7 +49,10 @@ const digest=x=>crypto.createHash('sha256').update(Buffer.from(x.split(',')[1],'
    assert.equal(before.mouthOpen,0,'speaker is silent before the spoken lead');
    const firstT=.7,nextT=report.shots[0].duration+.65;
    const first=await page.evaluate(t=>HybridP56QA.frameAt(t),firstT);
+   assert.equal(first.screen,false,'ambient screen is not mistaken for an authored cue');
+   assert.equal(first.ambientScreen,true,'un-authored shot has readable ambient screen instead of a blank slab');
    const second=await page.evaluate(t=>HybridP56QA.frameAt(t),nextT);
+   assert.equal(second.ambientScreen,false,'authored interactive screen replaces ambient content');
    const rewind=await page.evaluate(t=>HybridP56QA.frameAt(t),firstT);
    assert.equal(digest(first.image),digest(rewind.image),'replaying absolute-time hybrid film must match pixel-for-pixel');
    assert.notEqual(digest(first.image),digest(second.image),'camera and new actor performances must differ');
