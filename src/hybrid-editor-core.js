@@ -122,8 +122,21 @@
      if(style!==undefined)d.style=match(style,['smooth','lowpoly'],'art style');
    }),
    shot:(id,patch)=>commit(p=>{
-     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,move,caption,duration,screenKind,screenTitle,screenLines}=patch;
-     if(speaker!==undefined){actor(p,speaker);s.speaker=speaker}
+     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,cameraDistance,cameraFov,move,caption,duration,screenKind,screenTitle,screenLines}=patch;
+     if(speaker!==undefined){
+       actor(p,speaker);s.speaker=speaker;
+       // An actor close-up follows the current speaking character, not a
+       // stale target after changing who's speaking in the shot inspector.
+       if(s.camera?.kind==='actor')s.camera.target=speaker;
+       if(s.camera?.kind==='two'){
+         s.camera.target=speaker;
+         if(s.camera.secondary===speaker){
+           const partner=p.characters.find(c=>c.id!==speaker);
+           if(!partner)throw Error('Two-shot needs another character');
+           s.camera.secondary=partner.id;
+         }
+       }
+     }
      if(dialogue!==undefined)s.dialogue=safeString(dialogue,500,'Dialogue');
      if(emotion!==undefined){
        const e=match(emotion,EMOTIONS,'emotion');
@@ -131,12 +144,29 @@
      }
      if(action!==undefined){s.cast[s.speaker]={...(s.cast[s.speaker]||{emotion:'neutral'}),action:safeString(action,28,'Action')}}
      if(camera!==undefined){
+       const changed=s.camera?.kind!==camera;
        if(camera==='wide'||camera==='screen')s.camera={kind:camera};
        else if(camera==='actor')s.camera={kind:'actor',target:s.speaker};
        else if(camera==='two'){const other=p.characters.find(c=>c.id!==s.speaker)?.id;
          if(!other)throw Error('Two-shot needs two actors');
          s.camera={kind:'two',target:s.speaker,secondary:other};
        }else throw Error('Unknown camera kind');
+       // Revert the old shot type's custom framing to the new preset.
+       if(changed)delete s.framing;
+     }
+     if(cameraDistance!==undefined||cameraFov!==undefined){
+       const framing={...(s.framing||{})};
+       if(cameraDistance!==undefined){
+         if(!Number.isFinite(cameraDistance)||cameraDistance<3||cameraDistance>20)
+           throw Error('Camera distance must be 3–20 units');
+         framing.distance=cameraDistance;
+       }
+       if(cameraFov!==undefined){
+         if(!Number.isFinite(cameraFov)||cameraFov<25||cameraFov>60)
+           throw Error('Camera FOV must be 25–60 degrees');
+         framing.fov=cameraFov;
+       }
+       s.framing=framing;
      }
      if(move!==undefined)s.direction={...(s.direction||{}),move:match(move,MOVES,'camera movement'),
        transition:s.direction?.transition||'cut',blendSeconds:s.direction?.blendSeconds||0};
