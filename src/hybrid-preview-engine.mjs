@@ -224,8 +224,9 @@ function frameAt(t,encode=true){
  const shot=state.shot,speech=speechAt(project,t,mix,FrameForgeSpeechCore);
  for(const [id,actor] of session.instances())
    actor.setSpeech(id===shot.speaker&&speech.voiced?speech:{mouthOpen:0,viseme:'rest'});
- screenPlane.visible=onSet.draw(shot,state.localTime);
- if(screenPlane.visible)screenTexture.needsUpdate=true;
+ const authoredScreen=onSet.draw(shot,state.localTime);
+ if(!authoredScreen)onSet.drawAmbient(project.title,t);
+ screenPlane.visible=true;screenTexture.needsUpdate=true;
  camera.position.fromArray(pose.position);camera.lookAt(...pose.target);
  camera.fov=pose.fov;camera.updateProjectionMatrix();
  renderer.render(scene,camera);
@@ -241,7 +242,7 @@ function frameAt(t,encode=true){
  }
  return {image:encode?overlay.toDataURL('image/png'):null,time:t,shot:shot.id,
    activeActor:shot.speaker,voiced:speech.voiced,mouthOpen:speech.mouthOpen,
-   viseme:speech.viseme,screen:screenPlane.visible,camera:pose,caption:shot.caption,
+   viseme:speech.viseme,screen:authoredScreen,ambientScreen:!authoredScreen,camera:pose,caption:shot.caption,
    reactions:performance.active};
 }
 function masterWav(){
