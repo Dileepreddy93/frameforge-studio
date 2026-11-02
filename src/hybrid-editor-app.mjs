@@ -287,8 +287,10 @@ $('export').onclick=async()=>{
  $('progress').hidden=false;$('progress').value=0;
  text('export-status','Checking real H264/AAC encoders…');
  try{
-   const duration=projectDuration(editor.project);
-   const seconds=$('seconds').value==='full'?Math.min(duration,60):Math.min(2,duration);
+   const duration=projectDuration(editor.project),full=$('seconds').value==='full';
+   if(full&&duration>60.00001)
+     throw Error('This complete story is '+duration.toFixed(1)+' seconds; the current export limit is 60. Shorten the shots or choose the explicit 2-second test. The film will not be silently cut.');
+   const seconds=full?duration:Math.min(2,duration);
    const result=await exportHybridFilm(engine,{width:Number($('resolution').value),
     seconds,signal:exportAbort.signal,
     onProgress:p=>{$('progress').value=p.progress;text('export-status',
