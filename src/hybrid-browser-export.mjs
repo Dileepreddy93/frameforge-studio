@@ -33,7 +33,16 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
  active=true;
  try{
    engine.setOutputResolution(width,height);
-   video=new CanvasSource(engine.getSurface(),{codec:'avc',
+   // The renderer lives inside a same-origin iframe. Mediabunny validates
+   // HTMLCanvasElement in the caller's realm, so an iframe canvas fails
+   // instanceof and cannot be encoded despite an available H264 codec.
+   // Copy the actual pixel buffer to a parent-realm canvas at native size.
+   const encodeSurface=document.createElement('canvas');
+   encodeSurface.width=width;encodeSurface.height=height;
+   const encodeCtx=encodeSurface.getContext('2d',{alpha:false});
+   if(!encodeCtx)throw Error('Unable to create an H264 frame surface');
+   const sourceSurface=engine.getSurface();
+   video=new CanvasSource(encodeSurface,{codec:'avc',
      quality:new Quality({bitrate:width===1080?8000000:width===720?4200000:1200000}),
      keyFrameInterval:2,hardwareAcceleration:'no-preference'});
    track=new AudioBufferSource({codec:'aac',quality:new Quality({bitrate:192000})});
@@ -47,6 +56,7 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
    for(let i=0;i<frames;i++){
      if(signal?.aborted)throw signal.reason||new DOMException('Export cancelled','AbortError');
      engine.frameAt(i/FPS,false);
+     encodeCtx.drawImage(sourceSurface,0,0,width,height);
      await video.add(i/FPS,1/FPS);
      if(i%5===0||i===frames-1){
        onProgress({done:i+1,total:frames,progress:(i+1)/frames});
