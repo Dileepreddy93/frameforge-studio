@@ -52,6 +52,12 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    await page.locator('#title').press('Tab');
    assert.equal(await page.locator('#title').inputValue(),'My authentic hybrid story');
    await page.locator('#cast-type-luna').selectOption('creator');
+   await page.locator('#cast-top-luna').evaluate(el=>{
+     el.value='#268fbb';el.dispatchEvent(new Event('change',{bubbles:true}));
+   });
+   await page.locator('#cast-hair-luna').selectOption('bun');
+   await page.locator('#cast-style-luna').selectOption('lowpoly');
+
    await page.locator('#world').selectOption('meadow');
    await page.locator('#timeofday').selectOption('night');
    await page.locator('#dialogue').fill('This dialogue was edited by the creator.');
@@ -76,6 +82,9 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.equal(project.project.shots.length,3);
    assert.equal(project.project.hybrid.world.template,'meadow');
    assert.equal(project.project.hybrid.cast.luna.template,'creator');
+   assert.equal(project.project.hybrid.cast.luna.look.top,'#268fbb');
+   assert.equal(project.project.hybrid.cast.luna.look.hairStyle,'bun');
+   assert.equal(project.project.hybrid.cast.luna.style,'lowpoly');
    assert.equal(await page.locator('#export').isEnabled(),false,
      'Must never export an unvoiced screenplay as if voice mixing was complete');
    await page.reload({waitUntil:'domcontentloaded'});
