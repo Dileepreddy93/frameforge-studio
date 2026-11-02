@@ -70,9 +70,44 @@ module.exports=async function testCreatorVoice(page,base,out,{width=360,requireC
   await page.locator('#resolution').selectOption(String(width));
   await page.locator('#seconds').selectOption('2');
   if(browserCodec.h264&&browserCodec.aac){
+    const exportStart=Date.now();
+    const exportStates=[];
+    let lastStatus='';
+    const probeStatus=async()=>{
+      try{
+        const state=await page.evaluate(()=>({
+          status:document.getElementById('export-status')?.textContent,
+          progress:document.getElementById('progress')?.value,
+          cancelDisabled:document.getElementById('cancel')?.disabled,
+          exportingDisabled:document.getElementById('export')?.disabled
+        }));
+        if(state.status!==lastStatus){
+          lastStatus=state.status;const entry={elapsedMs:Date.now()-exportStart,...state};
+          exportStates.push(entry);
+          if(exportStates.length>160)exportStates.shift();
+          console.log('HYBRID_P7_MP4_PROGRESS '+JSON.stringify(entry));
+        }
+      }catch(e){console.log('HYBRID_P7_MP4_STATUS_READ_ERROR '+e.message)}
+    };
+    const monitor=setInterval(()=>{void probeStatus()},4000);
     const downloaded=page.waitForEvent('download',{timeout:requireCodec?600000:120000});
-    await page.locator('#export').click();
-    const movie=await downloaded;
+    const failed=page.waitForFunction(()=>
+      document.getElementById('export-status')?.textContent?.startsWith('MP4 export unavailable'),
+      null,{timeout:requireCodec?600000:120000,polling:1000}).then(async()=>{
+       throw Error('Creator MP4 export failed: '+await page.locator('#export-status').textContent());
+      });
+    let movie;
+    try{
+      await page.locator('#export').click();
+      await probeStatus();
+      movie=await Promise.race([downloaded,failed]);
+    }catch(e){
+      await probeStatus();
+      fs.writeFileSync(path.join(out,'p7-failed-export-states.json'),
+        JSON.stringify({width,codec:browserCodec,exportStates,error:e.message},null,2));
+      try{await page.screenshot({path:path.join(out,'p7-failed-export-screen.png'),fullPage:true})}catch{}
+      throw Error(e.message+'; last export state: '+JSON.stringify(exportStates.at(-1)||{}));
+    }finally{clearInterval(monitor)}
     const source=await movie.path(),dest=path.join(out,'p7-original-Kokoro-browser-native.mp4');
     fs.copyFileSync(source,dest);
     const probe=JSON.parse(cp.execFileSync('ffprobe',['-v','error','-count_frames',
