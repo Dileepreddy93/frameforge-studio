@@ -186,7 +186,11 @@ async function generateEditableVoices(){
  voiceBusy=true;
  const bridge=createKokoroBridge({timeoutMs:180000});
  try{
-   const output=await synthesizeHybridProject(project,{bridge,music:false});
+   const screenSounds=project.shots.flatMap(s=>
+     buildScreenShot(s,0)?.cues.map(c=>({shotId:s.id,at:c.at,cue:c.cue}))||[]);
+   // The verified original code-generated score and interactive-screen effects
+   // are mixed at 48 kHz, ducked under speech, and mastered to the same limiter.
+   const output=await synthesizeHybridProject(project,{bridge,music:true,screenSounds});
    if(JSON.stringify(project)!==snapshot)throw Error('Project changed during voice generation; output discarded');
    // Synthesis may alter shot lengths; rebuild every provider with its new V2 source.
    loadEditable(output.project);
@@ -200,7 +204,8 @@ function getEditableProject(){return JSON.parse(JSON.stringify(project))}
 function getExportAudio(){
  if(!editableVoiceReady)throw Error('Generate current dialogue before MP4 export. Silent storyboards cannot be sold as voiced films.');
  return {left:new Float32Array(mix.left),right:new Float32Array(mix.right),
-   sampleRate:HYBRID_AUDIO_RATE,duration:mix.duration,peakDb:mix.peakDb,lufs:mix.lufs};
+   sampleRate:HYBRID_AUDIO_RATE,duration:mix.duration,peakDb:mix.peakDb,lufs:mix.lufs,
+   music:mix.music,effects:mix.effects};
 }
 function setOutputResolution(width=360,height=640){
  if(!Number.isInteger(width)||!Number.isInteger(height)||width<180||height<320||
