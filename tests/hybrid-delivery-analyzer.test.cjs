@@ -5,7 +5,7 @@ const blank=analyzeGray(Buffer.alloc(144*256));
 assert.equal(blank.std,0);
 assert.equal(blank.visibleFraction,0);
 assert.equal(blank.blackFraction,1);
-const gradient=Buffer.from({length:144*256},(_,i)=>i%256);
+const gradient=Uint8Array.from({length:144*256},(_,i)=>i%256);
 const varied=analyzeGray(gradient);
 assert.ok(varied.std>60,'Real visual signal has measurable dynamic range');
 assert.ok(varied.visibleFraction>.7);
