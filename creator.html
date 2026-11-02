@@ -29,16 +29,28 @@ hr{height:1px;border:0;background:#3a4656;margin:19px 0}.tools{display:flex;gap:
 .workflow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:13px}.workflow span{border:1px solid #556274;padding:5px 8px;border-radius:8px;font-size:10px}
 .caution{border:1px solid #67564b;background:#2b2829;color:#f2c6ac;padding:10px 11px;border-radius:9px;font-size:11px;line-height:1.5;margin-top:14px}
 #file{position:absolute;width:1px;height:1px;opacity:0}
+.mobile-workspace{display:none}
 footer{padding:16px 24px;color:#acbacc;font-size:12px;border-top:1px solid #33404f}
 @media(max-width:1120px){main{grid-template-columns:minmax(260px,330px) minmax(380px,1fr)}.inspector{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px}.inspector>h2,.inspector>.muted,.inspector>.tools{grid-column:1/-1}}
-@media(max-width:730px){main{display:flex;flex-direction:column;padding:11px}.monitor{min-height:370px}.monitor img{max-height:420px}.inspector{display:block}header{padding:12px}.card{padding:14px}.cols{grid-template-columns:1fr 1fr}}
+@media(max-width:730px){
+.mobile-workspace{display:flex;position:sticky;top:0;z-index:15;gap:6px;padding:9px 10px;background:#0e121b;border-bottom:1px solid #455165}
+.mobile-workspace button{flex:1;min-height:46px;font-size:11px;padding:7px 4px;font-weight:650}
+.mobile-workspace button[aria-pressed=true]{background:#eeb487;color:#25170e;border-color:#f3c39f}
+main{display:flex;flex-direction:column;padding:11px}
+main>section.card{display:none}
+main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370px}.monitor img{max-height:420px}.inspector{display:block}header{padding:12px}.card{padding:14px}.cols{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important}}
 </style></head>
 <body>
 <header><div><div class="brand"><span>F</span> FrameForge Creator <small class="sub">Hybrid V2 beta</small></div><div class="sub">Real 3D · local-only edits · honest export</div></div>
 <div class="header-right"><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="save-project">Download project</button><button id="recovery-backup" hidden>Save damaged recovery copy</button><button id="open-project">Open project</button><input type="file" id="file" aria-label="Choose a FrameForge project JSON file" accept=".json,application/json"><a href="./beta.html" style="font-size:12px;align-self:center">Preview guide</a></div></header>
+<nav id="mobile-workspace" class="mobile-workspace" aria-label="Creator workspace tabs">
+<button type="button" data-view="story" aria-pressed="true" aria-controls="pane-story">1 · Story</button>
+<button type="button" data-view="shot" aria-pressed="false" aria-controls="pane-shot">2 · Shot</button>
+<button type="button" data-view="preview" aria-pressed="false" aria-controls="pane-preview">3 · Preview & export</button>
+</nav>
 <main>
-<section class="card" aria-label="Project, cast and timeline">
+<section id="pane-story" class="card" data-mobile-active="true" aria-label="Project, cast and timeline">
 <div class="eyebrow">01 / Your story</div><h1>Make something yours.</h1>
 <p class="muted">Start with two original characters, then adjust the cast, world and shots. Your source project is always downloadable.</p>
 <label for="title">Story title</label><input id="title" maxlength="120">
@@ -51,7 +63,7 @@ footer{padding:16px 24px;color:#acbacc;font-size:12px;border-top:1px solid #3340
 <ol id="shot-list"></ol><div class="tools"><button id="add-shot">+ Add shot</button><button id="move-up">↑ Move</button><button id="move-down">↓ Move</button><button id="delete-shot">Delete</button></div>
 <div id="storage-status" role="status" aria-live="polite">Checking local recovery…</div>
 </section>
-<section class="card" aria-label="Scene monitor and export">
+<section id="pane-preview" class="card" aria-label="Scene monitor and export">
 <div class="eyebrow">02 / Direct the film</div><h2>Scene monitor</h2>
 <div class="workflow"><span>Story</span><span>Cast</span><span>Direction</span><span>Voice</span><span>Export</span><span>Reopen</span></div>
 <div class="monitor"><p class="placeholder" id="placeholder">Loading the real 3D renderer…</p><canvas id="live-frame" role="img" aria-label="Actual 3D scene at the selected timeline position" width="360" height="640" hidden></canvas><img id="frame" alt="Rendered still frame" hidden></div>
@@ -72,7 +84,7 @@ footer{padding:16px 24px;color:#acbacc;font-size:12px;border-top:1px solid #3340
 <div id="export-status" role="status" aria-live="polite">Voice the story first; then verify MP4 support.</div>
 <div class="caution">Creator beta: Built-in characters and worlds only. Native Telugu/Hindi voices, imported rigs in this editor, and reliable full-length export across all devices are not yet certified. Your project JSON can be saved and reopened even if your browser cannot encode a video.</div>
 </section>
-<section class="card inspector" aria-label="Selected shot inspector">
+<section id="pane-shot" class="card inspector" aria-label="Selected shot inspector">
 <div class="eyebrow">03 / Moment-by-moment</div><h2>Shot inspector</h2><p class="muted">Write dialogue and tune acting. Changes appear immediately in the 3D monitor.</p>
 <div><label for="speaker">Who's speaking?</label><select id="speaker"></select>
 <label for="dialogue">Dialogue</label><textarea id="dialogue" maxlength="500"></textarea>
