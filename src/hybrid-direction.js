@@ -219,11 +219,19 @@
    const f=core.timeAt(p,time),s=f.shot,d=s.direction||{move:'static',transition:'cut',blendSeconds:0};
    const src=typeof s.camera==='string'?{kind:s.camera}:s.camera;
    const head=id=>{const a=anchors[id]?.head;if(!v3(a))throw Error('Missing head anchor '+id);return a};
+   // A portrait prop close-up must show the performer reacting to the object.
+   // One shared focal point follows both live actor and real 3D prop as they move.
+   const propFocus=shot=>{
+     if(!v3(stage.prop))throw Error('No prop anchor');
+     const holder=shot.propInteraction?.actor;
+     return holder&&anchors[holder]?.head?
+       stage.prop.map((v,i)=>lerp(v,head(holder)[i],.36)):[...stage.prop];
+   };
    let focus,azimuth=.15;
    if(src.kind==='actor')focus=head(src.target);
    else if(src.kind==='two'){const a=head(src.target),b=head(src.secondary);focus=a.map((v,i)=>(v+b[i])/2)}
    else if(src.kind==='screen'){if(!v3(stage.screen))throw Error('No screen anchor');focus=stage.screen}
-   else if(src.kind==='prop'){if(!v3(stage.prop))throw Error('No prop anchor');focus=stage.prop}
+   else if(src.kind==='prop')focus=propFocus(s)
    else {if(!v3(stage.center))throw Error('No stage center');focus=stage.center}
    const progress=f.localTime/s.duration;
    const fov=s.framing?.fov??38;
@@ -234,7 +242,7 @@
    // actor-close-up distance (4.8): over half the authored text was cropped.
    // Preserve intentional user framing overrides, but fit the full screen by
    // default (including the .9-unit push move) with a little side breathing room.
-   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?11.8:src.kind==='prop'?3.8:4.8);
+   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?11.8:src.kind==='prop'?4.6:4.8);
    const mod={push:-.9,pull:.9,drift:0,orbit:0,static:0}[d.move]||0;
    const distance=baseDist+mod*smooth(progress);
    if(d.move==='orbit')azimuth+=.5*progress;
@@ -248,7 +256,7 @@
      const prior=p.shots[f.index-1],priorCamera=typeof prior.camera==='string'?{kind:prior.camera}:prior.camera;
      const pastFocus=priorCamera.kind==='actor'?head(priorCamera.target):priorCamera.kind==='two'?
        head(priorCamera.target).map((v,i)=>(v+head(priorCamera.secondary)[i])/2):
-       priorCamera.kind==='screen'?stage.screen:priorCamera.kind==='prop'?stage.prop:stage.center;
+       priorCamera.kind==='screen'?stage.screen:priorCamera.kind==='prop'?propFocus(prior):stage.center;
      const k=smooth(f.localTime/blendSeconds),oldDist=prior.framing?.distance??5.4;
      raw.position=raw.position.map((v,i)=>lerp(
        [pastFocus[0]+Math.sin(.15)*oldDist,pastFocus[1]+.48,pastFocus[2]+Math.cos(.15)*oldDist][i],v,k));

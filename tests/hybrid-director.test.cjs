@@ -103,7 +103,10 @@ assert.deepEqual(propRoundTrip.errors,[]);
 assert.deepEqual(propRoundTrip.project.shots[0].propInteraction,{mode:'lift',actor:'luna'});
 assert.equal(propRoundTrip.project.shots[0].ambientScreen,false);
 const propCamera=direction.cameraAt(propProject,.7,anchors,{...stage,prop:[-.35,1.3,.72]});
-assert.deepEqual(propCamera.target,[-.35,1.3,.72]);
+assert.ok(Math.abs(propCamera.target[0]-(-.35*.64-1*.36))<1e-9);
+assert.ok(Math.abs(propCamera.target[1]-(1.3*.64+1.7*.36))<1e-9,
+ 'Portrait object close-up must include the reacting actor head, not just the prop');
+assert.ok(Math.abs(propCamera.target[2]-(.72*.64))<1e-9);
 assert.throws(()=>direction.cameraAt(propProject,.7,anchors,stage),/No prop anchor/);
 const unsafeProp=structuredClone(propProject);
 unsafeProp.shots[0].propInteraction.mode='teleport';

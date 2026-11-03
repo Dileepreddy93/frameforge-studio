@@ -84,7 +84,7 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
        e.shot(shot,{visualProp:'lantern'});
        if([4,5].includes(i)){
          e.shot(shot,{camera:'prop'});
-         e.shot(shot,{cameraDistance:i===4?4.4:3.8,cameraFov:i===4?38:34});
+         e.shot(shot,{cameraDistance:i===4?5.2:4.9,cameraFov:i===4?40:38});
        }
        if(i===4)e.shot(shot,{propMode:'reach',propActor:'luna'});
        if(i===5)e.shot(shot,{propMode:'lift',propActor:'luna'});
@@ -146,10 +146,30 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
       return [4,5,6].map(i=>{
         const frame=api.frameAt(at(i,i===5?.85:.75),false);
         return {shot:i+1,mode:frame.propPose?.mode,position:frame.propPose?.position,
-          gripError:frame.propPose?.gripError,cameraTarget:frame.camera?.target};
+          gripError:frame.propPose?.gripError,cameraTarget:frame.camera?.target,
+          propFocus:frame.propPose?.focus,bendRadians:frame.propPose?.bendRadians};
       });
     });
     assert.deepEqual(spatial.map(x=>x.mode),['reach','lift','carry']);
+    assert.ok(spatial.slice(0,2).every(x=>x.cameraTarget[1]>x.propFocus[1]+.25),
+      'Portrait prop close-ups must frame the actor face as well as the lantern: '+JSON.stringify(spatial));
+    assert.ok(spatial[0].bendRadians>.3&&spatial[1].bendRadians<.12,
+      'Torso must lean during approach and straighten during lifting');
+    const continuity=await page.evaluate(()=>{
+      const api=document.getElementById('engine').contentWindow.HybridP56QA;
+      const p=api.getEditableProject();
+      const start=i=>p.shots.slice(0,i).reduce((n,s)=>n+s.duration,0);
+      const approach=api.frameAt(start(4)+p.shots[4].duration-.02,false).propPose;
+      const lift=api.frameAt(start(5)+.02,false).propPose;
+      return {approach:approach.position,lift:lift.position,
+        seamDistance:Math.hypot(...approach.position.map((n,i)=>n-lift.position[i])),
+        liftBend:lift.bendRadians,gripError:lift.gripError};
+    });
+    assert.ok(continuity.seamDistance<.16,
+      'Lantern must not teleport between grounded reach and first lifting frame: '+JSON.stringify(continuity));
+    assert.ok(continuity.lift[1]>-.05,
+      'Lantern base must not sink below the snow at first contact');
+    fs.writeFileSync(path.join(OUT,'reach-lift-seam-proof.json'),JSON.stringify(continuity,null,2));
     const screens=await page.evaluate(()=>{
       const api=document.getElementById('engine').contentWindow.HybridP56QA;
       const p=api.getEditableProject();let t=0;
