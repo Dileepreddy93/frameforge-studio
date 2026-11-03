@@ -91,6 +91,12 @@ function blockLantern(shot,localTime,instances){
  else if(interaction.mode==='lift')target=initial.clone().lerp(held,smooth01((localTime-.12)/(shot.duration*.68)));
  else target=held;
  const pole=shoulder.clone().add(new T.Vector3(1,-.55,-.45));
+ // Ember's authored gestures may rotate the wrist (e.g. plead/hands-up).
+ // The two-bone solver assumes handOff is collinear with the forearm;
+ // retaining that gesture rotation moved the *real* grip point 18cm away
+ // despite the target being inside the arm's physical reachable volume.
+ // A prop-contact performance explicitly owns the wrist and hand shape.
+ arm.hand.rotation.set(0,0,0);
  solveLimb(arm,target,pole);
  const wrist=effector(arm,new T.Vector3());
  // The lift shot includes a real grasp beat. Earlier we parented the
