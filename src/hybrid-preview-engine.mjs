@@ -58,10 +58,10 @@ for(const x of [-.25,.25])for(const z of [-.25,.25]){
 const lanternLight=new T.PointLight(0xffbb57,1.25,5,2);
 lanternLight.position.set(0,.8,0);lanternLight.castShadow=false;
 storyLantern.add(lanternLight);
-storyLantern.position.set(-.48,0,.22);storyLantern.visible=false;scene.add(storyLantern);
+storyLantern.position.set(-.35,0,.72);storyLantern.visible=false;scene.add(storyLantern);
 // Deterministic spatial blocking: the lantern follows the actual IK wrist,
 // not a screen overlay. All poses are pure functions of shot and absolute time.
-const lanternGround=new T.Vector3(-.48,0,.22);
+const lanternGround=new T.Vector3(-.35,0,.72);
 const lanternHandleOffset=new T.Vector3(0,1.31,0);
 const smooth01=x=>{const k=Math.max(0,Math.min(1,x));return k*k*(3-2*k)};
 function blockLantern(shot,localTime,instances){
@@ -289,7 +289,7 @@ function frameAt(t,encode=true){
  const shot=state.shot,speech=speechAt(project,t,mix,FrameForgeSpeechCore);
  const propPose=blockLantern(shot,state.localTime,actors);
  const alignedAnchors=Object.fromEntries([...actors].map(([id,actor])=>[id,actor.getAnchors()]));
- const stage={...state.worldAnchors,prop:propPose?.focus||[-.48,.83,.22]};
+ const stage={...state.worldAnchors,prop:propPose?.focus||[-.35,.83,.72]};
  const pose=D.cameraAt(project,t,alignedAnchors,stage);
  if(storyLantern.visible)lanternLight.intensity=1.2+.12*Math.sin(t*2.4);
  for(const [id,actor] of actors)

@@ -83,8 +83,12 @@ async function snapshot(browser,server,episode){
   // Capture the actual uncompressed film canvas in lossless PNG. Re-encoding
   // otherwise identical RGB pixels to JPEG introduced 8x8-block jitter on CI.
   // No change to production V6 renderer or its normal JPEG export path.
-  const result=await page.evaluate(times=>times.map(t=>
-    FrameForgeQA.renderFilmFrame(t,360,640,false).toDataURL('image/png')),episode.times);
+  const result=await page.evaluate(times=>times.map(t=>{
+    FrameForgeQA.renderFilmFrame(t,360,640);
+    // V6 exposes its real composited caption+WebGL film as canvas.film in the DOM.
+    // The public QA renderFilmFrame wrapper itself returns a JPEG data URL.
+    return document.querySelector('canvas.film').toDataURL('image/png');
+  }),episode.times);
   assert.deepEqual(errors,[],'page runtime errors');
   const hashes=result.map(hash);hashes.frames=result;return hashes;
  } finally {await context.close();}
