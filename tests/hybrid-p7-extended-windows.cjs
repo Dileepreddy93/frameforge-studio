@@ -146,7 +146,9 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
       return [4,5,6].map(i=>{
         const frame=api.frameAt(at(i,i===5?.85:.75),false);
         return {shot:i+1,mode:frame.propPose?.mode,position:frame.propPose?.position,
-          gripError:frame.propPose?.gripError,cameraTarget:frame.camera?.target,
+          gripError:frame.propPose?.gripError,goalHandle:frame.propPose?.goalHandle,
+          wrist:frame.propPose?.wrist,shoulder:frame.propPose?.shoulder,
+          armMaxReach:frame.propPose?.armMaxReach,cameraTarget:frame.camera?.target,
           propFocus:frame.propPose?.focus,bendRadians:frame.propPose?.bendRadians};
       });
     });
@@ -188,6 +190,9 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     assert.ok(screens.every(x=>x.overlay===x.scenic),
       'World sign and the 3D screen plane must obey the same shot timeline');
     fs.writeFileSync(path.join(OUT,'world-sign-per-shot-proof.json'),JSON.stringify(screens,null,2));
+    console.log('HYBRID_REAL_FILM_REACH_DIAGNOSTIC '+JSON.stringify(spatial[0]));
+    assert.ok(spatial[0].gripError<.04,
+      'Public release gate: reach MUST grip the physical lantern handle in the real film, not just the demo: '+JSON.stringify(spatial[0]));
     assert.ok(spatial[0].gripError<=.20,
       'Reach approaches the handle but is not an authored grip (lift and carry require contact): '+JSON.stringify(spatial[0]));
     assert.ok(spatial[1].position[1]>spatial[0].position[1]+.25,
