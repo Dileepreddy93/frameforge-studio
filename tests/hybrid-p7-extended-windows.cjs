@@ -261,10 +261,15 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
       predicate:d=>d.suggestedFilename().endsWith('-export-report.json'),timeout:3000000});
     const downloaded=page.waitForEvent('download',{
       predicate:d=>d.suggestedFilename().endsWith('.mp4'),timeout:3000000});
+    // The cancellation preflight deliberately leaves an old failure label.
+    // Begin watching for a NEW failure only after the retry click has reset
+    // that status; otherwise a stale cancellation falsely fails a good export.
+    await page.locator('#export').click();
+    assert.ok(!String(await page.locator('#export-status').textContent()).includes('User cancelled export'),
+      'New export must clear the prior cancellation status before retry');
     const failure=page.waitForFunction(()=>
       document.getElementById('export-status')?.textContent?.startsWith('MP4 export unavailable'),
       null,{timeout:3000000,polling:1500}).then(async()=>{throw Error(await page.locator('#export-status').textContent())});
-    await page.locator('#export').click();
     dl=await Promise.race([downloaded,failure]);
     performanceDownload=await performanceReport;
   }catch(e){

@@ -97,20 +97,29 @@ async function snapshot(browser,server,episode){
 // The identical frozen build previously differed at an 8x8 JPEG-coded region;
 // this checks the real scene rather than codec quantization. Frozen self-capture
 // variation is measured per frame; there is NO fixed arbitrary tolerance.
-async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candidateB){
+// Evaluate the CURRENT candidate only against observed self-variation of a
+// frozen-V6 control captured several times on the same browser and same port.
+// Two old-vs-old captures sometimes happen to be identical although the third
+// and fourth differ by one channel in a few pixels. That makes a two-sample
+// maximum falsely diagnose an untouched scene as a regression.
+// No static numeric tolerance, no updates to original V6, and an explicit
+// tampered-frame negative control prevents a material change from passing.
+async function measureVisualDrift(browser,references,candidates){
+ if(references.length<4||candidates.length<2)throw Error('Independent render controls required');
  const page=await browser.newPage();
- try{return await page.evaluate(async samples=>{
+ try{return await page.evaluate(async ({samples,referenceCount})=>{
    const decode=async url=>{
-     const img=new Image();
-     img.src=url;
-     await img.decode();
+     const img=new Image();img.src=url;await img.decode();
      const cv=document.createElement('canvas');
      cv.width=img.naturalWidth;cv.height=img.naturalHeight;
      const cx=cv.getContext('2d',{willReadFrequently:true});
-     cx.drawImage(img,0,0);return cx.getImageData(0,0,cv.width,cv.height).data;
+     cx.drawImage(img,0,0);
+     return cx.getImageData(0,0,cv.width,cv.height).data;
    };
-   const [a,b,c,d]=await Promise.all(samples.map(decode));
-   if(a.length!==b.length||a.length!==c.length||a.length!==d.length)throw Error('Film frame dimensions changed');
+   const decoded=await Promise.all(samples.map(decode));
+   if(decoded.some(x=>x.length!==decoded[0].length))
+     throw Error('Film frame dimensions changed');
+   const refs=decoded.slice(0,referenceCount),takes=decoded.slice(referenceCount);
    const compare=(x,y)=>{
      let changed=0,sum=0,max=0;
      for(let i=0;i<x.length;i+=4){
@@ -123,17 +132,31 @@ async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candi
      }
      return {changedPixels:changed,meanAbsoluteRGB:sum/(x.length/4*3),maxChannelDifference:max};
    };
-   const baseline=compare(a,b);
-   const candidates=[compare(c,a),compare(c,b),compare(d,a),compare(d,b)];
-   // A candidate can match any independently captured frozen frame. We
-   // still refuse changes beyond the experimentally observed baseline jitter.
-   const best=candidates.reduce((x,y)=>
+   const frozenSelfPairs=[];
+   for(let i=0;i<refs.length;i++)
+     for(let j=i+1;j<refs.length;j++)
+       frozenSelfPairs.push(compare(refs[i],refs[j]));
+   const baseline=frozenSelfPairs.reduce((x,y)=>
+     x.meanAbsoluteRGB>y.meanAbsoluteRGB?x:y);
+   const allCandidateComparisons=takes.flatMap(t=>refs.map(b=>compare(t,b)));
+   const bestCandidate=allCandidateComparisons.reduce((x,y)=>
      x.meanAbsoluteRGB<y.meanAbsoluteRGB?x:y);
-   const allowable=baseline.meanAbsoluteRGB;
-   return {baseline,bestCandidate:best,allCandidateComparisons:candidates,
-     pixelControlPassed:best.meanAbsoluteRGB<=allowable+1e-9 &&
-       best.maxChannelDifference<=baseline.maxChannelDifference};
- },[referenceA,referenceB,candidateA,candidateB]);}
+   const largestBaselineChannel=Math.max(...frozenSelfPairs.map(x=>x.maxChannelDifference));
+   const accepted=measurement=>measurement.meanAbsoluteRGB<=baseline.meanAbsoluteRGB+1e-9 &&
+     measurement.maxChannelDifference<=largestBaselineChannel;
+   const tampered=new Uint8ClampedArray(takes[0]);
+   // Deliberate 100-pixel visible-color difference. If our calibrated control
+   // accepts this, the test itself is broken and must fail closed.
+   for(let i=0;i<Math.min(tampered.length,400);i+=4)
+     tampered[i]=tampered[i]<128?tampered[i]+96:tampered[i]-96;
+   const tamperedBest=refs.map(b=>compare(tampered,b)).reduce((x,y)=>
+     x.meanAbsoluteRGB<y.meanAbsoluteRGB?x:y);
+   const negativeControlRejected=!accepted(tamperedBest);
+   if(!negativeControlRejected)throw Error('V6 parity negative control did not catch a tampered film frame');
+   return {baseline,bestCandidate,
+     frozenSelfPairs,allCandidateComparisons,negativeControlRejected,
+     frozenControlCaptures:refs.length,pixelControlPassed:accepted(bestCandidate)};
+ },{samples:[...references,...candidates],referenceCount:references.length});}
  finally{await page.close()}
 }
 (async()=>{
@@ -161,10 +184,13 @@ async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candi
    // The negative control above can differ despite IDENTICAL baseline bytes.
    // Discover whether that difference is caused by capture sequence: record
    // each build twice in the same local origin, in otherwise fresh contexts.
-   // Both old→new pairs MUST still match EXACTLY, not approximately.
+   // Independent captures calibrate frozen-V6 renderer jitter; material
+   // differences must still be rejected by the negative control.
    server.setRoot(baseline);
    const referenceA=await snapshot(browser,server,episode);
    const referenceB=await snapshot(browser,server,episode);
+   const referenceC=await snapshot(browser,server,episode);
+   const referenceD=await snapshot(browser,server,episode);
    server.setRoot(ROOT);
    const candidateA=await snapshot(browser,server,episode);
    const candidateB=await snapshot(browser,server,episode);
@@ -172,6 +198,7 @@ async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candi
      episode:episode.id,baselineRepeatSame:referenceA.every((h,i)=>h===referenceB[i]),
      candidateRepeatSame:candidateA.every((h,i)=>h===candidateB[i]),
      baselineFirst:referenceA[0],baselineSecond:referenceB[0],
+     baselineThird:referenceC[0],baselineFourth:referenceD[0],
      candidateFirst:candidateA[0],candidateSecond:candidateB[0]
    }));
    for(let i=0;i<episode.times.length;i++){
@@ -184,6 +211,7 @@ async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candi
       const prefix=episode.id+'-'+format(episode.times[i])+'s';
       for(const [tag,series] of [
         ['baseline-a',referenceA],['baseline-b',referenceB],
+        ['baseline-c',referenceC],['baseline-d',referenceD],
         ['candidate-a',candidateA],['candidate-b',candidateB]]){
         const frame=series.frames[i];
         fs.writeFileSync(path.join(OUT,prefix+'-'+tag+'.png'),
@@ -192,17 +220,19 @@ async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candi
       fs.writeFileSync(path.join(OUT,prefix+'-hashes.json'),JSON.stringify({
         episode:episode.id,time:episode.times[i],
         hashes:{baselineA:referenceA[i],baselineB:referenceB[i],
+          baselineC:referenceC[i],baselineD:referenceD[i],
           candidateA:candidateA[i],candidateB:candidateB[i]},
         originalV6BaselineCommit:BASE
       },null,2));
     }
-    const exactMatch=[referenceA[i],referenceB[i]].some(h=>h===candidateA[i]||h===candidateB[i]);
+    const exactMatch=[referenceA[i],referenceB[i],referenceC[i],referenceD[i]].some(h=>h===candidateA[i]||h===candidateB[i]);
     let result={baseline:{changedPixels:0,meanAbsoluteRGB:0,maxChannelDifference:0},
       bestCandidate:{changedPixels:0,meanAbsoluteRGB:0,maxChannelDifference:0},
       pixelControlPassed:true};
     if(!exactMatch){
-      result=await measureVisualDrift(browser,referenceA.frames[i],referenceB.frames[i],
-        candidateA.frames[i],candidateB.frames[i]);
+      result=await measureVisualDrift(browser,
+        [referenceA.frames[i],referenceB.frames[i],referenceC.frames[i],referenceD.frames[i]],
+        [candidateA.frames[i],candidateB.frames[i]]);
     }
     console.log('HYBRID_PARITY_PIXEL_CONTROL '+JSON.stringify({
       episode:episode.id,time:episode.times[i],exactMatch,...result}));
