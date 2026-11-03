@@ -250,7 +250,12 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    // P14 creator acceptance: author ten original shots by the VISIBLE UI,
    // not programmatically calling the editor model or importing a prepared V2.
    // This is automation, NOT an independent novice/human or physical-phone test.
-   for(let i=3;i<10;i++){
+   // The two viewport runs deliberately exercise different opening states:
+   // desktop starts with three shots after undo/redo; mobile starts with two.
+   // Add exactly the number of new shots needed to reach ten, never hard-code seven.
+   const initialShotCount=await page.locator('#shot-list li').count();
+   assert.ok(initialShotCount>=1&&initialShotCount<10);
+   for(let i=initialShotCount;i<10;i++){
      if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
      const beforeCount=await page.locator('#shot-list li').count();
      await page.locator('#add-shot').click();
@@ -268,6 +273,9 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
        await page.screenshot({path:path.join(OUT,'add-shot-failure-'+viewport.width+'.png'),fullPage:true});
      assert.equal(diagnostic.count,beforeCount+1,
        'Clicking Add Shot must insert exactly one saved shot: '+JSON.stringify(diagnostic));
+     const lastShotId=await page.locator('#shot-list button').last().getAttribute('data-shot');
+     assert.equal(diagnostic.selected,lastShotId,
+       'Creator must select the newly added shot rather than editing an older scene');
      await page.locator('#shot-list button').last().click();
      await page.locator('#dialogue').fill('Original manually authored scene '+(i+1)+
        ': Our two characters choose the next beat together.');
@@ -284,8 +292,9 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    const tenSource=fs.readFileSync(await tenFile.path(),'utf8');
    const tenProject=JSON.parse(tenSource).project;
    assert.equal(tenProject.shots.length,10);
-   assert.equal(tenProject.shots.filter(s=>s.dialogue.includes('Original manually authored scene')).length,7,
-     'Each new shot was authored through the visible inspector');
+   assert.equal(tenProject.shots.filter(s=>s.dialogue.includes('Original manually authored scene')).length,
+     10-initialShotCount,
+     'Each new shot was authored through the visible inspector; viewport initial count is not fixed');
    const tenSeconds=tenProject.shots.reduce((sum,s)=>sum+s.duration,0);
    assert.ok(tenSeconds>=30&&tenSeconds<=60,
      'Real editor must be able to author a commercial-length short: '+tenSeconds);

@@ -239,7 +239,13 @@ for(const id of ['speaker','dialogue','emotion','action','camera','camera-distan
      id==='screenLines'?'screenLines':patchKey;
    changeProject(()=>editor.shot(selected,{[mapped]:patch[patchKey]}));
  };
-$('add-shot').onclick=()=>changeProject(()=>editor.addShot());
+$('add-shot').onclick=()=>changeProject(()=>{
+ const added=editor.addShot();
+ // Immediately select the authored shot; previously the inspector remained
+ // on the prior shot, so a new creator edited the wrong scene after Add.
+ if(added)selected=editor.project.shots[editor.project.shots.length-1].id;
+ return added;
+});
 $('delete-shot').onclick=()=>changeProject(()=>editor.removeShot(selected));
 $('move-up').onclick=()=>changeProject(()=>editor.moveShot(selected,-1));
 $('move-down').onclick=()=>changeProject(()=>editor.moveShot(selected,1));
@@ -332,10 +338,21 @@ $('export').onclick=async()=>{
    if(full&&duration>60.00001)
      throw Error('This complete story is '+duration.toFixed(1)+' seconds; the current export limit is 60. Shorten the shots or choose the explicit 2-second test. The film will not be silently cut.');
    const seconds=full?duration:Math.min(2,duration);
+   const exportStarted=performance.now();
    const result=await exportHybridFilm(engine,{width:Number($('resolution').value),
     seconds,signal:exportAbort.signal,
-    onProgress:p=>{$('progress').value=p.progress;text('export-status',
-      'Rendering '+p.done+' / '+p.total+' frames · '+Math.round(p.progress*100)+'%');}});
+    onProgress:p=>{
+      $('progress').value=p.progress;
+      // Live estimate based on rendered frames in this actual session;
+      // suppress early unstable estimates, never promise a fixed completion time.
+      const elapsedSeconds=(performance.now()-exportStarted)/1000;
+      const remain=p.done>=Math.max(30,p.total*.05)?
+        Math.round(elapsedSeconds*(p.total-p.done)/p.done):null;
+      const eta=remain===null?'':' · about '+Math.max(1,Math.ceil(remain/60))+
+        ' min remaining (live estimate)';
+      text('export-status','Rendering '+p.done+' / '+p.total+' frames · '+
+        Math.round(p.progress*100)+'%'+eta);
+    }});
    download(result.file,'frameforge-'+editor.project.id+'-'+result.report.width+'x'+result.report.height+'.mp4');
    download(new Blob([JSON.stringify(result.report,null,2)],{type:'application/json'}),
      'frameforge-'+editor.project.id+'-export-report.json');

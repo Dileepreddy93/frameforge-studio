@@ -77,10 +77,10 @@ main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370
 <div class="tools"><button id="voice" class="primary" disabled>Generate English speech</button></div>
 <div id="voice-status" role="status" aria-live="polite">Storyboard has no speech. Generate voice before exporting MP4.</div>
 <hr><h2>Export a real MP4</h2><p class="muted">Browser H.264/AAC encoding with full-file verification; unsupported browsers are refused, not silently downgraded.</p>
-<div class="cols"><div><label for="resolution">Video size</label><select id="resolution"><option value="360">360×640 / preview</option><option value="720">720×1280 / social</option><option value="1080">1080×1920 / master</option></select></div>
+<div class="cols"><div><label for="resolution">Video size</label><select id="resolution"><option value="360">360×640 / preview</option><option value="720" selected>720×1280 / social</option><option value="1080">1080×1920 / master</option></select></div>
 <div><label for="seconds">Length</label><select id="seconds"><option value="full">Full story (up to 60 s)</option><option value="2">First 2 seconds / test</option></select></div></div>
 <div class="tools"><button id="export" class="primary" disabled>Export verified MP4</button><button id="cancel" disabled>Cancel export</button></div>
-<progress id="progress" max="1" value="0" style="width:100%" hidden></progress>
+<progress id="progress" max="1" value="0" aria-label="Verified MP4 frame rendering progress" style="width:100%" hidden></progress>
 <div id="export-status" role="status" aria-live="polite">Voice the story first; then verify MP4 support.</div>
 <div class="caution">Creator beta: Built-in characters and worlds only. Native Telugu/Hindi voices, imported rigs in this editor, and reliable full-length export across all devices are not yet certified. Your project JSON can be saved and reopened even if your browser cannot encode a video.</div>
 </section>

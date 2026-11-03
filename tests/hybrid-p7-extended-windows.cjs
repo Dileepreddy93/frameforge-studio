@@ -224,7 +224,23 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
   assert.equal(audio.music,true);assert.ok(audio.effects>=2);
   assert.equal(audio.rate,48000);
   assert.ok(Number.isFinite(audio.lufs)&&audio.peakDb<0);
+  // P14: Abort a genuine 1080p native encoding *mid-render*, then retry
+  // the same real voiced film. Reject a leaked global exporter lock or lost audio.
   await page.locator('#resolution').selectOption('1080');
+  await page.locator('#seconds').selectOption('2');
+  await page.locator('#export').click();
+  await page.waitForFunction(()=>!document.getElementById('cancel').disabled&&
+    document.getElementById('progress').value>.005,null,{timeout:180000});
+  await page.locator('#cancel').click();
+  await page.waitForFunction(()=>{
+    const s=document.getElementById('export-status').textContent||'';
+    return s.startsWith('MP4 export unavailable:')&&s.includes('User cancelled export');
+  },null,{timeout:180000});
+  assert.equal(await page.locator('#export').isEnabled(),true,
+    'Cancelling a real export must restore the original valid voice and editor state');
+  assert.equal(await page.locator('#cancel').isEnabled(),false);
+  assert.equal(await page.locator('#progress').isVisible(),false);
+  console.log('HYBRID_CANCEL_AND_RETRY_PRECHECK_PASS');
   await page.locator('#seconds').selectOption('full');
   const start=Date.now(),events=[];
   let previous='';
