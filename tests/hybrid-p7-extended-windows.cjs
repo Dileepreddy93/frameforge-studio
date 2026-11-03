@@ -79,6 +79,7 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
        // Different portrait distances for emotional reactions, with headroom.
        e.shot(shot,{cameraDistance:6.2,cameraFov:42});
      }
+     if(alternate&&!screenInsert)e.shot(shot,{ambientScreen:'hide'});
      if(alternate&&!screenInsert&&i>=3){
        e.shot(shot,{visualProp:'lantern'});
        if([4,5].includes(i)){
@@ -127,6 +128,8 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     assert.ok(episode.shots.some(s=>s.camera.kind==='wide'));
     assert.deepEqual([4,5,6].map(i=>episode.shots[i].propInteraction?.mode),['reach','lift','carry']);
     assert.equal(episode.shots[5].camera.kind,'prop');
+    assert.equal(episode.shots.filter(s=>s.ambientScreen===false).length,8,
+      'Eight scripted outdoor shots should not show the background workstation');
     assert.equal(episode.audio.music.cues[0].style,'tension');
   }
   fs.writeFileSync(path.join(OUT,'ten-shot-source.frameforge.json'),raw);
@@ -147,6 +150,8 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
       });
     });
     assert.deepEqual(spatial.map(x=>x.mode),['reach','lift','carry']);
+    assert.ok(spatial[0].gripError<=.05,
+      'End-of-reach must touch lantern handle: '+JSON.stringify(spatial[0]));
     assert.ok(spatial[1].position[1]>spatial[0].position[1]+.25,
       'Lantern must rise physically in the authored lift shot: '+JSON.stringify(spatial));
     assert.ok(spatial[2].position[1]>.15,'Carried lantern must leave the ground');
@@ -191,14 +196,18 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     }catch(e){console.warn('Export status unavailable: '+e.message)}
   };
   const tick=setInterval(()=>void check(),10000);
-  let dl;
+  let dl,performanceDownload;
   try{
-    const downloaded=page.waitForEvent('download',{timeout:3000000});
+    const performanceReport=page.waitForEvent('download',{
+      predicate:d=>d.suggestedFilename().endsWith('-export-report.json'),timeout:3000000});
+    const downloaded=page.waitForEvent('download',{
+      predicate:d=>d.suggestedFilename().endsWith('.mp4'),timeout:3000000});
     const failure=page.waitForFunction(()=>
       document.getElementById('export-status')?.textContent?.startsWith('MP4 export unavailable'),
       null,{timeout:3000000,polling:1500}).then(async()=>{throw Error(await page.locator('#export-status').textContent())});
     await page.locator('#export').click();
     dl=await Promise.race([downloaded,failure]);
+    performanceDownload=await performanceReport;
   }catch(e){
     await check();fs.writeFileSync(path.join(OUT,'failure-report.json'),JSON.stringify({
       error:e.message,audio,events,errors
@@ -209,6 +218,13 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
   assert.match(dl.suggestedFilename(),/\.mp4$/);
   const movie=path.join(OUT,'ten-shot-browser-native-1080x1920.mp4');
   fs.copyFileSync(await dl.path(),movie);
+  const performancePath=path.join(OUT,'actual-export-performance.json');
+  fs.copyFileSync(await performanceDownload.path(),performancePath);
+  const browserReport=JSON.parse(fs.readFileSync(performancePath,'utf8'));
+  assert.ok(browserReport.performance&&
+    ['wallMs','renderMs','canvasTransferMs','encodeMs','finalizeMs'].every(k=>
+      Number.isFinite(browserReport.performance[k])&&browserReport.performance[k]>=0),
+    'Real completed export must measure rendering, copy and encoding costs');
   const probe=JSON.parse(cp.execFileSync('ffprobe',['-v','error','-count_frames',
     '-show_entries','stream=codec_name,codec_type,width,height,r_frame_rate,nb_read_frames,sample_rate,channels:format=duration,size',
     '-of','json',movie],{encoding:'utf8',timeout:90000}));

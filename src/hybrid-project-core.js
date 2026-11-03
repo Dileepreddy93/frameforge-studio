@@ -135,6 +135,8 @@
         !TEXT(s.screen.title,160)||!Array.isArray(s.screen.lines)||
         s.screen.lines.length>16||s.screen.lines.some(x=>!TEXT(x,120))))
         fail(at+'.screen','Screen app must contain safe authored text and supported kind');
+      if(s.ambientScreen!==undefined&&typeof s.ambientScreen!=='boolean')
+        fail(at+'.ambientScreen','Background monitor must be true or false');
       if(s.visualProp!==undefined&&s.visualProp!=='lantern')
         fail(at+'.visualProp','Unsupported on-set visual prop');
       if(s.propInteraction!==undefined&&(!OBJ(s.propInteraction)||s.visualProp!=='lantern'||

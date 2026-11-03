@@ -27,6 +27,11 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
    throw Error('Mastered stereo audio must be 48kHz');
  if(audio.left.length<Math.round(length*48000)-100)
    throw Error('Voice master shorter than requested export');
+ // Measure the REAL browser export path without estimating frame cost from
+ // timestamps or attributing offline synthesis time to video encoding.
+ const clock=()=>performance.now();
+ const stageMs={renderer:0,canvasTransfer:0,encoder:0,finalize:0};
+ const exportStarted=clock();
  const output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
  let video=null,track=null;
  const oldSize={width:360,height:640};
@@ -55,15 +60,23 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
    await track.add(audioBuffer);track.close();track=null;
    for(let i=0;i<frames;i++){
      if(signal?.aborted)throw signal.reason||new DOMException('Export cancelled','AbortError');
+     let mark=clock();
      engine.frameAt(i/FPS,false);
+     stageMs.renderer+=clock()-mark;
+     mark=clock();
      encodeCtx.drawImage(sourceSurface,0,0,width,height);
+     stageMs.canvasTransfer+=clock()-mark;
+     mark=clock();
      await video.add(i/FPS,1/FPS);
+     stageMs.encoder+=clock()-mark;
      if(i%5===0||i===frames-1){
        onProgress({done:i+1,total:frames,progress:(i+1)/frames});
        await new Promise(resolve=>setTimeout(resolve,0));
      }
    }
+   let mark=clock();
    video.close();video=null;await output.finalize();
+   stageMs.finalize=clock()-mark;
    const raw=output.target.buffer;
    if(!raw||raw.byteLength<1024)throw Error('H264 writer returned an empty file');
    const file=new Blob([raw],{type:'video/mp4'});
@@ -86,7 +99,16 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
      first.close();last.close();
      summary={ok:true,width,height,fps:FPS,frames,seconds:frames/FPS,
        codec:'h264',audio:'aac',audioChannels:2,audioHz:48000,firstAndLastDecode:true,
-       bytes:file.size,source:'frameforge.project/2 browser-native WebCodecs + Mediabunny'};
+       bytes:file.size,source:'frameforge.project/2 browser-native WebCodecs + Mediabunny',
+       // Wall time also includes cooperative UI yields and container validation;
+       // components are non-overlapping and measured on the same 30 fps source.
+       performance:{wallMs:Math.round(clock()-exportStarted),
+         renderMs:Math.round(stageMs.renderer),
+         canvasTransferMs:Math.round(stageMs.canvasTransfer),
+         encodeMs:Math.round(stageMs.encoder),
+         finalizeMs:Math.round(stageMs.finalize),
+         averageFrameRenderMs:+(stageMs.renderer/frames).toFixed(2),
+         averageFrameEncodeMs:+(stageMs.encoder/frames).toFixed(2)}};
    }finally{input.dispose?.()}
    return {file,report:summary};
  }catch(e){

@@ -166,6 +166,7 @@ function renderUI({render3d=true}={}){
  $('camera-fov').value=String(current.framing?.fov??38);
  $('caption').value=current.caption||'';$('shot-duration').value=current.duration.toFixed(2);
  $('visual-prop').value=current.visualProp||'none';
+ $('ambient-screen').value=current.ambientScreen===false?'hide':'show';
  $('prop-mode').disabled=!current.visualProp;$('prop-actor').disabled=!current.visualProp;
  $('prop-mode').value=current.propInteraction?.mode||'ground';
  fillSelect($('prop-actor'),p.characters.map(x=>[x.id,x.name]),current.propInteraction?.actor||current.speaker);
@@ -220,11 +221,11 @@ for(const id of ['title','logline'])$(id).onchange=()=>changeProject(()=>editor[
 for(const id of ['world','timeofday'])$(id).onchange=()=>changeProject(()=>editor.world($('world').value,$('timeofday').value));
 $('soundtrack').onchange=()=>changeProject(()=>editor.soundtrack($('soundtrack').value));
 $('shot-sound').onchange=()=>changeProject(()=>editor.shotSound(selected,$('shot-sound').value));
-for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','visual-prop','prop-mode','prop-actor','screenKind','screenTitle','screenLines'])
+for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','visual-prop','prop-mode','prop-actor','ambient-screen','screenKind','screenTitle','screenLines'])
  $(id).onchange=()=>{
    const patchKey=id==='shot-duration'?'duration':
       id==='camera-distance'?'cameraDistance':id==='camera-fov'?'cameraFov':
-      id==='visual-prop'?'visualProp':id==='prop-mode'?'propMode':id==='prop-actor'?'propActor':id;
+      id==='visual-prop'?'visualProp':id==='prop-mode'?'propMode':id==='prop-actor'?'propActor':id==='ambient-screen'?'ambientScreen':id;
    const numeric=['shot-duration','camera-distance','camera-fov'].includes(id);
    const patch={ [patchKey]:numeric?Number($(id).value):$(id).value};
    // Screen camel-case as expected by the V2 editor model.

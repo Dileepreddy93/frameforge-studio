@@ -122,7 +122,7 @@
      if(style!==undefined)d.style=match(style,['smooth','lowpoly'],'art style');
    }),
    shot:(id,patch)=>commit(p=>{
-     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,cameraDistance,cameraFov,move,caption,duration,screenKind,screenTitle,screenLines,visualProp,propMode,propActor}=patch;
+     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,cameraDistance,cameraFov,move,caption,duration,screenKind,screenTitle,screenLines,visualProp,propMode,propActor,ambientScreen}=patch;
      if(speaker!==undefined){
        actor(p,speaker);s.speaker=speaker;
        // An actor close-up follows the current speaking character, not a
@@ -178,6 +178,11 @@
        }else if(visualProp==='lantern')s.visualProp='lantern';
        else throw Error('Unsupported original 3D prop');
      }
+     if(ambientScreen!==undefined){
+       if(ambientScreen==='hide')s.ambientScreen=false;
+       else if(ambientScreen==='show')delete s.ambientScreen;
+       else throw Error('Background monitor must be show or hide');
+     }
      if(propMode!==undefined||propActor!==undefined){
        if(s.visualProp!=='lantern')throw Error('Enable the lantern before directing its interaction');
        const next={mode:s.propInteraction?.mode||'ground',actor:s.propInteraction?.actor||s.speaker};
@@ -206,7 +211,7 @@
      const last=p.shots[p.shots.length-1],shot=clone(last);shot.id='shot-'+String(count).padStart(2,'0');
      shot.dialogue='Here is the next moment in our story.';shot.duration=3;
      shot.direction={move:'static',transition:'cut',blendSeconds:0};
-     delete shot.screen;delete shot.caption;delete shot.visualProp;delete shot.propInteraction;
+     delete shot.screen;delete shot.caption;delete shot.visualProp;delete shot.propInteraction;delete shot.ambientScreen;
      if(shot.camera?.kind==='prop')shot.camera={kind:'actor',target:shot.speaker};p.shots.push(shot)
    }),
    removeShot:id=>commit(p=>{if(p.shots.length<=1)throw Error('Keep at least one shot');
@@ -230,6 +235,7 @@
          const merged={...clone(old),...clone(s),timing:clone(old.timing||s.timing||{lead:.15,pauseAfter:.35})};
          if(!s.visualProp)delete merged.visualProp;
          if(!s.propInteraction)delete merged.propInteraction;
+         if(s.ambientScreen===undefined)delete merged.ambientScreen;
          return merged;
        });
        p.hybrid.director=clone(parsed.project.hybrid.director||{oneTake:false});

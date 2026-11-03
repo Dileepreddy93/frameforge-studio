@@ -131,6 +131,12 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.equal(propFocus.propPose.mode,'reach');
    assert.equal(propFocus.camera.shotId,'shot-01');
    assert.ok(Number.isFinite(propFocus.propPose.gripError));
+   assert.ok(propFocus.propPose.gripError<=.05,
+     'At the final reach pose, wrist must touch the lantern handle: '+propFocus.propPose.gripError);
+   await page.locator('#ambient-screen').selectOption('hide');
+   const quietShot=await page.evaluate(()=>document.getElementById('engine').contentWindow.HybridP56QA.frameAt(1.6,false));
+   assert.equal(quietShot.ambientScreen,false);
+   assert.equal(quietShot.screenVisible,false);
    await page.locator('#camera').selectOption('actor');
    await page.locator('#camera-distance').fill('6.2');await page.locator('#camera-distance').press('Tab');
    await page.locator('#camera-fov').fill('42');await page.locator('#camera-fov').press('Tab');
@@ -159,6 +165,7 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.equal(project.project.shots[0].framing.fov,42,'Saved original lens FOV');
    assert.equal(project.project.shots[0].visualProp,'lantern','Chosen story prop survives save/reopen');
    assert.deepEqual(project.project.shots[0].propInteraction,{mode:'reach',actor:'luna'},'Authored grip action persists');
+   assert.equal(project.project.shots[0].ambientScreen,false,'Ambient monitor visibility persists');
    assert.equal(await page.locator('#export').isEnabled(),false,
      'Must never export an unvoiced screenplay as if voice mixing was complete');
    await page.reload({waitUntil:'domcontentloaded'});

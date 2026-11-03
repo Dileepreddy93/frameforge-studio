@@ -80,14 +80,18 @@ async function snapshot(browser,server,episode){
   }
   // Match caption layout before recording pixel hashes, regardless of cached fonts.
   await page.evaluate(()=>document.fonts.ready);
-  const result=await page.evaluate(times=>times.map(t=>FrameForgeQA.renderFilmFrame(t,360,640)),episode.times);
+  // Capture the actual uncompressed film canvas in lossless PNG. Re-encoding
+  // otherwise identical RGB pixels to JPEG introduced 8x8-block jitter on CI.
+  // No change to production V6 renderer or its normal JPEG export path.
+  const result=await page.evaluate(times=>times.map(t=>
+    FrameForgeQA.renderFilmFrame(t,360,640,false).toDataURL('image/png')),episode.times);
   assert.deepEqual(errors,[],'page runtime errors');
   const hashes=result.map(hash);hashes.frames=result;return hashes;
  } finally {await context.close();}
 }
-// Compare decoded RGB pixels instead of compressed-JPEG file bytes. JPEG
-// encoders can vary by a few low-intensity pixels even on the identical frozen
-// build, as proved by the negative control. The baseline's own repeated-capture
+// Compare decoded RGB pixels from lossless PNG captures, never JPEG blocks.
+// The identical frozen build previously differed at an 8x8 JPEG-coded region;
+// this checks the real scene rather than codec quantization. Frozen self-capture
 // variation is measured per frame; there is NO fixed arbitrary tolerance.
 async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candidateB){
  const page=await browser.newPage();
@@ -178,7 +182,7 @@ async function measureVisualDrift(browser,referenceA,referenceB,candidateA,candi
         ['baseline-a',referenceA],['baseline-b',referenceB],
         ['candidate-a',candidateA],['candidate-b',candidateB]]){
         const frame=series.frames[i];
-        fs.writeFileSync(path.join(OUT,prefix+'-'+tag+'.jpg'),
+        fs.writeFileSync(path.join(OUT,prefix+'-'+tag+'.png'),
           Buffer.from(frame.split(',')[1],'base64'));
       }
       fs.writeFileSync(path.join(OUT,prefix+'-hashes.json'),JSON.stringify({

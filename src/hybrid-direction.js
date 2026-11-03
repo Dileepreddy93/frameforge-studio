@@ -108,12 +108,14 @@
          const camera=parseCamera(a.camera,new Set(p.characters.map(x=>x.id)));
          if(!MOVES.has(a.move??'static')||!['cut','blend'].includes(a.transition??'cut'))
            throw Error('Unknown camera movement');
+         if(a.ambient!==undefined&&!['show','hide'].includes(a.ambient))throw Error('Ambient monitor must be show or hide');
          const blendSeconds=Number(a.blend??0);
          if(!finite(blendSeconds,0,1.5))throw Error('Blend time invalid');
          active={id:a.id,duration,camera,dialogue:'',speaker:'',intent:a.intent||'scripted',
            firstFrameStatus:'draft',cast:{},direction:{move:a.move||'static',
              transition:a.transition||'cut',blendSeconds},
            ...(a.caption?{caption:a.caption}:{}),
+           ...(a.ambient==='hide'?{ambientScreen:false}:{}),
            timing:{lead:.15,pauseAfter:.35}};
          p.shots.push(active);continue;
        }
@@ -169,6 +171,7 @@
       'transition='+d.transition,'blend='+(d.blendSeconds||0),
       'intent='+encode(s.intent)];
      if(s.caption)parts.push('caption='+encode(s.caption));
+     if(s.ambientScreen===false)parts.push('ambient=hide');
      out.push(parts.join(' '));
      const acting=s.cast?.[s.speaker]||{emotion:'neutral',action:'explain'};
      out.push((names[s.speaker]||s.speaker)+' ('+(acting.emotion||'neutral')+
