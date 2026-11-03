@@ -298,6 +298,9 @@ function frameAt(t,encode=true){
  const ambientScreen=!authoredScreen&&shot.ambientScreen!==false;
  if(ambientScreen)onSet.drawAmbient(project.title,t);
  screenPlane.visible=Boolean(authoredScreen||ambientScreen);
+ // Synchronize BOTH the overlay monitor and the complete wooden world sign
+ // before rendering, including direct seeks and reverse scrubbing.
+ const scenicScreenVisible=session.world().setScreenVisible(screenPlane.visible);
  if(screenPlane.visible)screenTexture.needsUpdate=true;
  camera.position.fromArray(pose.position);camera.lookAt(...pose.target);
  camera.fov=pose.fov;camera.updateProjectionMatrix();
@@ -314,7 +317,8 @@ function frameAt(t,encode=true){
  }
  return {image:encode?overlay.toDataURL('image/png'):null,time:t,shot:shot.id,
    activeActor:shot.speaker,voiced:speech.voiced,mouthOpen:speech.mouthOpen,
-   viseme:speech.viseme,screen:authoredScreen,ambientScreen,screenVisible:screenPlane.visible,camera:pose,caption:shot.caption,
+   viseme:speech.viseme,screen:authoredScreen,ambientScreen,screenVisible:screenPlane.visible,
+   scenicScreenVisible,camera:pose,caption:shot.caption,
    reactions:performance.active,propPose};
 }
 function masterWav(){

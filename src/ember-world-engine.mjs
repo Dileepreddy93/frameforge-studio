@@ -89,7 +89,19 @@ export function buildNature(renderer,o={}){
 
   // Wooden sign for screen events, with a hanging lantern.
   const screenCanvas=document.createElement('canvas');screenCanvas.width=1600;screenCanvas.height=900;const screenTexture=new THREE.CanvasTexture(screenCanvas);screenTexture.colorSpace=THREE.SRGBColorSpace;screenTexture.anisotropy=8;
-  const sign=new THREE.Group();sign.position.set(-.3,0,-3.6);if(o.sign!==false)group.add(sign);
+  // The on-set sign is a whole prop: posts, opaque backing, mapped face and light.
+  // Expose deterministic per-frame visibility for the Hybrid director; legacy
+  // Ember callers continue to see the same sign by default.
+  const signPresent=o.sign!==false;
+  const sign=new THREE.Group();sign.name='ember-nature-story-screen';
+  sign.position.set(-.3,0,-3.6);if(signPresent)group.add(sign);
+  const setScreenVisible=visible=>{
+    if(typeof visible!=='boolean')throw TypeError('Scenic screen visibility must be boolean');
+    if(!signPresent)return null;
+    sign.visible=visible;
+    return sign.visible;
+  };
+  const getScreenVisible=()=>signPresent?sign.visible:null;
   for(const x of [-2.05,2.05]){const post=new THREE.Mesh(new THREE.BoxGeometry(.2,4.6,.2),bark);post.position.set(x,2.3,-.05);post.castShadow=true;sign.add(post);}
   const board=new THREE.Mesh(new THREE.BoxGeometry(4.3,2.42,.12),new THREE.MeshStandardMaterial({color:'#4a3322',roughness:.9}));board.position.y=3.2;board.castShadow=true;sign.add(board);
   const face=new THREE.Mesh(new THREE.PlaneGeometry(4.15,2.33),new THREE.MeshStandardMaterial({map:screenTexture,roughness:.85}));face.position.set(0,3.2,.065);sign.add(face);
@@ -129,7 +141,8 @@ export function buildNature(renderer,o={}){
     anim.push(t=>{const f=1+Math.sin(t*13)*.12+Math.sin(t*7.3)*.1+Math.sin(t*23)*.06;fl.intensity=26*f;flames.forEach((m,i)=>{m.scale.set(1+Math.sin(t*9+i)*.12,f*(1.1-i*.12)+Math.sin(t*11+i*2)*.1,1);m.rotation.y=t*(1+i*.3);});});
   }
 
-  return {group,key,screenLight,screen:{canvas:screenCanvas,ctx:screenCanvas.getContext('2d'),texture:screenTexture,style:'sign'},renderKey:kCap,renderKeyLabel:kStem,keyRest:[.48,.25],
+  return {group,key,screenLight,setScreenVisible,getScreenVisible,
+    screen:{canvas:screenCanvas,ctx:screenCanvas.getContext('2d'),texture:screenTexture,style:'sign'},renderKey:kCap,renderKeyLabel:kStem,keyRest:[.48,.25],
     screenPoint:V(-.3,3.2,-3.5),keyPoint:V(2.5,.55,1.9),screenPose:{pos:V(-.1,3.3,3.4),at:V(-.3,3.2,-3.6),fov:40,ap:.0016},groundY:0,
     background:null,fog:new THREE.FogExp2(T.fog,T.fogD),environment:env,environmentIntensity:T.env,exposure:T.exposure,
     animate:t=>{for(const a of anim)a(t);},dispose:()=>{env?.dispose();group.traverse(o=>{o.geometry?.dispose();if(o.material)for(const m of [].concat(o.material)){m.map?.dispose();m.dispose();}});}};

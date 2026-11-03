@@ -137,6 +137,19 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    const quietShot=await page.evaluate(()=>document.getElementById('engine').contentWindow.HybridP56QA.frameAt(1.6,false));
    assert.equal(quietShot.ambientScreen,false);
    assert.equal(quietShot.screenVisible,false);
+   assert.equal(quietShot.scenicScreenVisible,false,
+     'Hiding the background monitor must remove its complete world sign and light');
+   await page.locator('#screenKind').selectOption('terminal');
+   const inserted=await page.evaluate(()=>
+     document.getElementById('engine').contentWindow.HybridP56QA.frameAt(1.6,false));
+   assert.equal(inserted.screenVisible,true);
+   assert.equal(inserted.scenicScreenVisible,true,
+     'A scripted screen insert must restore the world sign');
+   await page.locator('#screenKind').selectOption('none');
+   const restored=await page.evaluate(()=>
+     document.getElementById('engine').contentWindow.HybridP56QA.frameAt(1.6,false));
+   assert.equal(restored.scenicScreenVisible,false,
+     'Removing the insert must not leave stale background scenery');
    await page.locator('#camera').selectOption('actor');
    await page.locator('#camera-distance').fill('6.2');await page.locator('#camera-distance').press('Tab');
    await page.locator('#camera-fov').fill('42');await page.locator('#camera-fov').press('Tab');

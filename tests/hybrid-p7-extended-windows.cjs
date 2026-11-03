@@ -150,6 +150,22 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
       });
     });
     assert.deepEqual(spatial.map(x=>x.mode),['reach','lift','carry']);
+    const screens=await page.evaluate(()=>{
+      const api=document.getElementById('engine').contentWindow.HybridP56QA;
+      const p=api.getEditableProject();let t=0;
+      const at=p.shots.map(s=>{const center=t+s.duration*.5;t+=s.duration;return center});
+      // Deliberately alternate on/off scenes to catch stale scene-graph visibility.
+      return [0,3,4,7,9,3,0,7].map(i=>{
+        const frame=api.frameAt(at[i],false);
+        return {shot:i+1,scenic:frame.scenicScreenVisible,
+          overlay:frame.screenVisible,insert:Boolean(frame.screen)};
+      });
+    });
+    assert.deepEqual(screens.map(x=>x.scenic),[false,true,false,true,false,true,false,true],
+      'The opaque world sign and attached lamp must be visible ONLY for authored inserts: '+JSON.stringify(screens));
+    assert.ok(screens.every(x=>x.overlay===x.scenic),
+      'World sign and the 3D screen plane must obey the same shot timeline');
+    fs.writeFileSync(path.join(OUT,'world-sign-per-shot-proof.json'),JSON.stringify(screens,null,2));
     assert.ok(spatial[0].gripError<=.20,
       'Reach approaches the handle but is not an authored grip (lift and carry require contact): '+JSON.stringify(spatial[0]));
     assert.ok(spatial[1].position[1]>spatial[0].position[1]+.25,
@@ -253,7 +269,7 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     const p=document.getElementById('engine').contentWindow.HybridP56QA.getEditableProject();
     let t=0;return p.shots.map(s=>{const out={start:t,duration:s.duration,id:s.id,mode:s.propInteraction?.mode||'ground'};t+=s.duration;return out});
   });
-  for(const [label,index] of (ALTERNATE?[['reach',4],['lift',5],['carry',6]]:[])){
+  for(const [label,index] of (ALTERNATE?[['outdoor-no-sign',0],['authored-screen-insert',3],['reach',4],['lift',5],['carry',6]]:[])){
     const shot=retimed[index],timestamp=shot.start+shot.duration*(label==='lift'?.84:.75);
     cp.execFileSync('ffmpeg',['-v','error','-y','-ss',timestamp.toFixed(3),
       '-i',movie,'-frames:v','1',path.join(OUT,'interaction-'+label+'.png')],

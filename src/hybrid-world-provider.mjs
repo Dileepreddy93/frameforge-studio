@@ -59,6 +59,17 @@ function attachWorld(scene,source,descriptor,{stageOffset=[0,0,0]}={}){
      if(!v3(screen))throw Error('Invalid world screen anchor');
      return {center,screen,ground:[stageOffset[0],worldY,stageOffset[2]]};
    },
+   // Optional world scenery: desk/imported worlds may have no wooden sign.
+   // Null means absent, false means a real sign explicitly hidden.
+   setScreenVisible(visible){
+     if(disposed)throw Error('World disposed');
+     if(typeof visible!=='boolean')throw TypeError('Scenic screen visibility must be boolean');
+     return typeof source.setScreenVisible==='function'?source.setScreenVisible(visible):null;
+   },
+   getScreenVisible(){
+     if(disposed)throw Error('World disposed');
+     return typeof source.getScreenVisible==='function'?source.getScreenVisible():null;
+   },
    getGroup:()=>source.group,
    dispose(){
      if(disposed)return;disposed=true;
