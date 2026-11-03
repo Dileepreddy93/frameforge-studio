@@ -163,9 +163,11 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
       const lift=api.frameAt(start(5)+.02,false).propPose;
       return {approach:approach.position,lift:lift.position,
         seamDistance:Math.hypot(...approach.position.map((n,i)=>n-lift.position[i])),
-        liftBend:lift.bendRadians,gripError:lift.gripError};
+        liftBend:lift.bendRadians,gripError:lift.gripError,
+        attachProgress:lift.attachProgress};
     });
-    assert.ok(continuity.seamDistance<.16,
+    assert.equal(continuity.attachProgress,0,'First lift frame must stay grounded');
+    assert.ok(continuity.seamDistance<.04,
       'Lantern must not teleport between grounded reach and first lifting frame: '+JSON.stringify(continuity));
     assert.ok(continuity.lift[1]>-.05,
       'Lantern base must not sink below the snow at first contact');

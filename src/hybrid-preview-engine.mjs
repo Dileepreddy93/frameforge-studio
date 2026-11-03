@@ -93,12 +93,20 @@ function blockLantern(shot,localTime,instances){
  const pole=shoulder.clone().add(new T.Vector3(1,-.55,-.45));
  solveLimb(arm,target,pole);
  const wrist=effector(arm,new T.Vector3());
- if(interaction.mode==='lift'||interaction.mode==='carry')
-   storyLantern.position.copy(wrist).sub(lanternHandleOffset);
+ // The lift shot includes a real grasp beat. Earlier we parented the
+ // lantern to the wrist immediately, visibly teleporting it ~18cm at the cut.
+ // Keep the object grounded while the performer reaches, then smoothly blend
+ // from the physical ground coordinate to the actual IK wrist attachment.
+ const attachProgress=interaction.mode==='carry'?1:
+   interaction.mode==='lift'?smooth01((localTime-.16)/.56):0;
+ if(interaction.mode==='lift'||interaction.mode==='carry'){
+   const heldBase=wrist.clone().sub(lanternHandleOffset);
+   storyLantern.position.copy(lanternGround).lerp(heldBase,attachProgress);
+ }
  const handleWorld=storyLantern.position.clone().add(lanternHandleOffset);
  return {mode:interaction.mode,actor:interaction.actor,position:storyLantern.position.toArray(),
    focus:storyLantern.position.clone().add(new T.Vector3(0,.83,0)).toArray(),
-   gripError:wrist.distanceTo(handleWorld),bendRadians:bend,
+   gripError:wrist.distanceTo(handleWorld),bendRadians:bend,attachProgress,
    goalHandle:initial.toArray(),wrist:wrist.toArray(),
    shoulder:shoulder.toArray(),armMaxReach:(arm.lenU+arm.lenF+arm.handOff)*rig.root.scale.x};
 }

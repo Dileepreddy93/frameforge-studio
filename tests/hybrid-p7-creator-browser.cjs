@@ -135,6 +135,18 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
      'Reaching for a grounded lantern requires visible upper-body motion');
    assert.ok(propFocus.propPose.gripError<=.08,
      'Leaning approach should bring wrist close to the physical handle: '+JSON.stringify(propFocus.propPose));
+   await page.locator('#prop-mode').selectOption('lift');
+   const groundedStart=await page.evaluate(()=>
+     document.getElementById('engine').contentWindow.HybridP56QA.frameAt(.02,false));
+   const heldEnd=await page.evaluate(()=>
+     document.getElementById('engine').contentWindow.HybridP56QA.frameAt(1.5,false));
+   assert.equal(groundedStart.propPose.attachProgress,0,
+     'First lift frame must remain on the same physical ground coordinate');
+   assert.ok(Math.abs(groundedStart.propPose.position[1])<.01);
+   assert.equal(heldEnd.propPose.attachProgress,1,
+     'Final lift frames follow the actual IK wrist');
+   assert.ok(heldEnd.propPose.gripError<.04);
+   await page.locator('#prop-mode').selectOption('reach');
    await page.locator('#ambient-screen').selectOption('hide');
    const quietShot=await page.evaluate(()=>document.getElementById('engine').contentWindow.HybridP56QA.frameAt(1.6,false));
    assert.equal(quietShot.ambientScreen,false);
