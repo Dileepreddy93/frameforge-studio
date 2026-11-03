@@ -31,6 +31,15 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
  // timestamps or attributing offline synthesis time to video encoding.
  const clock=()=>performance.now();
  const stageMs={renderer:0,canvasTransfer:0,encoder:0,finalize:0};
+ // Per-frame measurements (not estimated timestamps) expose slow tails and
+ // mesh/draw-call pressure without altering native output pixels or FPS.
+ const frameRenderMs=[],frameDrawCalls=[],frameTriangles=[];
+ const distribution=values=>{
+   if(!values.length)return null;
+   const s=values.slice().sort((a,b)=>a-b);
+   const pick=q=>+s[Math.max(0,Math.ceil(s.length*q)-1)].toFixed(2);
+   return {samples:s.length,p50:pick(.5),p95:pick(.95),p99:pick(.99),max:pick(1)};
+ };
  const exportStarted=clock();
  const output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
  let video=null,track=null;
@@ -61,8 +70,14 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
    for(let i=0;i<frames;i++){
      if(signal?.aborted)throw signal.reason||new DOMException('Export cancelled','AbortError');
      let mark=clock();
-     engine.frameAt(i/FPS,false);
-     stageMs.renderer+=clock()-mark;
+     const frame=engine.frameAt(i/FPS,false);
+     const renderMs=clock()-mark;
+     stageMs.renderer+=renderMs;
+     frameRenderMs.push(renderMs);
+     if(Number.isFinite(frame?.rendererStats?.drawCalls))
+       frameDrawCalls.push(frame.rendererStats.drawCalls);
+     if(Number.isFinite(frame?.rendererStats?.triangles))
+       frameTriangles.push(frame.rendererStats.triangles);
      mark=clock();
      encodeCtx.drawImage(sourceSurface,0,0,width,height);
      stageMs.canvasTransfer+=clock()-mark;
@@ -108,7 +123,10 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
          encodeMs:Math.round(stageMs.encoder),
          finalizeMs:Math.round(stageMs.finalize),
          averageFrameRenderMs:+(stageMs.renderer/frames).toFixed(2),
-         averageFrameEncodeMs:+(stageMs.encoder/frames).toFixed(2)}};
+         averageFrameEncodeMs:+(stageMs.encoder/frames).toFixed(2),
+         renderFrameMs:distribution(frameRenderMs),
+         webglDrawCalls:distribution(frameDrawCalls),
+         webglTriangles:distribution(frameTriangles)}};
    }finally{input.dispose?.()}
    return {file,report:summary};
  }catch(e){

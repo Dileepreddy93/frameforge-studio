@@ -247,9 +247,53 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
      }));
      assert.equal(persisted,'{"corrupted":','Damaged recovery is never overwritten automatically');
    }
+   // P14 creator acceptance: author ten original shots by the VISIBLE UI,
+   // not programmatically calling the editor model or importing a prepared V2.
+   // This is automation, NOT an independent novice/human or physical-phone test.
+   for(let i=3;i<10;i++){
+     if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
+     await page.locator('#add-shot').click();
+     await page.locator('#shot-list button').nth(i).click();
+     await page.locator('#dialogue').fill('Original manually authored scene '+(i+1)+
+       ': Our two characters choose the next beat together.');
+     await page.locator('#dialogue').press('Tab');
+     await page.locator('#shot-duration').fill('3.5');
+     await page.locator('#shot-duration').press('Tab');
+     await page.locator('#camera').selectOption(i%3===0?'two':'actor');
+   }
+   assert.equal(await page.locator('#shot-list li').count(),10,
+     'Ten real UI-authored shots must be visible');
+   const tenDownload=page.waitForEvent('download');
+   await page.locator('#save-project').click();
+   const tenFile=await tenDownload;
+   const tenSource=fs.readFileSync(await tenFile.path(),'utf8');
+   const tenProject=JSON.parse(tenSource).project;
+   assert.equal(tenProject.shots.length,10);
+   assert.equal(tenProject.shots.filter(s=>s.dialogue.includes('Original manually authored scene')).length,7,
+     'Each new shot was authored through the visible inspector');
+   const tenSeconds=tenProject.shots.reduce((sum,s)=>sum+s.duration,0);
+   assert.ok(tenSeconds>=30&&tenSeconds<=60,
+     'Real editor must be able to author a commercial-length short: '+tenSeconds);
+   assert.equal(await page.locator('#export').isEnabled(),false,
+     'Unvoiced ten-shot film cannot be misrepresented as export-ready');
+   await page.waitForTimeout(450);
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>document.getElementById('play').disabled===false,
+     null,{timeout:120000});
+   assert.equal(await page.locator('#shot-list li').count(),10,
+     'All ten GUI-authored shots must recover after a real browser refresh');
+   if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
+   await page.locator('#file').setInputFiles({name:'gui-authored-ten-shots.json',
+     mimeType:'application/json',buffer:Buffer.from(tenSource)});
+   await page.waitForFunction(()=>document.querySelectorAll('#shot-list li').length===10);
+   assert.equal(await page.locator('#shot-list li').count(),10,
+     'Downloaded GUI-authored ten-shot project must reopen identically');
+   await page.screenshot({path:path.join(OUT,'ten-shot-gui-'+viewport.width+'.png'),
+     fullPage:true});
    assert.deepEqual(errors,[],'No unhandled error in creator UI');
    findings.push({viewport,faceReadability,originalPixelsChanged:true,castWorldShotEditing:true,
-     undoRedo:true,reopenJSON:true,IndexedDBRecovery:true,staleAudioRefused:true,PNG:true});
+     undoRedo:true,reopenJSON:true,IndexedDBRecovery:true,staleAudioRefused:true,PNG:true,
+     tenShotGuiAuthoring:true,tenShotGuiReload:true});
    await context.close();
   }
   fs.writeFileSync(path.join(OUT,'report.json'),JSON.stringify({

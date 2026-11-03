@@ -193,8 +193,8 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     console.log('HYBRID_REAL_FILM_REACH_DIAGNOSTIC '+JSON.stringify(spatial[0]));
     assert.ok(spatial[0].gripError<.04,
       'Public release gate: reach MUST grip the physical lantern handle in the real film, not just the demo: '+JSON.stringify(spatial[0]));
-    assert.ok(spatial[0].gripError<=.20,
-      'Reach approaches the handle but is not an authored grip (lift and carry require contact): '+JSON.stringify(spatial[0]));
+    assert.ok(spatial[0].gripError<.04,
+      'Full real film must achieve physical hand-to-handle contact before lifting: '+JSON.stringify(spatial[0]));
     assert.ok(spatial[1].position[1]>spatial[0].position[1]+.25,
       'Lantern must rise physically in the authored lift shot: '+JSON.stringify(spatial));
     assert.ok(spatial[2].position[1]>.15,'Carried lantern must leave the ground');
@@ -268,6 +268,15 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     ['wallMs','renderMs','canvasTransferMs','encodeMs','finalizeMs'].every(k=>
       Number.isFinite(browserReport.performance[k])&&browserReport.performance[k]>=0),
     'Real completed export must measure rendering, copy and encoding costs');
+  for(const label of ['renderFrameMs','webglDrawCalls','webglTriangles']){
+    const d=browserReport.performance[label];
+    assert.ok(d&&d.samples===Math.floor(audio.duration*30),
+      'All native frames must have measured '+label+' stats');
+    assert.ok(d.p50>=0&&d.p50<=d.p95&&d.p95<=d.p99&&d.p99<=d.max,
+      'Real frame distribution is invalid for '+label+': '+JSON.stringify(d));
+  }
+  assert.ok(browserReport.performance.webglDrawCalls.p50>0,
+    'Physical WebGL draw calls must be reported from actual renderer');
   const probe=JSON.parse(cp.execFileSync('ffprobe',['-v','error','-count_frames',
     '-show_entries','stream=codec_name,codec_type,width,height,r_frame_rate,nb_read_frames,sample_rate,channels:format=duration,size',
     '-of','json',movie],{encoding:'utf8',timeout:90000}));

@@ -99,6 +99,14 @@ function blockLantern(shot,localTime,instances){
  arm.hand.rotation.set(0,0,0);
  solveLimb(arm,target,pole);
  const wrist=effector(arm,new T.Vector3());
+ // Curl fingers around the authored lantern handle as reach becomes grasp.
+ // Set only after the actor's normal gesture pose; seek and re-export reset it.
+ const grasp=interaction.mode==='reach'?smooth01((localTime-.72)/.65):
+   interaction.mode==='lift'?smooth01(localTime/.35):1;
+ const curl=.32+.70*grasp;
+ arm.fingers.forEach((f,i)=>{f.rotation.z=-arm.s*curl*(1+i*.08)});
+ arm.index.rotation.z=-arm.s*(.27+.63*grasp);
+ arm.thumb.rotation.z=-arm.s*(.1+.55*grasp);
  // The lift shot includes a real grasp beat. Earlier we parented the
  // lantern to the wrist immediately, visibly teleporting it ~18cm at the cut.
  // Keep the object grounded while the performer reaches, then smoothly blend
@@ -341,7 +349,9 @@ function frameAt(t,encode=true){
    activeActor:shot.speaker,voiced:speech.voiced,mouthOpen:speech.mouthOpen,
    viseme:speech.viseme,screen:authoredScreen,ambientScreen,screenVisible:screenPlane.visible,
    scenicScreenVisible,camera:pose,caption:shot.caption,
-   reactions:performance.active,propPose};
+   reactions:performance.active,propPose,
+   rendererStats:{drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,
+     lines:renderer.info.render.lines,points:renderer.info.render.points}};
 }
 function masterWav(){
  const L=mix.left,R=mix.right,n=Math.min(L.length,R.length);
