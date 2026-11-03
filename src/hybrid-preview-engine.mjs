@@ -75,6 +75,12 @@ function blockLantern(shot,localTime,instances){
  const actor=instances.get(interaction.actor),rig=actor?.getRig?.();
  if(!rig?.arms?.[1])throw Error('Authored prop actor has no right-hand rig');
  const arm=rig.arms[1];
+ // Reach and the beginning of lift include a forward torso bend. Hands
+ // alone cannot reliably touch a prop sitting below chest height.
+ // Pure time-domain evaluation keeps scrub/export deterministic.
+ const bend=interaction.mode==='reach'?.42*smooth01((localTime-.08)/1.25):
+   interaction.mode==='lift'?.42*(1-smooth01(localTime/(shot.duration*.8))):0;
+ rig.chest.rotation.x+=bend;
  rig.root.updateMatrixWorld(true);
  const shoulder=arm.shoulder.getWorldPosition(new T.Vector3());
  const initial=lanternGround.clone().add(lanternHandleOffset);
@@ -92,7 +98,9 @@ function blockLantern(shot,localTime,instances){
  const handleWorld=storyLantern.position.clone().add(lanternHandleOffset);
  return {mode:interaction.mode,actor:interaction.actor,position:storyLantern.position.toArray(),
    focus:storyLantern.position.clone().add(new T.Vector3(0,.83,0)).toArray(),
-   gripError:wrist.distanceTo(handleWorld)};
+   gripError:wrist.distanceTo(handleWorld),bendRadians:bend,
+   goalHandle:initial.toArray(),wrist:wrist.toArray(),
+   shoulder:shoulder.toArray(),armMaxReach:(arm.lenU+arm.lenF+arm.handOff)*rig.root.scale.x};
 }
 
 const original=await(await fetch('../projects/zero-latency.frameforge.json')).json();

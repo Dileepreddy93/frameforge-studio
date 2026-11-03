@@ -131,8 +131,10 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.equal(propFocus.propPose.mode,'reach');
    assert.equal(propFocus.camera.shotId,'shot-01');
    assert.ok(Number.isFinite(propFocus.propPose.gripError));
-   assert.ok(propFocus.propPose.gripError<=.20,
-     'Approach shot must bring the hand within one palm-length of the handle; actual grasp occurs in lift: '+propFocus.propPose.gripError);
+   assert.ok(propFocus.propPose.bendRadians>=.35,
+     'Reaching for a grounded lantern requires visible upper-body motion');
+   assert.ok(propFocus.propPose.gripError<=.08,
+     'Leaning approach should bring wrist close to the physical handle: '+JSON.stringify(propFocus.propPose));
    await page.locator('#ambient-screen').selectOption('hide');
    const quietShot=await page.evaluate(()=>document.getElementById('engine').contentWindow.HybridP56QA.frameAt(1.6,false));
    assert.equal(quietShot.ambientScreen,false);
