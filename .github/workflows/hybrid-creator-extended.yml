@@ -5,6 +5,19 @@ on:
     paths:
       - ".github/workflows/hybrid-creator-extended.yml"
       - "tests/hybrid-p7-extended-windows.cjs"
+      - "src/hybrid-preview-engine.mjs"
+      - "src/hybrid-browser-export.mjs"
+      - "src/hybrid-direction.js"
+      - "src/hybrid-world-provider.mjs"
+      - "src/ember-world-engine.mjs"
+      - "src/ember-actor-provider.mjs"
+      - "src/ember-character-engine.mjs"
+      - "src/hybrid-editor-app.mjs"
+      - "src/hybrid-editor-core.js"
+      - "src/hybrid-editor-storage.mjs"
+      - "src/hybrid-voice.mjs"
+      - "src/kokoro-worker.js"
+      - "creator.html"
   workflow_dispatch:
 concurrency:
   group: frameforge-extended-release-${{ github.ref }}

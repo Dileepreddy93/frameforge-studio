@@ -252,8 +252,23 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    // This is automation, NOT an independent novice/human or physical-phone test.
    for(let i=3;i<10;i++){
      if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
+     const beforeCount=await page.locator('#shot-list li').count();
      await page.locator('#add-shot').click();
-     await page.locator('#shot-list button').nth(i).click();
+     const diagnostic=await page.evaluate(()=>({
+       count:document.querySelectorAll('#shot-list li').length,
+       status:document.getElementById('status')?.textContent,
+       storage:document.getElementById('storage-status')?.textContent,
+       addDisabled:document.getElementById('add-shot')?.disabled,
+       selected:[...document.querySelectorAll('#shot-list button')].find(x=>x.getAttribute('aria-current')==='true')?.dataset.shot,
+       workspace:document.querySelector('#mobile-workspace button[aria-pressed=true]')?.dataset.view,
+       paneVisible:document.getElementById('pane-story')?.dataset.mobileActive
+     }));
+     console.log('HYBRID_P14_GUI_ADD_DIAGNOSTIC '+JSON.stringify({viewport,i,beforeCount,...diagnostic}));
+     if(diagnostic.count!==beforeCount+1)
+       await page.screenshot({path:path.join(OUT,'add-shot-failure-'+viewport.width+'.png'),fullPage:true});
+     assert.equal(diagnostic.count,beforeCount+1,
+       'Clicking Add Shot must insert exactly one saved shot: '+JSON.stringify(diagnostic));
+     await page.locator('#shot-list button').last().click();
      await page.locator('#dialogue').fill('Original manually authored scene '+(i+1)+
        ': Our two characters choose the next beat together.');
      await page.locator('#dialogue').press('Tab');
@@ -288,6 +303,16 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    await page.waitForFunction(()=>document.querySelectorAll('#shot-list li').length===10);
    assert.equal(await page.locator('#shot-list li').count(),10,
      'Downloaded GUI-authored ten-shot project must reopen identically');
+   await page.locator('#shot-list button').nth(9).click();
+   await page.locator('#dialogue').fill('This final change survived an instant refresh.');
+   await page.locator('#dialogue').press('Tab');
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>document.getElementById('play').disabled===false,null,{timeout:120000});
+   await page.locator('#shot-list button').nth(9).click();
+   assert.equal(await page.locator('#dialogue').inputValue(),
+     'This final change survived an instant refresh.',
+     'Latest visible edit must survive a refresh without waiting for IndexedDB');
+   if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
    await page.screenshot({path:path.join(OUT,'ten-shot-gui-'+viewport.width+'.png'),
      fullPage:true});
    assert.deepEqual(errors,[],'No unhandled error in creator UI');

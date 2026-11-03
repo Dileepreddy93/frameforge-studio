@@ -189,8 +189,14 @@ function renderUI({render3d=true}={}){
 function queueSave(){
  if(!store||initialRecoveryCorrupt)return;
  const json=editor.serialize();
+ // The immediate checkpoint prevents a refresh/force-close from losing the
+ // latest visible edit while the async IndexedDB write is still queued.
+ const savedAt=performance.timeOrigin+performance.now();
+ const checkpointed=store.saveNow?.(json,savedAt);
+ if(!checkpointed)
+   text('storage-status','Writing IndexedDB recovery… Download a project backup before closing this tab.');
  storageSequence=storageSequence.catch(()=>{}).then(async()=>{
-   try{await store.save(json);
+   try{await store.save(json,savedAt);
      text('storage-status','Autosaved on this device ('+store.mode+'). Download a copy before clearing browser storage.')}
    catch(e){text('storage-status','Storage error: '+e.message+' Download a backup now.')}
  });
