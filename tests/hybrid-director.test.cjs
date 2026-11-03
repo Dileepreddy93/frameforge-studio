@@ -89,6 +89,22 @@ const close=direction.cameraAt(authoredCloseScreen,2.3,anchors,stage);
 assert.ok(Math.hypot(...close.position.map((v,i)=>v-stage.screen[i]))<screenDistance,
   'Explicit artist camera overrides remain authoritative');
 
+const propProject=structuredClone(base);
+propProject.shots[0].visualProp='lantern';
+propProject.shots[0].propInteraction={mode:'lift',actor:'luna'};
+propProject.shots[0].camera={kind:'prop'};
+direction.verify(propProject);
+const propScript=direction.projectToScript(propProject);
+assert.match(propScript,/@prop name=lantern mode=lift actor=luna/);
+const propRoundTrip=direction.scriptToProject(propScript,propProject);
+assert.deepEqual(propRoundTrip.errors,[]);
+assert.deepEqual(propRoundTrip.project.shots[0].propInteraction,{mode:'lift',actor:'luna'});
+const propCamera=direction.cameraAt(propProject,.7,anchors,{...stage,prop:[-.35,1.3,.72]});
+assert.deepEqual(propCamera.target,[-.35,1.3,.72]);
+assert.throws(()=>direction.cameraAt(propProject,.7,anchors,stage),/No prop anchor/);
+const unsafeProp=structuredClone(propProject);
+unsafeProp.shots[0].propInteraction.mode='teleport';
+assert.throws(()=>direction.verify(unsafeProp),/Invalid hybrid project|invalid story prop interaction/);
 const malformed=structuredClone(base);malformed.shots[0].screen.lines=['x'.repeat(250)];
 assert.throws(()=>direction.verify(malformed));
 const malformed2=structuredClone(base);malformed2.shots[1].direction.move='executeJavascript';

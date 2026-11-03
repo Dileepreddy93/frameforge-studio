@@ -62,8 +62,8 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
      if(i>=2)e.addShot();
      const p=e.project,shot=p.shots[i].id;
      const screenInsert=alternate?(i===3||i===7):(i===5||i===8);
-     const alternateCamera=['actor','two','wide','screen','actor',
-       'actor','two','screen','actor','wide'][i];
+     const alternateCamera=['actor','two','wide','screen','prop',
+       'prop','two','screen','actor','wide'][i];
      e.shot(shot,{speaker:i%2?'atlas':'luna',dialogue:lines[i],
        emotion:alternate?
          ['worried','curious','worried','surprised','sad','idea','happy','happy','curious','happy'][i]:
@@ -71,15 +71,24 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
        action:alternate?
          ['think','point','listen','press','plead','raise','explain','cheer','nod','wave'][i]:
          ['wave','explain','think','point','nod'][i%5],
-       camera:alternate?alternateCamera:screenInsert?'screen':i%3===2?'two':'actor',
+       camera:alternate?([4,5].includes(i)?'actor':alternateCamera):screenInsert?'screen':i%3===2?'two':'actor',
        move:alternate?(screenInsert?'pull':i%2?'drift':'push'):i%2?'drift':'push',duration:4.5,
        caption:alternate?({0:'WHERE DID THE LIGHT GO?',7:'THE VALLEY WAKES',
          9:'THE NIGHT REMEMBERS'}[i]||''):i%3===0?'OUR STORY, MADE HERE':''});
      if(!screenInsert&&(alternate?![1,2,6,9].includes(i):i%3!==2)){
        // Different portrait distances for emotional reactions, with headroom.
-       e.shot(shot,{cameraDistance:alternate&&i===4?6.8:6.2,cameraFov:42});
+       e.shot(shot,{cameraDistance:6.2,cameraFov:42});
      }
-     if(alternate&&!screenInsert&&i>=3)e.shot(shot,{visualProp:'lantern'});
+     if(alternate&&!screenInsert&&i>=3){
+       e.shot(shot,{visualProp:'lantern'});
+       if([4,5].includes(i)){
+         e.shot(shot,{camera:'prop'});
+         e.shot(shot,{cameraDistance:i===4?4.4:3.8,cameraFov:i===4?38:34});
+       }
+       if(i===4)e.shot(shot,{propMode:'reach',propActor:'luna'});
+       if(i===5)e.shot(shot,{propMode:'lift',propActor:'luna'});
+       if([6,8,9].includes(i))e.shot(shot,{propMode:'carry',propActor:'luna'});
+     }
      if(screenInsert){
        e.shot(shot,{screenKind:'terminal',
          screenTitle:alternate?(i===3?'BEACON SIGNAL':'VALLEY LIGHTS'):
@@ -116,6 +125,8 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     assert.ok(episode.shots.filter(s=>s.visualProp==='lantern').length>=4,
       'The narrated lantern must exist as a persisted, original 3D prop');
     assert.ok(episode.shots.some(s=>s.camera.kind==='wide'));
+    assert.deepEqual([4,5,6].map(i=>episode.shots[i].propInteraction?.mode),['reach','lift','carry']);
+    assert.equal(episode.shots[5].camera.kind,'prop');
     assert.equal(episode.audio.music.cues[0].style,'tension');
   }
   fs.writeFileSync(path.join(OUT,'ten-shot-source.frameforge.json'),raw);
@@ -124,6 +135,25 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
   await page.waitForFunction(()=>document.querySelectorAll('#shot-list li').length===10,
     null,{timeout:60000});
   assert.equal(await page.locator('#soundtrack').inputValue(),ALTERNATE?'tension':'groove');
+  if(ALTERNATE){
+    const spatial=await page.evaluate(()=>{
+      const api=document.getElementById('engine').contentWindow.HybridP56QA;
+      const project=api.getEditableProject();
+      const at=(i,k=.7)=>project.shots.slice(0,i).reduce((n,s)=>n+s.duration,0)+project.shots[i].duration*k;
+      return [4,5,6].map(i=>{
+        const frame=api.frameAt(at(i,i===5?.85:.75),false);
+        return {shot:i+1,mode:frame.propPose?.mode,position:frame.propPose?.position,
+          gripError:frame.propPose?.gripError,cameraTarget:frame.camera?.target};
+      });
+    });
+    assert.deepEqual(spatial.map(x=>x.mode),['reach','lift','carry']);
+    assert.ok(spatial[1].position[1]>spatial[0].position[1]+.25,
+      'Lantern must rise physically in the authored lift shot: '+JSON.stringify(spatial));
+    assert.ok(spatial[2].position[1]>.15,'Carried lantern must leave the ground');
+    assert.ok(spatial.slice(1).every(x=>x.gripError<.04),
+      'Lantern handle must stay attached to the rigged wrist in lift/carry shots');
+    fs.writeFileSync(path.join(OUT,'authored-lantern-spatial-proof.json'),JSON.stringify(spatial,null,2));
+  }
   assert.equal(await page.locator('#export').isEnabled(),false,'No stale speech can export');
   console.log('HYBRID_LONG_FILM_AUTHOR_PASS '+JSON.stringify({shots:LINES.length,bytes:raw.length}));
   await page.locator('#voice').click();
@@ -203,6 +233,16 @@ const LINES=ALTERNATE?LANTERN_LINES:ORIGINAL_LINES;
     frames:finalAudit.frames,seconds:finalAudit.seconds,
     audio:finalAudit.soundtrack,brightness:finalAudit.samples.map(f=>f.mean)
   }));
+  const retimed=await page.evaluate(()=>{
+    const p=document.getElementById('engine').contentWindow.HybridP56QA.getEditableProject();
+    let t=0;return p.shots.map(s=>{const out={start:t,duration:s.duration,id:s.id,mode:s.propInteraction?.mode||'ground'};t+=s.duration;return out});
+  });
+  for(const [label,index] of (ALTERNATE?[['reach',4],['lift',5],['carry',6]]:[])){
+    const shot=retimed[index],timestamp=shot.start+shot.duration*(label==='lift'?.84:.75);
+    cp.execFileSync('ffmpeg',['-v','error','-y','-ss',timestamp.toFixed(3),
+      '-i',movie,'-frames:v','1',path.join(OUT,'interaction-'+label+'.png')],
+      {stdio:['ignore','pipe','pipe'],timeout:40000});
+  }
   for(const [label,t] of [['first',.1],['middle',audio.duration/2],['last',audio.duration-.2]]){
     cp.execFileSync('ffmpeg',['-v','error','-y','-ss',t.toFixed(3),
       '-i',movie,'-frames:v','1',path.join(OUT,label+'.png')],

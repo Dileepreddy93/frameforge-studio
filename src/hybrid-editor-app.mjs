@@ -160,11 +160,15 @@ function renderUI({render3d=true}={}){
  $('action').value=current.cast?.[current.speaker]?.action||'explain';
  $('camera').value=current.camera?.kind||'actor';$('move').value=current.direction?.move||'static';
  const cameraDefault=current.camera?.kind==='screen'?11.8:
-   current.camera?.kind==='two'?9.4:current.camera?.kind==='wide'?11.2:4.8;
+   current.camera?.kind==='two'?9.4:current.camera?.kind==='wide'?11.2:
+   current.camera?.kind==='prop'?3.8:4.8;
  $('camera-distance').value=String(current.framing?.distance??cameraDefault);
  $('camera-fov').value=String(current.framing?.fov??38);
  $('caption').value=current.caption||'';$('shot-duration').value=current.duration.toFixed(2);
  $('visual-prop').value=current.visualProp||'none';
+ $('prop-mode').disabled=!current.visualProp;$('prop-actor').disabled=!current.visualProp;
+ $('prop-mode').value=current.propInteraction?.mode||'ground';
+ fillSelect($('prop-actor'),p.characters.map(x=>[x.id,x.name]),current.propInteraction?.actor||current.speaker);
  $('shot-sound').value=current.sfx?.[0]?.cue||'none';
  $('screenKind').value=current.screen?.kind||'none';
  $('screenTitle').disabled=!current.screen;$('screenLines').disabled=!current.screen;
@@ -216,11 +220,11 @@ for(const id of ['title','logline'])$(id).onchange=()=>changeProject(()=>editor[
 for(const id of ['world','timeofday'])$(id).onchange=()=>changeProject(()=>editor.world($('world').value,$('timeofday').value));
 $('soundtrack').onchange=()=>changeProject(()=>editor.soundtrack($('soundtrack').value));
 $('shot-sound').onchange=()=>changeProject(()=>editor.shotSound(selected,$('shot-sound').value));
-for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','visual-prop','screenKind','screenTitle','screenLines'])
+for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','visual-prop','prop-mode','prop-actor','screenKind','screenTitle','screenLines'])
  $(id).onchange=()=>{
    const patchKey=id==='shot-duration'?'duration':
       id==='camera-distance'?'cameraDistance':id==='camera-fov'?'cameraFov':
-      id==='visual-prop'?'visualProp':id;
+      id==='visual-prop'?'visualProp':id==='prop-mode'?'propMode':id==='prop-actor'?'propActor':id;
    const numeric=['shot-duration','camera-distance','camera-fov'].includes(id);
    const patch={ [patchKey]:numeric?Number($(id).value):$(id).value};
    // Screen camel-case as expected by the V2 editor model.

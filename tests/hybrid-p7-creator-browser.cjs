@@ -120,6 +120,20 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    await page.locator('#visual-prop').selectOption('lantern');
    const withProp=await page.locator('#live-frame').evaluate(canvas=>canvas.toDataURL('image/png'));
    assert.notEqual(noProp,withProp,'Chosen lantern must change actual rendered 3D pixels');
+   assert.equal(await page.locator('#prop-mode').isEnabled(),true);
+   await page.locator('#prop-actor').selectOption('luna');
+   await page.locator('#prop-mode').selectOption('reach');
+   await page.locator('#camera').selectOption('prop');
+   const propFocus=await page.evaluate(()=>{
+     const api=document.getElementById('engine').contentWindow.HybridP56QA;
+     return api.frameAt(1.6,false);
+   });
+   assert.equal(propFocus.propPose.mode,'reach');
+   assert.equal(propFocus.camera.shotId,'shot-01');
+   assert.ok(Number.isFinite(propFocus.propPose.gripError));
+   await page.locator('#camera').selectOption('actor');
+   await page.locator('#camera-distance').fill('6.2');await page.locator('#camera-distance').press('Tab');
+   await page.locator('#camera-fov').fill('42');await page.locator('#camera-fov').press('Tab');
    if(mobile)await page.locator('#mobile-workspace [data-view="story"]').click();
    await page.locator('#add-shot').click();
    assert.equal(await page.locator('#shot-list li').count(),3);
@@ -144,6 +158,7 @@ const ROOT=path.resolve(__dirname,'..'),OUT=path.resolve(process.env.FRAMEFORGE_
    assert.equal(project.project.shots[0].framing.distance,6.2,'Saved original camera dolly');
    assert.equal(project.project.shots[0].framing.fov,42,'Saved original lens FOV');
    assert.equal(project.project.shots[0].visualProp,'lantern','Chosen story prop survives save/reopen');
+   assert.deepEqual(project.project.shots[0].propInteraction,{mode:'reach',actor:'luna'},'Authored grip action persists');
    assert.equal(await page.locator('#export').isEnabled(),false,
      'Must never export an unvoiced screenplay as if voice mixing was complete');
    await page.reload({waitUntil:'domcontentloaded'});

@@ -3,6 +3,7 @@
 // No side-effect network telemetry or commercial asset loading.
 import * as T from '../vendor/three@0.180.0/three.module.min.js';
 import {registerEmberCharacters} from '../src/ember-actor-provider.mjs';
+import {solveLimb,effector} from '../src/ember-character-engine.mjs';
 import {registerEmberWorlds} from '../src/hybrid-world-provider.mjs';
 import {createOnSetScreen,buildScreenShot} from '../src/hybrid-screen.mjs';
 import {resamplePCM,retimeForVoice,renderHybridAudio,HYBRID_AUDIO_RATE,speechAt,sampledEnvelope,createKokoroBridge,synthesizeHybridProject} from '../src/hybrid-voice.mjs';
@@ -57,7 +58,42 @@ for(const x of [-.25,.25])for(const z of [-.25,.25]){
 const lanternLight=new T.PointLight(0xffbb57,1.25,5,2);
 lanternLight.position.set(0,.8,0);lanternLight.castShadow=false;
 storyLantern.add(lanternLight);
-storyLantern.position.set(0,0,1.2);storyLantern.visible=false;scene.add(storyLantern);
+storyLantern.position.set(-.35,0,.72);storyLantern.visible=false;scene.add(storyLantern);
+// Deterministic spatial blocking: the lantern follows the actual IK wrist,
+// not a screen overlay. All poses are pure functions of shot and absolute time.
+const lanternGround=new T.Vector3(-.35,0,.72);
+const lanternHandleOffset=new T.Vector3(0,1.31,0);
+const smooth01=x=>{const k=Math.max(0,Math.min(1,x));return k*k*(3-2*k)};
+function blockLantern(shot,localTime,instances){
+ storyLantern.visible=shot.visualProp==='lantern';
+ storyLantern.position.copy(lanternGround);
+ if(!storyLantern.visible)return null;
+ const interaction=shot.propInteraction;
+ if(!interaction||interaction.mode==='ground')
+   return {mode:'ground',position:storyLantern.position.toArray(),
+     focus:storyLantern.position.clone().add(new T.Vector3(0,.83,0)).toArray(),gripError:null};
+ const actor=instances.get(interaction.actor),rig=actor?.getRig?.();
+ if(!rig?.arms?.[1])throw Error('Authored prop actor has no right-hand rig');
+ const arm=rig.arms[1];
+ rig.root.updateMatrixWorld(true);
+ const shoulder=arm.shoulder.getWorldPosition(new T.Vector3());
+ const initial=lanternGround.clone().add(lanternHandleOffset);
+ const held=shoulder.clone().add(new T.Vector3(.12,-.38,.57));
+ const originalWrist=effector(arm,new T.Vector3());
+ let target;
+ if(interaction.mode==='reach')target=originalWrist.lerp(initial,smooth01((localTime-.12)/1.2));
+ else if(interaction.mode==='lift')target=initial.clone().lerp(held,smooth01((localTime-.12)/(shot.duration*.68)));
+ else target=held;
+ const pole=shoulder.clone().add(new T.Vector3(1,-.55,-.45));
+ solveLimb(arm,target,pole);
+ const wrist=effector(arm,new T.Vector3());
+ if(interaction.mode==='lift'||interaction.mode==='carry')
+   storyLantern.position.copy(wrist).sub(lanternHandleOffset);
+ const handleWorld=storyLantern.position.clone().add(lanternHandleOffset);
+ return {mode:interaction.mode,actor:interaction.actor,position:storyLantern.position.toArray(),
+   focus:storyLantern.position.clone().add(new T.Vector3(0,.83,0)).toArray(),
+   gripError:wrist.distanceTo(handleWorld)};
+}
 
 const original=await(await fetch('../projects/zero-latency.frameforge.json')).json();
 const speechResponse=await fetch('../audio/zero-latency/voice.mp3');
@@ -247,14 +283,16 @@ function frameAt(t,encode=true){
  if(!session)throw Error('Not prepared');
  const state=session.seek(t);
  const performance=D.performanceAt(project,t);
- for(const [id,actor] of session.instances())
+ const actors=new Map(session.instances());
+ for(const [id,actor] of actors)
    actor.setPose(t,state.shot,performance.cast[id]||{emotion:'neutral',action:'listen'});
- const alignedAnchors=Object.fromEntries([...session.instances()].map(([id,actor])=>[id,actor.getAnchors()]));
- const pose=D.cameraAt(project,t,alignedAnchors,state.worldAnchors);
  const shot=state.shot,speech=speechAt(project,t,mix,FrameForgeSpeechCore);
- storyLantern.visible=shot.visualProp==='lantern';
+ const propPose=blockLantern(shot,state.localTime,actors);
+ const alignedAnchors=Object.fromEntries([...actors].map(([id,actor])=>[id,actor.getAnchors()]));
+ const stage={...state.worldAnchors,prop:propPose?.focus||[-.35,.83,.72]};
+ const pose=D.cameraAt(project,t,alignedAnchors,stage);
  if(storyLantern.visible)lanternLight.intensity=1.2+.12*Math.sin(t*2.4);
- for(const [id,actor] of session.instances())
+ for(const [id,actor] of actors)
    actor.setSpeech(id===shot.speaker&&speech.voiced?speech:{mouthOpen:0,viseme:'rest'});
  const authoredScreen=onSet.draw(shot,state.localTime);
  if(!authoredScreen)onSet.drawAmbient(project.title,t);
@@ -275,7 +313,7 @@ function frameAt(t,encode=true){
  return {image:encode?overlay.toDataURL('image/png'):null,time:t,shot:shot.id,
    activeActor:shot.speaker,voiced:speech.voiced,mouthOpen:speech.mouthOpen,
    viseme:speech.viseme,screen:authoredScreen,ambientScreen:!authoredScreen,camera:pose,caption:shot.caption,
-   reactions:performance.active};
+   reactions:performance.active,propPose};
 }
 function masterWav(){
  const L=mix.left,R=mix.right,n=Math.min(L.length,R.length);

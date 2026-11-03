@@ -46,6 +46,12 @@
        throw Error(where+' contains invalid reaction beats');
      if(s.visualProp!==undefined&&s.visualProp!=='lantern')
        throw Error(where+' has unsupported visual prop');
+     if(s.propInteraction!==undefined&&(!obj(s.propInteraction)||s.visualProp!=='lantern'||
+       !['ground','reach','lift','carry'].includes(s.propInteraction.mode)||
+       !p.characters.some(c=>c.id===s.propInteraction.actor)))
+       throw Error(where+' has invalid story prop interaction');
+     if(s.camera?.kind==='prop'&&s.visualProp!=='lantern')
+       throw Error(where+' has a prop camera without a prop');
      if(s.caption!==undefined&&(!safe(s.caption)||s.caption.length>140))
        throw Error(where+' contains invalid caption');
    }
@@ -56,7 +62,7 @@
    return camera.kind+(camera.target?':'+camera.target:'')+(camera.secondary?','+camera.secondary:'');
  }
  function parseCamera(raw,ids){
-   if(['wide','screen','duo'].includes(raw))return raw==='duo'?{kind:'wide'}:{kind:raw};
+   if(['wide','screen','prop','duo'].includes(raw))return raw==='duo'?{kind:'wide'}:{kind:raw};
    const m=/^(actor|two):([a-z][a-z0-9-]{0,39})(?:,([a-z][a-z0-9-]{0,39}))?$/.exec(raw);
    if(!m)throw Error('Camera must be actor:ID, two:ID,ID, wide or screen');
    if(!ids.has(m[2])||(m[1]==='two'&&(!ids.has(m[3])||m[2]===m[3])))
@@ -114,9 +120,11 @@
        if(!active)throw Error('First declare @shot before dialogue');
        if(line.startsWith('@prop ')){
          const a=readAttrs(line,'@prop');
-         if(Object.keys(a).length!==1||a.name!=='lantern')
-           throw Error('Supported visual prop: lantern');
-         active.visualProp=a.name;continue;
+         if(a.name!=='lantern'||Object.keys(a).some(k=>!['name','mode','actor'].includes(k)))
+           throw Error('Supported visual prop: lantern with optional mode and actor');
+         active.visualProp=a.name;
+         if(a.mode||a.actor)active.propInteraction={mode:a.mode||'ground',actor:a.actor||active.speaker};
+         continue;
        }
        if(line.startsWith('@reaction ')){
          const a=readAttrs(line,'@reaction');
@@ -165,7 +173,8 @@
      const acting=s.cast?.[s.speaker]||{emotion:'neutral',action:'explain'};
      out.push((names[s.speaker]||s.speaker)+' ('+(acting.emotion||'neutral')+
        ') ['+(acting.action||'explain')+']: '+s.dialogue);
-     if(s.visualProp)out.push('@prop name='+encode(s.visualProp));
+     if(s.visualProp)out.push('@prop name='+encode(s.visualProp)+
+       (s.propInteraction?' mode='+encode(s.propInteraction.mode)+' actor='+encode(s.propInteraction.actor):''));
      for(const r of s.reactions||[])out.push('@reaction actor='+r.actor+' at='+r.at+
        ' emotion='+r.emotion+' action='+r.action);
      if(s.screen){
@@ -211,6 +220,7 @@
    if(src.kind==='actor')focus=head(src.target);
    else if(src.kind==='two'){const a=head(src.target),b=head(src.secondary);focus=a.map((v,i)=>(v+b[i])/2)}
    else if(src.kind==='screen'){if(!v3(stage.screen))throw Error('No screen anchor');focus=stage.screen}
+   else if(src.kind==='prop'){if(!v3(stage.prop))throw Error('No prop anchor');focus=stage.prop}
    else {if(!v3(stage.center))throw Error('No stage center');focus=stage.center}
    const progress=f.localTime/s.duration;
    const fov=s.framing?.fov??38;
@@ -221,7 +231,7 @@
    // actor-close-up distance (4.8): over half the authored text was cropped.
    // Preserve intentional user framing overrides, but fit the full screen by
    // default (including the .9-unit push move) with a little side breathing room.
-   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?11.8:4.8);
+   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?11.8:src.kind==='prop'?3.8:4.8);
    const mod={push:-.9,pull:.9,drift:0,orbit:0,static:0}[d.move]||0;
    const distance=baseDist+mod*smooth(progress);
    if(d.move==='orbit')azimuth+=.5*progress;
@@ -235,7 +245,7 @@
      const prior=p.shots[f.index-1],priorCamera=typeof prior.camera==='string'?{kind:prior.camera}:prior.camera;
      const pastFocus=priorCamera.kind==='actor'?head(priorCamera.target):priorCamera.kind==='two'?
        head(priorCamera.target).map((v,i)=>(v+head(priorCamera.secondary)[i])/2):
-       priorCamera.kind==='screen'?stage.screen:stage.center;
+       priorCamera.kind==='screen'?stage.screen:priorCamera.kind==='prop'?stage.prop:stage.center;
      const k=smooth(f.localTime/blendSeconds),oldDist=prior.framing?.distance??5.4;
      raw.position=raw.position.map((v,i)=>lerp(
        [pastFocus[0]+Math.sin(.15)*oldDist,pastFocus[1]+.48,pastFocus[2]+Math.cos(.15)*oldDist][i],v,k));

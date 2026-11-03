@@ -22,6 +22,12 @@ const propEditor=ed.createEditor(p);
 assert.equal(propEditor.shot('shot-01',{visualProp:'lantern'}),true);
 assert.equal(propEditor.project.shots[0].visualProp,'lantern');
 assert.equal(ed.parseCreatorFile(propEditor.serialize()).shots[0].visualProp,'lantern');
+assert.equal(propEditor.shot('shot-01',{propMode:'reach',propActor:'luna',camera:'prop'}),true);
+assert.deepEqual(propEditor.project.shots[0].propInteraction,{mode:'reach',actor:'luna'});
+assert.equal(propEditor.project.shots[0].camera.kind,'prop');
+assert.deepEqual(ed.parseCreatorFile(propEditor.serialize()).shots[0].propInteraction,{mode:'reach',actor:'luna'});
+assert.throws(()=>propEditor.shot('shot-01',{propMode:'teleport'}),/Unsupported prop interaction/);
+assert.throws(()=>propEditor.shot('shot-01',{propActor:'missing'}),/Unknown actor/);
 const propScript=propEditor.scriptText();
 assert.match(propScript,/@prop name=lantern/);
 assert.equal(ed.createEditor(propEditor.project).script(propScript),false);
@@ -30,6 +36,8 @@ const unsafe=structuredClone(propEditor.project);unsafe.shots[0].visualProp='uns
 assert.throws(()=>ed.parseCreatorFile(JSON.stringify(unsafe)),/Invalid hybrid project/);
 assert.equal(propEditor.shot('shot-01',{visualProp:'none'}),true);
 assert.equal(propEditor.project.shots[0].visualProp,undefined);
+assert.equal(propEditor.project.shots[0].propInteraction,undefined);
+assert.equal(propEditor.project.shots[0].camera.kind,'actor');
 
 const cameraTest=ed.createEditor(state.project);
 assert.equal(cameraTest.shot('shot-01',{cameraDistance:6.2,cameraFov:42}),true);

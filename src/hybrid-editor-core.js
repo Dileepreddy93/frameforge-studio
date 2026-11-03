@@ -122,7 +122,7 @@
      if(style!==undefined)d.style=match(style,['smooth','lowpoly'],'art style');
    }),
    shot:(id,patch)=>commit(p=>{
-     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,cameraDistance,cameraFov,move,caption,duration,screenKind,screenTitle,screenLines,visualProp}=patch;
+     const s=p.shots[index(p,id)];const {speaker,dialogue,emotion,action,camera,cameraDistance,cameraFov,move,caption,duration,screenKind,screenTitle,screenLines,visualProp,propMode,propActor}=patch;
      if(speaker!==undefined){
        actor(p,speaker);s.speaker=speaker;
        // An actor close-up follows the current speaking character, not a
@@ -146,6 +146,7 @@
      if(camera!==undefined){
        const changed=s.camera?.kind!==camera;
        if(camera==='wide'||camera==='screen')s.camera={kind:camera};
+       else if(camera==='prop'){if(s.visualProp!=='lantern')throw Error('Enable the lantern before selecting its close-up');s.camera={kind:'prop'};}
        else if(camera==='actor')s.camera={kind:'actor',target:s.speaker};
        else if(camera==='two'){const other=p.characters.find(c=>c.id!==s.speaker)?.id;
          if(!other)throw Error('Two-shot needs two actors');
@@ -171,9 +172,18 @@
      if(move!==undefined)s.direction={...(s.direction||{}),move:match(move,MOVES,'camera movement'),
        transition:s.direction?.transition||'cut',blendSeconds:s.direction?.blendSeconds||0};
      if(visualProp!==undefined){
-       if(visualProp==='none')delete s.visualProp;
-       else if(visualProp==='lantern')s.visualProp='lantern';
+       if(visualProp==='none'){
+         delete s.visualProp;delete s.propInteraction;
+         if(s.camera?.kind==='prop'){s.camera={kind:'actor',target:s.speaker};delete s.framing}
+       }else if(visualProp==='lantern')s.visualProp='lantern';
        else throw Error('Unsupported original 3D prop');
+     }
+     if(propMode!==undefined||propActor!==undefined){
+       if(s.visualProp!=='lantern')throw Error('Enable the lantern before directing its interaction');
+       const next={mode:s.propInteraction?.mode||'ground',actor:s.propInteraction?.actor||s.speaker};
+       if(propMode!==undefined)next.mode=match(propMode,['ground','reach','lift','carry'],'prop interaction');
+       if(propActor!==undefined){actor(p,propActor);next.actor=propActor}
+       s.propInteraction=next;
      }
      if(caption!==undefined){if(caption){s.caption=safeString(caption,140,'Caption')}else delete s.caption}
      if(duration!==undefined){if(!Number.isFinite(duration)||duration<.5||duration>15)throw Error('Shot must be 0.5–15s');
@@ -196,7 +206,8 @@
      const last=p.shots[p.shots.length-1],shot=clone(last);shot.id='shot-'+String(count).padStart(2,'0');
      shot.dialogue='Here is the next moment in our story.';shot.duration=3;
      shot.direction={move:'static',transition:'cut',blendSeconds:0};
-     delete shot.screen;delete shot.caption;delete shot.visualProp;p.shots.push(shot)
+     delete shot.screen;delete shot.caption;delete shot.visualProp;delete shot.propInteraction;
+     if(shot.camera?.kind==='prop')shot.camera={kind:'actor',target:shot.speaker};p.shots.push(shot)
    }),
    removeShot:id=>commit(p=>{if(p.shots.length<=1)throw Error('Keep at least one shot');
      const i=index(p,id),removed=p.shots[i];
@@ -218,6 +229,7 @@
          if(!old)return clone(s);
          const merged={...clone(old),...clone(s),timing:clone(old.timing||s.timing||{lead:.15,pauseAfter:.35})};
          if(!s.visualProp)delete merged.visualProp;
+         if(!s.propInteraction)delete merged.propInteraction;
          return merged;
        });
        p.hybrid.director=clone(parsed.project.hybrid.director||{oneTake:false});

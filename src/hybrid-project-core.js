@@ -17,7 +17,7 @@
   const TYPES=new Set(['legacy','procedural','rigged']);
   const WORLDS=new Set(['legacy','procedural','imported']);
   const ASSET_TYPES=new Set(['character','world','backdrop']);
-  const CAMERA_TYPES=new Set(['actor','two','wide','screen']);
+  const CAMERA_TYPES=new Set(['actor','two','wide','screen','prop']);
   const LEGACY_CAMERAS=new Set(['dev','blue','orange','duo','wide','screen']);
   const EMOTIONS=new Set([...legacy.emotions,'curious','idea']);
   const ACTIONS=new Set([...legacy.actions,'none','wave','point','point-screen','point-other','shrug',
@@ -137,6 +137,10 @@
         fail(at+'.screen','Screen app must contain safe authored text and supported kind');
       if(s.visualProp!==undefined&&s.visualProp!=='lantern')
         fail(at+'.visualProp','Unsupported on-set visual prop');
+      if(s.propInteraction!==undefined&&(!OBJ(s.propInteraction)||s.visualProp!=='lantern'||
+        !['ground','reach','lift','carry'].includes(s.propInteraction.mode)||
+        !charIds.has(s.propInteraction.actor)||Object.keys(s.propInteraction).some(k=>!['actor','mode'].includes(k))))
+        fail(at+'.propInteraction','Lantern interaction requires a registered actor and safe action');
       if(s.caption!==undefined&&!TEXT(s.caption,140))
         fail(at+'.caption','Caption exceeds safety limit');
       if(s.reactions!==undefined&&(!Array.isArray(s.reactions)||
@@ -150,6 +154,8 @@
           fail(at+'.camera','Camera subject is absent');
       }else if(OBJ(s.camera)){
         if(!CAMERA_TYPES.has(s.camera.kind))fail(at+'.camera.kind','Unknown camera type');
+        if(s.camera.kind==='prop'&&s.visualProp!=='lantern')
+          fail(at+'.camera','Prop camera requires a visible lantern');
         if(s.camera.kind==='actor'&&!charIds.has(s.camera.target))
           fail(at+'.camera.target','Missing/unknown camera target');
         if(s.camera.kind==='two'&&(!charIds.has(s.camera.target)||!charIds.has(s.camera.secondary)||
