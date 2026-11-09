@@ -72,6 +72,7 @@ jobs:
           node tests/robot-acting.test.cjs
           node tests/kokoro-g2p.test.cjs
           node tests/script-core.test.cjs
+          node tests/creator-storage.test.mjs
       - name: Engine module parses
         run: node tests/engine-syntax.test.mjs
   real-character-render-tests:
@@ -281,6 +282,8 @@ jobs:
         run: node tests/hybrid-p7-creator-browser.cjs
       - name: V6 episodes open in the Creator as templates with DEV, BLUE and ORANGE
         run: node tests/creator-templates-browser.cjs
+      - name: A second tab can't overwrite work; earlier versions restore
+        run: node tests/creator-safety-browser.cjs
       - name: Archive real interface screenshots, UX and privacy test results
         if: always()
         uses: actions/upload-artifact@v4

@@ -228,6 +228,20 @@
        stage.prop.map((v,i)=>lerp(v,head(holder)[i],.36)):[...stage.prop];
    };
    let focus,azimuth=.15;
+   // Coverage (FrameForge 2026-11-09): a close-up is shot from the side of the nearest other actor (shot / reverse
+   // shot, so speakers face each other across cuts); two-shots alternate sides; wides look down a little. Only when
+   // the author hasn't set the framing themselves.
+   const authored=s.framing&&(s.framing.distance!==undefined||s.framing.fov!==undefined);
+   const rootX=id=>v3(anchors[id]?.root)?anchors[id].root[0]:null;
+   let lift=0;
+   if(!authored&&src.kind==='actor'&&rootX(src.target)!==null){
+     const me=rootX(src.target),others=Object.keys(anchors).filter(id=>id!==src.target&&rootX(id)!==null);
+     if(others.length){
+       const near=others.reduce((a,b)=>Math.abs(rootX(a)-me)<=Math.abs(rootX(b)-me)?a:b);
+       azimuth=.3*Math.sign(rootX(near)-me||1);
+     }
+   }else if(!authored&&src.kind==='two')azimuth=f.index%2?-.18:.18;
+   else if(!authored&&src.kind==='wide')lift=1.1;
    if(src.kind==='actor')focus=head(src.target);
    else if(src.kind==='two'){const a=head(src.target),b=head(src.secondary);focus=a.map((v,i)=>(v+b[i])/2)}
    else if(src.kind==='screen'){if(!v3(stage.screen))throw Error('No screen anchor');focus=stage.screen}
@@ -250,7 +264,7 @@
    const distance=baseDist+mod*smooth(progress);
    if(d.move==='orbit')azimuth+=.5*progress;
    if(d.move==='drift')azimuth+=.12*(progress-.5);
-   let camY=focus[1]+.48+Math.sin(progress*Math.PI)*.04;
+   let camY=focus[1]+.48+lift+Math.sin(progress*Math.PI)*.04;
    if(src.kind==='screen'){
      // Rise just enough that the line of sight to the screen's lower edge clears the tallest head standing between
      // the camera and the screen (head anchors + 0.75 for hair, hats and antennae).

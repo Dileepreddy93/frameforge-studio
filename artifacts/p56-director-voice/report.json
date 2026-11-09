@@ -1,0 +1,33 @@
+{
+  "kind": "FrameForge P5/P6 engineering QA",
+  "v6ProductionUnchanged": true,
+  "timing": "frameforge.project/2 only",
+  "voiceSource": "preexisting V6 Kokoro-generated track; no fresh model call",
+  "multilingualStatus": "English supported by existing worker; Hindi/Telugu not yet verified",
+  "copyright": "Re-use of existing first-party episode soundtrack for internal proof",
+  "films": [
+    {
+      "film": 1,
+      "frames": 36,
+      "seconds": 4.566666666666666,
+      "audioPeakDb": -1.9999995886470454,
+      "audioLufs": -14.026005080004559,
+      "screen": true,
+      "actionPixelRewind": true,
+      "voiceDrivenMouth": true,
+      "source": "existing Kokoro V6 speech re-used, NOT novel TTS"
+    },
+    {
+      "film": 2,
+      "frames": 36,
+      "seconds": 4.566666666666666,
+      "audioPeakDb": -1.9999995886470454,
+      "audioLufs": -14.026005080004559,
+      "screen": true,
+      "actionPixelRewind": true,
+      "voiceDrivenMouth": true,
+      "source": "existing Kokoro V6 speech re-used, NOT novel TTS"
+    }
+  ],
+  "releaseReady": false
+}

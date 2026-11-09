@@ -1,5 +1,5 @@
 // FrameForge P7 Creator. Real model, no React state duplication, no telemetry.
-import {createProjectStore} from './hybrid-editor-storage.mjs';
+import {createProjectStore,holdEditorLock,storageReport} from './hybrid-editor-storage.mjs';
 import {exportHybridFilm} from './hybrid-browser-export.mjs';
 const $=id=>document.getElementById(id),M=window.FrameForgeHybridEditor,C=window.FrameForgeHybridProjectCore;
 let editor=null,store=null,engine=null,selected='shot-01',play=false,last=0,animation=0;
@@ -190,8 +190,51 @@ function renderUI({render3d=true}={}){
  if(!$('script-pane').hidden)$('script').value=editor.scriptText();
  if(render3d&&engine)rebuild();
 }
+// Phase 8: "Report a problem" builds a report the user can read, copy, download or post. Nothing is sent by itself,
+// and it never includes the story's lines.
+const recentErrors=[];
+addEventListener('error',e=>{recentErrors.push(String(e.message||e.error||'error').slice(0,300));recentErrors.splice(0,recentErrors.length-20)});
+addEventListener('unhandledrejection',e=>{recentErrors.push(String(e.reason?.message||e.reason||'rejection').slice(0,300));recentErrors.splice(0,recentErrors.length-20)});
+function problemReport(){
+ const p=editor?.project,msg=id=>($(id)?.textContent||'').trim();
+ return ['FrameForge Creator problem report','Date: '+new Date().toISOString(),'Page: '+location.pathname,
+  'Browser: '+navigator.userAgent,'Platform: '+(navigator.userAgentData?.platform||navigator.platform||'?'),
+  'Screen: '+screen.width+'×'+screen.height+' · window '+innerWidth+'×'+innerHeight+' · pixel ratio '+devicePixelRatio,
+  'Memory hint: '+(navigator.deviceMemory?navigator.deviceMemory+' GB':'?')+' · CPU threads: '+(navigator.hardwareConcurrency||'?'),
+  'Video encoder (WebCodecs): '+('VideoEncoder' in window?'yes':'no')+' · Web Locks: '+(navigator.locks?'yes':'no'),
+  'Storage: '+(store?.mode||'none')+(readOnly?' (read-only: open in another tab)':''),
+  'Project: '+(p?p.shots.length+' shots, '+p.shots.reduce((t,s)=>t+s.duration,0).toFixed(1)+' s, set '+p.hybrid.world.template+'/'+p.hybrid.world.time+
+    ', cast '+Object.values(p.hybrid.cast).map(c=>c.template).join('/'):'not open'),
+  'Status: '+msg('status'),'Saving: '+msg('storage-status'),'Voice: '+msg('voice-status'),'Export: '+msg('export-status'),
+  'Recent errors: '+(recentErrors.length?'\n  '+recentErrors.join('\n  '):'none'),
+  '','What were you doing when it happened? (add it here)'].join('\n');
+}
+$('report').onclick=()=>{
+ const text=problemReport();$('report-text').value=text;
+ const body=text.length>1800?text.slice(0,1800)+'\n…(download the full report)':text;
+ $('report-open').href='https://github.com/Dileepreddy93/frameforge-studio/issues/new?title='+encodeURIComponent('Problem report: ')+'&body='+encodeURIComponent(body);
+ $('report-dialog').showModal();
+};
+$('report-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('report-text').value);$('report-copy').textContent='Copied'}catch{ $('report-text').select()}};
+$('report-download').onclick=()=>download(new Blob([$('report-text').value],{type:'text/plain'}),'frameforge-problem-report.txt');
+$('report-close').onclick=()=>$('report-dialog').close();
+// Phase 5: one editing tab at a time, earlier versions, and a reminder to keep a downloaded copy.
+let readOnly=false,editsSinceDownload=0;
+const DOWNLOAD_KEY='frameforge-creator-last-download',REMIND_MS=20*60*1000;
+const lastDownload=()=>{try{return Number(localStorage.getItem(DOWNLOAD_KEY))||0}catch{return 0}};
+const remindToDownload=()=>editsSinceDownload>=5&&Date.now()-lastDownload()>REMIND_MS?
+ ' It has been a while since you downloaded a copy: use “Download project” to keep one outside this browser.':'';
+async function refreshVersions(){
+ if(!store?.history)return;
+ const list=await store.history().catch(()=>[]),select=$('versions');
+ select.replaceChildren(new Option(list.length>1?'Earlier versions…':'No earlier versions yet',''));
+ list.slice(1).forEach((v,i)=>select.append(new Option(new Date(v.savedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+
+   ' · '+Math.max(1,Math.round(v.bytes/1024))+' KB',String(i+1))));
+ select.disabled=list.length<2||readOnly;
+}
 function queueSave(){
- if(!store||initialRecoveryCorrupt)return;
+ if(!store||initialRecoveryCorrupt||readOnly)return;
+ editsSinceDownload++;
  const json=editor.serialize();
  // The immediate checkpoint prevents a refresh/force-close from losing the
  // latest visible edit while the async IndexedDB write is still queued.
@@ -201,7 +244,8 @@ function queueSave(){
    text('storage-status','Writing IndexedDB recovery… Download a project backup before closing this tab.');
  storageSequence=storageSequence.catch(()=>{}).then(async()=>{
    try{await store.save(json,savedAt);
-     text('storage-status','Autosaved on this device ('+store.mode+'). Download a copy before clearing browser storage.')}
+     text('storage-status','Autosaved on this device ('+store.mode+'). Download a copy before clearing browser storage.'+remindToDownload());
+     refreshVersions()}
    catch(e){text('storage-status','Storage error: '+e.message+' Download a backup now.')}
  });
 }
@@ -287,6 +331,7 @@ $('still').onclick=()=>{
 };
 $('render').onclick=()=>rebuild();
 $('save-project').onclick=()=>{
+ try{localStorage.setItem(DOWNLOAD_KEY,String(Date.now()))}catch{}editsSinceDownload=0;
  if(!editor)return;download(new Blob([editor.serialize()],{type:'application/json'}),
    'frameforge-'+editor.project.id+'.json');
 };
@@ -314,6 +359,16 @@ $('start-from').onchange=async()=>{
    $('recovery-backup').hidden=true;renderUI();queueSave();
    text('status','Opened "'+p.title+'". Generate voices before export.');
  }catch(e){text('status','Template refused: '+e.message)}
+};
+$('versions').onchange=async()=>{
+ const i=Number($('versions').value);$('versions').value='';
+ if(!i||!store||readOnly||busy)return;
+ if(!confirm('Go back to this earlier version? Your current version stays in the list.'))return;
+ try{
+   const p=M.parseCreatorFile(await store.version(i));
+   editor.replace(p);selected=p.shots[0].id;renderUI();queueSave();
+   text('status','Earlier version restored. Generate voices before export.');
+ }catch(e){text('status','That version could not be opened: '+e.message)}
 };
 $('open-project').onclick=()=>{
  if(initialRecoveryCorrupt&&!recoveryExportRequested){
@@ -398,6 +453,7 @@ async function bootEditor(){
    if(w.HybridP56Error)throw Error(String(w.HybridP56Error));
    if(!w.HybridP56Ready)throw Error('3D renderer could not start');
    engine=w.HybridP56QA;
+   readOnly=!(await holdEditorLock());
    store=await createProjectStore();
    let saved=null;
    try{saved=await store.load()}catch(e){text('storage-status','Recovery read failed: '+e.message)}
@@ -423,8 +479,18 @@ async function bootEditor(){
      queueMicrotask(()=>{$('start-from').value=startTemplate;$('start-from').dispatchEvent(new Event('change'))});
    editor=M.createEditor(p);selected=p.shots[0].id;renderUI();
    if(!initialRecoveryCorrupt)queueSave();
-   if(!initialRecoveryCorrupt)
+   if(readOnly){
+     text('storage-status','FrameForge Creator is already open in another tab. Changes in this tab are not saved: close the other tab, then reload this one.');
+     $('storage-status').dataset.readOnly='true';
+   }else if(!initialRecoveryCorrupt){
      text('storage-status',saved?'Recovered a locally saved project.':'Created new project with local autosave.');
+     storageReport().then(r=>{
+       const space=r.low?' Your browser is almost out of storage space: download your project now.':'';
+       const keep=r.persisted?'':' (the browser may clear it under storage pressure)';
+       if(space||keep)text('storage-status',$('storage-status').textContent+keep+space);
+     });
+     refreshVersions();
+   }
  }catch(e){
    text('status','Cannot open the hybrid creator: '+e.message+
     '. Your original V6 editor remains available.');

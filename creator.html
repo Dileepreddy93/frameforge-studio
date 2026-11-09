@@ -44,7 +44,13 @@ label.check{display:flex;gap:8px;align-items:center;margin:10px 0}label.check in
 </style></head>
 <body>
 <header><div><div class="brand"><span>F</span> FrameForge Creator <small class="sub">Hybrid V2 beta</small></div><div class="sub">Real 3D · local-only edits · honest export</div></div>
-<div class="header-right"><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="save-project">Download project</button><button id="recovery-backup" hidden>Save damaged recovery copy</button><select id="start-from" aria-label="Start from a template"><option value="">Start from…</option><option value="blank">A blank two-character story</option></select><button id="open-project">Open project</button><input type="file" id="file" aria-label="Choose a FrameForge project JSON file" accept=".json,application/json"><a href="./beta.html" style="font-size:12px;align-self:center">Preview guide</a></div></header>
+<div class="header-right"><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="save-project">Download project</button><button id="recovery-backup" hidden>Save damaged recovery copy</button><select id="start-from" aria-label="Start from a template"><option value="">Start from…</option><option value="blank">A blank two-character story</option></select><select id="versions" aria-label="Earlier versions of this project" disabled><option value="">No earlier versions yet</option></select><button id="open-project">Open project</button><input type="file" id="file" aria-label="Choose a FrameForge project JSON file" accept=".json,application/json"><a href="./beta.html" style="font-size:12px;align-self:center">Guide</a><button id="report" type="button">Report a problem</button></div></header>
+<dialog id="report-dialog" aria-labelledby="report-heading" style="max-width:720px;width:calc(100% - 32px);background:#151b24;color:#eef;border:1px solid #3a4250;border-radius:14px">
+<h2 id="report-heading" style="margin-top:0">Report a problem</h2>
+<p class="muted">This report stays on your computer until you choose to share it. It has your browser, device and the Creator's messages, but not your story's lines.</p>
+<label for="report-text">Report</label><textarea id="report-text" rows="12" readonly style="width:100%;font:12px ui-monospace,monospace"></textarea>
+<div class="tools" style="margin-top:10px"><button id="report-copy" type="button">Copy</button><button id="report-download" type="button">Download</button><a id="report-open" target="_blank" rel="noopener">Open the support page with this report</a><button id="report-close" type="button">Close</button></div>
+</dialog>
 <nav id="mobile-workspace" class="mobile-workspace" aria-label="Creator workspace tabs">
 <button type="button" data-view="story" aria-pressed="true" aria-controls="pane-story">1 · Story</button>
 <button type="button" data-view="shot" aria-pressed="false" aria-controls="pane-shot">2 · Shot</button>
