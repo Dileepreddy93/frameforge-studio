@@ -35,5 +35,8 @@ films and problem reports in `~/Desktop/Animate/proof/devices/<device>/`.
 - **Firefox 142 on Linux:** the Creator works and H.264 encoding works; there's no AAC encoder. A real 2-second
   export gave a verified H.264 + Opus MP4, and the Creator shows a note that some Apple apps may not play Opus.
 - **No WebGL** (hardware acceleration off): the Creator says so and says what to do. No crash.
-- **WebKit (Safari's engine):** see the latest `cross-browser` workflow run for macOS. Real Safari on a Mac and on
-  an iPhone still needs a person.
+- **WebKit 26 on macOS (Safari's engine, CI run on PR #23):** the Creator boots and renders, and it has WebGL 2,
+  H.264 at 720p and 1080p, and AAC. So standard MP4 export should work in Safari. Real Safari on a Mac and on an
+  iPhone still needs a person to confirm.
+- **Chromium on macOS (open-source build):** boots; AAC yes, H.264 no. Branded Chrome has H.264.
+- **Firefox 142 on Windows:** boots; H.264 yes, AAC no. Export uses Opus audio.
