@@ -179,7 +179,7 @@ jobs:
         run: node tests/hybrid-baseline.test.cjs --media
       - name: P1 hybrid WebGL provider proof, deterministic seek and playable MP4
         run: node tests/hybrid-p1-video-browser.cjs
-      - name: P2 real Ember cast (six templates, 4 views, 8 emotions, customization and MP4)
+      - name: P2 real Ember cast (nine templates incl. DEV, BLUE, ORANGE; 4 views, 8 emotions, customization and MP4)
         run: node tests/hybrid-p2-characters-browser.cjs
       - name: P3 P4 imported humanoid and Ember worlds (WebGL / H264+Aac)
         run: node tests/hybrid-p34-browser.cjs
@@ -279,6 +279,8 @@ jobs:
         run: node tests/hybrid-p9-beta-browser.cjs
       - name: Author, revise, save, reopen and preview original V2 films in actual creator UI
         run: node tests/hybrid-p7-creator-browser.cjs
+      - name: V6 episodes open in the Creator as templates with DEV, BLUE and ORANGE
+        run: node tests/creator-templates-browser.cjs
       - name: Archive real interface screenshots, UX and privacy test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -290,7 +292,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frameforge-p7-creator-e2e
-          path: artifacts/p7-creator/
+          path: |
+            artifacts/p7-creator/
+            artifacts/creator-templates/
           if-no-files-found: warn
 
   rigged-character-import:

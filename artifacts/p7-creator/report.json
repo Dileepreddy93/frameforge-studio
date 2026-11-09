@@ -1,0 +1,49 @@
+{
+  "verdict": "HYBRID_P7_CREATOR_BROWSER_PASS",
+  "findings": [
+    {
+      "viewport": {
+        "width": 1330,
+        "height": 930
+      },
+      "faceReadability": {
+        "mean": 75.92773098095401,
+        "visibleFraction": 0.722452380952381
+      },
+      "originalPixelsChanged": true,
+      "castWorldShotEditing": true,
+      "undoRedo": true,
+      "reopenJSON": true,
+      "IndexedDBRecovery": true,
+      "staleAudioRefused": true,
+      "PNG": true,
+      "tenShotGuiAuthoring": true,
+      "tenShotGuiReload": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "faceReadability": {
+        "mean": 75.92773098095401,
+        "visibleFraction": 0.722452380952381
+      },
+      "originalPixelsChanged": true,
+      "castWorldShotEditing": true,
+      "undoRedo": true,
+      "reopenJSON": true,
+      "IndexedDBRecovery": true,
+      "staleAudioRefused": true,
+      "PNG": true,
+      "tenShotGuiAuthoring": true,
+      "tenShotGuiReload": true
+    }
+  ],
+  "tested": "Real Chromium WebGL desktop and mobile viewport simulation",
+  "limitations": [
+    "English Kokoro inference not executed in this dedicated P7 test",
+    "Browser H264 encoding may be unsupported on Chromium CI",
+    "Mobile viewport emulation is not real iOS/Android hardware"
+  ]
+}

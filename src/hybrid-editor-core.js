@@ -8,11 +8,20 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(core,director){
  'use strict';
  const clone=x=>JSON.parse(JSON.stringify(x));
- const TEMPLATES=Object.freeze(['creator','human','robot','creature','bot','mascot']);
+ const TEMPLATES=Object.freeze(['creator','human','robot','creature','bot','mascot','dev','blue','orange']);
  const WORLDS=Object.freeze(['forest','meadow','snow','desk']);
  const EMOTIONS=Object.freeze(['neutral','happy','sad','angry','surprised','worried','curious','idea']);
  const MOVES=Object.freeze(['static','push','pull','drift','orbit']);
- const VOICES=Object.freeze(['af_heart','af_bella','am_michael','am_puck']);
+ // Every English voice in Kokoro-82M v1.0 (American af_/am_, British bf_/bm_). Labels are for the cast picker.
+ const VOICE_LABELS=Object.freeze({
+   af_heart:'Heart · American woman',af_bella:'Bella · American woman',af_nicole:'Nicole · American woman (soft)',
+   af_sarah:'Sarah · American woman',af_aoede:'Aoede · American woman',af_kore:'Kore · American woman',
+   am_michael:'Michael · American man',am_puck:'Puck · American man',am_adam:'Adam · American man',
+   am_echo:'Echo · American man',am_eric:'Eric · American man',am_fenrir:'Fenrir · American man',
+   am_liam:'Liam · American man',am_onyx:'Onyx · American man (deep)',
+   bf_emma:'Emma · British woman',bf_isabella:'Isabella · British woman',
+   bm_george:'George · British man',bm_daniel:'Daniel · British man',bm_fable:'Fable · British man',bm_lewis:'Lewis · British man'});
+ const VOICES=Object.freeze(Object.keys(VOICE_LABELS));
  const MUSIC=Object.freeze(['off','groove','tension','stop','sting']);
  const SFX=Object.freeze(['none','typing','chime','buzz','zap','scratch','whoosh','pop']);
  const LOOK_COLORS=Object.freeze(['top','accent','skin','hair','eyes','bottom','shoes','screen']);
@@ -248,10 +257,83 @@
    serialize:()=>JSON.stringify({format:'frameforge.creator/1',project:current},null,2)
   });
  }
+ // The V6 episodes (frameforge.project/1) open in the Creator with DEV, BLUE and ORANGE rebuilt as Creator cast. Every
+ // line, speaker, performance, sound cue, score cue and screen insert carries over; cameras map to Creator cameras and
+ // use the Creator's framing (the V6 distances were tuned for the old rigs). Voices are re-made in the browser.
+ const EPISODE_TEMPLATES=Object.freeze([
+   Object.freeze({file:'zero-latency.frameforge.json',label:'Zero Latency (DEV, BLUE, ORANGE)'}),
+   Object.freeze({file:'dark-mode.frameforge.json',label:'Dark Mode (DEV, BLUE, ORANGE)'})]);
+ const EPISODE_CAST=Object.freeze(['dev','blue','orange']);
+ const SCREEN_TONE=Object.freeze({good:'success',bad:'alert',warn:'alert',alert:'alert',calm:'calm',info:'info'});
+ const short=(x,n)=>typeof x==='string'&&x.trim()?x.trim().slice(0,n):null;
+ function episodeScreen(s){
+   const i=s.insert||s.wall;
+   if(!i||typeof i!=='object')return null;
+   const pair=[short(i.headline||i.label,60),short(i.value,40)].filter(Boolean).join(': ');
+   const lines=[i.context,pair,i.badge?'['+i.badge+']':null,i.request,i.status,i.caption,i.footer]
+     .map(x=>short(x,120)).filter(Boolean).slice(0,8);
+   if(!lines.length)return null;
+   return {kind:'browser',tone:SCREEN_TONE[i.tone]||'info',title:short(i.window,160)||short(s.title,160)||'Dashboard',lines};
+ }
+ function episodeCamera(s,ids){
+   if(ids.includes(s.camera))return {kind:'actor',target:s.camera};
+   if(s.camera==='duo'){
+     const other=ids.find(id=>id!==s.speaker);
+     return other?{kind:'two',target:s.speaker,secondary:other}:{kind:'actor',target:s.speaker};
+   }
+   if(s.camera==='wide'||s.camera==='screen')return {kind:s.camera};
+   return {kind:'actor',target:s.speaker};
+ }
+ function fromEpisode(original){
+   if(original?.schema!==core.legacySchema)throw Error('Not a FrameForge V6 episode file');
+   core.assertProject(original);
+   const ids=original.characters.map(c=>c.id);
+   if(!ids.every(id=>EPISODE_CAST.includes(id)))throw Error('This V6 episode uses a character the Creator does not have');
+   const p={schema:core.schema,id:slug(original.id)||'episode',title:original.title,logline:original.logline,
+     output:{width:1080,height:1920,fps:30},style:clone(original.style),environment:clone(original.environment),
+     characters:original.characters.map(c=>({id:c.id,name:c.name,visualIdentity:c.visualIdentity,
+       voice:{profile:VOICES.includes(c.voice?.kokoro?.voice)?c.voice.kokoro.voice:'am_michael',
+         voiceLock:'Consistent original local voice'},sheetStatus:'draft',expressions:[...EMOTIONS]})),
+     hybrid:{version:1,cast:Object.fromEntries(ids.map(id=>[id,{provider:'procedural',template:id}])),
+       world:{provider:'procedural',template:'desk',time:'night',foliage:.07,wind:.5,particles:[]},
+       assets:[],director:{oneTake:false}},
+     shots:original.shots.map(s=>{
+       const move=s.framing?.move;
+       const out={id:s.id,speaker:s.speaker,dialogue:s.dialogue,duration:+s.duration.toFixed(3),
+         intent:short(s.intent,240)||'scene',camera:episodeCamera(s,ids),
+         cast:Object.fromEntries(Object.entries(s.cast||{}).filter(([id])=>ids.includes(id)).map(([id,v])=>
+           [id,{...(v.emotion?{emotion:v.emotion}:{}),...(v.action?{action:v.action}:{})}])),
+         direction:{move:MOVES.includes(move)?move:'static',transition:'cut',blendSeconds:0},
+         firstFrameStatus:'draft'};
+       if(s.timing){
+         const t={};
+         for(const k of ['lead','pauseAfter','pace'])if(Number.isFinite(s.timing[k]))t[k]=s.timing[k];
+         out.timing=t;
+       }
+       const screen=episodeScreen(s);
+       if(screen)out.screen=screen;
+       const sfx=(s.sfx||[]).filter(x=>SFX.includes(x.cue)&&x.cue!=='none'&&Number.isFinite(x.at))
+         .map(x=>({cue:x.cue,at:x.at,gain:Number.isFinite(x.gain)?x.gain:-12}));
+       if(sfx.length)out.sfx=sfx;
+       const r=s.reactionCut;
+       if(r&&ids.includes(r.role)&&EMOTIONS.includes(r.emotion)&&Number.isFinite(r.seconds))
+         out.reactions=[{actor:r.role,at:Math.min(Math.max(0,r.seconds),out.duration),emotion:r.emotion,action:'react'}];
+       return out;
+     }),
+     audio:{state:'storyboard_only',masterUrl:null}};
+   if(original.banner)p.banner=original.banner;
+   const music=original.audio?.music;
+   if(music&&Array.isArray(music.cues))
+     p.audio.music={bpm:Number.isFinite(music.bpm)?music.bpm:104,
+       cues:music.cues.filter(c=>MUSIC.includes(c.style)&&p.shots.some(s=>s.id===c.shot)).map(c=>clone(c))};
+   return clone(ensure(p));
+ }
  function parseCreatorFile(raw){
   if(typeof raw!=='string'||raw.length>1_048_576)throw Error('Project must be a text file under 1 MB');
   const data=JSON.parse(raw);const p=data?.format==='frameforge.creator/1'?data.project:data;
+  // A V6 episode file (frameforge.project/1) still opens: it becomes a Creator project with the rebuilt cast.
+  if(p?.schema===core.legacySchema)return fromEpisode(p);
   return clone(ensure(p));
  }
- return Object.freeze({TEMPLATES,WORLDS,EMOTIONS,MOVES,VOICES,MUSIC,SFX,fromLegacy,createEditor,parseCreatorFile});
+ return Object.freeze({TEMPLATES,WORLDS,EMOTIONS,MOVES,VOICES,VOICE_LABELS,MUSIC,SFX,fromLegacy,fromEpisode,EPISODE_TEMPLATES,createEditor,parseCreatorFile});
 });

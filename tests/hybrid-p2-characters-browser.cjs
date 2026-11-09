@@ -14,7 +14,7 @@ const ROOT=path.resolve(__dirname,'..');
 const OUT=path.resolve(process.env.FRAMEFORGE_P2_OUT||path.join(ROOT,'artifacts/p2-ember-cast'));
 const hash=data=>crypto.createHash('sha256').update(Buffer.from(data.split(',')[1],'base64')).digest('hex');
 const save=(name,data)=>fs.writeFileSync(path.join(OUT,name),Buffer.from(data.split(',')[1],'base64'));
-const TEMPLATES=['creator','human','robot','creature','bot','mascot'];
+const TEMPLATES=['creator','human','robot','creature','bot','mascot','dev','blue','orange'];
 const EMOTIONS=['neutral','happy','sad','angry','surprised','worried','curious','idea'];
 (async()=>{
  fs.mkdirSync(OUT,{recursive:true});

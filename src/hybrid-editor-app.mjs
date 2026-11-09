@@ -92,7 +92,7 @@ function renderUI({render3d=true}={}){
    fillSelect(type,M.TEMPLATES,p.hybrid.cast[character.id].template);
    type.setAttribute('aria-label','3D character model for '+character.name);
    const voice=document.createElement('select');voice.id='cast-voice-'+character.id;
-   fillSelect(voice,M.VOICES,character.voice.profile);
+   fillSelect(voice,M.VOICES.map(v=>[v,M.VOICE_LABELS[v]||v]),character.voice.profile);
    voice.setAttribute('aria-label','Voice for '+character.name);
    const grid=document.createElement('div');grid.className='cols';
    const column=(label,control)=>{const div=document.createElement('div'),l=document.createElement('label');
@@ -108,7 +108,10 @@ function renderUI({render3d=true}={}){
      robot:{top:'#8aa1ad',accent:'#3d4650'},
      creature:{top:'#3f6b58',accent:'#f2e2c9'},
      bot:{top:'#4f8fd6',accent:'#2e3440'},
-     mascot:{top:'#e8743c',accent:'#c9572e'}
+     mascot:{top:'#e8743c',accent:'#c9572e'},
+     dev:{top:'#3d5d66',accent:'#b098b1'},
+     blue:{top:'#4f7fae',accent:'#5c6fb8'},
+     orange:{top:'#d0703a',accent:'#5c6fb8'}
    };
    const descriptor=p.hybrid.cast[character.id],palette=presetColors[descriptor.template]||presetColors.creator;
    const appearance=document.createElement('div');appearance.className='cols';
@@ -292,6 +295,24 @@ $('recovery-backup').onclick=()=>{
  recoveryExportRequested=true;
  text('storage-status','Recovery copy download requested. Your damaged browser record is still intact; saving a new edit or importing another project will replace it.');
 };
+// Templates: the V6 episodes, opened as Creator projects with DEV, BLUE and ORANGE.
+for(const t of M.EPISODE_TEMPLATES){const o=document.createElement('option');o.value=t.file;o.textContent=t.label;$('start-from').append(o)}
+$('start-from').onchange=async()=>{
+ const choice=$('start-from').value;$('start-from').value='';
+ if(!choice||!editor||busy)return;
+ if(initialRecoveryCorrupt&&!recoveryExportRequested){
+   text('status','Download the damaged recovery copy before replacing the saved project.');return;
+ }
+ if(!confirm('Replace the project you are editing? Download it first if you want to keep it.'))return;
+ try{
+   const fixture=await fetch('./projects/'+(choice==='blank'?'zero-latency.frameforge.json':choice)).then(r=>{
+     if(!r.ok)throw Error('Template unavailable');return r.json()});
+   const p=choice==='blank'?M.fromLegacy(fixture):M.fromEpisode(fixture);
+   editor.replace(p);selected=p.shots[0].id;initialRecoveryCorrupt=false;recoveryRaw=null;
+   $('recovery-backup').hidden=true;renderUI();queueSave();
+   text('status','Opened "'+p.title+'". Generate voices before export.');
+ }catch(e){text('status','Template refused: '+e.message)}
+};
 $('open-project').onclick=()=>{
  if(initialRecoveryCorrupt&&!recoveryExportRequested){
    text('status','Download the damaged recovery copy before replacing the saved project.');return;
@@ -387,11 +408,17 @@ async function bootEditor(){
        text('storage-status','Damaged saved project preserved. Download the recovery copy before editing. '+e.message);
      }
    }
+   // creator.html#start=<episode file> opens that episode: straight away for a new visitor, or after asking when
+   // there is saved work to replace (the landing page's "example episodes" button uses this).
+   const start=new URLSearchParams(location.hash.slice(1)).get('start');
+   const startTemplate=M.EPISODE_TEMPLATES.find(t=>t.file===start)?.file||null;
+   if(startTemplate)history.replaceState(null,'',location.pathname+location.search);
    if(!p){
-     const fixture=await fetch('./projects/zero-latency.frameforge.json').then(r=>{
+     const fixture=await fetch('./projects/'+(startTemplate||'zero-latency.frameforge.json')).then(r=>{
        if(!r.ok)throw Error('Original FrameForge project fixture unavailable');return r.json()});
-     p=M.fromLegacy(fixture);
-   }
+     p=startTemplate?M.fromEpisode(fixture):M.fromLegacy(fixture);
+   }else if(startTemplate&&!initialRecoveryCorrupt)
+     queueMicrotask(()=>{$('start-from').value=startTemplate;$('start-from').dispatchEvent(new Event('change'))});
    editor=M.createEditor(p);selected=p.shots[0].id;renderUI();
    if(!initialRecoveryCorrupt)queueSave();
    if(!initialRecoveryCorrupt)

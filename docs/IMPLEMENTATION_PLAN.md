@@ -8,6 +8,15 @@ voiced 9:16 film they are proud to post, on the computer or phone they already o
 
 **Out of scope here:** login and payments. They come after phase 8, once people have shown they want to pay.
 
+## Progress
+
+| Phase | Status | Notes |
+|---|---|---|
+| 0 · Safe to ship from | done (PR #22) | `main` protected; `tools/deploy.sh <tag>`; LICENSE; CI on PRs + main; 5-green-runs check is ongoing |
+| 1 · One product | done (this PR) | see `docs/releases/PHASE_1_ONE_PRODUCT.md` |
+| 2 · The look | next | owner kept the current glossy look: fix defects within it |
+| 3–9 | to do | |
+
 ---
 
 ## Where we are (checked 2026-11-09)
@@ -70,12 +79,10 @@ Do this first, so nothing below can break production by accident.
    - `tools/deploy-v6.sh` became `tools/deploy.sh <tag>`. It refuses anything that isn't a tag on `main`, and
      prints the commit and the CI run it is shipping.
    - Rollback = deploy the previous tag.
-3. **One production project.** 🟡 Choose: keep `frameforge-v6` as the production project for the merged product, or
-   create a fresh `frameforge` project for it.
+3. **One production project.** ✅ Decided (2026-11-09): `frameforge-v6` stays the production project.
    - Either way, the staging project (`frameforge-hybrid-beta`) gets every candidate first.
    - Don't touch the old protected preview.
-4. **Licence for the public repo.** 🟡 The repo stays public (owner's decision). With no licence file, others may read
-   the code but not reuse it.
+4. **Licence for the public repo.** ✅ Done: `LICENSE` (all rights reserved); the repo stays public.
    - Add a `LICENSE` that says so plainly ("All rights reserved", or a source-available licence such as BUSL). That
      keeps copying illegal even though it is visible.
    - The code itself is not the moat. The finished films, the cast and the hosted service are.
@@ -92,9 +99,7 @@ Do this first, so nothing below can break production by accident.
 The landing page now opens the Creator (done in the consolidation PR). Make the rest match:
 
 1. **The V6 episodes become Creator templates.**
-   - 🟡 Choose: (a) DEV, BLUE and ORANGE become cast members in the Creator (rebuild them as Ember actors from their
-     approved model sheets), or (b) the Creator opens v1 episodes and plays them with the V6 renderer, read-only.
-   - Recommended: (a). One renderer means one look and half the maintenance. (b) is a stop-gap.
+   - ✅ Decided (2026-11-09): (a) DEV, BLUE and ORANGE are rebuilt as Creator cast. Done in phase 1.
 2. **Retire `studio.html` as a separate app** once both episodes open in the Creator. Old v1 files still open and are
    upgraded with `upgradeLegacyProject`.
 3. **Landing page around the Creator:** new copy, a reel made in the Creator, and an honest FAQ (browsers, languages,
@@ -108,8 +113,8 @@ The landing page now opens the Creator (done in the consolidation PR). Make the 
 
 ## Phase 2: The look (the biggest gap)
 
-1. 🟡 **Pick one art direction and write it into `STYLE.md`.** The recorded target is the flat, matte low-poly "coded"
-   look. The Creator drifted to glossy toy 3D. Recommended: go back to the flat matte target for the whole Creator cast.
+1. ✅ **Art direction decided (2026-11-09): keep the Creator's current glossy-toy 3D look** and fix its defects. Write
+   this into `STYLE.md` (the flat matte low-poly section becomes history).
 2. **Characters.**
    - Fix hair (no strands on the chest) and eyelids (open, readable eyes).
    - Make faces readable at phone size.
@@ -196,7 +201,7 @@ Rendering is 99 % of the export time, so the work is in the 3D scene, not the en
 
 ## Phase 7: Languages
 
-1. 🟡 Pick the first languages. Hindi and Telugu were asked for before.
+1. ✅ Decided (2026-11-09): **English first.** Hindi and Telugu come later.
 2. **Hindi:**
    - Upstream Kokoro-82M v1.0 is reported to include Hindi voices, but this has to be checked first: the copy pinned in
      the app ships English voices only.
@@ -250,11 +255,9 @@ Phase 0 ─▶ Phase 1 ─▶ Phase 2 ──────────────
 - Phase 3 must come before phase 4: a slow export fails on every device.
 - Phase 6 (breadth) waits for phase 2, so new props and sets are made in the final style.
 
-## Owner decisions needed (🟡)
+## Owner decisions
 
-1. **Production project** (phase 0): reuse `frameforge-v6` or create a new one.
-2. **Licence** for the public repo (phase 0).
-3. **The V6 cast in the Creator** (phase 1): rebuild them (recommended), or a read-only stop-gap.
-4. **Art direction** (phase 2): the flat matte low-poly target (recommended), or the current glossy toy look.
-5. **First languages** (phase 7).
-6. **Price points** to test (phase 9).
+Decided 2026-11-09: production project `frameforge-v6`; LICENSE (all rights reserved, repo public); DEV, BLUE and ORANGE
+rebuilt in the Creator; keep the current glossy look; English first.
+
+Still open: **price points** to test (phase 9), the **support email address** and **domain** (phase 8).

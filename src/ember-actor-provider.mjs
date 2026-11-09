@@ -4,7 +4,7 @@
 import * as T from '../vendor/three@0.180.0/three.module.min.js';
 import {buildCharacter,animateCharacter,drawFace,headWorld,disposeCharacter} from './ember-character-engine.mjs';
 
-export const TEMPLATE_IDS=Object.freeze(['creator','human','robot','creature','bot','mascot']);
+export const TEMPLATE_IDS=Object.freeze(['creator','human','robot','creature','bot','mascot','dev','blue','orange']);
 export const KINDS=Object.freeze(['human','robot','creature','bot','mascot']);
 export const EMOTIONS=Object.freeze(['neutral','happy','sad','angry','surprised','worried','curious','idea']);
 export const LOOK_DEFAULTS=Object.freeze({
@@ -19,7 +19,14 @@ export const TEMPLATES=Object.freeze({
   robot:{kind:'robot',voice:'am_echo',look:{top:'#8aa1ad',accent:'#3d4650',screen:'#7fd6ff',bottom:'#3d4650',shoes:'#2b3036'}},
   creature:{kind:'creature',voice:'af_sky',look:{species:'fox',skin:'#d9793d',hair:'#2a1e1a',top:'#3f6b58',accent:'#f2e2c9',bottom:'#2d3a33',eyeStyle:'glossy'}},
   bot:{kind:'bot',voice:'af_nova',look:{top:'#4f8fd6',accent:'#2e3440',screen:'#ffd27a'}},
-  mascot:{kind:'mascot',voice:'af_sky',look:{shape:'block',top:'#e8743c',accent:'#c9572e',eyes:'#1c1310'}}
+  mascot:{kind:'mascot',voice:'af_sky',look:{shape:'block',top:'#e8743c',accent:'#c9572e',eyes:'#1c1310'}},
+  // The FrameForge cast from the V6 episodes, rebuilt in the Creator's style (owner decision 2026-11-09). Colours from
+  // STYLE.md and design/robot-forms.js: DEV's warm-brown skin, teal hoodie, black hair and round glasses; BLUE a
+  // blue-shell bot with a light-blue face; ORANGE an orange-shell robot with an amber face; violet joints.
+  dev:{kind:'human',voice:'am_michael',look:{hairStyle:'chunky',glasses:'round',topStyle:'hoodie',head:1.25,
+    skin:'#c66c48',hair:'#120806',top:'#3d5d66',accent:'#b098b1',bottom:'#232a3a',shoes:'#d6cbb5'}},
+  blue:{kind:'bot',voice:'af_heart',look:{top:'#4f7fae',accent:'#5c6fb8',screen:'#79c5ff'}},
+  orange:{kind:'robot',voice:'bm_george',look:{top:'#d0703a',accent:'#5c6fb8',screen:'#ffc15a',bottom:'#3b2a40',shoes:'#1c1b30'}}
 });
 export const FACES=Object.freeze({
   neutral:{brow:0,raise:0,eye:1,smile:.05,tilt:0,down:0,open:0},
