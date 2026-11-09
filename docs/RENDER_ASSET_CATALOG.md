@@ -13,4 +13,4 @@ All files are our earlier development outputs, NOT Claude & Pixel or Agent Poly 
 | media/v5-evidence/orange-character-sheet.png | 457209 | 84a448df6dc75692c97ed2006b93e2100a2cb479daa25299e98b30f51493e978 | archived |
 | media/v5-evidence/environment-first-frame.png | 131204 | 04ea0bb3fa4c91685f75b2b062b5b28467356a2c432acbcf0ce3008a5830ed47 | archived |
 
-Source URLs and expected hashes are in docs/RENDER_ASSET_CATALOG.json. Verify again after clone using sha256sum on each path and compare with docs/RENDER_ASSET_CATALOG.json and docs/HANDOFF_STATE_2026-10-24.json. (The previously mentioned verification script is not present.)
+Source URLs and expected hashes are in docs/RENDER_ASSET_CATALOG.json. Verify again after clone using sha256sum on each path and compare with docs/RENDER_ASSET_CATALOG.json and docs/history/HANDOFF_STATE_2026-10-24.json. (The previously mentioned verification script is not present.)

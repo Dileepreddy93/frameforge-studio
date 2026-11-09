@@ -1,12 +1,12 @@
 name: FrameForge code quality
 on:
   push:
-    branches: [develop, "feature/**", "claude/**"]
+    branches: [main, "feature/**", "claude/**", "chore/**"]
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
   pull_request:
-    branches: [develop, main]
+    branches: [main]
   workflow_dispatch:
 concurrency:
   group: frameforge-code-quality-${{ github.ref }}

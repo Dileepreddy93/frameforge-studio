@@ -58,8 +58,9 @@ const episode=file=>JSON.parse(fs.readFileSync(path.join(ROOT,'projects',file),'
  assert.match(await page.locator('#reel').getAttribute('src'),/ep02-dark-mode\.(mp4|webm)$/);
  assert.equal(await page.locator('#tab-darkmode').getAttribute('aria-pressed'),'true');
 
- // Every call to action opens the studio.
- for(const href of await page.locator('a.btn.primary').evaluateAll(as=>as.map(a=>a.getAttribute('href'))))assert.equal(href,'studio.html');
+ // One product: every primary call to action opens the Creator; the example episodes stay one click away.
+ for(const href of await page.locator('a.btn.primary').evaluateAll(as=>as.map(a=>a.getAttribute('href'))))assert.equal(href,'creator.html');
+ assert.ok(await page.locator('a.btn[href="studio.html"]').count()>=1,'the example episodes are linked');
  await page.waitForTimeout(500);
  assert.deepEqual(missing,[],'every page asset loads');
  assert.equal(errors.length,0,'page errors: '+errors.join('; '));
