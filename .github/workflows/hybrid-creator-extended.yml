@@ -1,7 +1,7 @@
 name: FrameForge long-film customer release acceptance
 on:
   push:
-    branches: [main, "feature/**", "claude/**"]
+    branches: [main]
     paths:
       - ".github/workflows/hybrid-creator-extended.yml"
       - "tests/hybrid-p7-extended-windows.cjs"

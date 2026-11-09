@@ -48,8 +48,7 @@ The full voice model (~326 MB) or the light one (~92 MB) downloads once from Hug
 
 ## Tests
 
-CI (`.github/workflows/`) runs on every push to `main`, `feature/**`, `claude/**` and `chore/**`, and on every pull
-request into `main`:
+CI (`.github/workflows/`) runs on every pull request into `main` and on every push to `main`:
 
 - `project-contract.yml`: the 7 quality jobs (source and project tests, real character renders, voice and mix, portable
   video export, the Creator's native HD export, beta usability on desktop and a 390 px viewport, rigged import).
@@ -63,15 +62,30 @@ the rest need `python3 -m http.server 8959`, as in the workflow).
 
 ## Deploying
 
-No Vercel project is connected to GitHub, so a merge never deploys anything. Every deploy is a deliberate, manual step:
+No Vercel project is connected to GitHub, so a merge never deploys anything. **Only release tags ship**:
 
-| Vercel project | URL | Serves | How |
-|---|---|---|---|
-| `frameforge-v6` | https://frameforge-v6.vercel.app | V6 (`2b78e60`) | `tools/deploy-v6.sh` (stages a copy outside the repo) |
-| `frameforge-hybrid-beta` | SSO-protected preview URLs | the Creator, for testing | staging deploys of tested commits |
-| `frameforge-3d-director-preview` | protected | V5 landing (legacy) | **never deploy**; the repo's `.vercel/` link points here, so never run `vercel` inside the repo |
+```bash
+git tag -a v7.0.0 -m "…" origin/main && git push origin v7.0.0   # a tag on main whose commit passed CI
+tools/deploy.sh v7.0.0 --staging      # SSO-protected preview on frameforge-hybrid-beta: check it here first
+tools/deploy.sh v7.0.0 --prod         # https://frameforge-v6.vercel.app (only with the owner's yes)
+tools/deploy.sh v6.9.0 --prod         # roll back = deploy the previous tag
+```
 
-Rules for production are in [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) (phase 0).
+`tools/deploy.sh` refuses a tag that isn't on `main` or has no green "FrameForge code quality" run. It ships the
+tag's files (`git archive`), never the working tree, minus `.vercelignore`, from a staged copy outside the repo.
+
+| Vercel project | URL | Role |
+|---|---|---|
+| `frameforge-v6` | https://frameforge-v6.vercel.app | **production** |
+| `frameforge-hybrid-beta` | SSO-protected preview URLs | **staging**: every release candidate goes here first |
+| `frameforge-3d-director-preview` | protected | legacy V5 landing. **Never deploy**: the repo's `.vercel/` link points here, so never run `vercel` inside the repo |
+
+Releases are listed in [docs/RELEASES.md](docs/RELEASES.md).
+
+## Licence
+
+All rights reserved: see [LICENSE](LICENSE). The repository is public so the source can be read, not reused.
+Third-party parts keep their own licences ([credits.html](credits.html)).
 
 ## Docs
 

@@ -1,0 +1,18 @@
+Copyright (c) 2026 M Dileep Kumar Reddy. All rights reserved.
+
+This repository is public so that its source can be read. That does not grant any licence. No permission is given to
+copy, modify, distribute, host, sell, or make derivative works of this software, its characters, artwork, sets,
+music, sound effects, episodes or documentation, in whole or in part, without the prior written permission of the
+copyright holder.
+
+Third-party components keep their own licences and are not covered by the paragraph above. They are listed, with
+their licences, in credits.html and in the notices next to them, including:
+  - vendor/three@0.180.0 (three.js, MIT)
+  - vendor/onnxruntime-web@1.30.0 (ONNX Runtime Web, MIT)
+  - vendor/mediabunny@1.62.1 (Mediabunny, MPL-2.0)
+  - assets/voice (misaki dictionaries, Apache-2.0; see assets/voice/NOTICE.md)
+  - Kokoro-82M voice model (Apache-2.0), downloaded at run time, not stored in this repository
+
+Films you make with FrameForge are yours.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.

@@ -67,7 +67,7 @@ Do this first, so nothing below can break production by accident.
 1. **Protect `main`:** pull requests only, the 7 quality jobs required, no force-push, no deletion.
 2. **Release from tags.**
    - A release is a tag on `main` (`v7.0.0`, …).
-   - `tools/deploy-v6.sh` becomes `tools/deploy.sh <tag>`. It refuses anything that isn't a tag on `main`, and
+   - `tools/deploy-v6.sh` became `tools/deploy.sh <tag>`. It refuses anything that isn't a tag on `main`, and
      prints the commit and the CI run it is shipping.
    - Rollback = deploy the previous tag.
 3. **One production project.** 🟡 Choose: keep `frameforge-v6` as the production project for the merged product, or
