@@ -37,6 +37,12 @@ const screenPlane=new T.Mesh(new T.PlaneGeometry(3.8,2.14),
 screenPlane.position.set(0,2.1,-2.9);screenPlane.visible=false;scene.add(screenPlane);
 // FrameForge fix (2026-11-09): put the on-set screen on the world's own screen surface. It was fixed at the desk
 // monitor's place, so in the outdoor sets it hung low in front of the sign and left the sign's top third empty.
+// Phase 3: compile every shader once when a project loads, so the first frame of each shot doesn't stall on a
+// shader compile (the p95 spikes in the export report). Hidden objects are included.
+function warmShaders(){
+ try{const hidden=[];scene.traverse(o=>{if(!o.visible){hidden.push(o);o.visible=true}});
+   screenPlane.visible=true;renderer.compile(scene,camera);hidden.forEach(o=>o.visible=false);screenPlane.visible=false}catch{}
+}
 function alignScreenToWorld(){
  const at=session?.seek(0)?.worldAnchors?.screen;
  const outdoor=project?.hybrid?.world?.provider==='procedural'&&project.hybrid.world.template!=='desk';
@@ -251,7 +257,7 @@ async function loadFresh(modelPrefix='/artifacts/voice-model-samples/fresh-v2-ko
  registry=P.createRegistry();
  registerEmberCharacters(registry,{scene,positions:{luna:[-1,0,0],atlas:[1,0,0]}});
  registerEmberWorlds(registry,{scene,renderer});
- registry.lock();session=P.createSession(project,{registry});alignScreenToWorld();
+ registry.lock();session=P.createSession(project,{registry});alignScreenToWorld();warmShaders();
  film='fresh-kokoro';
  return {newText:project.shots.map(x=>x.dialogue),
    markers:mix.markers,duration:mix.duration,projectSchema:project.schema,
@@ -277,7 +283,7 @@ function loadEditable(source){
  const positions=Object.fromEntries(positionIds.map((id,i)=>[id,[(i-(positionIds.length-1)/2)*1.8,0,0]]));
  registerEmberCharacters(registry,{scene,positions});
  registerEmberWorlds(registry,{scene,renderer});
- registry.lock();session=P.createSession(project,{registry});alignScreenToWorld();
+ registry.lock();session=P.createSession(project,{registry});alignScreenToWorld();warmShaders();
  film='editable';editableVoiceReady=false;
  return {duration:session.duration,shots:project.shots.length,voicesGenerated:false};
 }
@@ -400,11 +406,15 @@ function masterWav(){
  return btoa(result);
 }
 // Performance probe (plan phase 3): switch one cost off at a time to measure what a frame spends its time on.
-function perfProbe({shadows=true,physical=true}={}){
+function perfProbe({shadows=true,physical=true,sheen=true,hide=[]}={}){
  renderer.shadowMap.enabled=shadows;renderer.shadowMap.needsUpdate=true;
+ // hide: 'instanced' (grass, rocks, trees), 'points' (snow, stars, motes), 'bigmesh' (meshes over 20k vertices)
+ scene.traverse(o=>{if(o.userData.ffHidden){o.visible=true;delete o.userData.ffHidden}
+   const kind=o.isInstancedMesh?'instanced':o.isPoints?'points':o.isMesh&&o.geometry?.attributes?.position?.count>20000?'bigmesh':null;
+   if(kind&&hide.includes(kind)&&o.visible){o.visible=false;o.userData.ffHidden=true}});
  scene.traverse(o=>{for(const m of [].concat(o.material||[])){
    if(m.isMeshPhysicalMaterial){m.userData.ff??={sheen:m.sheen,clearcoat:m.clearcoat};
-     m.sheen=physical?m.userData.ff.sheen:0;m.clearcoat=physical?m.userData.ff.clearcoat:0;m.needsUpdate=true}}});
+     m.sheen=physical&&sheen?m.userData.ff.sheen:0;m.clearcoat=physical?m.userData.ff.clearcoat:0;m.needsUpdate=true}}});
  return {shadows,physical};
 }
 window.HybridP56QA={create,loadFresh,loadEditable,generateEditableVoices,getEditableProject,getExportAudio,getSurface:()=>overlay,setOutputResolution,frameAt,masterWav,perfProbe,summary:()=>({film,shots:project?.shots.length,

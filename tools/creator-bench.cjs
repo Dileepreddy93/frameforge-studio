@@ -13,7 +13,8 @@ const server=http.createServer((req,res)=>{const f=path.join(root,decodeURICompo
  res.writeHead(200,{'content-type':/\.m?js$/.test(f)?'text/javascript':/\.html$/.test(f)?'text/html':'application/octet-stream'});fs.createReadStream(f).pipe(res)});
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
- const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ // --gpu uses the machine's real GPU (headed launch); the default is software rendering, like CI.
+ const browser=await chromium.launch(args.includes('--gpu')?{headless:false,args:['--ignore-gpu-blocklist']}:{args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  const page=await browser.newPage();
  await page.goto(`http://127.0.0.1:${server.address().port}/hybrid-preview.html`);
  await page.waitForFunction(()=>window.HybridP56Ready);
@@ -21,7 +22,8 @@ const server=http.createServer((req,res)=>{const f=path.join(root,decodeURICompo
  const times=[...Array(N)].map((_,i)=>+(dur*(i+.5)/N).toFixed(3));
  const stat=a=>{const s=[...a].sort((x,y)=>x-y);return {p50:+s[Math.floor(s.length*.5)].toFixed(1),p95:+s[Math.min(s.length-1,Math.floor(s.length*.95))].toFixed(1)}};
  const out={size:`${W}x${H}`,frames:N,variants:{}};
- for(const [name,v] of [['full',{}],['no shadows',{shadows:false}],['no sheen/clearcoat',{physical:false}],['neither',{shadows:false,physical:false}],['full again',{}]]){
+ for(const [name,v] of [['full',{}],['no shadows',{shadows:false}],['no sheen/clearcoat',{physical:false}],['no sheen only',{sheen:false}],['no instanced',{hide:['instanced']}],
+  ['no points',{hide:['points']}],['no big meshes',{hide:['bigmesh']}],['full again',{}]]){
   const ms=await page.evaluate(([v,times])=>{window.HybridP56QA.perfProbe(v);window.HybridP56QA.frameAt(times[0],false);
     return times.map(t=>{const a=performance.now();window.HybridP56QA.frameAt(t,false);
       window.HybridP56QA.getSurface().getContext('2d').getImageData(0,0,1,1);return performance.now()-a})},[v,times]);

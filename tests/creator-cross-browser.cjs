@@ -14,7 +14,8 @@ const OUT=path.resolve(process.env.FRAMEFORGE_XB_OUT||'artifacts/cross-browser')
  try{
   await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('static server did not start')),15000);
     server.stdout.on('data',d=>{if(String(d).includes('static server on')){clearTimeout(timer);resolve()}})});
-  browser=await pw[NAME].launch({headless:true});
+  // CI machines have no GPU: let Firefox use its software WebGL, as Chromium's tests use SwiftShader.
+  browser=await pw[NAME].launch({headless:true,...(NAME==='firefox'?{firefoxUserPrefs:{'webgl.force-enabled':true}}:{})});
   const page=await browser.newPage({viewport:{width:1330,height:930}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(`http://127.0.0.1:${PORT}/creator.html`,{waitUntil:'domcontentloaded',timeout:90000});
@@ -32,6 +33,9 @@ const OUT=path.resolve(process.env.FRAMEFORGE_XB_OUT||'artifacts/cross-browser')
     /^(Cannot open|Scene unavailable)/.test(document.getElementById('status').textContent),null,{timeout:120000});
   const state=await page.evaluate(()=>({status:document.getElementById('status').textContent,
     playable:document.getElementById('play').disabled===false,saving:document.getElementById('storage-status').textContent}));
+  // Without WebGL the Creator must say so in plain words (and what to do), not crash.
+  if(!state.playable)assert.match(state.status,/3D graphics \(WebGL\)|Cannot open/,'a clear message when the Creator cannot start');
+  if(!caps.webgl2&&!state.playable)assert.match(state.status,/WebGL/,'the message names the missing WebGL');
   if(state.playable){
     const still=await page.evaluate(()=>{const w=document.getElementById('engine').contentWindow;
       const r=w.HybridP56QA.frameAt(1,true);return {draw:r.rendererStats.drawCalls,image:r.image}});

@@ -515,8 +515,9 @@ async function bootEditor(){
      refreshVersions();
    }
  }catch(e){
-   text('status','Cannot open the hybrid creator: '+e.message+
-    '. Your original V6 editor remains available.');
+   text('status',e.message==='WEBGL_UNAVAILABLE'?
+    'Cannot open the Creator: this browser has 3D graphics (WebGL) turned off or unavailable. Turn on hardware acceleration in its settings, or use Chrome or Edge on a laptop or desktop.':
+    'Cannot open the hybrid creator: '+e.message+'. Use “Report a problem” to tell us.');
    booting=false;
  }
 }
