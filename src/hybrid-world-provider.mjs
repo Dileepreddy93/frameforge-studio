@@ -123,7 +123,8 @@ export function registerEmberWorlds(registry,{scene,renderer,preparedWorld=null,
      const key=new T.DirectionalLight('#ffca92',2.1);key.position.set(-3,6,5);atmo.group.add(key);
      const light=new T.HemisphereLight('#c4dbff','#303044',1.5);atmo.group.add(light);
      // Use actual atmosphere animation, not a placeholder background; own only our additions.
-     return attachWorld(scene,{...atmo,screenPoint:new T.Vector3(0,2,-3),
+     // The desk monitor hangs above the cast's heads (FrameForge 2026-11-09), so screen shots see it over them.
+     return attachWorld(scene,{...atmo,screenPoint:new T.Vector3(0,3.2,-3),
        dispose(){atmo.dispose?.();floor.geometry.dispose();floor.material.dispose()}}
       ,o,{stageOffset});
    }

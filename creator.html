@@ -39,6 +39,7 @@ footer{padding:16px 24px;color:#acbacc;font-size:12px;border-top:1px solid #3340
 main{display:flex;flex-direction:column;padding:11px}
 main>section.card{display:none}
 main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370px}.monitor img{max-height:420px}.inspector{display:block}header{padding:12px}.card{padding:14px}.cols{grid-template-columns:1fr 1fr}}
+label.check{display:flex;gap:8px;align-items:center;margin:10px 0}label.check input{width:auto;min-height:0}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important}}
 </style></head>
 <body>
@@ -72,6 +73,7 @@ main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370
 <div class="tools"><button id="play" class="primary" disabled>Play</button><button id="still" disabled>Save PNG still</button><button id="render" disabled>Refresh scene</button></div>
 <div id="status" role="status" aria-live="polite">Preparing your project…</div>
 <hr><h2>Sound direction</h2><p class="muted">Original procedurally synthesized music, not licensed tracks or cloud AI. Score automatically ducks beneath dialogue; shot sounds are edited in the inspector.</p>
+<label class="check"><input type="checkbox" id="subtitles"> Subtitles: show every spoken line</label>
 <label for="soundtrack">Musical score</label><select id="soundtrack"><option value="off">None / dialogue only</option><option value="groove">Warm groove</option><option value="tension">Dramatic tension</option><option value="sting">Reveal sting</option><option value="stop">Stop / silence beat</option></select>
 <hr><h2>Voice every line</h2><p class="muted">Uses the local English Kokoro model. Initial model download may be large. Never import someone's voice without consent. Script changes require new speech.</p>
 <div class="tools"><button id="voice" class="primary" disabled>Generate English speech</button></div>

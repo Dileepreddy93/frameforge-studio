@@ -38,7 +38,13 @@ export function createOnSetScreen({width=1600,height=900}={}){
   draw:(shot,elapsed)=>{
     const frame=buildScreenShot(shot,elapsed);
     if(!frame)return false;
+    // FrameForge (2026-11-09): the app is laid out in a 900-px centre column of the 1600×900 canvas. Zoom that column by
+    // 1.3 so its text reads at phone size; the background is filled first so the zoomed edges never show a seam.
+    const Z=1.3;
+    ctx.save();ctx.fillStyle='#0b1018';ctx.fillRect(0,0,1600,900);
+    ctx.setTransform(Z,0,0,Z,800*(1-Z),0);
     drawAppScreen(ctx,frame.app,frame.elapsed,frame.app.title,frame.span);
+    ctx.restore();
     return true;
   }
  });

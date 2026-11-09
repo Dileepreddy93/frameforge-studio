@@ -82,6 +82,7 @@ function renderUI({render3d=true}={}){
  $('world').value=p.hybrid.world.template;
  $('timeofday').value=p.hybrid.world.time||'golden';
  $('soundtrack').value=p.audio.music?.cues?.[0]?.style||'off';
+ $('subtitles').checked=p.hybrid.director?.subtitles===true;
  const cast=$('cast');cast.replaceChildren();
  for(const character of p.characters){
    const area=document.createElement('section'),head=document.createElement('h3');
@@ -229,6 +230,7 @@ function changeProject(action){
 for(const id of ['title','logline'])$(id).onchange=()=>changeProject(()=>editor[id]($(id).value));
 for(const id of ['world','timeofday'])$(id).onchange=()=>changeProject(()=>editor.world($('world').value,$('timeofday').value));
 $('soundtrack').onchange=()=>changeProject(()=>editor.soundtrack($('soundtrack').value));
+$('subtitles').onchange=()=>changeProject(()=>editor.subtitles($('subtitles').checked));
 $('shot-sound').onchange=()=>changeProject(()=>editor.shotSound(selected,$('shot-sound').value));
 for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','visual-prop','prop-mode','prop-actor','ambient-screen','screenKind','screenTitle','screenLines'])
  $(id).onchange=()=>{

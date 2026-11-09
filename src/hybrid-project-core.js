@@ -66,8 +66,10 @@
     });
     const hybrid=p.hybrid;
     if(hybrid?.director!==undefined&&(!OBJ(hybrid.director)||
-      typeof hybrid.director.oneTake!=='boolean'))
-      fail('hybrid.director','Only explicit oneTake mode is supported');
+      typeof hybrid.director.oneTake!=='boolean'||
+      (hybrid.director.subtitles!==undefined&&typeof hybrid.director.subtitles!=='boolean')||
+      Object.keys(hybrid.director).some(k=>!['oneTake','subtitles'].includes(k))))
+      fail('hybrid.director','Director options are oneTake and optional subtitles (true or false)');
 
     if(!OBJ(hybrid)||hybrid.version!==1)fail('hybrid','Expected hybrid version 1');
     const cast=hybrid?.cast;

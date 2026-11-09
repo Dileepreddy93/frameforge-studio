@@ -242,14 +242,31 @@
    // actor-close-up distance (4.8): over half the authored text was cropped.
    // Preserve intentional user framing overrides, but fit the full screen by
    // default (including the .9-unit push move) with a little side breathing room.
-   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?11.8:src.kind==='prop'?4.6:4.8);
+   // Screen shots fill the portrait frame with the app's zoomed centre column (about 3.1 units wide), not the whole
+   // landscape monitor (FrameForge 2026-11-09).
+   const screenFit=1.6/(Math.tan(fov*Math.PI/360)*9/16);
+   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?screenFit:src.kind==='prop'?4.6:5.6);
    const mod={push:-.9,pull:.9,drift:0,orbit:0,static:0}[d.move]||0;
    const distance=baseDist+mod*smooth(progress);
    if(d.move==='orbit')azimuth+=.5*progress;
    if(d.move==='drift')azimuth+=.12*(progress-.5);
-   const raw={position:[focus[0]+Math.sin(azimuth)*distance,
-     focus[1]+.48+Math.sin(progress*Math.PI)*.04,focus[2]+Math.cos(azimuth)*distance],
-     target:[...focus],fov};
+   let camY=focus[1]+.48+Math.sin(progress*Math.PI)*.04;
+   if(src.kind==='screen'){
+     // Rise just enough that the line of sight to the screen's lower edge clears the tallest head standing between
+     // the camera and the screen (head anchors + 0.75 for hair, hats and antennae).
+     const heads=Object.values(anchors).filter(a=>v3(a?.head)&&v3(a?.root));
+     if(heads.length){
+       const top=Math.max(...heads.map(a=>a.head[1]))+.75,castZ=heads.reduce((z,a)=>z+a.root[2],0)/heads.length;
+       const camZ=focus[2]+Math.cos(azimuth)*distance,low=focus[1]-1.1,sa=(camZ-castZ)/Math.max(.01,camZ-focus[2]);
+       if(sa>0&&sa<.98)camY=Math.max(camY,(top-low*sa)/(1-sa));
+     }
+   }
+   // Close-ups aim a little below the head's centre so the whole head and some shoulders fit, with headroom
+   // (FrameForge 2026-11-09: the old aim cropped the top of big heads).
+   const aim=src.kind==='actor'?[focus[0],focus[1]-.32,focus[2]]:[...focus];
+   if(src.kind==='actor')camY-=.18;
+   const raw={position:[focus[0]+Math.sin(azimuth)*distance,camY,focus[2]+Math.cos(azimuth)*distance],
+     target:aim,fov};
    const transition=p.hybrid.director?.oneTake&&f.index>0?'blend':d.transition;
    const blendSeconds=p.hybrid.director?.oneTake&&f.index>0?Math.min(.7,s.duration/3):d.blendSeconds;
    if(transition==='blend'&&f.index>0&&f.localTime<blendSeconds&&blendSeconds>0){

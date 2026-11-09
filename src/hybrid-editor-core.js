@@ -108,6 +108,9 @@
    clearVoice:()=>{voiceRevision=null},
    title:v=>commit(p=>{p.title=safeString(v,120,'Title')}),
    logline:v=>commit(p=>{p.logline=safeString(v,1024,'Story idea')}),
+   // Subtitles: every spoken line shown as text while it plays (FrameForge plan phase 2).
+   subtitles:on=>commit(p=>{if(typeof on!=='boolean')throw Error('Subtitles must be on or off');
+     p.hybrid.director={...(p.hybrid.director||{oneTake:false}),subtitles:on}}),
    world:(template,time='golden')=>commit(p=>{
      p.hybrid.world={provider:'procedural',template:match(template,WORLDS,'world'),
        time:match(time,['morning','golden','night'],'time'),foliage:.07,wind:.5,particles:[]}}),
@@ -296,7 +299,7 @@
          voiceLock:'Consistent original local voice'},sheetStatus:'draft',expressions:[...EMOTIONS]})),
      hybrid:{version:1,cast:Object.fromEntries(ids.map(id=>[id,{provider:'procedural',template:id}])),
        world:{provider:'procedural',template:'desk',time:'night',foliage:.07,wind:.5,particles:[]},
-       assets:[],director:{oneTake:false}},
+       assets:[],director:{oneTake:false,subtitles:true}},
      shots:original.shots.map(s=>{
        const move=s.framing?.move;
        const out={id:s.id,speaker:s.speaker,dialogue:s.dialogue,duration:+s.duration.toFixed(3),

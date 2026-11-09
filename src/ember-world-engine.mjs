@@ -23,7 +23,7 @@ export const PARTICLES=['leaves','fireflies','dust','pollen','snow','rain'];
 export const NATURE={
   forest:{trees:95,pine:.35,treeMin:9,grass:9000,flowers:160,rocks:16,mushrooms:14,ground:'grass',logs:true,defaults:t=>['leaves','dust',...(t==='morning'?[]:['fireflies'])]},
   meadow:{trees:26,pine:.15,treeMin:22,grass:15000,flowers:900,rocks:8,mushrooms:4,ground:'grass',logs:false,defaults:t=>t==='night'?['fireflies']:['pollen','dust']},
-  snow:{trees:80,pine:.92,treeMin:9,grass:1600,flowers:0,rocks:14,mushrooms:0,ground:'snow',logs:true,defaults:()=>['snow'],tint:{morning:{fog:'#dfe7ee',sky:'#e6f0ff',ground:'#c9d3dc',fogD:.028},golden:{fog:'#e7c7b0',ground:'#c9b8a8'},night:{fog:'#1a2436',ground:'#3a4658'}}}
+  snow:{trees:80,pine:1,treeMin:9,grass:1600,flowers:0,rocks:14,mushrooms:0,ground:'snow',logs:true,defaults:()=>['snow'],tint:{morning:{fog:'#dfe7ee',sky:'#e6f0ff',ground:'#c9d3dc',fogD:.028},golden:{fog:'#e7c7b0',ground:'#c9b8a8'},night:{fog:'#1a2436',ground:'#3a4658'}}}
 };
 // Night defaults to a campfire in forest and snow; o.campfire=false removes it.
 export function buildNature(renderer,o={}){
@@ -37,6 +37,12 @@ export function buildNature(renderer,o={}){
   group.add(sky);let env=null;
   if(renderer?.isWebGLRenderer){const pm=new THREE.PMREMGenerator(renderer),sc=new THREE.Scene(),s2=new Sky();s2.scale.setScalar(10);s2.material.uniforms.turbidity.value=T.turbidity;s2.material.uniforms.rayleigh.value=T.rayleigh;s2.material.uniforms.sunPosition.value.copy(sun);sc.add(s2);env=pm.fromScene(sc,.03).texture;pm.dispose();}
   if(time==='night'){
+    // FrameForge fix (2026-11-09): with the sun below the horizon the physical sky renders a muddy grey-brown. At night
+    // a painted gradient dome (deep blue overhead, lighter toward the horizon) replaces it; the env map is unchanged.
+    sky.visible=false;
+    const nightTex=canvasTex(8,256,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#03050f');g.addColorStop(.38,'#0a1230');g.addColorStop(.5,snowy?'#22325a':'#1a2850');g.addColorStop(.56,snowy?'#2c3d66':'#22305a');g.addColorStop(1,'#0c1226');x.fillStyle=g;x.fillRect(0,0,w,h);});
+    nightTex.wrapS=nightTex.wrapT=THREE.ClampToEdgeWrapping;nightTex.repeat.set(1,1);
+    group.add(new THREE.Mesh(new THREE.SphereGeometry(170,32,16),new THREE.MeshBasicMaterial({map:nightTex,side:THREE.BackSide,fog:false,depthWrite:false})));
     const sp=[],rs=rng(3);for(let i=0;i<900;i++){const th=rs()*PI*2,ph=Math.acos(rs()*.85+.12);sp.push(Math.sin(ph)*Math.cos(th)*85,Math.cos(ph)*85,Math.sin(ph)*Math.sin(th)*85);}
     const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sp,3));group.add(new THREE.Points(sg,new THREE.PointsMaterial({color:'#e8eeff',size:1.6,sizeAttenuation:false,transparent:true,opacity:.85,fog:false})));
     const moon=new THREE.Mesh(new THREE.SphereGeometry(3,32,16),new THREE.MeshBasicMaterial({color:'#f4f1e2',fog:false}));moon.position.copy(V(-.3,.5,-1).normalize().multiplyScalar(80));group.add(moon);
@@ -51,7 +57,7 @@ export function buildNature(renderer,o={}){
   const grassTex=snowy?canvasTex(512,512,(x,w,h)=>{x.fillStyle='#e9eef2';x.fillRect(0,0,w,h);const g=rng(13);for(let i=0;i<5000;i++){x.fillStyle=g()<.5?'#dde4ea':'#f7f9fb';x.fillRect(g()*w,g()*h,2+g()*5,2+g()*4);}},28):canvasTex(512,512,(x,w,h)=>{x.fillStyle=time==='golden'?'#5e6b2c':'#4c6b2f';x.fillRect(0,0,w,h);const g=rng(11);for(let i=0;i<9000;i++){const s=g();x.fillStyle=s<.33?'#3e5a26':s<.66?'#6a8a3a':'#58772f';if(time==='golden'&&s>.9)x.fillStyle='#8c8a3a';x.fillRect(g()*w,g()*h,1+g()*2,3+g()*6);}},28);
   const gGeo=new THREE.PlaneGeometry(220,220,200,200);gGeo.rotateX(-PI/2);const gp=gGeo.attributes.position;for(let i=0;i<gp.count;i++)gp.setY(i,groundAt(gp.getX(i),gp.getZ(i)));gGeo.computeVertexNormals();
   const ground=new THREE.Mesh(gGeo,new THREE.MeshStandardMaterial({map:grassTex,roughness:snowy?.7:.96,color:time==='night'?(snowy?'#7d8aa8':'#55705a'):'#ffffff'}));ground.receiveShadow=true;group.add(ground);
-  const dirt=canvasTex(512,512,(x,w,h)=>{const gr=x.createRadialGradient(w/2,h/2,10,w/2,h/2,w/2);const c0=snowy?'214,222,230':'122,92,60',c1=snowy?'200,210,220':'110,84,54';gr.addColorStop(0,`rgba(${c0},1)`);gr.addColorStop(.6,`rgba(${c1},.9)`);gr.addColorStop(1,`rgba(${c1},0)`);x.fillStyle=gr;x.fillRect(0,0,w,h);const g=rng(5);for(let i=0;i<2500;i++){x.fillStyle=`rgba(${60+g()*60},${45+g()*40},${30+g()*25},${.25+g()*.3})`;const rr=g()*w*.45,a=g()*PI*2;x.beginPath();x.arc(w/2+Math.cos(a)*rr,h/2+Math.sin(a)*rr,1+g()*3,0,PI*2);x.fill();}});
+  const dirt=canvasTex(512,512,(x,w,h)=>{const gr=x.createRadialGradient(w/2,h/2,10,w/2,h/2,w/2);const c0=snowy?'214,222,230':'122,92,60',c1=snowy?'200,210,220':'110,84,54';gr.addColorStop(0,`rgba(${c0},1)`);gr.addColorStop(.6,`rgba(${c1},.9)`);gr.addColorStop(1,`rgba(${c1},0)`);x.fillStyle=gr;x.fillRect(0,0,w,h);const g=rng(5);for(let i=0;i<2500;i++){x.fillStyle=snowy?`rgba(${170+g()*50},${185+g()*45},${205+g()*40},${.25+g()*.3})`:`rgba(${60+g()*60},${45+g()*40},${30+g()*25},${.25+g()*.3})`;const rr=g()*w*.45,a=g()*PI*2;x.beginPath();x.arc(w/2+Math.cos(a)*rr,h/2+Math.sin(a)*rr,1+g()*3,0,PI*2);x.fill();}});
   const clearing=new THREE.Mesh(new THREE.CircleGeometry(8,64),new THREE.MeshStandardMaterial({map:dirt,transparent:true,roughness:1,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1}));clearing.rotation.x=-PI/2;clearing.position.y=.01;clearing.receiveShadow=true;group.add(clearing);
 
   // Trees: instanced trunks, leafy canopy blobs and pine tiers, each swaying on its own phase.
@@ -82,9 +88,11 @@ export function buildNature(renderer,o={}){
   const NR=preset.rocks,rocks=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(.5,1),new THREE.MeshStandardMaterial({color:snowy?'#9aa3ab':'#7a7c74',roughness:.95}),NR);rocks.castShadow=rocks.receiveShadow=true;
   for(let i=0;i<NR;i++){const a=r()*PI*2,d=6+r()*6,x=Math.sin(a)*d,z=Math.cos(a)*d*.8-1;m4.compose(V(x,groundAt(x,z)+.1,z),q.setFromEuler(new THREE.Euler(r(),r()*3,r())),V(.5+r()*.9,.35+r()*.5,.5+r()*.8));rocks.setMatrixAt(i,m4);}group.add(rocks);
   const stems=new THREE.InstancedMesh(new THREE.CylinderGeometry(.05,.07,.3,8),new THREE.MeshStandardMaterial({color:'#efe6d2',roughness:.8}),Math.max(1,preset.mushrooms)),caps=new THREE.InstancedMesh(new THREE.SphereGeometry(.16,16,10,0,PI*2,0,PI/2),new THREE.MeshStandardMaterial({color:'#c2412f',roughness:.55}),Math.max(1,preset.mushrooms));
-  for(let i=0;i<preset.mushrooms;i++){const t=trees[i*3%trees.length],x=t.x+.8,z=t.z+.6,y=groundAt(x,z),s=.7+r()*.8;m4.compose(V(x,y+.15*s,z),q.identity(),V(s,s,s));stems.setMatrixAt(i,m4);m4.compose(V(x,y+.3*s,z),q.identity(),V(s,s*.8,s));caps.setMatrixAt(i,m4);}group.add(stems,caps);
+  for(let i=0;i<preset.mushrooms;i++){const t=trees[i*3%trees.length],x=t.x+.8,z=t.z+.6,y=groundAt(x,z),s=.7+r()*.8;m4.compose(V(x,y+.15*s,z),q.identity(),V(s,s,s));stems.setMatrixAt(i,m4);m4.compose(V(x,y+.3*s,z),q.identity(),V(s,s*.8,s));caps.setMatrixAt(i,m4);}
+  // FrameForge fix: a preset with no mushrooms/flowers drew one unplaced instance at the origin (a red cap by the cast's feet).
+  stems.count=caps.count=preset.mushrooms;group.add(stems,caps);
   const flowers=new THREE.InstancedMesh(new THREE.SphereGeometry(.05,8,6),new THREE.MeshStandardMaterial({roughness:.6,emissiveIntensity:.0}),Math.max(1,preset.flowers)),fc=['#fff6e6','#ffd45a','#ff9ac2','#b9a2ff'];
-  for(let i=0;i<preset.flowers;i++){const a=r()*PI*2,d=4.5+r()*(preset.flowers>300?24:9),x=Math.sin(a)*d,z=Math.cos(a)*d;m4.compose(V(x,groundAt(x,z)+.22+r()*.12,z),q.identity(),V(1,1,1));flowers.setMatrixAt(i,m4);flowers.setColorAt(i,new THREE.Color(fc[i%4]));}group.add(flowers);
+  for(let i=0;i<preset.flowers;i++){const a=r()*PI*2,d=4.5+r()*(preset.flowers>300?24:9),x=Math.sin(a)*d,z=Math.cos(a)*d;m4.compose(V(x,groundAt(x,z)+.22+r()*.12,z),q.identity(),V(1,1,1));flowers.setMatrixAt(i,m4);flowers.setColorAt(i,new THREE.Color(fc[i%4]));}flowers.count=preset.flowers;group.add(flowers);
   if(preset.logs)for(const [x,z,ry] of [[-4.6,-1.2,.4],[4.9,-2.2,-.6]]){const log=new THREE.Mesh(new THREE.CylinderGeometry(.32,.36,3,14),bark);log.rotation.set(0,ry,PI/2);log.position.set(x,.3,z);log.castShadow=log.receiveShadow=true;group.add(log);}
 
   // Wooden sign for screen events, with a hanging lantern.
@@ -112,6 +120,7 @@ export function buildNature(renderer,o={}){
   const keyGroup=new THREE.Group();keyGroup.position.set(2.5,0,1.9);group.add(keyGroup);
   const kStem=new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,.5,16),new THREE.MeshStandardMaterial({color:'#f2ead6',roughness:.7}));kStem.position.y=.25;kStem.castShadow=true;keyGroup.add(kStem);
   const kCap=new THREE.Mesh(new THREE.SphereGeometry(.55,32,16,0,PI*2,0,PI/2),new THREE.MeshStandardMaterial({color:'#ff6a4a',roughness:.45,emissive:'#ff4a2a',emissiveIntensity:time==='night'?.9:.25}));kCap.position.y=.48;kCap.scale.y=.75;kCap.castShadow=true;keyGroup.add(kCap);
+  if(snowy)kStem.visible=kCap.visible=false;   // FrameForge: a glowing red mushroom doesn't belong in snow; the press anchor stays
 
   // Atmosphere: sunbeams with dust, falling leaves, fireflies; a campfire at night.
   const beamTex=canvasTex(64,512,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,240,210,0)');g.addColorStop(.35,'rgba(255,236,200,.55)');g.addColorStop(1,'rgba(255,236,200,0)');x.fillStyle=g;x.fillRect(0,0,w,h);const g2=x.createLinearGradient(0,0,w,0);g2.addColorStop(0,'rgba(0,0,0,1)');g2.addColorStop(.5,'rgba(0,0,0,0)');g2.addColorStop(1,'rgba(0,0,0,1)');x.globalCompositeOperation='destination-out';x.fillStyle=g2;x.fillRect(0,0,w,h);});
