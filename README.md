@@ -1,4 +1,9 @@
-> **Current project state (October 24, 2026):** This README's original material documents the preserved V3 backup. For the active V5+ studio, implementation phases, exact evidence and new-chat continuation, start at [CONTINUE_HERE.md](CONTINUE_HERE.md), [nine-phase contract](docs/IMPLEMENTATION_PLAN_P0_P8.md) and [execution ledger](docs/EXECUTION_LEDGER.md). V3 production is intentionally preserved. Development now includes merged V5.3 speech work on `develop`; quality is still not reference-approved.
+> **Current state (2026-10-26, V6 after M4):** live at https://frameforge-v6.vercel.app (its own Vercel project).
+> DEV, BLUE and ORANGE are approved designs built in 3D. Voices, music and MP4 export run in the buyer's browser, offline
+> after one visit, with no GPL/LGPL code ([credits](credits.html)). Both episodes are re-voiced and rendered at 1080×1920.
+> **Not reference parity**: the ranked gaps are in [docs/releases/M4_3_REFERENCE_COMPARISON.md](docs/releases/M4_3_REFERENCE_COMPARISON.md).
+> Start at [CONTINUE_HERE.md](CONTINUE_HERE.md). Below: the original V3 backup notes (tag `v3.0-stable`), then how
+> the V6 voices, mixes and renders work.
 
 ---
 

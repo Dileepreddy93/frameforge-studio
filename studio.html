@@ -2,8 +2,8 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FrameForge Studio — Director Preview</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:block}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;min-height:400px}.shots{grid-template-columns:1fr 1fr}}
-#stage>.frame-meta,#sceneTitle,#subtitle,#screenInsert{display:none!important}
+:root{color-scheme:dark;font-family:Inter,system-ui,Arial;color:#e8ecfa;background:#090d17}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}header{padding:15px 22px;background:#111626;border-bottom:1px solid #303a59;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:850;color:inherit;text-decoration:none}.brand em{font-style:normal;color:#a184ff}.hint{color:#a6b0d1;font-size:12px}.tag{padding:7px 11px;background:#222b44;border:1px solid #414f71;border-radius:40px;color:#c5d5ff;font-size:11px}.wrap{display:grid;grid-template-columns:270px minmax(300px,1fr) 320px;min-height:calc(100vh - 67px)}aside{background:#121827;padding:20px;border-right:1px solid #303a59}aside.right{border-right:0;border-left:1px solid #303a59}h3{font-size:14px;margin:2px 0 17px}label{color:#b4c1dc;font-size:12px;display:block;margin:15px 0 7px}textarea,input,select{background:#1c2540;border:1px solid #394968;border-radius:10px;padding:10px;color:white;width:100%;font-size:13px}textarea{height:97px;resize:vertical}button{cursor:pointer;background:#27334e;color:#f8f9ff;border:1px solid #475674;border-radius:10px;padding:10px 12px;font-size:13px}button:hover{border-color:#927bff}button.primary{background:linear-gradient(110deg,#7049e8,#9b50ee);border:0;font-weight:650}button.full{width:100%;margin-top:10px}.note{background:#20263d;border:1px solid #3c4664;border-radius:12px;padding:11px;color:#b6c4db;font-size:12px;line-height:1.5;margin:15px 0}.sep{height:1px;background:#303a59;margin:20px 0}main{padding:21px 18px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.viewport{height:min(67vh,715px);min-height:360px;max-width:440px;aspect-ratio:9/16;margin:12px auto;border:1px solid #36446d;border-radius:17px;overflow:hidden;position:relative;background:radial-gradient(ellipse at top,#3b166b,#0e0926 72%);box-shadow:0 25px 70px #0007}.viewport canvas{display:block;width:100%;height:100%}.frame-meta{position:absolute;top:12px;left:12px;border:1px solid #717db45c;background:#0c1238b0;border-radius:30px;padding:6px 10px;font-size:11px;pointer-events:none}.subtitle{position:absolute;bottom:14%;left:7%;width:86%;font-size:clamp(16px,2vw,24px);font-weight:800;line-height:1.23;text-align:center;text-shadow:0 3px 6px #000,0 0 12px #000;pointer-events:none}.failure{position:absolute;inset:0;display:none;place-content:center;gap:12px;padding:30px;text-align:center;background:#191b30;color:#ffc7c7;z-index:10}.failure p{color:#d8dcf0;font-size:13px;line-height:1.5;margin:0}.transport{max-width:550px;margin:14px auto;display:flex;gap:8px;align-items:center}.transport input{padding:0;flex:1;accent-color:#9b6bff}.clock{font-size:11px;color:#b4c2de;white-space:nowrap}.shots{display:flex;flex-direction:column;gap:9px;max-height:310px;overflow:auto}.shot{padding:12px;border-radius:10px;background:#1b2540;border:1px solid #303f61;text-align:left}.shot.sel{border-color:#a264ff;background:#31224c}.shot small{display:block;color:#b3b9dd;margin-top:4px;font-size:11px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:13px 9px;background:#1b2540;border:1px solid #303f61;border-radius:9px;text-align:center}.metric b{display:block;font-size:20px}.metric span{font-size:10px;color:#adbbd1}.fine{font-size:11px;color:#8e9ebd;line-height:1.5}#mp4Progress{width:100%;margin-top:10px;accent-color:#9b6bff}.report{margin-top:10px;padding:10px;border:1px solid #394968;border-radius:10px;background:#141b2e;font-size:11px;line-height:1.5}.report b{display:block;font-size:12px;margin-bottom:4px}.report.ok b{color:#9fe0b5}.report.bad b{color:#ffb4b4}.report ul{margin:4px 0 6px;padding-left:16px}.report li.bad{color:#ffb4b4}.report li.skip{color:#8e9ebd}.report a{color:#c5d5ff}.editbar{display:flex;gap:8px;align-items:center;max-width:550px;margin:0 auto 10px}.editbar button{padding:6px 12px;font-size:12px}.editbar button:disabled{opacity:.45;cursor:default}.recovery{max-width:550px;margin:0 auto 12px;padding:10px 12px;border:1px solid #3f6f55;background:#173126;border-radius:10px;font-size:12px;color:#cfeedd;display:flex;gap:10px;align-items:center;justify-content:space-between}.recovery[hidden]{display:none}.recovery button{padding:6px 10px;font-size:12px;white-space:nowrap}textarea.script{height:300px;font:12px/1.55 "Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace;white-space:pre;overflow-wrap:normal;overflow:auto}#scriptHelp summary{cursor:pointer;color:#b4c1dc;margin-top:8px}#scriptHelp code{color:#c5d5ff}#scriptStatus{margin-top:8px}#scriptStatus[data-state=error]{color:#ffb4b4}#scriptStatus[data-state=ok]{color:#9fe0b5}#status{font-size:12px;color:#b9c5e9}.controlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:1080px){.wrap{grid-template-columns:220px 1fr}.right{grid-column:1/-1;border-top:1px solid #303a59}.shots{display:grid;grid-template-columns:repeat(3,1fr);max-height:unset}}@media(max-width:700px){header{padding:12px}.tag{display:none}.wrap{display:flex;flex-direction:column}main{order:1}aside.right{order:2}.wrap>aside:not(.right){order:3}aside,aside.right{border:0;border-bottom:1px solid #303a59}main{padding:12px}.viewport{height:64vh;height:min(64vh,calc(100svh - 215px));min-height:300px}.shots{grid-template-columns:1fr 1fr}}
+#stage>.frame-meta,#sceneTitle,#subtitle{display:none!important}
 .shottools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 2px}.shottools button{padding:7px 4px}
 .castgrid{display:grid;grid-template-columns:62px 1fr 1fr;gap:6px;align-items:center;margin-top:6px}.castgrid b{font-size:12px}
 h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{color:#ffcf7a}
@@ -11,15 +11,15 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 .voicegrid{display:grid;grid-template-columns:58px 1fr 34px;gap:8px 6px;align-items:center;margin-top:10px}.prongrid{display:grid;grid-template-columns:1fr 1fr 30px 30px;gap:6px;align-items:center;margin-top:8px}.prongrid input{width:100%;margin:0;padding:7px}.prongrid button{padding:6px 0}.voicegrid b{font-size:12px}.voicegrid select{padding:7px}.voicegrid input{width:100%;margin:4px 0 0}
 .meter{height:6px;border-radius:3px;background:#1c2540;overflow:hidden;margin-top:8px}.meter>span{display:block;height:100%;width:0;background:#9b50ee}
 </style></head>
-<body><header><div><a class="brand" href="./" title="FrameForge home">◈ Frame<em>Forge</em> <span style="font-size:12px;color:#a7b3d6">STUDIO</span></a><div class="hint">LIVE DIRECTOR PREVIEW · Original 3D characters · <a href="./asset-lab.html" style="color:#9de6df;font-weight:750" title="Inspect real rigged GLB imports">Rigged character lab ↗</a></div></div><div class="tag">STUDIO · What you see is what you export</div></header>
-<div class="wrap"><aside><h3>Quick Create</h3><label>Story idea</label><textarea id="idea">A developer asks two robot assistants to fix one tiny bug. They argue over a missing semicolon.</textarea><label>Language</label><select id="language"><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option></select><label>Episode template</label><select id="preset"><option value="comedy">ZERO LATENCY — Voiced episode (41.8s)</option><option value="mystery">Mystery storyboarding (no voice)</option></select><button id="build" class="primary full">✦ Build episode timeline</button>
+<body><header><div><a class="brand" href="./" title="FrameForge home">◈ Frame<em>Forge</em> <span style="font-size:12px;color:#a7b3d6">STUDIO</span></a><div class="hint">LIVE DIRECTOR PREVIEW · Original 3D characters · <a href="./credits.html" style="color:#9de6df;font-weight:750" title="Open-source parts and their licences">Credits &amp; licences</a></div></div><div class="tag">STUDIO · What you see is what you export</div></header>
+<div class="wrap"><aside><h3>Write an episode</h3><label for="preset">Start from</label><select id="preset"><option value="comedy">ZERO LATENCY — Episode 01</option></select><label for="script">Script</label><textarea id="script" class="script" spellcheck="true" rows="14" aria-describedby="scriptHelp scriptStatus"></textarea><details class="fine" id="scriptHelp"><summary>How to write it</summary><p>One line per shot: <code>DEV (worried): Our app is slow.</code> Speakers: DEV, BLUE, ORANGE. Emotions in brackets: happy, worried, surprised, angry, sad, thinking.</p><p>Story window: <code>[wall bad] p95 load = 12.0 s</code> above the lines it sits behind. A screen shot: <code>[screen good] Load time = 0 ms | Instant.</code> under the line spoken over it. <code># Title</code> and <code>&gt; one-line summary</code> at the top.</p><p>The studio picks the cameras, a wide, reaction cuts, acting, music and sound, then voices every line in your browser. Fine-tune any shot on the right.</p></details><button id="build" class="primary full">✦ Make the episode from this script</button><div class="fine" id="scriptStatus" role="status" aria-live="polite"></div>
 <label for="projectImport">Import a FrameForge JSON episode</label>
 <input id="projectImport" type="file" accept=".json,application/json" aria-describedby="projectImportStatus">
-<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">Every episode is one JSON file: script, performances, cameras, music and sound cues. Edit shots on the right: changed lines are voiced in your browser (Voices, below), then export an MP4 here. Download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Set design</label><select id="environment"><option value="night">Midnight Studio</option><option value="sunset">Sunset Laboratory</option><option value="noir">Noir Workshop</option></select><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><label>Pronunciations</label><p class="fine">For names the voices get wrong: write how the word sounds, the stressed syllable in capitals (koh-KOR-oh).</p><div class="prongrid" id="pronGrid"></div><button id="pronAdd" class="full">+ Add a pronunciation</button><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><div class="fine" id="mp4Status" aria-live="polite">Offline frame-accurate MP4 export. Requires a browser supporting WebCodecs; export speed depends on your machine.</div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records your WebGL preview with its Kokoro dialogue; WebM, not MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Play the 41.8-second English episode with three Kokoro voices, 43 timed Foley/UI effects and a mastered stereo score. Preview selected dialogue speaks the line in its character's voice, with the emotion set for the speaker in that shot. Hindi/Telugu voices are not connected yet.</p></aside>
-<main><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div id="screenInsert" style="display:none;position:absolute;inset:17% 8% 23%;background:linear-gradient(155deg,#15263f,#070c1a);border:2px solid #5369a4;border-radius:14px;box-shadow:0 12px 40px #000b;padding:20px;color:white;"><div style="font:700 11px Arial;color:#a0bce7;letter-spacing:.15em">SYSTEM DASHBOARD</div><div style="margin-top:38%;text-align:center;font:900 44px Arial" id="screenNumber">0 ms</div><div style="text-align:center;color:#b8d4e2;font-size:12px" id="screenDescription">Page response time</div></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div><details id="renderedFilm" style="max-width:550px;margin:16px auto;background:#1a2540;border:1px solid #53699d;border-radius:14px;padding:12px"><summary style="cursor:pointer;font-weight:750;color:#fff;font-size:14px">▶ Previous version · V3 film (41.8s)</summary><p class="fine" style="margin:9px 0 12px">New directed-acting cut: native 480×854, 30 FPS, 1,254 frames, three English voices, 43 Foley cues and synchronized stereo audio. Facial animation is still below the reference-quality target.</p><video controls playsinline preload="metadata" style="display:block;width:min(100%,320px);margin:8px auto;border-radius:12px" src="media/zero-latency-acting-v3-with-foley.mp4">Your browser cannot play MP4 video.</video><p style="font-size:12px;text-align:center;margin:12px auto 2px"><a style="color:#c5b4ff" href="media/zero-latency-acting-v3-with-foley.mp4" target="_blank" rel="noopener noreferrer">Open MP4 directly in a new tab</a></p></details>
+<div class="fine" id="projectImportStatus" role="status">Choose a validated episode file. Custom 3D rigs are not yet supported.</div><div class="note">An episode is one file: its script, performances, cameras, music and sound cues. Fine-tune shots on the right; changed lines are voiced in your browser (Voices, below). Export the MP4 below, and download the episode to keep it.</div><div class="sep"></div><h3>Production controls</h3><label>Lighting intensity</label><input id="lighting" type="range" min=".5" max="3" step=".1" value="1.3"><label>Camera movement</label><select id="motion"><option value="cinematic">Cinematic drift</option><option value="static">Static tripod</option></select><div class="sep"></div><h3>Looks</h3><div class="looks" id="looks"></div><button id="resetLooks" class="full">Reset looks</button><p class="fine">Colours save with the episode.</p><div class="sep"></div><h3>Voices</h3><label for="voiceModel">Voice model</label><select id="voiceModel"><option value="full">Full quality · 326 MB download</option><option value="light">Light · 92 MB download (8-bit; listen before you choose)</option></select><div class="fine" id="voiceEngine" role="status">Checking for the voice model…</div><div class="meter" id="voiceMeter" hidden><span></span></div><button id="voiceDownload" class="full" hidden>⬇ Download voices · 326 MB, once</button><div class="voicegrid" id="voiceGrid"></div><label>Pronunciations</label><p class="fine">For names the voices get wrong: write how the word sounds, the stressed syllable in capitals (koh-KOR-oh).</p><div class="prongrid" id="pronGrid"></div><button id="pronAdd" class="full">+ Add a pronunciation</button><button id="voiceLines" class="primary full">🎙 Voice every line</button><p class="fine" id="voiceStatus" aria-live="polite">Voices run in your browser: no keys, no server, and they work offline once downloaded. Each line is spoken with its speaker's emotion in that shot (Shot inspector).</p><div class="sep"></div><h3>Export</h3><button id="download" class="full">Download episode JSON</button><label>Final MP4 resolution</label><select id="mp4Res"><option value="720">720 × 1280 · HD</option><option value="1080">1080 × 1920 · Full HD</option><option value="360">360 × 640 · Fast draft</option></select><button class="primary full" id="exportMP4">◆ Export MP4 with dialogue (30 FPS)</button><progress id="mp4Progress" max="1" value="0" hidden></progress><button id="exportCancel" class="full" hidden>✕ Cancel export</button><div class="fine" id="mp4Status" aria-live="polite">Frame-exact MP4 export in your browser (Chrome or Edge). Speed depends on your computer; every export is checked afterwards.</div><div class="report" id="exportReport" hidden></div><button id="record" class="full">● Record realtime preview (WebM)</button><div class="fine" id="recordStatus">Records the monitor in real time as it plays, with sound; WebM, not MP4. For the finished film, use Export MP4.</div><button id="narrate" class="full">▶ Preview selected dialogue</button><button id="stopSpeech" class="full">Stop voice preview</button><p class="fine">Preview selected dialogue speaks the selected line in its character's voice, with the emotion set for the speaker in that shot. Voices are English, with American and British accents.</p></aside>
+<main><div class="recovery" id="recovery" role="status" hidden></div><div class="editbar"><button id="undo" disabled title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" disabled title="Redo (Ctrl+Shift+Z)">↷ Redo</button><span id="saveState" class="fine" aria-live="polite">Your changes are saved in this browser as you work.</span></div><div class="row"><div><b>Cinematic 3D monitor</b><div class="hint">Live 9:16 animation · camera-directed scene</div></div><span id="status">Loading engine…</span></div><div class="viewport" id="stage"><div class="frame-meta">● LIVE 3D · FRAMEFORGE</div><div id="sceneTitle" style="position:absolute;right:12px;top:14px;font-size:11px;font-weight:800;letter-spacing:.11em;color:#d9e7f6;background:#0a1025b0;border:1px solid #47577e;border-radius:7px;padding:7px 9px;pointer-events:none;">THE PROMISE</div><div class="subtitle" id="subtitle"></div><div class="failure" id="failure">The 3D renderer could not start. Check WebGL and connection to the Three.js CDN.</div></div>
 <div class="transport"><button class="primary" id="play">▶ Play</button><button id="stop">■ Stop</button><input id="scrub" type="range" min="0" max="30" step=".05" value="0"><span class="clock" id="clock">00:00 / 00:30</span></div><p class="fine" style="max-width:550px;margin:auto">Each line is voiced separately and sets its shot length; music ducks under speech and the mouth follows each line. Play, scrub or click a shot: the monitor shows the exact frame that exports.</p></main>
 <aside class="right"><h3>Episode dashboard</h3><div class="metrics"><div class="metric"><b id="count">6</b><span>DIRECTED SHOTS</span></div><div class="metric"><b id="duration">30s</b><span>TOTAL DURATION</span></div></div><div class="sep"></div><h3>Shot editor</h3><div class="shots" id="shots"></div><div class="shottools"><button id="shotUp" title="Move this shot earlier">↑ Earlier</button><button id="shotDown" title="Move this shot later">↓ Later</button><button id="shotDup">Duplicate</button><button id="shotDel">Delete</button></div>
-<label>Title card</label><input id="shotTitle" maxlength="60">
+<label for="shotTitle">Shot name <span class="fine">(in the shot list and on the monitor; not in the exported film)</span></label><input id="shotTitle" maxlength="60">
 <label>Selected dialogue</label><textarea id="dialogue"></textarea><div class="controlrow"><div><label>Speaker</label><select id="speaker"><option value="dev">Developer</option><option value="blue">Blue assistant</option><option value="orange">Orange assistant</option></select></div><div><label>Camera</label><select id="camera"><option value="wide">Wide</option><option value="dev">Developer</option><option value="blue">Blue robot</option><option value="orange">Orange robot</option><option value="duo">Two-shot</option><option value="screen">Screen insert</option></select></div></div><button id="apply" class="primary full">Apply line changes</button>
 <h4>Camera</h4><div class="controlrow"><div><label>Move</label><select id="move"><option value="push">Push in</option><option value="pull">Pull out</option><option value="drift">Drift</option><option value="static">Locked off</option></select></div><div><label>Amount</label><input id="moveAmount" type="range" min="0" max="1.2" step=".05"></div></div>
 <label>Dutch angle <span id="rollValue"></span></label><input id="roll" type="range" min="-12" max="12" step="1">
@@ -28,16 +28,53 @@ h4{margin:16px 0 4px;font-size:13px;color:#c5b4ff;letter-spacing:.04em}.stale{co
 <h4>Performance</h4><div class="castgrid" id="castGrid"></div>
 <p class="fine" id="audioState" role="status"></p><p class="fine">Click a shot to select it. Title, camera and performance update live; line, speaker, the speaker's emotion, timing and shot order changes are re-voiced in your browser.</p></aside></div>
 <script src="./src/project-core.js"></script>
+<script src="./src/script-core.js"></script>
 <script src="./src/performance-core.js"></script>
 <script src="./src/speech-performance-core.js"></script>
 <script src="./design/dev-forms.js"></script>
 <script src="./design/dev-character.js"></script>
 <script src="./design/robot-forms.js"></script>
 <script src="./design/robot-character.js"></script>
+<script src="./design/set-forms.js"></script>
+<script src="./design/set-arena.js"></script>
+<script src="./src/arena-set.js"></script>
 <script src="./src/dev-acting-core.js"></script>
 <script src="./src/robot-acting-core.js"></script>
+<script>
+// Start-up guard (M6.1): if the studio can't start, say why and what to do, instead of "Loading engine…" forever.
+(function(){
+ let shown=false;
+ // The first reason is the specific one; later errors are its consequences.
+ const show=(title,detail)=>{
+  if(window.FrameForgeQA||shown)return;shown=true;
+  const box=document.getElementById('failure');if(!box)return;
+  box.innerHTML='';const h=document.createElement('b');h.textContent=title;const p=document.createElement('p');p.textContent=detail;
+  const again=document.createElement('button');again.textContent='Try again';again.onclick=()=>location.reload();
+  box.append(h,p,again);box.style.display='grid';
+  const st=document.getElementById('status');if(st)st.textContent='The studio could not start';
+ };
+ window.FrameForgeBootFail=show;
+ const gl=document.createElement('canvas').getContext('webgl2');
+ if(!gl)addEventListener('DOMContentLoaded',()=>show('This browser can\'t draw 3D (WebGL 2 is off or missing).',
+  'Use Chrome or Edge, turn on "Use graphics acceleration when available" in the browser\'s settings, update the browser, then try again.'));
+ addEventListener('error',e=>{if(!window.FrameForgeQA&&e.message&&String(e.filename||'').startsWith(location.origin))show('The studio hit an error while starting.',e.message);});
+ addEventListener('unhandledrejection',e=>{if(!window.FrameForgeQA)show('The studio hit an error while starting.',String(e.reason?.message||e.reason));});
+ setTimeout(()=>show('The studio is taking too long to start.','Check your connection and try again. If it keeps happening, your computer may be too slow for the 3D studio, or a browser extension may be blocking it.'),90000);
+})();
+</script>
 <script type="module">
-import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+// Libraries come from our own site (vendor/, unmodified pinned copies) and fall back to the same version on the CDN.
+const loadLib=async(name,own,cdn)=>{
+ try{return await import(own)}catch(first){
+  console.warn(name+': our copy failed to load ('+first.message+'), using the CDN');
+  try{return await import(cdn)}catch(second){
+   window.FrameForgeBootFail?.('A part of the studio could not be downloaded ('+name+').','Check your connection (or any ad or script blocker) and try again.');
+   throw second;
+  }
+ }
+};
+window.FrameForgeLoadLib=loadLib;
+const T=await loadLib('three.js','./vendor/three@0.180.0/three.module.min.js','https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js');
 const $ = x=>document.getElementById(x);
 const stage=$('stage');
 const VOID=0x100c1b;
@@ -54,172 +91,44 @@ const key=new T.DirectionalLight(0xffe6d0,KEY_INTENSITY);key.position.set(5,5,5)
 key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.0004;key.shadow.normalBias=.02;
 Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-3,near:.5,far:25});
 const rim=new T.DirectionalLight(0x7f9cff,9);rim.position.set(2,8,-3);scene.add(rim);
+// M5.3 light (docs/releases/M5_3_LIGHT.md). A character key: a second key that only the cast's materials see
+// (added to their Lambert shading in addCharacterKey). It casts no shadows, so nothing on a head can throw one across
+// a face, and the set keeps its light. It is camera-relative, from the scene key's side (camera right, 50° off the
+// lens axis, 30° up), so every close-up and reverse angle is modelled alike; the far side of a form stays dark.
+const CHAR_KEY={color:0xffd6bc,intensity:5.5,az:50,el:30};
+const charKeyDir={value:(()=>{const a=CHAR_KEY.az*Math.PI/180,e=CHAR_KEY.el*Math.PI/180;return new T.Vector3(Math.sin(a)*Math.cos(e),Math.sin(e),Math.cos(a)*Math.cos(e))})()};
+const charKeyColour={value:new T.Color()};
+const setCharKey=scale=>charKeyColour.value.setHex(CHAR_KEY.color).multiplyScalar(CHAR_KEY.intensity*scale);setCharKey(1);
+function addCharacterKey(roots){
+ const seen=new Set();
+ for(const root of roots)root.traverse(m=>{
+  if(!m.isMesh)return;
+  for(const material of [].concat(m.material)){
+   if(seen.has(material)||!(material.isMeshLambertMaterial||material.isMeshStandardMaterial))continue;seen.add(material);
+   material.onBeforeCompile=shader=>{
+    shader.uniforms.charKeyDir=charKeyDir;shader.uniforms.charKeyColour=charKeyColour;
+    shader.fragmentShader='uniform vec3 charKeyDir;\nuniform vec3 charKeyColour;\n'+shader.fragmentShader.replace('#include <lights_fragment_end>',
+     '#include <lights_fragment_end>\nreflectedLight.directDiffuse+=charKeyColour*saturate(dot(normal,charKeyDir))*BRDF_Lambert(diffuseColor.rgb);');
+   };
+   material.customProgramCacheKey=()=>'character-key';material.needsUpdate=true;
+  }
+ });
+ return seen.size;
+}
+// A black lift: a screen blend in front of the lens (out = in + lift·(1 − in)) raises blacks to a violet haze
+// (luma ~10, like the reference) and leaves highlights almost untouched. In the 3D render, so preview and film match.
+const BLACK_LIFT=0x070510;
+scene.add(cam);
+const blackLift=new T.Mesh(new T.PlaneGeometry(10,10),new T.MeshBasicMaterial({color:BLACK_LIFT,toneMapped:false,transparent:true,depthTest:false,depthWrite:false,
+ blending:T.CustomBlending,blendEquation:T.AddEquation,blendSrc:T.OneMinusDstColorFactor,blendDst:T.OneFactor}));
+blackLift.name='black-lift';blackLift.position.z=-.15;blackLift.renderOrder=1e6;blackLift.frustumCulled=false;cam.add(blackLift);
 const mat=(c,r=.72,m=.05)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 const dark=mat(0x101122),navy=mat(0x202443),white=mat(0xe3dbe0),blue=mat(0x4f83bb,.4,.45),orange=mat(0xf18427,.45,.24),skin=mat(0x9c6b4b),hair=mat(0x191524),suit=mat(0x3c4168),glow=new T.MeshStandardMaterial({color:0x6df6ff,emissive:0x43d7ff,emissiveIntensity:2});
 function cube(g,x,y,z,w,h,d,m){let o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;g.add(o);return o}
 function ball(g,x,y,z,r,m){let o=new T.Mesh(new T.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o}
-let floor=cube(scene,0,-.16,0,18,.24,15,mat(0x1b1530));let wall=cube(scene,0,3,-5,18,7,.2,mat(0x171026));
-let stageBox=cube(scene,0,.24,-1.5,6,.46,3,mat(0x29203e));
-cube(scene,0,1.3,-2.75,5,.15,1.7,mat(0x5c3559,.38));for(let x of [-2.3,2.3])cube(scene,x,.72,-2.75,.18,1.13,.3,dark);
-
-// CINEMATIC SET V2 — built as an inhabited space, not a flat neon backdrop.
-// Stage architecture has a consistent industrial palette, practical light sources,
-// depth layers, textured signs, and contact shadows. All assets are original.
-const artGroup=new T.Group();scene.add(artGroup);
-const satin=(hex,r=.52,metal=.1)=>new T.MeshStandardMaterial({color:hex,roughness:r,metalness:metal});
-const bronzed=satin(0x635258,.36,.55), warmWhite=satin(0xe3c5a4,.55,.06), midnight=satin(0x1a2432,.71,.08);
-const copper=satin(0xb16d54,.39,.39), steelSet=satin(0x354958,.36,.57);
-const cyanEmission=new T.MeshStandardMaterial({color:0x83d9e3,emissive:0x3f9eaf,emissiveIntensity:1.3,roughness:.28});
-const amberEmission=new T.MeshStandardMaterial({color:0xffc18b,emissive:0xb66b3b,emissiveIntensity:1.6,roughness:.35});
-const shadowMat=new T.MeshBasicMaterial({color:0x090e1b,transparent:true,opacity:.37,depthWrite:false,side:T.DoubleSide});
+// The set (M5.1, direction C): the screen arena is built in src/arena-set.js once DEV's scale is known (see DEV_S).
 const flat=color=>new T.MeshLambertMaterial({color,flatShading:true});
-floor.material=flat(0x17132a);wall.material=flat(0x141026);stageBox.material=flat(0x1a1530);
-function tube(parent,a,b,r,m,detail=10){
- const va=new T.Vector3(...a),vb=new T.Vector3(...b);
- const diff=vb.clone().sub(va),shape=new T.Mesh(new T.CylinderGeometry(r,r,diff.length(),detail),m);
- shape.position.copy(va.add(vb).multiplyScalar(.5));shape.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),diff.normalize());
- parent.add(shape);shape.castShadow=true;return shape
-}
-function drum(parent,x,y,z,r,h,m){
- const mesh=new T.Mesh(new T.CylinderGeometry(r,r,h,28),m);
- mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh
-}
-function plaque(textA,textB,glowHue,x,y,z,w=.95,h=.47){
- const cv=document.createElement('canvas');cv.width=600;cv.height=320;
- const q=cv.getContext('2d');q.fillStyle='#172231';q.fillRect(0,0,600,320);
- const grad=q.createLinearGradient(30,0,520,320);grad.addColorStop(0,'#202e3c');grad.addColorStop(1,'#101b2a');q.fillStyle=grad;q.fillRect(13,13,574,294);
- q.strokeStyle='#657589';q.lineWidth=7;q.strokeRect(20,20,560,280);
- q.fillStyle=glowHue;q.font='bold 68px Arial';q.textAlign='center';q.fillText(textA,300,160);
- q.font='bold 29px Arial';q.fillStyle='#9cb3bd';q.fillText(textB,300,227);
- const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;const m=new T.MeshBasicMaterial({map:t,side:T.DoubleSide,toneMapped:false});
- const frame=new T.Mesh(new T.PlaneGeometry(w,h),m);frame.position.set(x,y,z);artGroup.add(frame);
- return frame
-}
-// Rear wall composition: two flanking equipment bays, warm arch, central stage identity.
-for(const x of [-4.15,4.15]){
- cube(artGroup,x,2.25,-4.65,1.60,4.3,.40,midnight);
- cube(artGroup,x,4.2,-4.37,1.76,.13,.17,copper);
- for(let y of [1.0,1.95,2.9]){
-  cube(artGroup,x,y,-4.39,1.42,.045,.09,steelSet);
-  for(let k=0;k<5;k++){
-   const z=-4.25,px=x-.49+k*.245;
-   cube(artGroup,px,y+.23,z,.12,.36,.16,k%3===0?copper:satin(k%2?0x697c89:0x375268,.5,.24));
-  }
- }
- const p=new T.PointLight(0xffa96e,6,3.8);p.position.set(x,3.5,-3.8);artGroup.add(p);
- cube(artGroup,x,3.6,-4.25,.65,.10,.10,amberEmission);
-}
-// Recessed layered portal and arc surround behind the cast.
-cube(artGroup,0,3.2,-4.66,5.75,3.6,.13,satin(0x263440,.79,.13));
-cube(artGroup,0,3.2,-4.48,4.55,2.75,.09,satin(0x111b2b,.43,.19));
-const arch=new T.Mesh(new T.TorusGeometry(1.58,.063,12,80,Math.PI),bronzed);
-arch.position.set(0,4.1,-4.14);arch.rotation.z=0;artGroup.add(arch);
-for(const x of [-1.60,1.60]){
- tube(artGroup,[x,1.85,-4.14],[x,4.09,-4.14],.075,bronzed);
- cube(artGroup,x,2.9,-4.0,.065,1.75,.065,cyanEmission);
-}
-plaque("FRAMEFORGE","STORY SYSTEMS","#ffcf9c",0,4.30,-4.01,1.8,.79);
-// Practical architectural strips and baffles.
-for(let x of [-3.12,3.12]){
- cube(artGroup,x,3.0,-4.28,.10,4.35,.20,steelSet);
- cube(artGroup,x,3.0,-4.13,.048,2.7,.05,amberEmission);
-}
-for(let z of [-2.7,-1.3,.35]){
- tube(artGroup,[-5.2,.11,z],[5.2,.11,z],.017,steelSet,8);
-}
-// Foreground set dressing: restrained consoles with readable controls.
-for(const x of [-3.2,3.2]){
- const side=Math.sign(x);
- const stand=cube(artGroup,x,1.04,-2.6,.67,1.34,.78,steelSet);
- cube(artGroup,x,1.75,-2.48,.83,.14,.63,copper);
- const top=cube(artGroup,x,1.82,-2.39,.77,.065,.58,midnight);top.rotation.x=-.23;
- for(let i=0;i<4;i++){
-  const spot=new T.Mesh(new T.SphereGeometry(.044,12,8),i%2?cyanEmission:amberEmission);
-  spot.position.set(x-.21+i*.14,1.85,-2.09);artGroup.add(spot);
- }
- tube(artGroup,[x,1.32,-2.08],[x+side*.25,1.2,-1.68],.044,steelSet);
-}
-// Three elevated soft luminous panels: subtle depth behind human and robots.
-for(let i=0;i<3;i++){
- const x=-2.3+i*2.3;
- const panel=cube(artGroup,x,4.55,-3.6,1.42,.10,.40,steelSet);panel.rotation.x=.24;
- const light=cube(artGroup,x,4.51,-3.3,1.20,.035,.24,i===1?warmWhite:cyanEmission);light.rotation.x=.24;
-}
-// Physical shadow pools connect characters with the stage.
-const blobCv=document.createElement('canvas');blobCv.width=blobCv.height=128;
-const blobCx=blobCv.getContext('2d');const rg=blobCx.createRadialGradient(64,64,6,64,64,64);
-rg.addColorStop(0,'rgba(0,0,0,.54)');rg.addColorStop(.40,'rgba(0,0,0,.32)');rg.addColorStop(1,'rgba(0,0,0,0)');
-blobCx.fillStyle=rg;blobCx.fillRect(0,0,128,128);const blobTexture=new T.CanvasTexture(blobCv);
-for(const x of [-1.7,0,1.7]){
- const blob=new T.Mesh(new T.PlaneGeometry(1.55,.91),new T.MeshBasicMaterial({map:blobTexture,transparent:true,depthWrite:false,opacity:.82}));
- blob.rotation.x=-Math.PI/2;blob.position.set(x,.49,x===-1.7?-1:.5);artGroup.add(blob);
-}
-// A light dust layer adds depth cues without costly volumetric shaders.
-const scatter=new T.BufferGeometry(),dust=[];
-for(let i=0;i<55;i++){
- const x=((((i*37)%113)/113)-.5)*10;
- const y=.8+(((i*71)%113)/113)*4.6;
- const z=-4.10+(((i*17)%79)/79)*6.3;dust.push(x,y,z);
-}
-scatter.setAttribute('position',new T.Float32BufferAttribute(dust,3));
-const flecks=new T.Points(scatter,new T.PointsMaterial({color:0xd9c4ab,size:.025,transparent:true,opacity:.48,depthWrite:false}));
-artGroup.add(flecks);
-// V6 SET (STYLE.md): a near-black room whose story lives on real monitors, not on overlay cards.
-// The V5 neon set stays hidden until the set pass replaces the rest of it.
-artGroup.visible=false;
-const v6Set=new T.Group();scene.add(v6Set);
-const bezelMat=flat(0x0b0a12);
 const MONO='"Ubuntu Sans Mono","JetBrains Mono","DejaVu Sans Mono",monospace';
-const TONES={bad:{ink:'#fc5757',rule:'#e05553',tint:'#471c30'},good:{ink:'#44e082',rule:'#3a9a66',tint:'#1c3a2e'}};
-function monitor(w,h,x,y,z,ry){
- const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*h/w);
- const texture=new T.CanvasTexture(cv);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=8;
- const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;v6Set.add(g);
- cube(g,0,0,-.05,w+.14,h+.14,.08,bezelMat);
- g.add(new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:texture,toneMapped:false})));
- return {ctx:cv.getContext('2d'),texture,width:cv.width,height:cv.height,drawn:null};
-}
-function windowChrome(c,W,title,rule){
- c.fillStyle='#151029';c.fillRect(0,0,W,c.canvas.height);
- c.fillStyle='#1b1534';c.fillRect(0,0,W,84);
- ['#e05553','#dea32f','#23a93b'].forEach((dot,i)=>{c.fillStyle=dot;c.beginPath();c.arc(40+i*32,42,11,0,Math.PI*2);c.fill()});
- c.fillStyle='#a7a1c7';c.font='700 34px '+MONO;c.textAlign='left';c.textBaseline='middle';c.fillText(title,148,44);
- c.fillStyle=rule;c.fillRect(0,84,W,5);
-}
-// Metric screen: window title, label, one huge number in the state colour, a jagged sparkline, a badge.
-function drawWallScreen(screen,wall){
- const key=JSON.stringify(wall??null);if(screen.drawn===key)return;screen.drawn=key;
- const c=screen.ctx,W=screen.width,H=screen.height;
- if(!wall){c.fillStyle='#151029';c.fillRect(0,0,W,H);screen.texture.needsUpdate=true;return}
- const tone=TONES[wall.tone];
- windowChrome(c,W,wall.window,tone.rule);
- c.fillStyle='#676284';c.font='400 44px '+MONO;c.fillText(wall.label,56,176);
- if(wall.badge){
-  c.font='700 38px '+MONO;const bw=c.measureText(wall.badge).width+56;
-  c.fillStyle=tone.tint;c.beginPath();c.roundRect(W-bw-40,128,bw,70,10);c.fill();
-  c.fillStyle=tone.ink;c.textAlign='center';c.fillText(wall.badge,W-bw/2-40,165);c.textAlign='left';
- }
- c.fillStyle=tone.ink;c.font='700 230px '+MONO;c.textBaseline='alphabetic';c.fillText(wall.value,46,430);
- c.strokeStyle=tone.ink;c.lineWidth=7;c.lineJoin='miter';c.beginPath();
- for(let i=0;i<=30;i++){
-  const jag=((i*37+11)%17)/17,trend=wall.tone==='bad'?-i*1.6:i*.4;
-  const px=24+i*(W-48)/30,py=H-90+trend-jag*(wall.tone==='bad'?62:30);
-  i?c.lineTo(px,py):c.moveTo(px,py);
- }
- c.stroke();screen.texture.needsUpdate=true;
-}
-// Side screen: an abstract chat/log window that dresses the set without competing with the story screen.
-function drawSideScreen(screen){
- const c=screen.ctx,W=screen.width;
- windowChrome(c,W,'notes',TONES.bad.rule);
- for(let i=0;i<6;i++){
-  const right=i%2===1,w=260+((i*97)%5)*70;
-  c.fillStyle=right?'#2b2455':'#3a2732';c.beginPath();c.roundRect(right?W-w-48:48,130+i*82,w,46,14);c.fill();
- }
- screen.texture.needsUpdate=true;
-}
-const wallScreen=monitor(3.0,1.88,-1.0,4.45,-3.75,-.3);
-const sideScreen=monitor(1.6,1.0,-3.55,2.75,-3.35,.42);drawSideScreen(sideScreen);
 
 const dev=new T.Group();dev.position.set(-1.7,.33,-1);scene.add(dev);
 cube(dev,0,1.25,0,.95,1.3,.55,suit);cube(dev,0,2.28,0,.75,.9,.68,skin);cube(dev,0,2.78,-.02,.83,.25,.73,hair);cube(dev,-.55,1.36,0,.24,.99,.25,suit);cube(dev,.55,1.36,0,.24,.99,.25,suit);cube(dev,-.27,.4,0,.3,.45,.35,navy);cube(dev,.27,.4,0,.3,.45,.35,navy);
@@ -303,6 +212,11 @@ const DEV_SPEC=window.FrameForgeDev.DEV,devBuild=window.FrameForgeDesign.build(D
 const DEV_HEAD_Y=2.30,DEV_FEET_Y=.14,DEV_S=(DEV_HEAD_Y-DEV_FEET_Y)/-devRigSpec.ground;
 // Close-ups were framed for the M1.3 head (1.05 units tall); they stand back by this much to frame the new head the same.
 const DEV_FRAME=DEV_S/1.05;
+// The set: the screen arena (design/set-arena.js), in DEV units scaled by DEV_S. Its plaza top meets DEV's feet
+// (the dev group's height plus DEV_FEET_Y), centred between the cast. The plaza is the stage the art lab keeps.
+const arena=window.FrameForgeArenaSet.build(T,{scale:DEV_S,origin:[0,.33+DEV_FEET_Y-window.FrameForgeArena.ARENA.plaza.h*DEV_S,-.25]});
+scene.add(arena.group,arena.plaza);
+const stageBox=arena.plaza;
 function devGeometry(tris){
  const geometry=new T.BufferGeometry();
  geometry.setAttribute('position',new T.Float32BufferAttribute(tris.flatMap(t=>t.p.flat()),3));
@@ -509,6 +423,7 @@ function applyRobotPose(actor,emotion,ch){
  for(const arm of actor.armJoints){const s=arm.sign>0?'L':'R';arm.pivot.rotation.set(-(c[s+'.swing']||0),0,arm.sign*(c[s+'.out']||0));}
 }
 buildRobot(faces.blue,'blue');buildRobot(faces.orange,'orange');
+addCharacterKey([dev,b.root,o.root]);
 // Where the cameras aim: each robot's head centre, standing on its root (which hovers at y .43).
 const ROBOT_HEAD_Y={blue:.43+ROBOT_S*ROBOT_SHEET.ROBOTS.blue.head.c[1],orange:.43+ROBOT_S*ROBOT_SHEET.ROBOTS.orange.head.c[1]};
 // Robot close-ups stand back so the sheet head is about 60% of the frame width with its shoulders in (STYLE.md).
@@ -597,8 +512,9 @@ update=function(){
  const viseme=speechCue.viseme;
  const speechPower=speechCue.mouthOpen;
  const index=shots.indexOf(shot);
- // The wall screen keeps showing what it last showed until a shot gives it something new.
- drawWallScreen(wallScreen,shots.slice(0,index+1).findLast(s=>s.wall)?.wall);
+ // The story window keeps showing what it last showed (a shot's wall, or a screen shot's insert) until a newer one.
+ const told=shots.slice(0,index+1).findLast(s=>s.wall||(s.camera==='screen'&&s.insert));
+ arena.drawStory(!told?null:told.camera==='screen'&&told.insert?{insert:told.insert}:{wall:told.wall});
  const expression={blue:shot.cast.blue.emotion,orange:shot.cast.orange.emotion};
  // Listeners visibly notice something before the next speaker begins.
  const reaction=cinematicReaction(shot,local);
@@ -651,7 +567,8 @@ const projectCatalog=Object.create(null);
 // The episode list is data: add an entry to projects/index.json to publish a new episode.
 const projectReady=fetch('./projects/index.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Missing projects/index.json (HTTP '+r.status+')');return r.json()}).then(index=>{
  const select=$('preset');select.innerHTML='';
- for(const {key,label} of index.episodes){const o=document.createElement('option');o.value=key;o.textContent=label;select.appendChild(o)}
+ // Hidden entries load (tests use them) but aren't offered.
+ for(const {key,label,hidden} of index.episodes){if(hidden)continue;const o=document.createElement('option');o.value=key;o.textContent=label;select.appendChild(o)}
  return Promise.all(index.episodes.map(async ({key,file})=>{
  const path='./projects/'+file;
  const response=await fetch(path,{cache:'no-cache'});
@@ -666,8 +583,8 @@ function load(){const p=$('preset').value;const project=projectCatalog[p];if(!pr
  window.FrameForgeProjectCore.assertRendererCompatible(project);
  soundtrack.pause();
  if(project.audio.state==='mastered'){soundtrack.src=project.audio.masterUrl;soundtrack.load();$('recordStatus').textContent=project.shots.length+' scenes with mastered audio ready';}
- else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard: no voices yet';}audioStale=false;audioMode=project.audio.state==='mastered'?'master':'none';browserVoice=null;voiceRun++;applyLooks(project);fillLooks(project);fillVoices(project);fillPronunciations(project);lastGuessed=[];loadEnvelope(project.audio.voiceUrl);shots=window.FrameForgeProjectCore.toTimelineShots(project);$('idea').value=project.logline;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();if(audioMode==='none')autoVoice();}
-function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration.toFixed(1)+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b>'+(i+1)+'. '+s.camera.toUpperCase()+' · '+s.duration.toFixed(1)+'s</b><small></small>';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});fillInspector();}
+ else{soundtrack.removeAttribute('src');soundtrack.load();$('recordStatus').textContent='Storyboard: no voices yet';}audioStale=false;audioMode=project.audio.state==='mastered'?'master':'none';browserVoice=null;voiceRun++;applyLooks(project);fillLooks(project);fillVoices(project);fillPronunciations(project);lastGuessed=[];loadEnvelope(project.audio.voiceUrl);shots=window.FrameForgeProjectCore.toTimelineShots(project);$('script').value=window.FrameForgeScript.projectToScript(project);scriptDirty=false;window.FrameForgeCurrentProject=project;time=0;selected=0;running=false;refresh();update();if(audioMode==='none')autoVoice();}
+function refresh(){duration=shots.reduce((a,s)=>a+s.duration,0);$('scrub').max=duration;$('count').textContent=shots.length;$('duration').textContent=duration.toFixed(1)+'s';$('shots').innerHTML='';shots.forEach((s,i)=>{const x=document.createElement('button');x.className='shot'+(i===selected?' sel':'');x.innerHTML='<b></b><small></small>';x.querySelector('b').textContent=(i+1)+'. '+(s.title?s.title+' · ':'')+s.camera.toUpperCase()+' · '+s.duration.toFixed(1)+'s';x.querySelector('small').textContent=s.text;x.onclick=()=>{selected=i;time=shots.slice(0,i).reduce((a,v)=>a+v.duration,0);refresh();update()};$('shots').appendChild(x)});fillInspector();;syncScript();}
 const performerCoordinates={
  blue:[0,ROBOT_HEAD_Y.blue,.54],
  orange:[1.72,ROBOT_HEAD_Y.orange,.54],
@@ -681,33 +598,48 @@ function cinematicReaction(shot,local){
  return {role:cut.role,emotion:cut.emotion,subject,camera:[subject[0]+(cut.role==='orange'?.15:-.14)*k,subject[1]+.08*k,subject[2]+scale*k]};
 }
 
-function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('screenInsert').style.display=s.camera==='screen'?'block':'none';$('screenNumber').textContent=s.insert?.value||'';$('screenDescription').textContent=s.insert?.label||'';$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,ROBOT_HEAD_Y.blue,.57]:s.camera==='orange'?[1.72,ROBOT_HEAD_Y.orange,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
+function update(){let acc=0,s=shots[shots.length-1],si=shots.length-1,local=0;for(let i=0;i<shots.length;i++){if(time<acc+shots[i].duration){s=shots[i];si=i;local=time-acc;break}acc+=shots[i].duration}if(si!==selected){selected=si;refresh()}$('subtitle').textContent=s.text;$('sceneTitle').textContent=s.title||window.FrameForgeCurrentProject?.title.toUpperCase()||'';$('clock').textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:'+String(Math.round(duration)).padStart(2,'0');$('scrub').value=time;$('play').textContent=running?'Ⅱ Pause':'▶ Play';let t=time;const sway=$('motion').value==='cinematic'?.14:0;let tgt= s.camera==='dev'?[-1.7,2.54,-1]:s.camera==='blue'?[0,ROBOT_HEAD_Y.blue,.57]:s.camera==='orange'?[1.72,ROBOT_HEAD_Y.orange,.57]:[0,2.00,0];const {distance,offset,up,fov,lookUp,move,amount,roll,aim}=s.framing;
  const wide=s.camera==='duo'||s.camera==='wide'||s.camera==='screen';
  // Two-shots lean toward the aimed character (by default the speaker) so they stay in frame.
  if(s.camera==='duo'||s.camera==='wide')tgt=[aim==='center'?0:performerCoordinates[aim][0]*(s.camera==='duo'?.5:.35),tgt[1],tgt[2]];
  const ease=Math.max(0,Math.min(1,local/s.duration));
- const travel=move==='static'?0:(ease*ease*(3-2*ease)-.5)*amount*(move==='pull'?-1:1);
- const dolly=move==='drift'?0:travel,drift=move==='drift'?travel*.8:dolly*.14;
- const pos=wide?[tgt[0]+offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance];
+ // A static move still breathes (M5.4): a sideways drift at a tenth of the default travel, so no hold is locked off.
+ // The path is 60% linear, 40% eased, so the camera never comes to a full stop at a shot's ends (M5.4).
+ const travel=(.6*ease+.4*ease*ease*(3-2*ease)-.5)*(move==='static'?.033:amount)*(move==='pull'?-1:1);
+ // Camera life (M5.4): a move covers the same share of the view at any distance, so wides and screen shots (18-21
+ // units away) push and drift as visibly as a close-up (4.7) instead of standing still.
+ const reach=wide?Math.max(1,distance/4.7):1;
+ const dolly=(move==='drift'||move==='static'?0:travel)*reach,drift=(move==='drift'||move==='static'?travel*.8:travel*.14)*reach;
+ let pos=wide?[tgt[0]+offset,2.66+up,distance]:[tgt[0]+offset,2.16+up,tgt[2]+distance],aimAt=[tgt[0],tgt[1]+lookUp,tgt[2]];
+ // Screen shots look at the story window in the set (M5.2), from in front of it and off to one side, so it is seen in
+ // perspective and cropped by the frame: distance along its normal, offset sideways, up and lookUp along its height;
+ // the aim sits a little under half way toward the camera's side. Their sway runs on shot time, so a screen shot looks
+ // the same wherever it sits in the episode.
+ if(s.camera==='screen'){const f=arena.storyFrame,at=(a,b,c)=>f.c.map((v,i)=>v+f.n[i]*a+f.u[i]*b+f.v[i]*c);pos=at(distance-dolly,offset+drift,up);aimAt=at(0,offset*.45+drift*.5,lookUp);}
+ const [dx,dz]=s.camera==='screen'?[0,0]:[drift,dolly];
+ const swayT=s.camera==='screen'?local:t;
  cam.fov=fov;cam.updateProjectionMatrix();
- cam.position.set(pos[0]+drift+Math.sin(t*.38)*sway*.14,pos[1]+Math.sin(t*.32)*sway*.08,pos[2]-dolly);
+ cam.position.set(pos[0]+dx+Math.sin(swayT*.38)*sway*.14*reach,pos[1]+Math.sin(swayT*.32)*sway*.08*reach,pos[2]-dz);
  if(s.camera==='dev'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.sub(look).multiplyScalar(DEV_FRAME).add(look);}
  // Robot close-ups: at the robot's eye level (its head sits lower or higher than DEV's), framed for the sheet head.
  if(s.camera==='blue'||s.camera==='orange'){const look=new T.Vector3(tgt[0],tgt[1]+lookUp,tgt[2]);cam.position.y=tgt[1]+.04+up;cam.position.sub(look).multiplyScalar(ROBOT_FRAME).add(look);}
- cam.lookAt(tgt[0],tgt[1]+lookUp,tgt[2]);
+ cam.lookAt(...aimAt);
  if(roll)cam.rotateZ(roll*Math.PI/180);
  // Listener reaction inserts are intentional editorial cuts, not camera jitter.
  const listenerCut=cinematicReaction(s,local);
  if(listenerCut){
-  cam.position.set(...listenerCut.camera);
+  // A slow push in and a small sideways drift over the cut (M5.4), so a reaction is never a locked-off frame.
+  const into=Math.min(1,Math.max(0,(local-(s.duration-s.reactionCut.seconds))/s.reactionCut.seconds)),e=into*into*(3-2*into);
+  const c=listenerCut.camera,sub=listenerCut.subject,k=1.02-.04*e,side=(e-.5)*.02*Math.hypot(c[0]-sub[0],c[1]-sub[1],c[2]-sub[2]);
+  cam.position.set(sub[0]+(c[0]-sub[0])*k+side,sub[1]+(c[1]-sub[1])*k,sub[2]+(c[2]-sub[2])*k);
   cam.lookAt(...listenerCut.subject);
   cam.fov=listenerCut.role==='dev'?34:31;
   cam.updateProjectionMatrix();
  }
- b.root.position.y=.43;o.root.position.y=.43;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=KEY_INTENSITY*Number($('lighting').value)/1.3;if($('environment').value==='sunset')scene.background.setHex(0x392234);else if($('environment').value==='noir')scene.background.setHex(0x080910);else scene.background.setHex(VOID);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
+ b.root.position.y=.43;o.root.position.y=.43;dev.rotation.y=.17+Math.sin(t*.8)*.04;dev.children[7]&&0;b.hull.rotation.z=Math.sin(t*1.3)*.02;o.hull.rotation.z=Math.sin(t*1.6)*.027;let talk=running?Math.abs(Math.sin(t*12)):0;b.m.scale.y=s.speaker==='blue'?1+talk*.9:1;o.m.scale.y=s.speaker==='orange'?1+talk*.9:1;mouth.scale.y=s.speaker==='dev'?1+talk*2:1;key.intensity=KEY_INTENSITY*Number($('lighting').value)/1.3;setCharKey(Number($('lighting').value)/1.3);$('status').textContent='3D engine ready · '+(si+1)+' / '+shots.length+' shots';}
 const soundtrack=new Audio();soundtrack.crossOrigin='anonymous';soundtrack.preload='auto';let audioContext=null,analyser=null,audioSamples=null,audioDestination=null;
 function audioInit(){if(audioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaElementSource(soundtrack);analyser=audioContext.createAnalyser();analyser.fftSize=1024;audioSamples=new Uint8Array(analyser.fftSize);source.connect(analyser);analyser.connect(audioContext.destination);audioDestination=audioContext.createMediaStreamDestination();source.connect(audioDestination)}
-$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=load;$('apply').onclick=()=>{
+$('play').onclick=()=>{running=!running;last=performance.now();if(running){audioInit();audioContext.resume();soundtrack.currentTime=time;soundtrack.play().catch(()=>{})}else soundtrack.pause()};$('stop').onclick=()=>{running=false;time=0;soundtrack.pause();soundtrack.currentTime=0;update()};$('scrub').oninput=e=>{time=Number(e.target.value);running=false;soundtrack.pause();soundtrack.currentTime=time;update()};$('build').onclick=buildFromScript;$('preset').onchange=()=>history_.openFromMenu();$('script').oninput=()=>{scriptDirty=true;};$('apply').onclick=()=>{
  const s=shots[selected],text=$('dialogue').value.trim()||s.text,speaker=$('speaker').value,camera=$('camera').value;
  if(text!==s.text||speaker!==s.speaker){s.voice=null;markAudioStale();}
  if(camera!==s.camera){
@@ -731,6 +663,9 @@ const VOICES=[['af_heart','Heart · US'],['af_bella','Bella · US'],['af_nicole'
  ['am_liam','Liam · US'],['am_onyx','Onyx · US, deep'],['bf_emma','Emma · UK'],['bf_isabella','Isabella · UK'],['bm_george','George · UK'],
  ['bm_fable','Fable · UK'],['bm_lewis','Lewis · UK'],['bm_daniel','Daniel · UK']];
 const DEFAULT_VOICE={dev:'am_michael',blue:'af_heart',orange:'bm_george'},FPS=30;
+// The voice model (M6.4): full quality (326 MB) or light (8-bit, about 90 MB). Kept per browser.
+const MODEL_SIZE={full:'326 MB',light:'92 MB'};
+let voiceModel=(()=>{try{return localStorage.getItem('frameforge.voiceModel')==='light'?'light':'full'}catch{return 'full'}})();
 let voiceWorker=null,voiceSeq=0,voiceEngine={state:'unknown'},audioMode='none',browserVoice=null,voiceRun=0,voiceTimer=0,trackUrl=null,auditionPlayer=null;
 const voicePending=new Map(),voiceProgress={};
 function voiceCall(message){
@@ -747,18 +682,18 @@ function voiceCall(message){
   };
  }
  const id=++voiceSeq;
- return new Promise((resolve,reject)=>{voicePending.set(id,{resolve,reject});voiceWorker.postMessage({...message,id});});
+ return new Promise((resolve,reject)=>{voicePending.set(id,{resolve,reject});voiceWorker.postMessage({...message,id,quality:voiceModel});});
 }
 function showVoiceEngine(){
  const e=voiceEngine,meter=$('voiceMeter'),files=Object.values(voiceProgress);
  const loaded=files.reduce((a,f)=>a+f.loaded,0),total=files.reduce((a,f)=>a+(f.total||f.loaded),0);
  const mb=x=>Math.round(x/1e6);
- $('voiceEngine').textContent=e.state==='ready'?'Voices ready · '+(e.device==='webgpu'?'GPU (WebGPU)':'CPU (WebAssembly)')+(e.source==='local'?' · local model':''):
+ $('voiceEngine').textContent=e.state==='ready'?'Voices ready · '+(voiceModel==='light'?'light model · ':'')+(e.device==='webgpu'?'GPU (WebGPU)':'CPU (WebAssembly)')+(e.source==='local'?' · local model':''):
   e.state==='loading'?(total&&loaded<total?'Downloading voices: '+mb(loaded)+' / '+mb(total)+' MB (once only)…':'Loading voices…'):
-  e.state==='downloaded'?'Voices downloaded · loading…':e.state==='missing'?'Voices are not downloaded yet: one 326 MB download, then they work offline.':
+  e.state==='downloaded'?'Voices downloaded · loading…':e.state==='missing'?'Voices are not downloaded yet: one '+MODEL_SIZE[voiceModel]+' download, then they work offline.':
   e.state==='error'?'Voices unavailable: '+e.message:'Checking for the voice model…';
  meter.hidden=e.state!=='loading'||!total;meter.firstChild.style.width=(total?100*loaded/total:0)+'%';
- $('voiceDownload').hidden=!['missing','error'].includes(e.state);$('voiceDownload').textContent=e.state==='error'?'↻ Try again':'⬇ Download voices · 326 MB, once';
+ $('voiceDownload').hidden=!['missing','error'].includes(e.state);$('voiceDownload').textContent=e.state==='error'?'↻ Try again':'⬇ Download voices · '+MODEL_SIZE[voiceModel]+', once';
 }
 function ensureVoices(){
  if(voiceEngine.state==='ready')return Promise.resolve(voiceEngine);
@@ -768,11 +703,23 @@ function ensureVoices(){
  voiceEngine={state:'loading',promise};showVoiceEngine();
  return promise;
 }
-voiceCall({type:'status'}).then(r=>{
+function checkVoices(){return voiceCall({type:'status'}).then(r=>{
  voiceEngine={state:r.modelCached?'downloaded':'missing'};showVoiceEngine();
  // A downloaded model loads in the background, so the first line is voiced without a wait.
  if(r.modelCached){ensureVoices().catch(e=>console.error('Voices',e));if(audioMode==='none'&&window.FrameForgeCurrentProject)autoVoice();}
-}).catch(e=>{voiceEngine={state:'error',message:e.message};showVoiceEngine();});
+}).catch(e=>{voiceEngine={state:'error',message:e.message};showVoiceEngine();});}
+checkVoices();
+$('voiceModel').value=voiceModel;
+// Switching the model: a fresh worker with the other model; lines voiced with the old one are voiced again.
+$('voiceModel').onchange=()=>{
+ voiceModel=$('voiceModel').value==='light'?'light':'full';try{localStorage.setItem('frameforge.voiceModel',voiceModel)}catch{}
+ if(voiceWorker){voiceWorker.terminate();voiceWorker=null;}
+ for(const p of voicePending.values())p.reject(new Error('the voice model changed'));voicePending.clear();
+ for(const k of Object.keys(voiceProgress))delete voiceProgress[k];
+ voiceEngine={state:'unknown'};showVoiceEngine();
+ if(audioMode==='browser')markAudioStale();
+ checkVoices();
+};
 $('voiceDownload').onclick=()=>ensureVoices().then(()=>{if(audioMode==='none')voiceAllLines()}).catch(e=>console.error('Voices',e));
 $('voiceLines').onclick=()=>voiceAllLines().catch(e=>console.error('Voicing',e));
 function voiceOf(speaker){
@@ -907,6 +854,7 @@ async function voiceAllLines(){
   lastGuessed=guessed;
   $('recordStatus').textContent=lines.length+' scenes voiced in your browser';
   refresh();time=shotStart(selected);update();
+  history_.rebase();
   return true;
  }catch(e){if(run===voiceRun)status.textContent='Voicing failed: '+e.message;throw e;}
 }
@@ -987,8 +935,10 @@ function snapshotProject(){
    intent:s.intent,cast:s.cast,framing:s.framing};
   // Timing is saved only where it differs from the defaults.
   const timing=Object.fromEntries(Object.entries(s.timing).filter(([k,v])=>v!=={lead:.15,pauseAfter:.35,pace:1}[k]));
-  for(const [key,value] of [['title',s.title||undefined],['reactionCut',s.reactionCut],['insert',s.insert],['voice',s.voice],['timing',Object.keys(timing).length?timing:undefined]])
-   if(value)out[key]=value;else delete out[key];
+  // Planned reaction cuts (M5.4) are not saved: the planner makes them again on load. An opted-out shot keeps false.
+  const reactionCut=s.reactionSource==='authored'?s.reactionCut:s.reactionSource==='off'?false:undefined;
+  for(const [key,value] of [['title',s.title||undefined],['reactionCut',reactionCut],['insert',s.insert],['voice',s.voice],['timing',Object.keys(timing).length?timing:undefined]])
+   if(value||value===false)out[key]=value;else delete out[key];
   delete out.acting;delete out.emotion;delete out.action;
   return out;
  });
@@ -1006,13 +956,176 @@ $('download').onclick=()=>{
   $('projectImportStatus').textContent='Exported '+project.title+' as a validated, reusable episode.';
  }catch(err){$('projectImportStatus').textContent='Export refused: '+err.message;}
 };
-function openProject(project){
+// Write an episode (M5.7): the script box. It shows the open episode as its script and follows edits made in the shot
+// inspector until you type in it; "Make the episode" plans the script (src/script-core.js) over the open episode's
+// cast, voices and looks, opens it, and voices it in the browser.
+let scriptDirty=false;
+function syncScript(){
+ if(scriptDirty||document.activeElement===$('script')||!window.FrameForgeCurrentProject)return;
+ try{$('script').value=window.FrameForgeScript.projectToScript(snapshotProject());}catch{}
+}
+function buildFromScript(){
+ let base=window.FrameForgeCurrentProject;
+ try{base=snapshotProject();}catch{}
+ if(!base){$('scriptStatus').textContent='The studio is still loading.';return;}
+ const {project,errors}=window.FrameForgeScript.scriptToProject($('script').value,base,{defaultFraming:window.FrameForgeProjectCore.defaultFraming});
+ if(errors.length){
+  $('scriptStatus').textContent=errors.slice(0,4).map(e=>(e.line?'Line '+e.line+': ':'')+e.message).join(' · ')+(errors.length>4?` · and ${errors.length-4} more`:'');
+  $('scriptStatus').dataset.state='error';return;
+ }
+ openProject(project,' — your script');history_.opened();
+ const secs=project.shots.reduce((a,s)=>a+s.duration,0);
+ $('scriptStatus').dataset.state='ok';
+ $('scriptStatus').textContent=`Made ${project.shots.length} shots (about ${Math.round(secs)} s before voicing). `+
+  (voiceEngine.state==='ready'?'Voicing every line now…':'Press “Voice every line” to hear it (the first time downloads the voices, 326 MB, once).');
+}
+// --- Autosave, undo and recovery (M6.2) -------------------------------------------------------------------------
+// Every change is saved in this browser (IndexedDB, written with strict durability so it is on disk before the write
+// completes; one slot per episode, the last one reopened on start), so a refresh, a crash or closing the tab loses at
+// most the last half second. (localStorage alone was not enough: Chrome writes it to disk seconds later, and a killed
+// browser lost the last edits. IndexedDB alone was not enough either: a page that is being refreshed or closed may be
+// gone before its last write commits. So leaving the page also writes a copy to localStorage, synchronously, and the
+// newer of the two is reopened.) Undo and redo step through the same
+// snapshots (the whole episode: shots, looks, voices, pronunciations). Voicing re-times shots by itself; that is not
+// an undo step. A typed but unmade script is kept too.
+const history_=(()=>{
+ const PREFIX='episode:',INDEX='index',MAX_STEPS=100,MAX_SLOTS=20;
+ let past=[],future=[],last=null,timer=0,applying=false,db=null;
+ const idb=()=>db??=new Promise((ok,no)=>{const r=indexedDB.open('frameforge-autosave',1);r.onupgradeneeded=()=>r.result.createObjectStore('slots');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);});
+ const tx=async(mode,fn)=>{const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('slots',mode,{durability:'strict'}),st=t.objectStore('slots');const out=fn(st);
+  t.oncomplete=()=>ok(out?.result);t.onerror=t.onabort=()=>no(t.error);});};
+ const read=k=>tx('readonly',st=>st.get(k)).catch(()=>null);
+ const write=(k,v)=>tx('readwrite',st=>st.put(v,k));
+ const remove=k=>tx('readwrite',st=>st.delete(k)).catch(()=>{});
+ let queue=Promise.resolve();   // writes happen in order
+ const serial=fn=>queue=queue.then(fn,fn);
+ const state=()=>{try{return JSON.stringify(snapshotProject())}catch{return null}};
+ const label=()=>$('preset').selectedOptions[0]?.textContent||'';
+ const clock=t=>new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ function buttons(){$('undo').disabled=!past.length;$('redo').disabled=!future.length;}
+ const UNLOAD='frameforge.autosave.unload';
+ const record=st=>{const p=window.FrameForgeCurrentProject;return p&&{v:1,savedAt:Date.now(),id:p.id,label:label(),project:st??last,script:scriptDirty?$('script').value:null,selected,time};};
+ // Leaving the page: whatever changed since the last save goes into localStorage at once (synchronous).
+ function leaving(){
+  if(applying||!window.FrameForgeCurrentProject)return;
+  const st=state();
+  if(st&&(st!==last||scriptDirty||timer)){try{localStorage.setItem(UNLOAD,JSON.stringify(record(st)));}catch{}}
+  checkpoint();
+ }
+ const dropUnload=id=>{try{if(JSON.parse(localStorage.getItem(UNLOAD)||'null')?.id===id)localStorage.removeItem(UNLOAD);}catch{}};
+ function store(st){
+  const p=window.FrameForgeCurrentProject;if(!p)return;
+  const rec=record(st);
+  return serial(async()=>{
+   try{
+    await write(PREFIX+p.id,rec);
+    const index=(await read(INDEX))||{ids:[]};index.last=p.id;index.ids=[p.id,...index.ids.filter(x=>x!==p.id)];
+    for(const old of index.ids.splice(MAX_SLOTS))await remove(PREFIX+old);
+    await write(INDEX,index);
+    $('saveState').textContent='Saved in this browser at '+clock(rec.savedAt)+'.';
+   }catch(e){$('saveState').textContent='Could not save in this browser ('+(e?.name||e)+'). Download the episode to keep it.';}
+  });
+ }
+ // After any change: one undo step if the episode differs, and a save either way (a typed script counts).
+ function checkpoint(){
+  clearTimeout(timer);timer=0;
+  if(applying||!window.FrameForgeCurrentProject)return;
+  const st=state();if(!st)return;
+  if(st!==last){if(last!==null){past.push(last);if(past.length>MAX_STEPS)past.shift();future=[];}last=st;store(st);buttons();}
+  else if(scriptDirty)store(st);
+ }
+ const soon=()=>{if(!applying){clearTimeout(timer);timer=setTimeout(checkpoint,500);}};
+ function apply(st){
+  applying=true;
+  const keep={selected,time,text:label()};
+  try{
+   openProject(JSON.parse(st),'');
+   const o=$('preset').selectedOptions[0];if(o)o.textContent=keep.text;
+   selected=Math.min(keep.selected,shots.length-1);time=Math.min(keep.time,Math.max(0,duration-.05));refresh();update();
+  }finally{applying=false;}
+  last=st;store(st);buttons();
+ }
+ function undo(){checkpoint();if(!past.length)return;future.push(last);apply(past.pop());}
+ function redo(){if(!future.length)return;past.push(last);apply(future.pop());}
+ // A freshly opened episode is the new baseline; earlier steps belong to the episode that was open.
+ function setLast(id){serial(async()=>{try{const index=(await read(INDEX))||{ids:[]};index.last=id;await write(INDEX,index);}catch{}});}
+ // A freshly opened episode is the new baseline; earlier steps belong to the episode that was open. A refresh comes
+ // back to it; episodes made from a script or imported are saved at once (they exist nowhere else).
+ function opened(){
+  past=[];future=[];last=state();buttons();
+  const p=window.FrameForgeCurrentProject;if(!p)return;
+  if($('preset').value==='custom')store(last);else setLast(p.id);
+ }
+ function banner(text,action,onAction){
+  const box=$('recovery');box.innerHTML='';const msg=document.createElement('span');msg.textContent=text;box.append(msg);
+  if(action){const b=document.createElement('button');b.textContent=action;b.onclick=async()=>{box.hidden=true;await onAction();};box.append(b);}
+  box.hidden=false;
+ }
+ function reopen(rec){
+  const project=JSON.parse(rec.project);
+  if(!window.FrameForgeProjectCore.validateProject(project).valid)return false;
+  openProject(project,'');
+  const o=$('preset').selectedOptions[0];if(o)o.textContent=rec.label||project.title+' — saved changes';
+  if(typeof rec.script==='string'){$('script').value=rec.script;scriptDirty=true;}
+  selected=Math.min(rec.selected||0,shots.length-1);time=Math.min(rec.time||0,Math.max(0,duration-.05));refresh();update();
+  return true;
+ }
+ const firstListed=()=>[...$('preset').options].map(o=>o.value).find(v=>v!=='custom')||'comedy';
+ // On start: the episode you were working on, as you left it.
+ async function recover(){
+  let index=null,rec=null;
+  try{index=await read(INDEX);rec=index?.last?await read(PREFIX+index.last):null;}catch{}
+  // A copy written while the page was closing wins if it is newer.
+  try{const quick=JSON.parse(localStorage.getItem(UNLOAD)||'null');
+   if(quick?.project&&(!rec||quick.savedAt>rec.savedAt)){rec=quick;index={...(index||{ids:[]}),last:quick.id};serial(()=>write(PREFIX+quick.id,quick));}
+  }catch{}
+  if(!rec?.project){
+   // The last episode open was an unedited one from the menu: open it again.
+   const key=index?.last&&Object.keys(projectCatalog).find(k=>k!=='custom'&&projectCatalog[k].id===index.last);
+   if(key&&[...$('preset').options].some(o=>o.value===key)){$('preset').value=key;load();return true;}
+   return false;
+  }
+  try{if(!reopen(rec))return false;}catch(e){console.warn('Saved episode could not be reopened',e);return false;}
+  const template=Object.entries(projectCatalog).find(([k,p])=>k!=='custom'&&p.id===rec.id)?.[0];
+  banner(`Welcome back: “${JSON.parse(rec.project).title}” is as you left it (saved ${clock(rec.savedAt)}).`,
+   template?'Use the original instead':'Start from an episode',async()=>{
+    dropUnload(rec.id);await serial(()=>remove(PREFIX+rec.id));$('preset').value=template&&[...$('preset').options].some(o=>o.value===template)?template:firstListed();load();opened();});
+  return true;
+ }
+ // Choosing an episode in the menu: your saved changes to it if there are any, the original one click away.
+ async function openFromMenu(){
+  checkpoint();
+  const key=$('preset').value,original=projectCatalog[key],rec=original&&key!=='custom'?await read(PREFIX+original.id):null;
+  $('recovery').hidden=true;
+  if(rec?.project&&rec.project!==JSON.stringify(original)&&reopen(rec)){
+   banner(`Opened your saved changes to “${original.title}” (saved ${clock(rec.savedAt)}).`,'Use the original instead',async()=>{
+    dropUnload(original.id);await serial(()=>remove(PREFIX+original.id));$('preset').value=key;load();opened();});
+  }else load();
+  opened();
+ }
+ function rebase(){if(applying)return;last=state();store(last);}
+ // Any edit in the page leads to a checkpoint shortly after; leaving the page saves at once.
+ for(const type of ['input','change','click'])document.addEventListener(type,e=>{if(!e.target.closest?.('#undo,#redo,#recovery'))soon();},true);
+ document.addEventListener('keydown',e=>{
+  if(!(e.ctrlKey||e.metaKey)||e.altKey)return;
+  const typing=e.target.closest?.('textarea,input[type=text],input:not([type])');
+  const k=e.key.toLowerCase();
+  if(k==='z'&&!typing){e.preventDefault();e.shiftKey?redo():undo();}
+  else if(k==='y'&&!typing){e.preventDefault();redo();}
+ });
+ addEventListener('pagehide',leaving);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')leaving();});
+ $('undo').onclick=undo;$('redo').onclick=redo;
+ return {checkpoint,undo,redo,opened,recover,openFromMenu,rebase,depth:()=>({undo:past.length,redo:future.length}),saved:()=>queue};
+})();
+window.FrameForgeHistoryQA=history_;
+function openProject(project,label=' — Imported project'){
  window.FrameForgeProjectCore.assertRendererCompatible(project);
  projectCatalog.custom=project;
  const select=$('preset');
  let option=select.querySelector('option[value="custom"]');
  if(!option){option=document.createElement('option');option.value='custom';select.add(option);}
- option.textContent=project.title+' — Imported project';
+ option.textContent=project.title+label;
  select.value='custom';
  load();
 }
@@ -1021,11 +1134,11 @@ $('projectImport').onchange=async event=>{
  try{
   if(file.size>1048576)throw new Error('Maximum project file size is 1 MiB');
   const project=JSON.parse(await file.text());
-  openProject(project);
+  openProject(project);history_.opened();
   $('projectImportStatus').textContent='Loaded '+project.title+' ('+project.shots.length+' scenes). Save edits with Download episode JSON.';
  }catch(err){$('projectImportStatus').textContent='Import rejected: '+err.message;}
  finally{event.target.value='';}
-};$('narrate').onclick=()=>{if(['ready','downloaded'].includes(voiceEngine.state)){const s=shots[selected];audition(s.text,{...voiceOf(s.speaker),speed:(voiceOf(s.speaker).speed??1)*s.timing.pace},lineEmotion(s));return}if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=$('language').value==='te'?'te-IN':$('language').value==='hi'?'hi-IN':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
+};$('narrate').onclick=()=>{if(['ready','downloaded'].includes(voiceEngine.state)){const s=shots[selected];audition(s.text,{...voiceOf(s.speaker),speed:(voiceOf(s.speaker).speed??1)*s.timing.pace},lineEmotion(s));return}if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(shots[selected].text);utter.lang=/^b/.test(voiceOf(shots[selected].speaker)?.voice||'')?'en-GB':'en-US';utter.rate=.95;window.speechSynthesis.speak(utter)};$('stopSpeech').onclick=()=>window.speechSynthesis?.cancel();
 let recorder=null,recordedChunks=[],recordingStream=null;
 function stopRecording(){if(!recorder||recorder.state==='inactive')return;recorder.stop();$('recordStatus').textContent='Finalizing the WebM recording…';}
 $('record').onclick=async()=>{
@@ -1065,7 +1178,6 @@ const outCanvas=document.createElement('canvas');
 const outCtx=outCanvas.getContext('2d',{alpha:false});
 // The monitor shows the composited film frame (title card, subtitles, inserts), so the preview matches the export.
 outCanvas.className='film';stage.prepend(outCanvas);renderer.domElement.remove();
-function roundRect(x,y,w,h,r){outCtx.beginPath();outCtx.roundRect(x,y,w,h,r)}
 let envPromise=Promise.resolve(),envToken=0;
 function loadEnvelope(url){
  const token=++envToken;envReady=false;decodedEnvelope=null;
@@ -1126,53 +1238,11 @@ function composeFilmFrame(w,hh){
  outCtx.drawImage(renderer.domElement,0,0,w,hh);
  const scale=w/360;
  outCtx.save();outCtx.scale(scale,scale);const H=hh/scale;
- let accumulated=0,activeIndex=shots.length-1;
- for(let i=0;i<shots.length;i++){if(time<accumulated+shots[i].duration){activeIndex=i;break}accumulated+=shots[i].duration}
- const insert=shots[activeIndex].insert;
- if(shots[activeIndex].camera==='screen'&&insert){
-  const alarmTone=insert.tone==='bad',shift=Math.max(0,Math.min(1,(time-accumulated)/Math.max(.1,shots[activeIndex].duration)));
-  const grd=outCtx.createLinearGradient(0,0,360,H);
-  grd.addColorStop(0,'#172340');grd.addColorStop(.7,'#0b1128');grd.addColorStop(1,'#060a18');
-  outCtx.fillStyle=grd;outCtx.fillRect(0,0,360,H);
-  const glass=outCtx.createLinearGradient(0,118,0,H*.79);
-  glass.addColorStop(0,'#192a42');glass.addColorStop(1,'#0b1428');
-  outCtx.fillStyle=glass;roundRect(16,112,328,H*.72,15);outCtx.fill();
-  outCtx.lineWidth=1.5;outCtx.strokeStyle='#48668c';outCtx.stroke();
-  outCtx.fillStyle='#0b1425';roundRect(26,124,308,H*.69,11);outCtx.fill();
-  outCtx.textAlign='left';
-  outCtx.fillStyle='#8d9fb4';outCtx.font='bold 11px Arial';
-  outCtx.fillText(insert.window,39,154);
-  for(let j=0;j<3;j++){outCtx.fillStyle=['#e97e80','#edbc6c','#71d5ab'][j];outCtx.beginPath();outCtx.arc(281+j*16,148,4,0,Math.PI*2);outCtx.fill();}
-  outCtx.fillStyle='#8e9db3';outCtx.font='11px monospace';
-  outCtx.fillText(insert.context,40,187);
-  outCtx.fillStyle=alarmTone?'#f2a3ad':'#82f0c8';outCtx.font='bold 17px Arial';
-  outCtx.fillText(insert.headline,40,235);
-  outCtx.textAlign='center';outCtx.font='900 83px Arial';
-  outCtx.fillText(insert.value,180,341);
-  outCtx.font='13px Arial';outCtx.fillStyle='#e4e9f5';
-  outCtx.fillText(insert.caption,180,376);
-  outCtx.textAlign='left';
-  outCtx.fillStyle='#172438';roundRect(40,404,280,53,7);outCtx.fill();
-  outCtx.fillStyle='#a9bdca';outCtx.font='13px monospace';
-  outCtx.fillText(insert.request,52,425);
-  outCtx.fillStyle=alarmTone?'#f4a1a8':'#a3f1cf';outCtx.font='bold 12px monospace';
-  outCtx.fillText(insert.status,52,445);
-  const graphY=Math.min(H-60,505),barMax=240;
-  // A filled rect, not a 1px stroke: Chrome anti-aliases stroke ends differently on its first draw.
-  outCtx.fillStyle='#344b67';outCtx.fillRect(45,graphY+79.5,270,1);
-  outCtx.strokeStyle=alarmTone?'#f1a0aa':'#80e5bf';outCtx.lineWidth=3;outCtx.beginPath();
-  for(let i=0;i<10;i++){
-   let px=46+i*(barMax/9),v=insert.graph==='flat'?72:75-23*Math.exp(-i*.6);
-   if(i===0)outCtx.moveTo(px,graphY+v);else outCtx.lineTo(px,graphY+v);
-  }
-  outCtx.stroke();outCtx.font='11px Arial';outCtx.fillStyle='#8b9eb5';
-  outCtx.fillText(insert.footer,45,graphY+106);
-  if(shift>.68){outCtx.fillStyle=alarmTone?'#ef7e87':'#64d4a3';outCtx.fillRect(40,H*.77,280,2);}
- }
  // Captions (STYLE.md): plain white type in the upper middle of the frame. No box, no header pill.
  // Shadow sizes are in output pixels: the canvas transform does not scale them.
  const lineText=$('subtitle').textContent;
  outCtx.font='800 16px "Inter","Ubuntu Sans","Hanken Grotesk",Arial,sans-serif';
+ // Screen shots too (M5.2): their story window sits below the caption, as in the reference.
  const lines=wrapWords(outCtx,lineText,278),lineHeight=23,top=H*.31-(lines.length-1)*lineHeight/2;
  outCtx.textAlign='center';outCtx.textBaseline='middle';
  outCtx.fillStyle='#fff';outCtx.shadowColor='rgba(0,0,0,.75)';outCtx.shadowBlur=5*scale;outCtx.shadowOffsetY=scale;
@@ -1180,7 +1250,56 @@ function composeFilmFrame(w,hh){
  outCtx.restore();
 }
 
-let offlineExportActive=false;
+let offlineExportActive=false,exportAbort=null;
+$('exportCancel').onclick=()=>exportAbort?.abort();
+// The export check (M6.3): the MP4 is opened again with Mediabunny and compared with what was asked for. The first
+// and last frames are decoded where the browser can decode H.264 (Chrome, Edge; Playwright's Chromium can't).
+async function validateMP4(media,blob,want){
+ const {Input,BlobSource,ALL_FORMATS,VideoSampleSink}=media,checks=[],fileInfo={bytes:blob.size};
+ const check=(name,ok,expected,actual,skip=false)=>checks.push({name,ok:skip?null:Boolean(ok),expected,actual});
+ const input=new Input({source:new BlobSource(blob),formats:ALL_FORMATS});
+ try{
+  const video=await input.getPrimaryVideoTrack(),audio=await input.getPrimaryAudioTrack();
+  check('Video track','yes'===(video?'yes':'no'),'H.264 video',video?await video.getCodec():'none');
+  if(video){
+   const [codec,w,h,stats,vDur]=await Promise.all([video.getCodec(),video.getDisplayWidth(),video.getDisplayHeight(),video.computePacketStats(),video.computeDuration()]);
+   Object.assign(fileInfo,{videoCodec:codec,width:w,height:h,frames:stats.packetCount,fps:+stats.averagePacketRate.toFixed(3),videoSeconds:+vDur.toFixed(3),videoKbps:Math.round(stats.averageBitrate/1000)});
+   check('Video codec',codec==='avc','avc (H.264)',codec);
+   check('Size',w===want.width&&h===want.height,want.width+'×'+want.height,w+'×'+h);
+   check('Frames',stats.packetCount===want.frames,want.frames,stats.packetCount);
+   check('Frame rate',Math.abs(stats.averagePacketRate-want.fps)<.05,want.fps+' fps',stats.averagePacketRate.toFixed(2)+' fps');
+   check('Video length',Math.abs(vDur-want.frames/want.fps)<=.5/want.fps,(want.frames/want.fps).toFixed(3)+' s',vDur.toFixed(3)+' s');
+   if(await video.canDecode()){
+    const sink=new VideoSampleSink(video),first=await sink.getSample(0),lastS=await sink.getSample(vDur-.5/want.fps);
+    check('First and last frames decode',first&&lastS,'both decode',(first?'first ✓':'first ✗')+' '+(lastS?'last ✓':'last ✗'));first?.close();lastS?.close();
+   }else check('First and last frames decode',null,'both decode','this browser can\'t decode H.264 to check',true);
+  }
+  check('Audio track',!!audio,want.audioCodec,audio?await audio.getCodec():'none');
+  if(audio){
+   const [codec,ch,rate,aDur]=await Promise.all([audio.getCodec(),audio.getNumberOfChannels(),audio.getSampleRate(),audio.computeDuration()]);
+   Object.assign(fileInfo,{audioCodec:codec,channels:ch,sampleRate:rate,audioSeconds:+aDur.toFixed(3)});
+   check('Audio codec',codec===want.audioCodec,want.audioCodec,codec);
+   check('Audio channels',ch===2,'stereo (2)',ch);
+   check('Audio sample rate',rate===48000,'48000 Hz',rate+' Hz');
+   const vLen=want.frames/want.fps;
+   check('Audio not cut short',aDur>=vLen-.05&&aDur<=vLen+.15,vLen.toFixed(3)+' s (−0.05 / +0.15)',aDur.toFixed(3)+' s');
+  }
+ }finally{input.dispose?.();}
+ const failed=checks.filter(c=>c.ok===false);
+ return {ok:failed.length===0,checked:new Date().toISOString(),file:want.file,episode:want.episode,requested:{width:want.width,height:want.height,frames:want.frames,fps:want.fps,seconds:+(want.frames/want.fps).toFixed(3),audioCodec:want.audioCodec},
+  result:fileInfo,audioLevels:want.audioLevels,checks,elapsedS:want.elapsedS,browser:want.browser};
+}
+function showExportReport(r){
+ const box=$('exportReport');box.innerHTML='';box.className='report '+(r.ok?'ok':'bad');
+ const head=document.createElement('b');head.textContent=r.ok?'✓ The MP4 checks out':'✗ The MP4 has problems: see below';
+ const sum=document.createElement('div');const f=r.result;
+ sum.textContent=`${f.width}×${f.height} · ${f.frames} frames · ${f.fps} fps · ${f.videoSeconds} s video, ${f.audioSeconds??'—'} s ${f.audioCodec??'no'} audio · ${(f.bytes/1048576).toFixed(1)} MB · peak ${r.audioLevels.peakDb} dBFS`;
+ const ul=document.createElement('ul');
+ for(const c of r.checks){const li=document.createElement('li');li.className=c.ok===false?'bad':c.ok===null?'skip':'';li.textContent=(c.ok===false?'✗ ':c.ok===null?'– ':'✓ ')+c.name+': '+c.actual+(c.ok===false?' (expected '+c.expected+')':'');ul.append(li);}
+ const a=document.createElement('a');a.textContent='Download this report (JSON)';a.download=r.file.replace(/\.mp4$/,'')+'-report.json';
+ a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}));
+ box.append(head,sum,ul,a);box.hidden=false;
+}
 async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,download=true,startTime=0}={}){
  if(offlineExportActive)throw new Error('Another export is already running');
  const project=window.FrameForgeCurrentProject;
@@ -1192,21 +1311,25 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
  if(!Number.isFinite(startTime)||startTime<0||startTime+frames/fps>duration+.05)throw new Error('Export segment outside the film duration');
  if(width%2||height%2)throw new Error('MP4 requires even output dimensions');
  offlineExportActive=true;const started=performance.now();const status=$('mp4Status');
- let sourceVideo=null,sourceAudio=null;
+ let sourceVideo=null,sourceAudio=null,output=null;
+ const abort=new AbortController();exportAbort=abort;
+ const bar=$('mp4Progress');bar.value=0;bar.hidden=false;$('exportCancel').hidden=false;$('exportReport').hidden=true;
+ const cancelled=()=>{if(abort.signal.aborted)throw new DOMException('Export cancelled','AbortError');};
  try{
   status.textContent='Initializing the MP4 encoders…';
   await envPromise;
   if(!envReady)throw new Error('Voice timing analysis unavailable');
-  const media=await import('https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/+esm');
-  const {Output,BufferTarget,Mp4OutputFormat,CanvasSource,AudioBufferSource,Quality,canEncodeAudio}=media;
-  if(!(await canEncodeAudio('aac'))){
-    status.textContent='Loading free AAC audio encoder…';
-    const {registerAacEncoder}=await import('https://cdn.jsdelivr.net/npm/@mediabunny/aac-encoder@1.62.1/+esm');
-    registerAacEncoder();
-  }
-  const output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
+  const media=await loadLib('the MP4 writer','./vendor/mediabunny@1.62.1/mediabunny.mjs','https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/+esm');
+  const {Output,BufferTarget,Mp4OutputFormat,CanvasSource,AudioBufferSource,Quality,canEncodeAudio,canEncodeVideo}=media;
+  // H.264 first: some Chromium builds (e.g. on Linux, and Playwright's) have no H.264 encoder at all.
+  if(!await canEncodeVideo('avc',{width,height}))throw new Error('This browser can\'t encode H.264 video, so it can\'t make an MP4. Google Chrome and Microsoft Edge can (some Chromium builds, for example on Linux, can\'t).');
+  // AAC where the browser encodes it (Chrome, Edge, Safari), else Opus in the MP4. No LGPL encoder is loaded:
+  // the decision is recorded in docs/releases/M4_4_LICENCE_AUDIT.md.
+  const audioCodec=await canEncodeAudio('aac')?'aac':await canEncodeAudio('opus')?'opus':null;
+  if(!audioCodec)throw new Error('This browser cannot encode AAC or Opus audio: export from Chrome or Edge.');
+  output=new Output({format:new Mp4OutputFormat(),target:new BufferTarget()});
   sourceVideo=new CanvasSource(outCanvas,{codec:'avc',quality:new Quality({bitrate:width>=1080?6800000:width>=720?4200000:width>=480?2400000:1300000}),keyFrameInterval:2,hardwareAcceleration:'no-preference'});
-  sourceAudio=new AudioBufferSource({codec:'aac',quality:new Quality({bitrate:160000})});
+  sourceAudio=new AudioBufferSource({codec:audioCodec,quality:new Quality({bitrate:160000})});
   output.addVideoTrack(sourceVideo);output.addAudioTrack(sourceAudio);
   // The browser-made soundtrack, or the episode's decoded mastered mix. Audio and video share one clock.
   let decoded;
@@ -1228,23 +1351,42 @@ async function exportFrameAccurateMP4({frameLimit=null,width=720,height=1280,dow
   await output.start();
   await sourceAudio.add(audioBuffer);
   sourceAudio.close();sourceAudio=null;
+  const loopStart=performance.now();
   for(let i=0;i<frames;i++){
+   cancelled();
    renderFilmFrame(startTime+i/fps,width,height,false);
    await sourceVideo.add(i/fps,1/fps);
-   if(i%15===0||i===frames-1){status.textContent='Rendering exact frames: '+(i+1)+' / '+frames+' ('+Math.floor((i+1)*100/frames)+'%)';await new Promise(r=>setTimeout(r,0))}
+   if(i%15===0||i===frames-1){
+    const done=i+1,rate=done/Math.max(.001,(performance.now()-loopStart)/1000),left=Math.round((frames-done)/rate);
+    bar.value=done/frames;
+    status.textContent=`Rendering frame ${done} of ${frames} (${Math.floor(done*100/frames)}%) · ${rate.toFixed(1)} frames/s · about ${left>=60?Math.floor(left/60)+' min '+left%60+' s':left+' s'} left`;
+    await new Promise(r=>setTimeout(r,0));
+   }
   }
+  cancelled();
   sourceVideo.close();sourceVideo=null;
-  status.textContent='Finalizing H.264 video and AAC audio…';
+  status.textContent='Finalizing H.264 video and '+(audioCodec==='aac'?'AAC':'Opus')+' audio…';
   await output.finalize();
   const raw=output.target.buffer;
   if(!raw||raw.byteLength<1000)throw new Error('MP4 unexpectedly empty');
   const blob=new Blob([raw],{type:'video/mp4'});
-  status.textContent='MP4 complete · '+(blob.size/1024/1024).toFixed(2)+' MB · '+(frames/fps).toFixed(2)+' seconds · '+(width+'×'+height);
+  // Read the finished file back and check it (M6.3): what was asked for is what was written.
+  status.textContent='Checking the MP4…';
+  let peak=0,sum=0,count=0;for(let c=0;c<audioBuffer.numberOfChannels;c++){const d=audioBuffer.getChannelData(c);for(let k=0;k<d.length;k++){const a=Math.abs(d[k]);if(a>peak)peak=a;sum+=d[k]*d[k];}count+=d.length;}
+  const report=await validateMP4(media,blob,{width,height,frames,fps,audioCodec,file:'frameforge-'+project.id+'-'+width+'x'+height+'.mp4',episode:project.title,
+   audioLevels:{peakDb:+(20*Math.log10(peak||1e-9)).toFixed(1),rmsDb:+(10*Math.log10(sum/Math.max(1,count)||1e-12)).toFixed(1),mixLufs:audioMode==='browser'?browserVoice?.mix?.lufs??null:null,source:audioMode==='browser'?'voiced in the browser':'the episode master'},
+   elapsedS:Math.round((performance.now()-started)/1000),browser:navigator.userAgent});
+  showExportReport(report);
+  status.textContent='MP4 complete · '+(blob.size/1024/1024).toFixed(2)+' MB · '+(frames/fps).toFixed(2)+' seconds · '+(width+'×'+height)+(audioCodec==='opus'?' · Opus audio (this browser has no AAC encoder; some Apple players need AAC: export from Chrome for those)':'');
   if(download){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='frameforge-'+project.id+'-'+width+'x'+height+'.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
-  return {blob,bytes:blob.size,duration:frames/fps,frames,width,height,elapsed:Math.round((performance.now()-started)/1000)};
- }catch(e){status.textContent='Export failed: '+e.message;throw e}
+  return {blob,bytes:blob.size,duration:frames/fps,frames,width,height,audioCodec,elapsed:Math.round((performance.now()-started)/1000),report};
+ }catch(e){
+  if(e?.name==='AbortError'){await output?.cancel().catch(()=>{});status.textContent='Export cancelled. Nothing was saved.';}
+  else status.textContent='Export failed: '+e.message+' Nothing was saved; try again.';
+  throw e;
+ }
  finally{
-  sourceVideo?.close();sourceAudio?.close();offlineMode=false;offlineExportActive=false;
+  sourceVideo?.close();sourceAudio?.close();offlineMode=false;offlineExportActive=false;exportAbort=null;$('exportCancel').hidden=true;$('mp4Progress').hidden=true;
   renderer.setSize(720,1280,false);running=false;time=0;update();
  }
 }
@@ -1438,6 +1580,13 @@ window.FrameForgeQA={
 };
 // In-browser voice path, for tests: engine state, the voice track and its loudness.
 window.FrameForgeVoiceQA=Object.freeze({
+ // The voice model (M6.4): which one, switch it, and one line voiced as a WAV (base64) for listening tests.
+ model:()=>voiceModel,
+ useModel:q=>{$('voiceModel').value=q;$('voiceModel').onchange();return voiceModel;},
+ downloaded:()=>JSON.parse(JSON.stringify(voiceProgress)),
+ speakWav:async(text,voice,emotion='neutral')=>{const r=await voiceCall({type:'speak',text,voice,speed:1,emotion,pronunciations:[]});
+  const b=new Uint8Array(await wavBlob([r.samples],r.rate).arrayBuffer());let s='';for(let i=0;i<b.length;i+=32768)s+=String.fromCharCode(...b.subarray(i,i+32768));
+  return {wav:btoa(s),seconds:r.seconds,cached:r.cached};},
  status:()=>({state:voiceEngine.state,device:voiceEngine.device,source:voiceEngine.source,model:voiceEngine.model,mode:audioMode,stale:audioStale,lines:browserVoice?.lines??null,
   mix:browserVoice?{lufs:browserVoice.mix.lufs,peakDb:browserVoice.mix.peakDb,music:browserVoice.mix.music,effects:browserVoice.mix.effects,ms:browserVoice.mix.ms}:null}),
  // The audio element that plays the episode: what it plays and whether it is playing.
@@ -1458,5 +1607,5 @@ window.FrameForgeVoiceQA=Object.freeze({
 // Offline: the studio keeps working without a connection once it has loaded (sw.js).
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Offline cache unavailable',e));
 
-projectReady.then(()=>{load();requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
+projectReady.then(async()=>{if(!await history_.recover())load();history_.opened();window.FrameForgeRecovered=true;requestAnimationFrame(frame);}).catch(err=>{$('recordStatus').textContent='PROJECT ERROR: '+err.message;console.error('FrameForge project load failed',err);});
 </script></body></html>

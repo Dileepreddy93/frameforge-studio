@@ -1,11 +1,11 @@
 // For machines that cannot reach cdn.jsdelivr.net (sandboxes, some CI proxies): serve the studio's pinned
 // CDN libraries from a local npm folder instead. Set FRAMEFORGE_CDN_MIRROR to a folder holding
-// node_modules/{three,onnxruntime-web,mediabunny,@mediabunny/aac-encoder} at the versions the studio pins.
+// node_modules/{three,onnxruntime-web,mediabunny} at the versions the studio pins.
 // With the variable unset nothing is routed and the browser uses the real CDN.
 const fs=require('node:fs');
 const path=require('node:path');
 
-const ESM={'mediabunny':'mediabunny/dist/bundles/mediabunny.mjs','@mediabunny/aac-encoder':'@mediabunny/aac-encoder/dist/bundles/mediabunny-aac-encoder.mjs'};
+const ESM={'mediabunny':'mediabunny/dist/bundles/mediabunny.mjs'};
 const TYPES={'.js':'text/javascript','.mjs':'text/javascript','.wasm':'application/wasm','.json':'application/json'};
 
 async function useCdnMirror(context,dir=process.env.FRAMEFORGE_CDN_MIRROR){

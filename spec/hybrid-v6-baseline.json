@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FrameForge V6 P0 protected, original release fixtures",
+  "captured_utc": "2026-11-01",
+  "baseline_commit": "2b78e60fd484f6590276f041bfafc977aa4ef479",
+  "purpose": "Git blob hashes of shipped V6 project, mastered audio and landing media; any change requires an explicit baseline review. This does NOT prove future render pixel parity.",
+  "projects": [
+    {
+      "id": "zero-latency",
+      "path": "projects/zero-latency.frameforge.json",
+      "git_blob_sha1": "7702b414a38c6f4548181bb9fa3059b32b39571d",
+      "shots": 14,
+      "seconds": 36.96666666666666,
+      "actors": [
+        "dev",
+        "blue",
+        "orange"
+      ]
+    },
+    {
+      "id": "dark-mode",
+      "path": "projects/dark-mode.frameforge.json",
+      "git_blob_sha1": "a98767420527864ebb845e32faecb95029eb96cf",
+      "shots": 12,
+      "seconds": 32.5,
+      "actors": [
+        "dev",
+        "blue",
+        "orange"
+      ]
+    }
+  ],
+  "assets": [
+    [
+      "audio/zero-latency/mix.mp3",
+      "a5442f8c90ea09a0610e325e7618a423e89156bc"
+    ],
+    [
+      "audio/zero-latency/voice.mp3",
+      "a16cd04ca6b67d8e41384186e1f3b04f35dd9e20"
+    ],
+    [
+      "audio/dark-mode/mix.mp3",
+      "d186771f968b651228b47728bcc43af76611f1cb"
+    ],
+    [
+      "audio/dark-mode/voice.mp3",
+      "ccdb14122b628968c94889155b332d8949574191"
+    ],
+    [
+      "media/v5/ep01-zero-latency.mp4",
+      "4aa98a1d37f3c6ccf2694c06e6452ff7c36a8766"
+    ],
+    [
+      "media/v5/ep01-zero-latency.webm",
+      "3407f02c800976c2e8a4f1f694a62ad0eaa0068a"
+    ],
+    [
+      "media/v5/ep02-dark-mode.mp4",
+      "243e219b8bbfc513ec2a31c0b701b8dc6a31d228"
+    ],
+    [
+      "media/v5/ep02-dark-mode.webm",
+      "10965906c0678feb3a9d2c1aadeeeecb51b565d6"
+    ],
+    [
+      "media/v5/cast-blue.jpg",
+      "e578f6857ff2b4c294c2bf1fa45f3ce299a32be8"
+    ],
+    [
+      "media/v5/cast-dev.jpg",
+      "8a847c91f8381ae9266c1e2108ff7f003d2e083c"
+    ],
+    [
+      "media/v5/cast-orange.jpg",
+      "d9c4029030d26b5ef52b92c32d4447d743b925a5"
+    ],
+    [
+      "media/v5/ep01-poster.jpg",
+      "eccd64c1a37e54964c71a0be6951250bbe8deee2"
+    ],
+    [
+      "media/v5/ep02-poster.jpg",
+      "fc97b63ad87d74d9a267c589c0917b614978816b"
+    ]
+  ],
+  "media_expectations": [
+    {
+      "path": "media/v5/ep01-zero-latency.mp4",
+      "width": 720,
+      "height": 1280,
+      "fps": 30,
+      "video": "h264",
+      "audio": "aac",
+      "seconds": 36.96666666666666
+    },
+    {
+      "path": "media/v5/ep01-zero-latency.webm",
+      "width": 720,
+      "height": 1280,
+      "fps": 30,
+      "video": "vp9",
+      "audio": "opus",
+      "seconds": 36.96666666666666
+    },
+    {
+      "path": "media/v5/ep02-dark-mode.mp4",
+      "width": 720,
+      "height": 1280,
+      "fps": 30,
+      "video": "h264",
+      "audio": "aac",
+      "seconds": 32.5
+    },
+    {
+      "path": "media/v5/ep02-dark-mode.webm",
+      "width": 720,
+      "height": 1280,
+      "fps": 30,
+      "video": "vp9",
+      "audio": "opus",
+      "seconds": 32.5
+    }
+  ]
+}

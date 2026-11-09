@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>FrameForge Ultimate P2 — original Ember cast verification</title>
+<style>body{margin:0;background:#111823;color:#fff;font:14px system-ui}#stage{width:360px;max-width:100%;margin:auto}#status{padding:8px;text-align:center}</style></head>
+<body><div id="status">P2 asset/actor adapter test (not production)</div><div id="stage"></div>
+<script src="../src/project-core.js"></script>
+<script src="../src/hybrid-project-core.js"></script>
+<script src="../src/hybrid-providers.js"></script>
+<script type="module">
+ import * as T from '../vendor/three@0.180.0/three.module.min.js';
+ import {registerEmberCharacters,TEMPLATE_IDS,EMOTIONS,createCharacterConfig,normalizeLook} from '../src/ember-actor-provider.mjs';
+ const scene=new T.Scene();scene.background=new T.Color('#18232f');
+ const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+ renderer.setPixelRatio(1);renderer.setSize(360,640,false);
+ document.querySelector('#stage').append(renderer.domElement);
+ scene.add(new T.HemisphereLight('#d1ebff','#30304d',2.4));
+ const key=new T.DirectionalLight('#fff0d6',3.5);key.position.set(2.5,5,5);scene.add(key);
+ const rim=new T.DirectionalLight('#8cabff',2);rim.position.set(-2,4,-3);scene.add(rim);
+ const floor=new T.Mesh(new T.BoxGeometry(8,.14,7),new T.MeshStandardMaterial({color:'#354456',roughness:.95}));
+ floor.position.y=-.2;scene.add(floor);
+ const camera=new T.PerspectiveCamera(35,360/640,.1,60);
+ const registry=FrameForgeHybridProviders.createRegistry();
+ registry.registerWorld('procedural',()=>({
+   setTime:t=>({t}),getStageAnchors:()=>({center:[0,1.4,0],screen:[0,1.5,-3]}),dispose:()=>{}
+ }));
+ registerEmberCharacters(registry,{scene,positions:{hero:[-1,0,0],partner:[1,0,0]},cameraPosition:[0,2.8,7]});
+ registry.lock();
+ const base=await(await fetch('../projects/zero-latency.frameforge.json')).json();
+ let session=null,project=null;
+ const create=({template='creator',look={},style='smooth',second=false}={})=>{
+   if(session)session.dispose();
+   const conf=createCharacterConfig({id:'hero',name:'Hero',template,look,style});
+   project=FrameForgeHybridProjectCore.upgradeLegacyProject(base);
+   project.id='p2-'+template;
+   project.characters=[{id:'hero',name:'Hero',visualIdentity:template+' styled actor',
+       voice:{profile:'actor',voiceLock:'Stable synthesized character voice'},
+       expressions:[...EMOTIONS],sheetStatus:'draft'}];
+   if(second)project.characters.push({id:'partner',name:'Partner',visualIdentity:'Ember companion rig',
+       voice:{profile:'companion',voiceLock:'Stable companion voice'},expressions:[...EMOTIONS],sheetStatus:'draft'});
+   project.shots=EMOTIONS.map((emotion,i)=>({
+     id:'shot-'+String(i+1).padStart(2,'0'),dialogue:'Hello. This is the '+emotion+' performance.',
+     speaker:'hero',camera:{kind:'actor',target:'hero'},duration:2.2,intent:'expression demo',
+     cast:{hero:{action:['explain','wave','shrug','point','handsup','think','nod','cheer'][i],emotion}},
+     timing:{lead:.15,pauseAfter:.3},firstFrameStatus:'draft'
+   }));
+   project.audio={state:'storyboard_only',masterUrl:null};
+   project.hybrid={version:1,cast:{hero:{provider:'procedural',template,
+       look:{...look},style}},world:{provider:'procedural',template:'simple-stage'},assets:[]};
+   if(second)project.hybrid.cast.partner={provider:'procedural',template:'robot',style};
+   const result=FrameForgeHybridProjectCore.validateProject(project);
+   if(!result.valid)throw Error(JSON.stringify(result.errors));
+   session=FrameForgeHybridProviders.createSession(project,{registry});
+   document.querySelector('#status').textContent='Ember '+template+' — '+style;
+   return{template,style,look:conf.look,project:JSON.parse(JSON.stringify(project))};
+ };
+ const frame=({time=1,emotionIndex=null,view=0}={})=>{
+   if(emotionIndex!==null)time=emotionIndex*2.2+.6;
+   const rig=session.instances().get('hero').getRig();
+   const dir=[0,Math.PI/2,Math.PI,Math.PI*3/2][view];
+   // Set the camera-facing orientation BEFORE IK/performance evaluation.
+   // Otherwise the previous view angle changes the arm solver's world-space targets.
+   rig.root.rotation.y=dir;
+   const f=session.seek(time);
+   camera.position.set(0,2.05,6);
+   camera.lookAt(0,1.35,0);
+   renderer.render(scene,camera);
+   return {image:renderer.domElement.toDataURL('image/png'),time:f.time,
+     actorCount:session.instances().size,actorIds:[...session.instances().keys()],
+     emotion:f.shot.cast.hero.emotion,pose:session.instances().get('hero').getPose(),
+     head:f.anchors.hero.head,root:f.anchors.hero.root,config:session.instances().get('hero').getConfig()};
+ };
+ window.HybridP2QA={create,frame,summary:()=>({templates:TEMPLATE_IDS,emotions:EMOTIONS}),normalizeLook,
+   renderSize:()=>[renderer.domElement.width,renderer.domElement.height],
+   dispose(){if(session)session.dispose();floor.geometry.dispose();floor.material.dispose();renderer.dispose();}};
+ create();
+ window.HybridP2Ready=true;
+ </script></body></html>

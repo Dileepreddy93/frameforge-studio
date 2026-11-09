@@ -1,9 +1,16 @@
 name: FrameForge code quality
 on:
   push:
-    branches: [develop, "feature/**"]
+    branches: [develop, "feature/**", "claude/**"]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
     branches: [develop, main]
+  workflow_dispatch:
+concurrency:
+  group: frameforge-code-quality-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   source-and-project-tests:
     runs-on: ubuntu-latest
@@ -20,6 +27,41 @@ jobs:
           node tests/git-blame-reference-contract.mjs
           node tests/rigged-asset-core.test.mjs
           node tests/project-core.test.cjs
+          node tests/hybrid-baseline.test.cjs
+          node tests/hybrid-project-core.test.cjs
+          node --check src/ember-character-engine.mjs
+          node --check src/ember-actor-provider.mjs
+          node --check src/three-rounded-box.mjs
+          node --check tests/hybrid-p2-characters-browser.cjs
+          node --check src/ember-import-validator.mjs
+          node --check src/ember-imported-rig.mjs
+          node --check src/hybrid-rigged-provider.mjs
+          node --check src/ember-world-engine.mjs
+          node --check src/hybrid-world-provider.mjs
+          node --check tests/hybrid-p34-browser.cjs
+          node tests/hybrid-p34-policy.test.mjs
+          node tests/hybrid-p34-diagnostics.test.mjs
+          node --check src/hybrid-direction.js
+          node --check src/hybrid-voice.mjs
+          node tests/hybrid-director.test.cjs
+          node tests/hybrid-voice.test.mjs
+          node tests/hybrid-p8-readiness.test.mjs
+          node tests/hybrid-p10-research.test.mjs
+          node --check src/hybrid-editor-core.js
+          node --check src/hybrid-editor-storage.mjs
+          node --check src/hybrid-browser-export.mjs
+          node --check src/hybrid-editor-app.mjs
+          node --check tests/hybrid-p7-creator-browser.cjs
+          node --check tests/hybrid-p7-real-creator-voice.cjs
+          node tests/hybrid-p7-editor.test.cjs
+          node --check tools/verify-hybrid-delivery.cjs
+          node tests/hybrid-delivery-analyzer.test.cjs
+          node --check tests/hybrid-p9-beta-browser.cjs
+          node --check tests/hybrid-p8-master-browser.cjs
+          node --check tests/hybrid-p6-fresh-synthesis.cjs
+          node --check tests/hybrid-p6-fresh-film-browser.cjs
+          node --check src/hybrid-screen.mjs
+          node --check tests/hybrid-p56-browser.cjs
           node tests/project-integration.test.mjs
           node tests/performance-core.test.cjs
           node tests/speech-performance-core.test.cjs
@@ -28,11 +70,13 @@ jobs:
           node tests/robot-design.test.cjs
           node tests/robot-character.test.cjs
           node tests/robot-acting.test.cjs
+          node tests/kokoro-g2p.test.cjs
+          node tests/script-core.test.cjs
       - name: Engine module parses
         run: node tests/engine-syntax.test.mjs
   real-character-render-tests:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,6 +88,9 @@ jobs:
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
+          # export-codec, offline-episode and the render check read the MP4s they make with ffprobe (M5.6).
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          ffprobe -version | head -1
       - name: Render 3D character views, emotions, and environment in Chromium
         run: |
           python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
@@ -57,9 +104,59 @@ jobs:
           node tests/performance-browser.cjs
           node tests/speech-performance-browser.cjs
           node tests/determinism-browser.cjs
+          node tests/hybrid-legacy-film-frames.cjs
           node tests/episode-data-browser.cjs
           node tests/studio-editor-browser.cjs
           node tests/landing-browser.cjs
+          node tests/export-codec-browser.cjs
+      - name: Episode files, offline studio and the offline renderer (M4 and M5.6)
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server-2.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/project-browser.cjs
+          node tests/project-import-export-browser.cjs
+          node tests/offline-episode-browser.cjs
+          node tests/render-failure-browser.cjs
+          node tests/script-browser.cjs
+          node tests/self-host-browser.cjs
+          node tests/autosave-browser.cjs
+          node tests/export-report-browser.cjs
+      - name: Archive unmodified frozen/candidate V6 screenshots for true pixel inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p0-v6-exact-pixel-forensics
+          path: artifacts/p0-visual-parity/
+          if-no-files-found: ignore
+  voice-and-mix-tests:
+    # Downloads the Kokoro voice model (about 326 MB) from huggingface.co on every run.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and ffmpeg
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Voice an episode in the browser, mix it and export it (M2.5, M4.4)
+        run: |
+          python3 -m http.server 8959 --bind 127.0.0.1 > /tmp/frameforge-ci-server.log 2>&1 &
+          export FRAMEFORGE_URL=http://127.0.0.1:8959/
+          node tests/episode-mix-browser.cjs
+          FRAMEFORGE_VOICE=1 node tests/self-host-browser.cjs
+          FRAMEFORGE_SAMPLES_OUT=artifacts/voice-model-samples node tests/voice-model-browser.cjs
+          FRAMEFORGE_SAMPLES_OUT=artifacts/voice-model-samples node tests/hybrid-p6-fresh-film-browser.cjs
+      - name: Archive full/light Kokoro voice models and NEW two-speaker V2 film evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-voice-model-samples
+          path: artifacts/voice-model-samples/
+          if-no-files-found: warn
   portable-video-export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -78,6 +175,44 @@ jobs:
           sudo apt-get install -y -qq ffmpeg
           ffmpeg -hide_banner -encoders | grep -w libx264
           ffprobe -version | head -1
+      - name: Verify original V6 assets and decode complete MP4 films
+        run: node tests/hybrid-baseline.test.cjs --media
+      - name: P1 hybrid WebGL provider proof, deterministic seek and playable MP4
+        run: node tests/hybrid-p1-video-browser.cjs
+      - name: P2 real Ember cast (six templates, 4 views, 8 emotions, customization and MP4)
+        run: node tests/hybrid-p2-characters-browser.cjs
+      - name: P3 P4 imported humanoid and Ember worlds (WebGL / H264+Aac)
+        run: node tests/hybrid-p34-browser.cjs
+      - name: P5 P6 authored screenplay, screen app, voice-guided actor and two complete MP4s
+        run: node tests/hybrid-p56-browser.cjs
+      - name: Preserve P5 P6 independently decoded voiced Ember scene films and audio evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p56-cameras-screen-voice-proof
+          path: artifacts/p56-director-voice/
+          if-no-files-found: warn
+      - name: Preserve P3 P4 model/world frames, full decode MP4 and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p34-hybrid-proof
+          path: artifacts/p34-hybrid/
+          if-no-files-found: warn
+      - name: Preserve P2 cast proof images, report and video
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p2-ember-cast-proof
+          path: artifacts/p2-ember-cast/
+          if-no-files-found: warn
+      - name: Preserve P1 adapter-only 3D video and probe report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p1-hybrid-adapter-proof
+          path: artifacts/p1-hybrid-proof/
+          if-no-files-found: warn
       - name: Verify actual V4 archived full-film bytes and decode
         run: node tools/verify-phase0.mjs
       - name: Extract five real V4 frames with timestamped hashes
@@ -102,6 +237,61 @@ jobs:
           name: frameforge-v5-3-audio-guided-motion-3sec
           path: artifacts/v5-3-audio-guided-3s.mp4
           if-no-files-found: error
+
+  hybrid-native-hd-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    needs: source-and-project-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser and H264/AAC encoder
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Native 1080x1920 30fps WebGL render, audio and full MP4 decode
+        run: node tests/hybrid-p8-master-browser.cjs
+      - name: Archive true full-resolution frames and independent codec evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p8-native-hd-certification
+          path: artifacts/p8-master-cert/
+          if-no-files-found: warn
+
+  hybrid-beta-usability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    needs: source-and-project-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install actual Chromium and browser dependencies
+        run: |
+          npm install --no-save playwright@1.56.1 @axe-core/playwright@4.14.0
+          npx playwright install --with-deps chromium
+      - name: Operate working beta on desktop and mobile viewports
+        run: node tests/hybrid-p9-beta-browser.cjs
+      - name: Author, revise, save, reopen and preview original V2 films in actual creator UI
+        run: node tests/hybrid-p7-creator-browser.cjs
+      - name: Archive real interface screenshots, UX and privacy test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p9-beta-usability
+          path: artifacts/p9-beta-ux/
+      - name: Archive real desktop/mobile creator workflow evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p7-creator-e2e
+          path: artifacts/p7-creator/
+          if-no-files-found: warn
 
   rigged-character-import:
     runs-on: ubuntu-24.04

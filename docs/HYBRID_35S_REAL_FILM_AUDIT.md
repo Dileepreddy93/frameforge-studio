@@ -1,0 +1,30 @@
+# Real FrameForge 35.7-second Creator film — visual and independent technical audit
+**Audited:** 2026-11-02. **This is not a marketing-ready 10/10 art certification.**
+
+## What was actually produced and verified
+- Exact full MP4 evidence: [GitHub Windows Chrome run 41392193307](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41392193307) and [download artifact 13117643806](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41392193307/artifacts/13117643806).
+- A new 10-shot V2 film, actual local Kokoro speech, original score and two authored SFX; **35.7 s**, 1080×1920/30fps H264/AAC, 1,071 decoded video frames, 48 kHz two-channel audio, completely decoded by FFmpeg. Runtime: **483 seconds** in Windows Chrome CI. Test evidence reported `-14.05 LUFS` mastered mix and `-2 dBFS` peak.
+- Independently downloaded and checked the archived 36,363,671-byte MP4: `ffprobe` showed H264 High profile, 1080×1920, 30/1 fps, **1,071 video frames**; AAC-LC 48 kHz stereo; actual MP4 duration 35.712s. External `ffmpeg volumedetect` measured **-17.6 dB mean**, **-1.9 dB maximum**; encoded soundtrack is not silent.
+- Five real decoded visual samples across the film had brightness means **101.74, 114.41, 105.25, 83.58, 78.13** and gray standard deviations **59.04, 62.84, 49.31, 52.40, 55.22**; all sample hashes differ. This verifies actual visible frames, **not** that the art is world-class.
+- A 13-frame visual contact sheet spanning 0.6–35s was inspected directly. **Positives:** consistent stylized human/robot models, readable major faces, meaningful expression changes, sustained 9:16 composition. **Observed weaknesses:** excessive reuse of one forest/workstation setting, repeated near-identical close-ups and two-shots, some over-tight faces, a largely static background screen, and scripted branding captions repeated instead of diverse dialogue-specific inserts. These observations apply to this one film; do not generalize to every generated film without sampling.
+
+## Specific implemented response to observed weaknesses
+- Creator now exposes **per-shot camera distance (3–20)** and **lens FOV (25–60°)** with validation, undo, persisted JSON and real 3D pixel-change browser tests. Switching shot camera resets incompatible framing; changing speaker keeps its actor camera on that speaker.
+- The Windows long-film acceptance script is updated to use **6.2-unit medium close-ups, 42° lenses** where appropriate, plus **two authored in-world terminal/screen inserts**. This actively exercises visual variety rather than repeating tight actor shots. Its updated [Windows Chrome long-film test](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41394212648) **COMPLETED SUCCESSFULLY** at source SHA `08831f0f4a1bf02a25a081aacad9b0675d817bad`. Marker `HYBRID_P7_30_TO_60_SECOND_WINDOWS_HD_PASS` proves 10 shots, 35.7s, 1,071 completely decoded native 1080×1920/30 H264/AAC frames, real English Kokoro dialogue, two SFX and authored score; [new movie artifact 13118659249](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41394212648/artifacts/13118659249). The verified automated signal inspector found nonblank diverse frames and audible stereo audio. **Manual timecoded viewing/listening of this newly reframed film has not been documented and remains required to judge visual improvements.**
+- `tools/verify-hybrid-delivery.cjs` adds independent complete-delivery checks (codec, frame count, five distinct visible samples, true audible nonclipped stereo track); wired into the revised Windows movie certification. Source analyzer unit tests passed [GitHub CI run 41392907068](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41392907068).
+- Protected [Creator staging](https://frameforge-hybrid-beta-2ot94b4es-dileepreddys-projects.vercel.app/creator.html) from `08831f0f4a1bf02a25a081aacad9b0675d817bad` was READY, separate from the untouched original V6 production.
+
+## Latest verified CI and preserved follow-on audit
+- **Main pipeline:** all seven GitHub Actions jobs passed at source SHA `08831f0f4a1bf02a25a081aacad9b0675d817bad`: [run 41394212683](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41394212683). Current newer commits are documentation-only; check live HEAD on the next session.
+- **Windows long film:** all steps passed for the revised Creator movie at the same source SHA: [run 41394212648](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41394212648). The revised movie should be watched and heard independently to determine whether cinematography fixes achieved their intended perceptual benefit.
+- **Precise next-step handoff:** [HYBRID_NEXT_CHAT_HANDOFF_2026-11-02.md](HYBRID_NEXT_CHAT_HANDOFF_2026-11-02.md). Authentication and payments remain intentionally excluded.
+
+## Outstanding criteria before claiming 9+/10
+- **Real human eyes/ears:** evaluate speech intelligibility, natural lip/eye/head interaction, character timing, repetitive choreography and film cuts. CI is not a perceptual judge.
+- **Real competing products:** produce and blind-test the *same* script under comparable settings; no invented score based on advertised competitor features.
+- **Real physical devices:** capture complete 30–60s renders on representative Windows, macOS, Android and iOS or transparently mark encoding unsupported; mobile viewport simulation alone is insufficient.
+- **Actual creators:** at least 20 independent novice/mixed creators should achieve an unassisted successful first film and reopen it, with observed task-completion metrics and failures recorded.
+- **Legacy V6 screenshot self-noise:** maintain baseline evidence and avoid treating unstable JPEG hashes as aesthetic regressions or arbitrarily waiving actual pixel change.
+- **Legal and commercial rights:** imported character/voice/music/motion licences must be accepted for commercial distribution; test-only rigs never sold.
+
+**Authentication and payments remain explicitly excluded at user's direction.**

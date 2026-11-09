@@ -18,13 +18,14 @@ const fsdata=JSON.parse(fs.readFileSync('projects/zero-latency.frameforge.json',
  current.shots.forEach((s,i)=>{assert.equal(s.text,fsdata.shots[i].dialogue);assert.equal(s.speaker,fsdata.shots[i].speaker);assert.equal(s.camera,fsdata.shots[i].camera);assert.equal(s.duration,fsdata.shots[i].duration);});
  const image=await page.evaluate(()=>FrameForgeQA.renderFilmFrame(7.4,360,640));
  assert.match(image,/^data:image\/jpeg;base64,/);assert.ok(image.length>4000);
- await page.locator('#preset').selectOption('mystery');
- await page.locator('#build').click();
- await page.waitForFunction(()=>FrameForgeCurrentProject?.id==='mountain-mystery'&&FrameForgeQA.shots().length===6,null,{timeout:12000});
+ // The menu offers the finished episodes; choosing one opens it at once. The storyboard fixture stays loadable but unlisted.
+ assert.deepEqual(await page.locator('#preset option').evaluateAll(o=>o.map(x=>x.value)),['comedy','darkmode']);
+ await page.locator('#preset').selectOption('darkmode');
+ await page.waitForFunction(()=>FrameForgeCurrentProject?.id==='dark-mode'&&FrameForgeQA.shots().length===12,null,{timeout:12000});
+ await page.evaluate(()=>FrameForgeQA.openProject(FrameForgeQA.project('mystery')));
  const mystery=await page.evaluate(()=>({id:FrameForgeCurrentProject.id,lines:FrameForgeQA.shots().length,audio:FrameForgeCurrentProject.audio.state}));
  assert.deepEqual(mystery,{id:'mountain-mystery',lines:6,audio:'storyboard_only'});
  await page.locator('#preset').selectOption('comedy');
- await page.locator('#build').click();
  await page.waitForFunction(()=>FrameForgeCurrentProject?.id==='zero-latency'&&FrameForgeQA.shots().length===14,null,{timeout:12000});
  assert.deepEqual(errors,[],'Page-level runtime errors');
  const broken=failed.filter(s=>/project-core|frameforge\.json/.test(s));

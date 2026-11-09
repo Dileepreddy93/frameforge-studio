@@ -1,0 +1,61 @@
+# FrameForge Ultimate — P3/P4 implementation contract
+
+Branch: `feature/hybrid-foundation`. Status: targeted P3/P4 3D browser/video proof PASSED; full commercial/VRM/multimodel and V6 release gates remain OPEN. This is an engineering record and not an assertion that the hybrid UI is production ready.
+
+## Integration design (not a blind source merger)
+
+P3 imports the original Ember model-analysis and bone-retargeting source, but wraps it behind FrameForge's **versioned v2 project**, hard byte-size caps, explicit validation, **local-only asset URLs**, pinned **self-hosted Three.js r180 GLTFLoader**, and a preloading stage separate from the synchronous rendering session.
+
+P4 uses actual Ember procedural world builders (forest, meadow, snow) and studio atmosphere. It attaches them to FrameForge's **single** world-provider contract, restoring scene state on disposal and exposing consistent `center`, `screen` and `ground` anchors to FrameForge's camera director. There is no second timeline and no change to legacy V6's set/renderer.
+
+## P3 modules
+
+- `src/ember-import-validator.mjs`: Ember source `character-import.js`, commit `22c745ffdc2d6411707f3a9bbe5bd70b10f9d9db`. Analyzes bone conventions, VRM metadata and morph channels.
+- `src/ember-imported-rig.mjs`: Ember source `imported.js` with the same pinned Three.js, original IK/mouth drawing, rest-pose resets and dispose logic; not a simplified placeholder.
+- `src/hybrid-rigged-provider.mjs`: enforces FrameForge's 25 MiB GLB cap, self-contained assets, recognized humanoid bones, required-extension allowlist and triangle budget **before GLTFLoader**. `prepareRiggedCast()` loads each model asynchronously exactly once per project instance. `registerRiggedCharacters()` maps completed rigs into P1's synchronous `ActorProvider` with deterministic absolute-time motion and head/root anchors.
+- `src/vendor-gltf-loader.mjs` and `src/vendor-buffergeometry-utils.mjs`: official Three.js r180 MIT modules pinned locally to remove the CDN dependency.
+- **Real test decision from GitHub CI:** CesiumMan has 19 skinned joints but nonstandard names such as `Skeleton_torso_joint_1` and `Skeleton_arm_joint_L__4_`. It is correctly **rejected as a retargetable humanoid**; it is not proof of actor support. `assets/rigged-samples/AraAthleticMan.glb` is a test-only 69-bone humanoid with recognized hips/spine/head/arms/legs (Ara/MakeHuman-derived source, CC0 base plus CMU motion restrictions). It is used only for CI technical evidence, never as a commercial asset. Source model clips are not played or licensed for redistribution; see `assets/rigged-samples/AraAthleticMan.CREDITS.md`.
+
+**Explicit VRM limitations:** glTF geometry and VRM metadata can be parsed and supported humanoid bone maps evaluated. VRM MToon materials, VRM-specific spring physics and VRMC node constraints are **not implemented**; unsupported *required* extensions must be rejected, and no universal VRM support claim is permitted.
+
+## P4 modules
+
+- `src/ember-world-engine.mjs`: Ember source `worlds.js`, imported with only local Three.js and original physics-sky classes.
+- `src/vendor-sky.mjs`, `src/vendor-groundedskybox.mjs`: pinned Three.js r180 MIT shader/world support.
+- `src/hybrid-world-provider.mjs`: uses the actual Ember `buildNature()` and `deskAtmosphere()`; world options are bounded for client rendering; `setTime(t)` calls the environment's pure absolute-time animations; scene state and GPU resources are released/cleaned on disposal. `auditWorldAsset` and `prepareImportedWorld` validate and load self-contained GLB worlds into `WorldProvider`.
+- Builder options currently cover forest, meadow, snow, desk, morning/golden/night, foliage, wind, and recognized ambient particles. No misleading claim that all Ember UI/theme settings have been implemented.
+- `tests/hybrid-p34-proof.html` creates a **single new v2** project using actual 69-bone Ara human rig and actual Ember world builds. The imported-world path uses the Khronos model **only as geometry-loading technical proxy**; it is not an original authored environment and cannot count toward final art acceptance.
+
+## Verified milestone (2026-11-01)
+
+[Run 41295668842](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842) successfully completed P3/P4 `portable-video-export` and logged:
+
+- `HYBRID_P3_IMPORT_PASS`: genuine rigged Ara technical model, 69 bones, 10,587,092 bytes, 48,820 triangles and eight directed acting beats.
+- `HYBRID_P4_WORLDS_PASS`: four Ember environments with three time presets, world/character anchors, view differences, frame seek/rewind and imported world loading.
+- `HYBRID_P34_VIDEO_PASS`: 24 frames, 300×500 H.264/AAC, complete ffmpeg decode and original V6 soundtrack used as a technical audio stub.
+- [P3/P4 original 3D frames, video and report artifact](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842/artifacts/13079385805).
+- The original V6 production renderer and critical `studio.html`/character/film/parser files have zero changes in the branch compare. The separate old-film cross-page pixel comparator is still failing and must be corrected without an arbitrary threshold waiver.
+
+Earlier red runs exposed **two real process improvements**: failing-closed rejection of CesiumMan nonstandard bones rather than treating any skinned mesh as a valid humanoid; and a test assertion typo `preset` vs the existing schema field `template`. These are recorded in the master plan.
+
+**Not verified:** fully correct VRM (MToon/physics), three independent rig conventions, a genuinely authored imported world, full editable studio UI, 1080p voiced film, mobile memory/performance and legal commercial rights to sample characters. These remain independent release gates.
+
+## Gates and exact evidence
+
+- P3 strict validation: required bones, skin, GLB bytes, extension and primitive bounds, no remote textures/buffers, no silent no-skin fallback. Existing `rigged-asset-core` and `asset-lab` tests remain in CI.
+- P3 real browser: recognized 69-bone Ara test GLB loaded, animated across eight v2-directed emotions and multiple camera angles, anchored and seekable. Unrecognized CesiumMan retargeting is a failure-closed negative test; this is a deliberately narrower support claim.
+- P4 nature: forest, meadow, snow, desk all render in Chromium, time-advanced and rewound, and scene cleanup works; imported world path validates and loads a locally contained GLB.
+- P3/P4 proof: H.264/AAC short MP4 fully decoded and probed for frame count; uses existing V6 master audio and is **not** a new voice/lip-sync demo.
+- Tests: `tests/hybrid-p34-policy.test.mjs` (source job), `tests/hybrid-p34-browser.cjs` (portable WebGL and video job), `tests/hybrid-p34-proof.html`.
+- CI entry point: [FrameForge code quality](https://github.com/Dileepreddy93/frameforge-studio/actions/workflows/project-contract.yml). **Do not mark success until both `HYBRID_P3_IMPORT_PASS` and `HYBRID_P4_WORLDS_PASS` and `HYBRID_P34_VIDEO_PASS` appear in passing job logs.**
+- P0/P1 outstanding legacy cross-browser-load frame parity and Windows/macOS final release certification still block production promotion.
+
+## Roadmap decisions
+
+1. Do **not** copy Ember's entire scene editor into `studio.html`: P5/P7 will adapt screens, direction and responsive controls while respecting FrameForge's stable film/export architecture.
+2. Do **not** call GLTFLoader with nonvalidated or externally referenced uploads. Decode only from the in-memory, explicitly bounded asset store.
+3. Do **not** claim all VRM or all Mixamo/Blender rigs work after only checking CesiumMan. Need multiple independently authored rig conventions, no-bone failures, morph-based expressive models and real browser/mobile performance proof.
+4. Do **not** conflate a 2-second code proof using mastered V6 audio with a complete voiced, synchronized, customer-exported 1080p original movie. That acceptance belongs to P6/P8.
+5. Never overwrite V6 production or existing `main`. All P3/P4 experiments remain reversible in `feature/hybrid-foundation`.
+
+Resume: check the latest `feature/hybrid-foundation` SHA, this file, master plan, and full GitHub Actions jobs; fix every red test and update exact run/artifact IDs.

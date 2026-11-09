@@ -25,9 +25,12 @@ const section=original.slice(original.indexOf('const templates={'),original.inde
 const pattern=/\["([^"]+)","([^"]+)","([^"]+)",([0-9]+(?:\.[0-9]+)?)\]/g;
 const sourceComedy=[...section.split('comedy:[')[1].split('mystery:[')[0].matchAll(pattern)];
 const sourceMystery=[...section.split('mystery:[')[1].matchAll(pattern)];
+// Cameras re-shot on purpose since V3: M5.1 made the first two-shot of Zero Latency the arena's wide.
+const reshot={'shot-06':['duo','wide']};
 for(const [legacy,project]of [[sourceComedy,comedy],[sourceMystery,mystery]]){
  assert.equal(legacy.length,project.shots.length,'shot count unchanged from V3 source');
- legacy.forEach((m,i)=>{const shot=project.shots[i];assert.equal(shot.dialogue,m[1]);assert.equal(shot.speaker,m[2]);assert.equal(shot.camera,m[3]);if(!shot.voice)assert.equal(shot.duration,Number(m[4]));});
+ legacy.forEach((m,i)=>{const shot=project.shots[i],[was,now]=project===comedy&&reshot[shot.id]||[];assert.equal(shot.dialogue,m[1]);assert.equal(shot.speaker,m[2]);
+  if(was){assert.equal(m[3],was);assert.equal(shot.camera,now);}else assert.equal(shot.camera,m[3]);if(!shot.voice)assert.equal(shot.duration,Number(m[4]));});
 }
 const invalid=(name,mutator)=>{
  const doc=clone(comedy);mutator(doc);const v=validateProject(doc);
@@ -75,7 +78,7 @@ assert.equal(comedyShots.find(s=>s.id==='shot-12').framing.lookUp,.07);
 const plain=toTimelineShots(mystery)[0];
 assert.deepEqual(plain.cast.blue,{action:'listen',emotion:'neutral'});
 assert.equal(plain.cast[plain.speaker].action,'explain');
-assert.deepEqual(plain.framing,{distance:7,offset:0,up:.08,fov:41,lookUp:0,move:'push',amount:.33,roll:0,aim:'center'});
+assert.deepEqual(plain.framing,{distance:21,offset:.3,up:4.34,fov:40,lookUp:3.5,move:'push',amount:.33,roll:0,aim:'center'});
 const duo=toTimelineShots(mystery).find(s=>s.camera==='duo');assert.equal(duo.framing.aim,duo.speaker,'two-shots favour the speaker by default');
 invalid('look colour not hex',p=>p.characters[0].look={hoodie:'red'});
 invalid('look slot the rig lacks',p=>p.characters[1].look={hoodie:'#ff0000'});
@@ -101,3 +104,26 @@ invalid('bad insert tone',p=>p.shots[8].insert.tone='meh');
 invalid('empty title',p=>p.shots[0].title='');
 invalid('empty banner',p=>p.banner='');
 console.log('SHOT_DIRECTION_TESTS_PASS: order-independent shots, defaults, legacy acting, 12 invalid cases');
+
+// Shot planner (M5.4): long close-ups and screen shots end on a listener's reaction; authored cuts win; false opts out.
+{
+ const planned=comedyShots.filter(s=>s.reactionSource==='planned');
+ assert.deepEqual(planned.map(s=>s.id),['shot-01','shot-05','shot-07','shot-09','shot-11','shot-13']);
+ assert.deepEqual(comedyShots.find(s=>s.id==='shot-05').reactionCut,{role:'dev',seconds:.82,emotion:'worried'});
+ assert.deepEqual(comedyShots.find(s=>s.id==='shot-01').reactionCut,{role:'blue',seconds:.79});
+ for(const s of comedyShots){
+  if(!s.reactionCut)continue;
+  assert.ok(s.reactionCut.role!==s.camera,s.id+' never cuts to the character already on screen');
+  if(s.reactionSource==='planned'){assert.notEqual(s.reactionCut.role,s.speaker);assert.ok(s.duration-s.reactionCut.seconds>=1.4-1e-9,s.id+' keeps 1.4 s before its cut');}
+ }
+ assert.ok(comedyShots.filter(s=>s.camera==='wide'||s.camera==='duo').every(s=>s.reactionSource!=='planned'),'wides and two-shots are not cut by the planner');
+ assert.ok(comedyShots.filter(s=>s.duration<2.4).every(s=>s.reactionSource!=='planned'),'short shots are not cut');
+ assert.equal(comedyShots.find(s=>s.id==='shot-03').reactionSource,'authored');
+ const off=clone(comedy);off.shots[0].reactionCut=false;
+ const offShot=toTimelineShots(off)[0];assert.equal(offShot.reactionCut,null);assert.equal(offShot.reactionSource,'off');
+ assert.equal(validateProject(off).valid,true);
+ const bad=clone(comedy);bad.shots[0].reactionCut=true;assert.equal(validateProject(bad).valid,false);
+ // The film keeps its length: the planner only changes the picture.
+ assert.equal(comedyShots.reduce((a,s)=>a+s.duration,0),comedyTotal);
+ console.log('SHOT_PLANNER_TESTS_PASS: 6 planned cuts in Zero Latency, authored cuts kept, opt-out, timing unchanged');
+}

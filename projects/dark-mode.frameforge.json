@@ -89,7 +89,7 @@
       "dialogue": "Users keep asking for dark mode.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.7,
+      "duration": 2.6333333333333333,
       "intent": "setup",
       "cast": {
         "dev": {
@@ -119,7 +119,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-01.wav",
-        "seconds": 2.201
+        "seconds": 2.119
       }
     },
     {
@@ -128,7 +128,7 @@
       "dialogue": "Dark mode is my favorite mode.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.433333333333333,
+      "duration": 2.2,
       "intent": "offer",
       "cast": {
         "dev": {
@@ -150,7 +150,7 @@
       },
       "framing": {
         "distance": 4.25,
-        "offset": 0.2,
+        "offset": -0.8,
         "up": 0.05,
         "fov": 35,
         "move": "push",
@@ -159,7 +159,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-02.wav",
-        "seconds": 1.94
+        "seconds": 1.706
       }
     },
     {
@@ -168,7 +168,7 @@
       "dialogue": "Great. Just make the app darker.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.6666666666666665,
+      "duration": 2.533333333333333,
       "intent": "request",
       "cast": {
         "dev": {
@@ -191,7 +191,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-03.wav",
-        "seconds": 1.961
+        "seconds": 1.843
       }
     },
     {
@@ -200,7 +200,7 @@
       "dialogue": "How dark?",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 1.8333333333333333,
+      "duration": 1.8,
       "intent": "deadpan",
       "cast": {
         "dev": {
@@ -234,7 +234,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-04.wav",
-        "seconds": 1.079
+        "seconds": 1.053
       }
     },
     {
@@ -242,8 +242,8 @@
       "title": "NOTHING FANCY",
       "dialogue": "Easy on the eyes. Nothing fancy.",
       "speaker": "dev",
-      "camera": "duo",
-      "duration": 2.966666666666667,
+      "camera": "wide",
+      "duration": 2.9,
       "intent": "clarify",
       "cast": {
         "dev": {
@@ -264,18 +264,19 @@
         "pauseAfter": 0.35
       },
       "framing": {
-        "distance": 6.9,
-        "offset": 0,
-        "up": 0.03,
-        "fov": 42,
+        "distance": 21,
+        "offset": 0.3,
+        "up": 4.34,
+        "fov": 40,
         "move": "drift",
         "amount": 0.4,
-        "aim": "dev"
+        "aim": "dev",
+        "lookUp": 3.5
       },
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-05.wav",
-        "seconds": 2.46
+        "seconds": 2.391
       }
     },
     {
@@ -284,7 +285,7 @@
       "dialogue": "Done. Maximum darkness achieved.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.933333333333333,
+      "duration": 2.7666666666666666,
       "intent": "payoff",
       "cast": {
         "dev": {
@@ -313,7 +314,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-06.wav",
-        "seconds": 2.186
+        "seconds": 2.032
       }
     },
     {
@@ -370,7 +371,14 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-07.wav",
-        "seconds": 2.581
+        "seconds": 2.587
+      },
+      "framing": {
+        "distance": 15.5,
+        "offset": -6.5,
+        "up": 3.6,
+        "fov": 40,
+        "lookUp": 2
       }
     },
     {
@@ -379,7 +387,7 @@
       "dialogue": "I can't see anything.",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.2,
+      "duration": 2.1333333333333333,
       "intent": "shock",
       "cast": {
         "dev": {
@@ -423,7 +431,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-08.wav",
-        "seconds": 1.385
+        "seconds": 1.339
       }
     },
     {
@@ -432,7 +440,7 @@
       "dialogue": "Exactly. No more eye strain.",
       "speaker": "blue",
       "camera": "blue",
-      "duration": 2.6,
+      "duration": 2.4,
       "intent": "justify",
       "cast": {
         "dev": {
@@ -455,7 +463,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-09.wav",
-        "seconds": 1.951
+        "seconds": 1.745
       }
     },
     {
@@ -464,7 +472,7 @@
       "dialogue": "Can you add a little light?",
       "speaker": "dev",
       "camera": "dev",
-      "duration": 2.2666666666666666,
+      "duration": 2.2,
       "intent": "plead",
       "cast": {
         "dev": {
@@ -495,7 +503,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-10.wav",
-        "seconds": 1.608
+        "seconds": 1.556
       }
     },
     {
@@ -504,7 +512,7 @@
       "dialogue": "I added one pixel. It is very proud.",
       "speaker": "orange",
       "camera": "orange",
-      "duration": 3.8666666666666667,
+      "duration": 3.7666666666666666,
       "intent": "punch",
       "cast": {
         "dev": {
@@ -546,7 +554,7 @@
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-11.wav",
-        "seconds": 2.981
+        "seconds": 2.862
       }
     },
     {
@@ -555,7 +563,7 @@
       "dialogue": "Ship it.",
       "speaker": "dev",
       "camera": "duo",
-      "duration": 3.7666666666666666,
+      "duration": 3.7333333333333334,
       "intent": "button",
       "cast": {
         "dev": {
@@ -576,18 +584,19 @@
         "pauseAfter": 2.8
       },
       "framing": {
-        "distance": 7.22,
+        "distance": 9.4,
         "offset": 0.26,
-        "up": 0.12,
+        "up": 1.5,
         "fov": 40,
         "move": "pull",
         "amount": 0.6,
-        "aim": "dev"
+        "aim": "dev",
+        "lookUp": 0.6
       },
       "firstFrameStatus": "not_created",
       "voice": {
         "file": "lines/shot-12.wav",
-        "seconds": 0.829
+        "seconds": 0.773
       }
     }
   ],

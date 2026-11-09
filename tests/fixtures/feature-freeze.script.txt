@@ -1,0 +1,28 @@
+# Feature Freeze
+> The release is tomorrow. DEV asks the robots to freeze all new features. They take it literally.
+
+[wall bad] open bugs = 47
+DEV (worried): The release is tomorrow, and we still have forty-seven bugs.
+BLUE (happy): Then we should add more features!
+DEV (angry): No. No new features. We need a feature freeze.
+ORANGE: Understood. Freezing everything.
+BLUE (surprised): Everything?
+ORANGE: Everything. It is the safest option.
+DEV (worried): Wait. What exactly are you freezing?
+[wall bad] server room = -40 °C
+ORANGE: The server room. I set it to minus forty.
+DEV (surprised): You froze the servers?
+BLUE (happy): They can't crash if they can't move!
+ORANGE: Zero bugs. As requested.
+[screen good] Open bugs = 0 | Nothing runs, so nothing breaks.
+DEV (worried): Nothing runs at all!
+BLUE (thinking): Technically, that is very stable.
+DEV (angry): Customers can't even log in!
+ORANGE: Then they cannot find new bugs either.
+DEV (sad): Please. Unfreeze the servers.
+BLUE (happy): Unfreezing now!
+[screen bad] Server temperature = 95 °C | Thawed a little too much.
+ORANGE (surprised): Slight overcorrection.
+DEV (worried): Is anything on fire?
+BLUE (happy): Only the backlog!
+ORANGE: Ship it.

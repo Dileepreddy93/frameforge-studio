@@ -1,0 +1,114 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameForge Creator · Hybrid Studio</title><meta name="color-scheme" content="dark">
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#0e121b;color:#f2f5fa;accent-color:#eda875}
+*{box-sizing:border-box}body{margin:0;min-width:320px}button,input,select,textarea{font:inherit}button{background:#273142;color:#f4f5fa;border:1px solid #525d6c;border-radius:10px;min-height:44px;padding:9px 12px;cursor:pointer}button:hover:not(:disabled){background:#37465e}button:disabled{opacity:.48;cursor:not-allowed}button.primary{background:#eeb487;color:#24170e;border-color:#f8c59b;font-weight:750}button.primary:hover:not(:disabled){background:#ffd1ac}a{color:#eec19e}
+:focus-visible{outline:3px solid #f9bf87!important;outline-offset:3px}
+header{background:#151c28;border-bottom:1px solid #343e4d;padding:12px 20px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.brand{font-size:16px;font-weight:850;letter-spacing:-.3px}.brand span{background:#f4b98e;color:#23170f;padding:5px 9px;border-radius:9px;margin-right:7px}.sub{font-size:11px;color:#b3bece}
+.header-right{display:flex;gap:8px;flex-wrap:wrap}header button{font-size:12px}
+main{max-width:1550px;margin:auto;padding:19px;display:grid;grid-template-columns:minmax(280px,325px) minmax(340px,1fr) minmax(280px,332px);gap:16px}
+.card{border:1px solid #344154;border-radius:17px;background:#192230;min-width:0;padding:17px}
+h1{font-size:22px;letter-spacing:-.5px;margin:3px 0 9px}h2{font-size:17px;margin:0 0 8px}h3{font-size:14px;margin:15px 0 7px}
+.muted{color:#b7c4d6;font-size:12px;line-height:1.5}.eyebrow{font-size:10px;color:#f2bc92;letter-spacing:1.2px;text-transform:uppercase;font-weight:850}
+label{font-size:12px;font-weight:650;display:block;margin:12px 0 6px;color:#dfebf8}
+input:not([type=range]):not([type=file]),select,textarea{width:100%;min-width:0;background:#0e1520;color:#f7f9fa;border:1px solid #4d586a;border-radius:9px;min-height:42px;padding:9px}
+textarea{min-height:76px;resize:vertical}input[type=range]{width:100%;min-height:40px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:9px}.cols label{margin-top:9px}
+hr{height:1px;border:0;background:#3a4656;margin:19px 0}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.tools>*{flex:1}
+#shot-list{list-style:none;padding:0;margin:11px 0;display:grid;gap:8px}
+#shot-list button{width:100%;text-align:left;min-height:68px;background:#1f2b3c;padding:10px;border-color:#45556b}
+#shot-list button[aria-current=true]{border-color:#eead81;background:#352d2b}
+#shot-list strong{display:block;font-size:13px}#shot-list small{display:block;color:#b8c3d4;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.monitor{border:1px solid #485468;border-radius:14px;min-height:490px;background:radial-gradient(ellipse at 60% 35%,#253956,#0c1320 75%);display:grid;place-items:center;padding:14px}
+.monitor img,.monitor canvas{width:min(100%,290px);max-height:505px;aspect-ratio:9/16;object-fit:contain;background:#0b1320;border-radius:11px;box-shadow:0 25px 48px #0009}
+.monitor .placeholder{text-align:center;color:#d2dae3;padding:30px;font-size:14px;max-width:290px}
+#engine{position:absolute;left:-20000px;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
+#status,#storage-status,#voice-status,#export-status{min-height:18px;font-size:12px;margin:8px 0;color:#e9bd9c;line-height:1.5}
+.timeline{margin:14px 0 2px}.timeline output{font-size:12px;float:right;color:#dbd2c6}
+.workflow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:13px}.workflow span{border:1px solid #556274;padding:5px 8px;border-radius:8px;font-size:10px}
+.caution{border:1px solid #67564b;background:#2b2829;color:#f2c6ac;padding:10px 11px;border-radius:9px;font-size:11px;line-height:1.5;margin-top:14px}
+#file{position:absolute;width:1px;height:1px;opacity:0}
+.mobile-workspace{display:none}
+footer{padding:16px 24px;color:#acbacc;font-size:12px;border-top:1px solid #33404f}
+@media(max-width:1120px){main{grid-template-columns:minmax(260px,330px) minmax(380px,1fr)}.inspector{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px}.inspector>h2,.inspector>.muted,.inspector>.tools{grid-column:1/-1}}
+@media(max-width:730px){
+.mobile-workspace{display:flex;position:sticky;top:0;z-index:15;gap:6px;padding:9px 10px;background:#0e121b;border-bottom:1px solid #455165}
+.mobile-workspace button{flex:1;min-height:46px;font-size:11px;padding:7px 4px;font-weight:650}
+.mobile-workspace button[aria-pressed=true]{background:#eeb487;color:#25170e;border-color:#f3c39f}
+main{display:flex;flex-direction:column;padding:11px}
+main>section.card{display:none}
+main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370px}.monitor img{max-height:420px}.inspector{display:block}header{padding:12px}.card{padding:14px}.cols{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important}}
+</style></head>
+<body>
+<header><div><div class="brand"><span>F</span> FrameForge Creator <small class="sub">Hybrid V2 beta</small></div><div class="sub">Real 3D · local-only edits · honest export</div></div>
+<div class="header-right"><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="save-project">Download project</button><button id="recovery-backup" hidden>Save damaged recovery copy</button><button id="open-project">Open project</button><input type="file" id="file" aria-label="Choose a FrameForge project JSON file" accept=".json,application/json"><a href="./beta.html" style="font-size:12px;align-self:center">Preview guide</a></div></header>
+<nav id="mobile-workspace" class="mobile-workspace" aria-label="Creator workspace tabs">
+<button type="button" data-view="story" aria-pressed="true" aria-controls="pane-story">1 · Story</button>
+<button type="button" data-view="shot" aria-pressed="false" aria-controls="pane-shot">2 · Shot</button>
+<button type="button" data-view="preview" aria-pressed="false" aria-controls="pane-preview">3 · Preview & export</button>
+</nav>
+<main>
+<section id="pane-story" class="card" data-mobile-active="true" aria-label="Project, cast and timeline">
+<div class="eyebrow">01 / Your story</div><h1>Make something yours.</h1>
+<p class="muted">Start with two original characters, then adjust the cast, world and shots. Your source project is always downloadable.</p>
+<label for="title">Story title</label><input id="title" maxlength="120">
+<label for="logline">What happens?</label><textarea id="logline" maxlength="1024"></textarea>
+<hr><h2>Cast and voices</h2><div id="cast"></div>
+<hr><h2>Set and atmosphere</h2>
+<div class="cols"><div><label for="world">Environment</label><select id="world"><option value="forest">Forest</option><option value="meadow">Meadow</option><option value="snow">Snow</option><option value="desk">Studio desk</option></select></div>
+<div><label for="timeofday">Time of day</label><select id="timeofday"><option value="morning">Morning</option><option value="golden">Golden hour</option><option value="night">Night</option></select></div></div>
+<hr><h2>Shot timeline</h2><p class="muted">Select a shot to revise the acting and camera. Changes invalidate the voice track until revoiced.</p>
+<ol id="shot-list"></ol><div class="tools"><button id="add-shot">+ Add shot</button><button id="move-up">↑ Move</button><button id="move-down">↓ Move</button><button id="delete-shot">Delete</button></div>
+<div id="storage-status" role="status" aria-live="polite">Checking local recovery…</div>
+</section>
+<section id="pane-preview" class="card" aria-label="Scene monitor and export">
+<div class="eyebrow">02 / Direct the film</div><h2>Scene monitor</h2>
+<div class="workflow"><span>Story</span><span>Cast</span><span>Direction</span><span>Voice</span><span>Export</span><span>Reopen</span></div>
+<div class="monitor"><p class="placeholder" id="placeholder">Loading the real 3D renderer…</p><canvas id="live-frame" role="img" aria-label="Actual 3D scene at the selected timeline position" width="360" height="640" hidden></canvas><img id="frame" alt="Rendered still frame" hidden></div>
+<iframe id="engine" src="./hybrid-preview.html" tabindex="-1" title="FrameForge hybrid rendering engine" aria-hidden="true"></iframe>
+<div class="timeline"><label for="scrub">Playhead <output id="time">0.00s</output></label><input id="scrub" type="range" min="0" max="6" step=".0333333" value="0"></div>
+<div class="tools"><button id="play" class="primary" disabled>Play</button><button id="still" disabled>Save PNG still</button><button id="render" disabled>Refresh scene</button></div>
+<div id="status" role="status" aria-live="polite">Preparing your project…</div>
+<hr><h2>Sound direction</h2><p class="muted">Original procedurally synthesized music, not licensed tracks or cloud AI. Score automatically ducks beneath dialogue; shot sounds are edited in the inspector.</p>
+<label for="soundtrack">Musical score</label><select id="soundtrack"><option value="off">None / dialogue only</option><option value="groove">Warm groove</option><option value="tension">Dramatic tension</option><option value="sting">Reveal sting</option><option value="stop">Stop / silence beat</option></select>
+<hr><h2>Voice every line</h2><p class="muted">Uses the local English Kokoro model. Initial model download may be large. Never import someone's voice without consent. Script changes require new speech.</p>
+<div class="tools"><button id="voice" class="primary" disabled>Generate English speech</button></div>
+<div id="voice-status" role="status" aria-live="polite">Storyboard has no speech. Generate voice before exporting MP4.</div>
+<hr><h2>Export a real MP4</h2><p class="muted">Browser H.264/AAC encoding with full-file verification; unsupported browsers are refused, not silently downgraded.</p>
+<div class="cols"><div><label for="resolution">Video size</label><select id="resolution"><option value="360">360×640 / preview</option><option value="720" selected>720×1280 / social</option><option value="1080">1080×1920 / master</option></select></div>
+<div><label for="seconds">Length</label><select id="seconds"><option value="full">Full story (up to 60 s)</option><option value="2">First 2 seconds / test</option></select></div></div>
+<div class="tools"><button id="export" class="primary" disabled>Export verified MP4</button><button id="cancel" disabled>Cancel export</button></div>
+<progress id="progress" max="1" value="0" aria-label="Verified MP4 frame rendering progress" style="width:100%" hidden></progress>
+<div id="export-status" role="status" aria-live="polite">Voice the story first; then verify MP4 support.</div>
+<div class="caution">Creator beta: Built-in characters and worlds only. Native Telugu/Hindi voices, imported rigs in this editor, and reliable full-length export across all devices are not yet certified. Your project JSON can be saved and reopened even if your browser cannot encode a video.</div>
+</section>
+<section id="pane-shot" class="card inspector" aria-label="Selected shot inspector">
+<div class="eyebrow">03 / Moment-by-moment</div><h2>Shot inspector</h2><p class="muted">Write dialogue and tune acting. Changes appear immediately in the 3D monitor.</p>
+<div><label for="speaker">Who's speaking?</label><select id="speaker"></select>
+<label for="dialogue">Dialogue</label><textarea id="dialogue" maxlength="500"></textarea>
+<label for="emotion">Emotion</label><select id="emotion"><option>neutral</option><option>happy</option><option>sad</option><option>angry</option><option>surprised</option><option>worried</option><option>curious</option><option>idea</option></select>
+<label for="action">Body action</label><select id="action"><option>explain</option><option>wave</option><option>think</option><option>point</option><option>nod</option><option>shrug</option><option>cheer</option><option>listen</option><option>press</option></select></div>
+<div><div class="cols"><div><label for="camera">Camera framing</label><select id="camera"><option value="actor">Close-up</option><option value="two">Two-shot</option><option value="wide">Wide</option><option value="screen">Monitor</option><option value="prop">Story object close-up</option></select></div><div><label for="move">Camera move</label><select id="move"><option value="static">Static</option><option value="push">Push-in</option><option value="pull">Pull-out</option><option value="drift">Drift</option><option value="orbit">Orbit</option></select></div></div>
+<div class="cols"><div><label for="camera-distance">Camera distance (3–20)</label><input id="camera-distance" type="number" min="3" max="20" step=".1" value="4.8"></div>
+<div><label for="camera-fov">Lens field of view (25–60°)</label><input id="camera-fov" type="number" min="25" max="60" step="1" value="38"></div></div>
+<p class="muted">Wider framing helps keep faces and hands in the vertical film. Set these per shot; switching camera type restores its default view.</p>
+<label for="shot-duration">Shot duration (seconds)</label><input id="shot-duration" type="number" min=".5" max="15" step=".1">
+<label for="caption">On-screen caption</label><input id="caption" maxlength="140">
+<label for="visual-prop">3D story object in this shot</label><select id="visual-prop"><option value="none">No story prop</option><option value="lantern">Original glowing lantern</option></select>
+<div class="cols"><div><label for="prop-mode">Lantern interaction</label><select id="prop-mode" disabled><option value="ground">On the ground</option><option value="reach">Reach for it</option><option value="lift">Grasp and lift</option><option value="carry">Carry in hand</option></select></div><div><label for="prop-actor">Character handling it</label><select id="prop-actor" disabled></select></div></div>
+<p class="muted">Actions are part of the saved shot. Object close-ups follow the lantern as it rises.</p>
+<label for="ambient-screen">Background workstation monitor</label><select id="ambient-screen"><option value="show">Visible — original studio look</option><option value="hide">Hidden — clean cinematic environment</option></select>
+<p class="muted">Per-shot visibility only. Scripted on-set screen inserts always remain visible, even when the ambient monitor is hidden.</p>
+<label for="shot-sound">Sound effect on this shot</label><select id="shot-sound"><option value="none">None</option><option value="typing">Keyboard typing</option><option value="chime">Success chime</option><option value="buzz">Warning buzz</option><option value="zap">Zap</option><option value="scratch">Record scratch</option><option value="whoosh">Whoosh</option><option value="pop">Soft pop</option></select>
+<label for="screenKind">On-set monitor</label><select id="screenKind"><option value="none">No screen</option><option value="terminal">Terminal</option><option value="chat">Chat</option><option value="code">Code</option><option value="browser">Browser</option><option value="inbox">Inbox</option><option value="grid">Grid</option></select>
+<label for="screenTitle">Monitor heading</label><input id="screenTitle" maxlength="160" disabled>
+<label for="screenLines">Monitor lines (one per line)</label><textarea id="screenLines" disabled></textarea>
+</div>
+<div class="tools"><button id="script-toggle">Advanced screenplay</button></div>
+<div id="script-pane" hidden><p class="muted">Director grammar round-trips shots, actions, cameras and screen cues. Validate before replacing.</p><textarea id="script" rows="11" spellcheck="false"></textarea><button id="apply-script">Validate and apply script</button></div>
+</section>
+</main><footer>Your project stays on this device. Auto-recovery uses IndexedDB when available. No advertisements, cloud uploads or fake progress. <a href="./studio.html">Use the stable V6 studio</a>.</footer>
+<script src="./src/project-core.js"></script><script src="./src/hybrid-project-core.js"></script><script src="./src/hybrid-direction.js"></script><script src="./src/hybrid-editor-core.js"></script>
+<script type="module" src="./src/hybrid-editor-app.mjs"></script></body></html>

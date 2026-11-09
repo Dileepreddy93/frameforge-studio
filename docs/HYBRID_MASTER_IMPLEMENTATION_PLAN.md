@@ -1,0 +1,351 @@
+# FrameForge Ultimate — phase-gated hybrid implementation contract
+
+Status: IMPLEMENTATION PLAN (not an assertion that phases are complete)
+Created: 2026-11-01
+Target repository: Dileepreddy93/frameforge-studio
+Work branch: feature/hybrid-foundation
+Frozen development starting commit: 2b78e60fd484f6590276f041bfafc977aa4ef479 (deployed to frameforge-v6.vercel.app when audited)
+Source repository: Dileepreddy93/ember-take-studio, main @ 22c745ffd (inspect full SHA before cherry-picking)
+Original FrameForge main: 49c10c59f89b971666c8be3b1aa7efa18ade1774 (DO NOT replace)
+Production constraint: no main merge, tag overwrite, production redeploy or deletion before independent acceptance.
+
+## EXECUTION STATUS AND RESUME POINT — 2026-11-01
+
+**Current phase:** P7 interactive V2 Creator now implemented and **PASSING desktop/mobile-viewport Chrome CI** for cast/world/script/shot edits, actual 3D pixel changes, undo/redo, PNG, downloadable JSON and browser autosave/reopen, plus automated WCAG 2.2 A/AA and corrupted-project recovery. P8 native **1080×1920/30** two-second FFmpeg-packed proof passed, browser-native H264/AAC exporter added but **not yet tested end-to-end on real supported hardware**. P9 separate SSO-protected Hobby staging **READY**, not original V6 production. P10 consent-first research tests pass; actual buyers untested. **Release is NOT certified:** extended 30–60s voiced customer export, physical device compatibility, V6 baseline image nondeterminism and Windows/macOS release remain open.
+**Work branch:** `feature/hybrid-foundation`. **Main/original V6 production:** untouched. **Separate authenticated hybrid beta staging deployment** [Creator route](https://frameforge-hybrid-beta-7rz45zdpy-dileepreddys-projects.vercel.app/creator.html), built READY from commit `baafcdec` in isolated project `frameforge-hybrid-beta`; beta's original production domain remains separate. Production launch remains unauthorized.
+**Authoritative baseline:** V6 M6.5 at `2b78e60fd484f6590276f041bfafc977aa4ef479`; do not reinterpret the old `main` branch as the V6 production baseline.
+
+| Gate | State at this checkpoint | Evidence or blocker |
+| --- | --- | --- |
+| Plan and resume pointer saved in GitHub | **DONE** | This document; `CONTINUE_HERE.md` updated to point to the active hybrid plan |
+| Safe feature branch from deployed V6 | **DONE** | `feature/hybrid-foundation`, starting at `2b78e60` |
+| Freeze original V6 episode project/audio/media inputs | **DONE** | `spec/hybrid-v6-baseline.json`; 2 projects (14 and 12 shots), 13 media assets with Git blob SHA-1 |
+| Enforce old project contract and checked-in fixture immutability | **DONE / UNIT PASS** | `tests/hybrid-baseline.test.cjs`; source-and-project job passed in [run 41287771443](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287771443) after a corrected manifest SHA |
+| Probe V6 reels and fully decode both MP4 films | **DONE / CI PASS** | `tests/hybrid-baseline.test.cjs --media`, portable-video-export job passed in [run 41287771443](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287771443) |
+| Test original film pixels against frozen M6.5 code in identical Chromium | **WIRED / RESULT PENDING** | `tests/hybrid-legacy-film-frames.cjs` compares 14 frames across 2 episodes using a git worktree; first run containing this test: [run 41288030520](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41288030520) |
+| Existing character, editing, mobile, voice and audio regressions | **PARTIALLY PASSING / SUITE PENDING** | [latest integration CI](https://github.com/Dileepreddy93/frameforge-studio/actions/workflows/project-contract.yml) includes source, browser, mix, rigged and portable video jobs; verify all jobs for the **latest head SHA** before approval |
+| Full Windows Chrome/Edge release-to-MP4 workflow | **RUNNING / NOT CERTIFIED** | Fixed verified old `mpv.exe` missing-PATH failure; [release run 41287333994](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287333994) is testing that change |
+| macOS AVFoundation compatibility of Windows release MP4 | **PENDING** | Downstream of successful Windows Chrome/Edge jobs in `release-e2e.yml` |
+| Publication is explicit and non-destructive | **IMPLEMENTED / CI PENDING** | Release job now requires manual dispatch on `main`, uses run-unique demo asset branches/tags and no force pushes or release deletion |
+| Manual full-film art, lip-sync and listening approval | **NOT DONE** | Exact final produced MP4 must be watched and heard; source tests alone cannot sign it off |
+| Production deployment/merge | **NOT DONE (intentional)** | Only after all P0 gates pass and the user authorizes production promotion |
+
+### P0 code changes committed so far
+
+- `4b0827b`: Windows `mpv.exe` resolution in full-film release validation.
+- `b699fb5`, `4045f11`, `e22484f`: original V6 asset/project SHA freeze, contract/media tests, CI wiring.
+- `95c8263`: correct one incomplete 40-character `.webm` Git blob SHA after a real red source test; later source and portable-media jobs passed.
+- `89fbd1d`: add safe new-chat entry point to `CONTINUE_HERE.md`.
+- `cadc029`: remove automated demo publication by commit message, force push and release deletion.
+- `889c91d`, `6de9964`: same-browser visual parity test (frozen baseline vs hybrid branch) wired into Chromium CI.
+- `4d657cd`: cancel superseded feature-branch CI runs and skip docs-only push workflows to limit expensive duplicate GitHub Actions minutes.
+
+### Commands to run at each P0 verification
+
+```bash
+git fetch origin --tags
+git switch feature/hybrid-foundation
+git pull --ff-only
+node tests/hybrid-baseline.test.cjs
+# With ffmpeg and ffprobe:
+node tests/hybrid-baseline.test.cjs --media
+# With Playwright Chromium installed and full git history:
+node tests/hybrid-legacy-film-frames.cjs
+# Existing unit/browser/voice/export suite is in .github/workflows/project-contract.yml
+# Full Windows/AVFoundation release is in .github/workflows/release-e2e.yml
+```
+
+**Required next action:** Read the latest commit and latest two workflow runs on `feature/hybrid-foundation`. Inspect any failed job logs; fix failures with precise repro, do not rewrite the baseline manifest to match a regression. Obtain full green runs and watch/listen acceptance before marking P0 complete or beginning P1. Existing `frameforge-v6.vercel.app` is intentionally not modified.
+
+**Update rule for all later phases:** Modify this section *in the same branch* after each phase or meaningful verification checkpoint. Keep: phase state, exact commit SHA, CI run URL, successful/failed commands, rendered-video/audio evidence, known regressions, next tasks and rollback reference. Never mark a gate PASS when it is merely queued/in progress.
+
+---
+
+## P1 — Versioned project and provider adapters (2026-11-01)
+
+**Development state: CORE CODE + WEBGL VIDEO PROOF PASSED; release-wide acceptance pending.** P1 code lives only on `feature/hybrid-foundation`, and does not alter the existing `studio.html`, original `src/project-core.js`, characters, soundtrack, or production export code.
+
+| Item | Evidence | State |
+| --- | --- | --- |
+| `frameforge.project/2` contract | `src/hybrid-project-core.js`; validates project, cast, cameras, assets, reference constraints, shot durations and film duration | **PASS** |
+| Frozen `frameforge.project/1` compatibility | Both real films v1 → v2 → v1 deep-equal, v1 legacy timeline and project validation delegated to unmodified core | **PASS** |
+| Deterministic timeline | `timeAt` / `toTimelineShots`, seek/rewind and shot-order independence tests | **PASS** |
+| Provider contracts | `src/hybrid-providers.js`: actor/world factory registry, camera/audio directors, asset-store bounds and copy isolation; lifecycle and disposal tests | **PASS** |
+| Malformed/untrusted v2 validation | 21 negative tests for invalid fields, provider types, references, timings, unsafe asset URIs, cameras and identities | **PASS** |
+| Source contract and unit suite | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137), `source-and-project-tests`; `HYBRID_P1_CONTRACT_PASS` log | **PASS** |
+| Actual WebGL provider proof | `tests/hybrid-p1-proof.html`, `tests/hybrid-p1-video-browser.cjs`; 24-frame 360×640 at 12 fps test-only H.264/AAC file decoded by ffmpeg, deterministic same-time frame hashes | **PASS** |
+| Browser/media video CI | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137), `portable-video-export`; `HYBRID_P1_WEBGL_VIDEO_PASS`, `HYBRID_P0_MEDIA_PASS` | **PASS** |
+| Video proof artifact | [P1 hybrid adapter proof](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137/artifacts/13075629883) | **UPLOADED** |
+| Legacy original-film parity | [run 41288071162](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41288071162) including visual parity test | **PASS** |
+| Latest complete source/browser/voice CI | [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137): source, rigged, voice-and-mix, and portable video passed, but real-character browser job failed on Dark Mode frame parity before re-sync (see P1 regression note); corrected test rerun 41289431575 pending | **PENDING FINAL** |
+| Windows/macOS full release certification | [release run 41287859898](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41287859898) | **P0 GATE OPEN** |
+
+**P1 commits:** `98fed858` (v2 contract), `e695b039` (provider registry/session/storage), `4bba8b46` (negative and compatibility tests), `4d949408` (source CI), `263a8fec` (real Three.js proof scene), `6222d1a5` (real playable proof film), `618cb4ca` (video CI and artifact), `a0166fa3` (interface specification).
+
+**Contract documentation:** [docs/HYBRID_V2_CONTRACT.md](HYBRID_V2_CONTRACT.md).
+
+**Limitations, not hidden:** The P1 proof uses synthetic QA geometry and intentionally silent test audio. It proves providers can drive Three.js graphics and a decodable short film; it does not prove Ember cast quality, working imported rigs, multilingual speech, real 1080×1920 custom episode exports, or public UI support. All new custom actors and worlds remain **opt-in v2** and are NOT routed into production. Those are P2–P8 tasks.
+
+**Latest P1 regression finding:** [run 41289099137](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289099137) failed the new *test-only visual parity assertion* on Dark Mode at 0.5 seconds. Other P1 checks and old deterministic-frame tests passed. The test was switching from Zero Latency to Dark Mode without waiting for `FrameForgeQA.envelopeReady()` for the selected film, and capturing the frozen and integration versions concurrently in one headless GPU. The v1 scene/renderer code was not edited. In commit `5786557`, `tests/hybrid-legacy-film-frames.cjs` now waits for switched-episode voice timing and fonts, and renders pages sequentially. **This is an unverified suspected test-race fix until the full rerun passes**, not a waiver of visual compatibility. See [rerun 41289431575](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41289431575).
+
+**Next checks:** Verify all jobs of run 41289099137, especially the real-character-render and voice/mix jobs, and complete the P0 Windows + macOS release tests. Do not promote to `main` or production, and do not claim P1 fully release-certified while these remain pending. If all gates pass, proceed to P2 vertical slice: one Ember actor and one Ember world inside the FrameForge rendering system with an independently verified voiced final MP4.
+
+---
+
+## P2 — Real Ember cast integration (2026-11-01)
+
+**Status: P2 DEDICATED ART + VIDEO CI PASS; FULL SUITE AND LEGACY RELEASE APPROVAL STILL PENDING.** Read [P2 cast contract and testing](HYBRID_P2_CHARACTER_ENGINE.md). No production UI/deployment change.
+
+- Source import: `src/ember-character-engine.mjs` (actual Ember source pinned to `22c745ffdc2d6411707f3a9bbe5bd70b10f9d9db`), `src/three-rounded-box.mjs` (Three.js r180 example, MIT).
+- Adaptor: `src/ember-actor-provider.mjs` registers the procedural ActorProvider; six real Ember presets `creator/human/robot/creature/bot/mascot`, appearance options, original IK, action gestures and eight emotional faces.
+- Character safety: dispose-owned geometry per model, including independent copies of the original shared hair-lock geometry (prevents shared mesh disposal between simultaneous rigs).
+- Browser QA: `tests/hybrid-p2-character-proof.html`, `tests/hybrid-p2-characters-browser.cjs`; tests all templates, four views, eight expressions, look presets/customization, seek determinism, two simultaneous actors and cleanup.
+- Movie proof: browser generates animated 360×640 frames, ffmpeg multiplexes **existing** V6 mastered audio into a two-second H.264/AAC P2 preview, then fully decodes/probes. This does **not** validate new character speech or lip sync: P6 owns that.
+- CI wiring: `.github/workflows/project-contract.yml` runs new module syntax checks and P2 browser/video acceptance in portable-video-export, uploading `frameforge-p2-ember-cast-proof`.
+- Relevant commits: `e163037`, `e6eb3dc`, `9556a6f`, `3060e38`, `2331120`, `0522320`, `ce3c9b8`, `03864e3`, `daccea7`. See commit history for precise full SHAs.
+- **CI:** [P2 verified run 41290322745](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745). Source and project tests **PASS**, rigged-character import **PASS**, portable-video-export **PASS**. Portable job log explicitly reports `HYBRID_P2_CAST_PASS` with all six presets showing four distinct camera views, eight distinct acting/emotion images and deterministic rewind; `HYBRID_P2_VIDEO_PASS` for a 2-second H.264/AAC clip with complete ffmpeg decode. Other browser/voice jobs were still executing at this checkpoint.
+- **P0/P1 blocker still open:** side-by-side old-film frame-hash comparison failed intermittently in new browser instances even though the legacy scene source has not changed. No tolerance waiver or baseline overwrite is authorized. Diagnose, capture and compare pixel differences and ensure repeatable parity or approved bounded tolerance before promotion.
+- **P2 real failure / fix:** Earlier [run 41290152840](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290152840) failed because the *test page* applied actor camera-facing rotation **after** pose/IK evaluation, making rewind dependent on the prior view. Commit `ceaad73b9e6bb384277d679b1eb6601249e48254` applies actor facing before seeking. The corrected run 41290322745 passed the dedicated determinism and video tests. No original V6 renderer code was changed.
+- **Proof artifact:** [P2 real Ember cast images and short MP4](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745/artifacts/13076996727), with 6 × 4 view captures, 6 × 8 emotion captures, two-actor/custom-look previews and a saved report.
+- **Next action:** Review other jobs of [run 41290322745](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41290322745) and unresolved P0/P1 cross-platform/visual parity, without relaxing comparison thresholds blindly. P3 may implement import adapters on the protected branch, but production promotion is blocked until release gates pass.
+
+---
+
+## P3 + P4 — Real imported humanoids and Ember environments (2026-11-01)
+
+**Targeted engineering proof: PASSED. Full P3/P4 production acceptance: NOT YET APPROVED.**
+Read [P3/P4 technical contract and licensing](HYBRID_P34_IMPORT_WORLDS.md).
+
+### Delivered code (protected hybrid branch only)
+- P3: `src/ember-import-validator.mjs` (Ember's original rig/face inspector), `src/ember-imported-rig.mjs` (true skinned humanoid/IK/viseme code), `src/hybrid-rigged-provider.mjs` (GLB preflight, 25 MiB cap, self-contained asset policy, required bone/extension checks, async preload, disposable absolute-time actor).
+- P3 runtime libraries: locally pinned official Three.js r180 MIT `src/vendor-gltf-loader.mjs`, `src/vendor-buffergeometry-utils.mjs`.
+- P4: `src/ember-world-engine.mjs` (actual Ember foliage, atmospheric light, snow, particles, scenes), `src/hybrid-world-provider.mjs` (bound options, world-time, safe anchors, scene restoration, GPU disposal, imported world validation).
+- P4 runtime libraries: locally pinned official Three.js r180 MIT `src/vendor-sky.mjs`, `src/vendor-groundedskybox.mjs`.
+- V6 `studio.html`, `src/project-core.js`, existing character engines, main and production remain unchanged, verified by actual GitHub compare against commit `2b78e60`.
+
+### Verified CI and evidence
+- [Code quality run 41295668842](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842) `portable-video-export` **PASSED**, and the source and rigged-import jobs passed.
+- Log `HYBRID_P3_IMPORT_PASS`: real `AraAthleticMan.glb`, **69 named humanoid bones**, 10,587,092 bytes, 48,820 triangles, 8 directed emotions, actual skinning/animations. Existing CC0/MakeHuman-derived test asset, CMU-derived bundled motion with **separate no-resale restrictions**: technical CI only, never commercial cast distribution; these clips are not used by proof.
+- Log `HYBRID_P4_WORLDS_PASS`: original Ember `forest` morning, `meadow` golden, `snow` night, `desk` golden, deterministic state and rewind; imported-world GLB loading using **Khronos CesiumMan as a geometry proxy only**, not an artistically validated environment.
+- Log `HYBRID_P34_VIDEO_PASS`: **24-frame, 300×500, H.264/AAC** test film, fully decoded by ffmpeg using the old V6 mastered audio. Not full-res new voiced/lip-synced output.
+- [P3/P4 actual screenshot/film/report artifact](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295668842/artifacts/13079385805).
+- P0 media checks, P1 hybrid video, and P2 six-character browser/video proof **also passed in the same portable job**.
+
+### Failure history and unresolved gates
+- First P34 browser run timed out: strict humanoid preflight correctly rejected **Khronos CesiumMan** because its 19 joints use nonstandard names (e.g. Skeleton_torso_joint_1) and lacked the required mapping. Real model diagnosis at [run 41295412244](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41295412244) confirmed Ara's recognized 69-joint mapping; we did **not** weaken safety to make CesiumMan pass.
+- Second browser run failed on a test typo expecting `world.preset`, when the correct v2 property is `world.template`; fixed in commit `c1251982` and verified green.
+- Full **P3 acceptance still open**: independent VRM and Mixamo/Blender assets, MToon/spring-bone and facial morph limitations, multi-rig handling, mobile GPU/memory and commercial licence checks.
+- Full **P4 acceptance still open**: one truly authored imported world, complete desk furniture/prop editing, HDRI/backdrop/360 options and real-device visual/performance tests.
+- **P0/P1 whole product release gate still open:** existing independent-browser baseline screenshot comparator periodically fails even though original V6 rendering code is unchanged; Windows/macOS full-film release gate is not certified. Do not weaken thresholds without baseline-variance evidence.
+- Production `frameforge-v6.vercel.app` and `main` deliberately untouched. New custom characters/worlds are not yet wired to the normal editor (P7), original voice/lip sync and final film pipeline (P6/P8).
+
+**Next checkpoint:** continue P3/P4 compatibility hardening and future P5 director integration on the protected branch; do not promote production until all above release gates are independently verified.
+
+---
+
+## P5/P6 — Additional fresh Kokoro dialogue and V2 movie verification (2026-11-01)
+
+**VERIFIED: REAL TWO-SPEAKER V2 KOKORO SYNTHESIS + EXTRA DECODED FILM PASS. Full release gates still open.**
+- `tests/hybrid-p6-fresh-synthesis.cjs` is executed by the existing `tests/voice-model-browser.cjs` after the *real* Kokoro-82M model has loaded. It creates two new English sentences for two new V2 actor identities, requests voice audio through `FrameForgeVoiceQA.speakWav` (the actual original browser model), then feeds the real decoded PCM into `synthesizeHybridProject()` to verify independently authored shot retiming, source rights, two-speaker assignment and mastered WAV.
+- `tests/hybrid-p56-proof.html` now supports `loadFresh()`, which loads the actual generated V2 project, voice WAV and mastered stereo WAV into the real Ember actor/world director, rather than showing a static video.
+- `tests/hybrid-p6-fresh-film-browser.cjs` produces an additional 360×640 H.264/AAC original-dialogue film, checks real audio-driven facial movement, shot and screen interaction, deterministic re-seeking, independent `ffprobe`/full `ffmpeg` decoding, and uploads audio/video/frame evidence. This new proof is run in the same CI job as the original voice models to reduce duplicate 90/326 MB model downloads.
+- `src/hybrid-voice.mjs` now *ceil*-aligns generated voice lengths to the next 30 fps frame instead of rounding down (which could cut ~16 ms of real speech). `tests/hybrid-voice.test.mjs` includes a passing fractional-duration render regression case.
+- **VERIFIED:** [GitHub Actions run 41316274642](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41316274642) `voice-and-mix-tests` **PASSED**, logging `HYBRID_P6_REAL_KOKORO_V2_PASS`: genuine English V2 synthesis by existing first-party Kokoro-82M for **Luna / Atlas**, `af_heart` and `am_michael`, two new original sentences, **5.5667s**, **−14.007 LUFS**, **−2.00 dBFS**. Also logged `HYBRID_P6_FRESH_FILM_PASS`: **44 frames, 360×640, 8 fps, H.264/AAC, full ffmpeg decode**, acoustic mouth max opening **0.97**, checked scene screen and deterministic rewind. [Fresh new film, original mono voice, mastered stereo WAV, project/report and screenshots](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41316274642/artifacts/13087274112). Source-contract, rigged import, portable video and voice CI all passed; separate `real-character-render-tests` **FAILED** on the preexisting V6 cross-page pixel parity comparator, not signed off.
+- **Strict limitations:** English Kokoro only for new first-party speech. Hindi/Telugu/other language TTS remains unsupported until an independently verified and appropriately licensed speech engine is integrated; acoustic mouth motion is not forced phoneme alignment. V2 editor connection and 1080×1920 customer exports are later phases. The original V6 cross-page parity test and full Windows/macOS release gates remain open.
+
+---
+
+## P5/P6 — One-timeline cinema direction and waveform-driven voice (2026-11-01)
+
+**Status: DIRECTOR + AUDIO CONTRACTS, TWO EXISTING AUDIO PROOFS AND NEW ACTUAL-KOKORO V2 THIRD FILM PASSED; INDIC TTS AND FULL RELEASE GATES OPEN.** See [P5/P6 contract, demo limitations and voice rights](HYBRID_P56_DIRECTION_VOICE.md).
+
+P5 implementation:
+- `src/hybrid-direction.js` is the V2 script round-trip, shot reorder, actor-independent camera geometry (wide, single actor, two actor, screen), push/pull/orbit/drift, constrained camera blends and one-take continuity. Expressions, secondary-actor reaction beats and on-set screen cues come from the same FrameForge timeline. Existing V6 `src/script-core.js` remains untouched.
+- `src/ember-screen-apps.mjs` is Ember's MIT screen-app renderer, wrapped by `src/hybrid-screen.mjs` as a frame-accurate editable monitor action, with audio cue mapping and a safe caption/screen layout.
+- V2 validator now validates direction, one-take, reactions, caption and screen text; legacy v1 delegates to original parser.
+
+P6 implementation:
+- `src/hybrid-voice.mjs` bridges the existing local Kokoro worker (English), imported legal/consented 48 kHz mono PCM, shot re-timing, actor-audio assignment, FrameForge's existing stereo `episode-mix` with original sound-kit/music ducking and safe peak/loudness, 20Hz acoustic speech envelope and the existing FrameForge approximate visemes.
+- `src/ember-actor-provider.mjs` and `src/hybrid-rigged-provider.mjs` now expose optional acoustic `setSpeech` mouth controls, without changing legacy V6 rendering.
+- Tamil, Telugu, Hindi or any unsupported language are **not** silently mapped onto English Kokoro. Import of licensed human recordings is supported; native language synthesis is not yet verified and remains a commercial release gap.
+- The worker bridge strips Kokoro's internal 60ms/100ms line padding before reapplying shot timing. `synthesizeHybridProject()` now runs each authored speaker through the existing Kokoro worker and creates a fully re-timed mastered V2 project; original FrameForge character `voice.kokoro.voice` ID takes precedence over a human-readable profile. Ember `curious` maps to supported Kokoro `thinking` delivery, and `idea` to `happy`, while the original facial emotions remain intact. This orchestration has a passing injected-worker unit test; fresh-original-dialogue V2 model inference still requires a dedicated full-model run.
+
+P5/P6 QA:
+- `tests/hybrid-director.test.cjs`, `tests/hybrid-voice.test.mjs`: script/one-take/reaction contracts and worker/PCM/mixing/consent; **source-and-project passed** in [run 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423).
+- `tests/hybrid-p56-proof.html`, `tests/hybrid-p56-browser.cjs`: 2 distinct Ember authored-story scenes with moving camera, live application screen, spoken-word mouth motion, original V6 Kokoro English speech segments placed in the **new** V2 mixer, 360×640 full-video H.264/AAC plus WAV and PNG screenshots, independent full ffmpeg decode. Voice clips are reused from the existing Zero Latency track and are **not newly synthesized dialogue**.
+- **VERIFIED:** [run 41299172423](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423) `portable-video-export` **PASS**, logging `HYBRID_P5_DIRECTOR_VIDEO_PASS` for two shot/screen/reaction and deterministic-seek films and `HYBRID_P6_AUDIO_VIDEO_PASS` for two **36-frame, 360×640, 4.567-second** H.264/AAC films with independent full ffmpeg decode, acoustic mouth behavior and mastered stereo near **−14.027 LUFS / −2.0 dBFS**. Artifact [13080990912](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299172423/artifacts/13080990912) holds both MP4s, mastered WAVs, stills and `report.json`. This run's source, original voice/mix and rigged-import jobs passed; its independent legacy screenshot-comparison job failed on the pre-existing V6 comparator.
+- **Latest source-contract test after new V2 Kokoro orchestration:** [run 41299701150](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41299701150), source-and-project-tests **PASS**. The first two-film proof uses original V6 Kokoro speech segments intentionally; `synthesizeHybridProject()` fresh-output mode itself has NOT yet been confirmed on actual downloaded model in the V2 environment.
+- The existing unrelated independent-page legacy film visual-parity test may still fail; P0/Windows+macOS release signoff still open. New combined hybrid customer UI is P7; high-resolution consumer export, long-film and mobile perf P8.
+- Production V6 and main remain protected and unchanged.
+
+**Next:** Keep the original V6 parity/Windows/macOS gates explicit and unwaived. Test `synthesizeHybridProject()` with the **actual downloaded Kokoro model** for two original English hybrid lines, listen to the two new performances, measure word-level alignment, verify mobile audio and GPU behavior, then independently evaluate licence-safe Hindi/Telugu local models. P7 editor and P8 full-res commercial export are distinct gates; do not deploy or merge production yet.
+
+---
+
+## P8/P9/P10 — Release-engineering and business-validation work (2026-11-01)
+
+**Important:** These are separate engineering milestones, not blanket completed phase EXITs. P7 unified workflow is still unimplemented. Read the [full P8–P10 release and research protocol](HYBRID_P8_P10_PRODUCT_RELEASE.md).
+
+**P8 actual code:**
+- `src/hybrid-export-readiness.mjs`: validates social/preview/master 9:16 presets, WebGL2, real H.264/AAC `isConfigSupported`, secure context, browser storage headroom, cancellation, ordered frames and successful independent decode.
+- `src/hybrid-preview-engine.mjs`: **shared, single-source V2 hybrid renderer** used by the P5/P6 QA fixture and ship-safe beta preview, supporting actual native 1080×1920 target framebuffer and correct caption sizing.
+- `tests/hybrid-p8-readiness.test.mjs` **PASSED** source job. `tests/hybrid-p8-master-browser.cjs` **PASSED** [CI run 41318626453](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41318626453) dedicated `hybrid-native-hd-export`: **1080×1920, 30 fps, 60 frames, 2 seconds**, actual WebGL surface, not 360px enlargement, H.264/AAC 48kHz stereo, full independent `ffmpeg` decode, first/middle/last PNG SHA256 hashes, non-blank pixel variance 38.43, encoded MP4 2,037,242 bytes. Native render+encode took **223s in Ubuntu Chromium software CI**. [Actual MP4, original HD stills and JSON report artifact 13088626695](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41318626453/artifacts/13088626695). This is intentionally a 2-second technical proof, **not a 30–60-second certified user export**, and ffmpeg CI packaging does not validate WebCodecs on Safari/mobile.
+- Real device Windows/macOS/Android/iOS, first/last long-film and original V6 independent-page parity **remain OPEN**. No relaxed snapshots or silent format downgrade.
+
+**P9 staging and real preview:**
+- `beta.html` implements accessible responsive guided sample selection, real scene rendering/scrubbing via `hybrid-preview.html` + shared scene engine, downloadable PNG, truthful H264/AAC/storage diagnostics, legacy V6 editor link and clear nonlaunch status. `hybrid-preview.html` ships as a separate reviewed public-facing surface; internal `tests/` remains excluded.
+- `tests/hybrid-p9-beta-browser.cjs` **PASSED** [CI 41318626453](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41318626453) and **again with pinned axe-core 4.14.0 WCAG 2.2 A/AA automated checks**, [CI 41319222705](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41319222705): Chromium **1280×900 and 390×844**, two real stories, scrub, PNG, codec diagnostics, opt-in/revocation, keyboard labels, 44px button height and no horizontal overflow. [Newest real screenshots, axe reports and usability result artifact 13088517668](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41319222705/artifacts/13088517668). Automated scan found no tagged WCAG A/AA violations in those pages, but that is **not** an accessibility-conformance certification or real mobile hardware test.
+- Created **separate** free/Hobby Vercel project `frameforge-hybrid-beta`, project ID `prj_NIQffXRaKOy0lR3t6KkzihvB9RPh`, deployment `dpl_FirF2JeVp7jRrBAypEVfMWcAiAS1` from feature SHA `904d934` and build **READY**. Vercel tool labeled this isolated new beta project's initial deployment `target:production` despite asking for preview; it did **not** affect existing `frameforge-v6` production. The separate project's alias `https://frameforge-hybrid-beta.vercel.app/beta.html` is currently **SSO-protected**. External unauthenticated browsing is blocked; don't assert public customer accessibility. Build logs confirm **228 ignored internal files**, including QA, docs, research-only Ara/CMU samples and artifacts, were excluded. Staging uses the same shared renderer as CI. No project Git auto-integration was installed; deployment used explicit Git SHA via Vercel deployment API.
+- **Needs:** authenticated on-site route/browser review and actual user cohort; no actual P7 full workflow yet.
+
+**P10 legitimate market/UX infrastructure:**
+- `src/beta-research.mjs`, `tests/hybrid-p10-research.test.mjs` **PASSED** source CI; raw opt-in session events, strict allowlisted nonidentifying fields, consent revocation deletes collected data, private downloadable JSON, actual separate participant aggregation, and no fake paying customers. Beta user form collects completion, quality, ease, hypothetical willingness to pay and blocker reports.
+- Competitive source audit: Krikey AI advertised Pro **$15/month** with 165 monthly credits, multiple export/voice capabilities (https://www.krikey.ai/pricing); Animaker advertised free watermarked/limited exports with paid tiers (https://app.animaker.com/pricing?language=en). Standards: WCAG2.2/ATAG, NN/g progress disclosure and task completion, MDN codec/storage and Core Web Vitals (source links in product release protocol).
+- **No customer interviews, paid conversion, retention or traction are claimed**. Hypothetical $7/$12/$20 does not establish demand. Run first-time creator usability and opt-in WTP after P7 working customer journey exists.
+
+**Global no-launch blocker:** Original independent-browser V6 side-by-side pixel comparator still fails intermittently, although Git compare shows no changes to the original renderer/modules. P7 complete story-to-export-to-reopen flow, real customer long-film validation and mobile hardware certification remain open. Neither `main` nor original production is changed.
+
+---
+
+## P7 — Implemented Creator interface and latest production gates (2026-11-01)
+
+P7 is no longer just a demo plan. **Latest all-branch CI run 41322641272: SIX of SEVEN jobs PASS.** The original V6 cross-page visual-parity job is the only failure; see the targeted regression diagnostic below. [Actual P7 verified Chromium desktop/mobile-viewport screenshots and test report](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41322641272/artifacts/13090051342).
+
+- `creator.html` is a responsive authoring surface with editable two-actor cast, English voices, four procedural Ember worlds, timeline and shot inspector, emotions, blocking, camera movements, captions, integrated on-set screens and advanced screenplay.
+- `src/hybrid-editor-core.js` handles strictly validated `frameforge.project/2` editing with undo/redo, safe file import/export, atomic changes, shot reorder and stale-speech invalidation. `tests/hybrid-p7-editor.test.cjs` green.
+- `src/hybrid-editor-app.mjs` binds actual 3D preview, world/cast changes, saved PNG, play/pause, speech audio playback, recovery, and export. `src/hybrid-editor-storage.mjs` implements IndexedDB or explicit limited localStorage fallback and file download; if recovery JSON is malformed, the exact damaged bytes remain downloadable rather than silently overwritten on startup. **Follow-up hardening:** require confirmed recovery download before a later editor edit can overwrite that original corrupted record.
+- `src/hybrid-preview-engine.mjs` creates native Three.js frames for the actual authored project, retains the original Ember character/world providers, draws authored captions and derives lip motion from saved 48kHz Kokoro PCM. A local English Kokoro worker is used for new dialogue; original V6 model retained.
+- `src/hybrid-browser-export.mjs` implements actual on-device H.264/AAC WebCodecs/Mediabunny, progress and cancellation, frame/codec verification and first/last decode where supported. **Code is added; full 30–60 second end-to-end Creator voice → browser MP4 test remains unverified on real desktop Chrome/Edge.** Native 1080×1920/30 FFmpeg-backed **2s proof** was independently passed previously, not consumer browser export.
+- `tests/hybrid-p7-creator-browser.cjs` in CI exercises desktop and 390px mobile viewport, real preview pixel changes, cast/world/dialogue/shot edits, undo/redo, save/reopen and original PNG download; newer tests also cover automated A/AA scan and damaged-data recovery. No physical mobile devices are claimed.
+- **SSO-protected staging**: [feature Creator build](https://frameforge-hybrid-beta-7rz45zdpy-dileepreddys-projects.vercel.app/creator.html) on separate Vercel Hobby project, target **staging**, explicit feature SHA `fef68f2987897e5e079b6b4c8c0c991060d3ddb7`; Ready verified. This did not overwrite `frameforge-v6.vercel.app`.
+
+### Frozen V6 visual-parity diagnostic
+
+Previous full CI had a failed exact screenshot comparison between frozen V6 and the identical original V6 files within the feature branch. A new **negative control** in [run 41328407840](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41328407840) demonstrated that **the frozen baseline compared against itself at different localhost ports yields two different exact image hashes** (`e6be815e...` vs `daa2bb8b...`). This is evidence of **browser/capture nondeterminism**, not proof that distinct origin alone caused it. New [paired-control test](https://github.com/Dileepreddy93/frameforge-studio/blob/feature/hybrid-foundation/tests/hybrid-legacy-film-frames.cjs) captures old/old and new/new on the same origin with service workers disabled, then requires two independent **exact-pixel** matched old/new comparisons per frame. Pending CI verdict at this checkpoint. Never mark legacy parity green until both matched captures pass on current HEAD. Preserve the frozen baseline hashes and every assertion.
+
+P7 is an engineering beta. Consumer readiness still requires robust full-length HD browser exports, real mobile devices, licensed assets, manual art/audio review and an evidence-backed usability cohort; do not claim paid SaaS launch readiness.
+
+---
+
+## Goal
+
+One product, using FrameForge's deterministic cinematic episode engine, cast identity, audio, browser voices, film export verification, and test infrastructure, extended with Ember's configurable characters, humanoid GLB/VRM characters, worlds, props, cameras, reactions, screen interactions, looks, and usable editing UI.
+
+An exported custom episode must remain editable/reopenable and reproducible. The existing DEV/BLUE/ORANGE episodes must remain functional and produce identical results when no new feature is enabled.
+
+No attempt at "everything works" by concatenating sources: integrate module-by-module behind stable contracts.
+
+## Architecture and compatibility invariants
+
+1. Leave the original project contract `frameforge.project/1` valid, unchanged to consumers. Define a distinct `frameforge.project/2` extended document, with an explicit v1 -> v2 adapter and v1-native read/play/export mode.
+2. Maintain a `legacy` render path for DEV, BLUE, ORANGE and existing episodes. New features opt in using document version/capability flags. Never silently change framing, acting, lighting or sound of old episodes.
+3. Introduce interfaces with pure time-based evaluation (seek is deterministic):
+   - ActorProvider: `create(config,assets)`, `setPose(time,shot,performance)`, `getAnchors()`, `dispose()`.
+   - WorldProvider: `create(world,assets)`, `setTime(time)`, `getStageAnchors()`, `dispose()`.
+   - CameraDirector: `evaluate(time,shot,anchors)`, independent of actor names.
+   - AudioDirector: voice/sound/music cues -> `mix`, with explicit timing metadata and legacy fallback.
+   - AssetStore: imports, validation, IndexedDB, versioned project references, no arbitrary remote URLs.
+4. Validate assets *before* loading; enforce byte, geometry, texture, bone, morph and extension limits; gracefully reject unsupported models. No remote code execution or untrusted arbitrary scripts from imported files.
+5. Pin dependencies; Three.js version overlap (0.180.0) is useful but not sufficient. Keep CSS/editor widgets independent of film model and rendering engine.
+6. Old FrameForge renders must match a captured baseline on a pinned Chromium/software path (frame hashes if deterministic; otherwise stated image/audio comparison thresholds). Preserve original soundtrack and rendered fixture artifacts as independent evidence.
+7. Test one real complete output at each integration milestone; a rendered still or a passing source test alone is not acceptance.
+8. Maintain third-party licence notices and asset provenance. Preserve FrameForge's restrictions against redistributing research-only Ara/CMU assets.
+9. No chargeable cloud/GPU usage without authenticated server-side quotas, rate limits, per-job limits and cost alerts. Local-first is default.
+10. Every phase requires a reversible PR, green relevant tests, video/audio proof and a staging Vercel preview, not an unchecked production overwrite.
+
+## Work phases and concrete exit criteria
+
+### P0 — Baseline & safety (first, blocking)
+- Audit source/deployment SHA, Git branches, licences, CI and export/voice failure evidence.
+- Fix release-test Windows mpv PATH resolution, then rerun full release and existing V6 CI.
+- Render and archive original Zero Latency and Dark Mode on pinned tooling, with metadata, decoded representative frames and audio measurements.
+- Make baseline fixture manifest with hashes/probes and an automatic old-episode compatibility gate.
+- EXIT: two existing films and current editor/export pass; pinned baseline and rollback documented; no production change.
+
+### P1 — Versioned document & feature adapters
+- Add v2 document parser/validator, v1 passthrough, explicit migration, and round-trip tests; do not weaken the v1 validator.
+- Define ActorProvider, WorldProvider, CameraDirector, AssetStore and stable evaluation contracts in separate modules.
+- EXIT: existing v1 remains identical; a minimal v2 synthetic actor/world test can seek and export without involving UI. This synthetic *test fixture* is permitted for code correctness, never as a user-facing cinematic quality claim.
+
+### P2 — Configurable built-in cast
+- Adapt Ember's six templates from `characters.js` through ActorProvider.
+- Support body/head proportions, outfits, accessories, colors, multiple actors, pose anchors, memory cleanup.
+- Preserve DEV/BLUE/ORANGE original providers and model sheets.
+- EXIT: each template loads, animates, seeks and exports; legacy renders unchanged; show validated 4-view and 8-emotion evidence.
+
+### P3 — Real imported humanoid characters
+- Adapt `character-import.js`, `imported.js`, compatible GLTFLoader/three-vrm and `local-library.js`.
+- Support vetted GLB/VRM, bone-mapping, jaw/viseme mapping, blinks, gaze, gestures, sitting/holding props, disposal.
+- Preserve warnings when morphs/bones are absent and avoid claiming universal support.
+- EXIT: at least three independently authored real models, from two rig conventions, imported and used in full voiced films.
+
+### P4 — Worlds, environments and props
+- Adapt Ember's world builders and world import; introduce stage anchors, shadows, lights, world-space monitor surfaces, HDRI validation, particle time-seeking.
+- Preserve original FrameForge arena and set lighting for v1.
+- EXIT: every Ember built-in world type and at least one imported world export in full films; stable stage alignment and bounded performance.
+
+### P5 — Direction, cameras, actions, world-space screens
+- Extend shot grammar for arbitrary actors, cinematic angles, one-take option, camera blending, screen actions, reaction beats and props.
+- Adapt `screen-apps.js` and `dist/timeline.js` selectively; map to one FrameForge project timeline, never keep two concurrent source-of-truth timelines.
+- EXIT: shot edit/reorder/reaction, accurate seek, script round-trip and no caption/screen collisions; legacy camera tests pass.
+
+### P6 — Voice, multilingual R&D and sound
+- Keep FrameForge's existing Kokoro voices/phonemizer and episode-mix as baseline.
+- Adapt Ember's local/cloud voice options behind AudioDirector, and voice-import support where rights and compatibility are clear.
+- Benchmark, rather than claim, Hindi/Telugu TTS including listening tests, phoneme timings, visemes and Unicode captions; do not expose unfinished language claims.
+- EXIT: English regression, imported audio timing and two end-to-end custom actor movies pass. Release Indic languages only after separately tested.
+
+### P7 — Single responsive creator UI
+- Combine Cast, World, Scene, Voice and Film controls in FrameForge; keep story-first preview and shot inspector.
+- Add browser asset library, autosave/recovery, undo, clear states, mobile controls and gentle quick-create path.
+- EXIT: beginners can script -> character -> world -> voice -> preview -> export -> reopen on desktop and real mobile.
+
+### P8 — Production exporter & release certification
+- Preserve FrameForge's MP4 frame-count/codec/progress/cancel/report path as the primary exporter.
+- Add well-tested fallbacks where browser encoders are absent; optimize memory, assets, render order and recording.
+- Validate full 1080x1920/30fps H.264 plus audio, decoded first/last frame, loudness, subtitles and seeking.
+- Test Chrome/Edge Windows, Chrome Android, Safari iOS/macOS and useful desktop Linux configurations. Report skipped tests explicitly.
+- EXIT: no P0 regressions, exports independently playable, no critical error paths, approved full-film samples.
+
+### P9 — Isolated Vercel beta & user testing
+- Deploy feature branch to separate Vercel project/preview, never overwrite the existing protected production URL.
+- Run new creator usability tests; measure first-video success, time-to-export, repeat-creation and reported defects.
+- Promote to production only after explicit verified acceptance, with immutable tag/rollback.
+- EXIT: verified stable beta with known documented limitations.
+
+### P10 — Competitive differentiators (post-core)
+- Test first-rate original characters/acting, custom reusable cast, Indian-language TTS, optional MediaPipe retargeted motion, GIF/PNG/FBX exports, advanced templates.
+- Build durable authenticated cloud workspaces/render queues and subscription billing only when demand and unit economics are evidenced.
+- EXIT: actual competitive quality benchmarks and buyer outcomes, never feature checkmarks alone.
+
+## Priority order and risk gates
+
+P0 -> P1 -> P2/P4 vertical slice -> P3 -> P5 -> P6 -> P7 -> P8 -> P9 -> P10.
+P2 and P4 must first demonstrate *one* new customizable actor in *one* new world, voiced and exported, before expanding to all templates/worlds.
+P8 must run continuously from P0, not only at the end.
+
+Most likely high-risk boundaries:
+- FrameForge v1 fixed-id camera/appearance logic vs Ember's arbitrary character IDs.
+- Arm/face animation retargeting across GLB/VRM bone conventions.
+- Lighting/material expectations and scale/coordinate differences.
+- Asset storage and security, browser memory and GPU limitations.
+- Two competing voice metadata formats; stale voice after script edits.
+- Export codec compatibility, audio muxing and cross-platform playback.
+- Increased bundle size and unsupported extension/decoder loads.
+- Commercial terms of third-party avatar/motion assets and cloud TTS models.
+
+## PR and artifact discipline
+
+- One feature slice per PR; no giant cross-project source dump.
+- PR includes changed interface, migration path, tests, screenshot/video proof, licence note, performance report and rollback instructions.
+- Green unit/integration/browser/render tests + representative mobile checks + human watch/listen approval.
+- Track failures with exact commit, command, platform and artifact. A CI failure is not marked passed by explaining its cause.
+- Promotion: feature branch -> staging deploy -> review -> release tag -> main merge -> production only if explicitly authorized.
+- No destructive Git operations, forced pushes, deleted older branches/tags, or expense-creating cloud resources without independent review.
+
+## Business acceptance (after technical beta)
+
+Positioning: local-first, independently editable 3D reels with reusable original cast and consistent high-quality audio/film output.
+Competitor benchmark: Krikey's real workflows (custom avatars, motion libraries, languages, export types, project sharing), not just feature labels.
+Proposed $12/mo is only a market test; no validated conversion or unit economics currently exist.
+Run independent creator testing before claiming customers will pay.

@@ -1,0 +1,46 @@
+name: Hybrid Creator native Windows HD acceptance
+on:
+  push:
+    branches: ["feature/hybrid-foundation"]
+    paths: [".github/workflows/hybrid-creator-windows.yml", "tests/hybrid-p7-real-creator-voice.cjs", "tests/hybrid-p7-windows-browser.cjs", "src/hybrid-browser-export.mjs"]
+  workflow_dispatch:
+concurrency:
+  group: hybrid-windows-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  chrome-native-hd-customer-flow:
+    runs-on: windows-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real Chrome automation and independent video decoder
+        shell: pwsh
+        run: |
+          npm install --no-save playwright@1.56.1
+          choco install ffmpeg -y --no-progress
+          & "C:\Program Files\Google\Chrome\Application\chrome.exe" --version
+      - name: Run original V2 Creator + real Kokoro speech + native HD WebCodecs mux
+        shell: pwsh
+        env:
+          FRAMEFORGE_URL: http://127.0.0.1:8959/
+          FRAMEFORGE_WINDOWS_OUT: artifacts/hybrid-windows-native
+        run: |
+          $env:Path = "$env:ProgramData\chocolatey\bin;" + $env:Path
+          Start-Process -FilePath node -ArgumentList "tests/static-server.cjs","8959" -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          $response=Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8959/creator.html
+          if ($response.StatusCode -ne 200) { throw "V2 Creator not served" }
+          node tests/hybrid-p7-windows-browser.cjs
+          if ($LASTEXITCODE) { throw "Native HD export failed; do not release" }
+      - name: Archive the ACTUAL customer-created file and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameforge-p7-windows-1080p-native-customer-mp4
+          path: artifacts/hybrid-windows-native/
+          if-no-files-found: warn
