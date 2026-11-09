@@ -1,0 +1,19 @@
+{
+ "browser": "firefox",
+ "version": "142.0.1",
+ "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:142.0) Gecko/20100101 Firefox/142.0",
+ "webgl2": true,
+ "webCodecs": true,
+ "h264_720": true,
+ "h264_1080": true,
+ "aac": false,
+ "opus": true,
+ "webLocks": true,
+ "indexedDB": true,
+ "webgpu": false,
+ "sharedArrayBuffer": false,
+ "creatorBoots": true,
+ "status": "Rendered 2 editable shots in forest.",
+ "canExportMP4": true,
+ "pageErrors": []
+}

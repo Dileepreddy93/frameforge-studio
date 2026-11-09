@@ -1,0 +1,19 @@
+{
+ "browser": "chromium",
+ "version": "141.0.7390.37",
+ "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+ "webgl2": true,
+ "webCodecs": true,
+ "h264_720": false,
+ "h264_1080": false,
+ "aac": false,
+ "opus": true,
+ "webLocks": true,
+ "indexedDB": true,
+ "webgpu": true,
+ "sharedArrayBuffer": false,
+ "creatorBoots": true,
+ "status": "Rendered 2 editable shots in forest.",
+ "canExportMP4": false,
+ "pageErrors": []
+}

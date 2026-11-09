@@ -24,6 +24,8 @@ function disposeGroup(group){
 export function validateWorldOptions(o={}){
  if(!WORLD_PRESETS.includes(o.template))throw Error('Unknown Ember world template');
  if(o.time!==undefined&&!WORLD_TIMES.includes(o.time))throw Error('Invalid time of day');
+ if(o.view!==undefined&&(o.template!=='desk'||!['city','mountains','forest','ocean','space'].includes(o.view)))
+   throw Error('Window views are city, mountains, forest, ocean or space, on the studio desk only');
  if(o.foliage!==undefined&&!within(o.foliage,0,1))throw RangeError('World foliage must be 0–1');
  if(o.wind!==undefined&&!within(o.wind,0,2))throw RangeError('World wind must be 0–2');
  if(o.particles!==undefined&&(!Array.isArray(o.particles)||o.particles.length>6||
@@ -123,7 +125,8 @@ export function registerEmberWorlds(registry,{scene,renderer,preparedWorld=null,
      const key=new T.DirectionalLight('#ffca92',2.1);key.position.set(-3,6,5);atmo.group.add(key);
      const light=new T.HemisphereLight('#c4dbff','#303044',1.5);atmo.group.add(light);
      // Use actual atmosphere animation, not a placeholder background; own only our additions.
-     return attachWorld(scene,{...atmo,screenPoint:new T.Vector3(0,2,-3),
+     // The desk monitor hangs above the cast's heads (FrameForge 2026-11-09), so screen shots see it over them.
+     return attachWorld(scene,{...atmo,screenPoint:new T.Vector3(0,3.2,-3),
        dispose(){atmo.dispose?.();floor.geometry.dispose();floor.material.dispose()}}
       ,o,{stageOffset});
    }

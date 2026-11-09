@@ -1,0 +1,71 @@
+{
+  "result": "HYBRID_P34_PASS",
+  "model": "Ara Athletic Man (internal-only technical rig; CMU clips not used)",
+  "sourceGitBlob": "1747281c0e7e10c4fe364d99a43c18bcb140bdb1",
+  "p3": {
+    "realSkinned": true,
+    "bytes": 10587092,
+    "triangles": 48820,
+    "expressions": 8,
+    "source": "Ara GLB technical QA only"
+  },
+  "p4": {
+    "worlds": [
+      {
+        "preset": "forest",
+        "time": "morning",
+        "head": [
+          0.012818188626230414,
+          3.0849546533992105,
+          -0.144582013343768
+        ],
+        "rewind": true
+      },
+      {
+        "preset": "meadow",
+        "time": "golden",
+        "head": [
+          0.012818188626230414,
+          3.0849546533992105,
+          -0.144582013343768
+        ],
+        "rewind": true
+      },
+      {
+        "preset": "snow",
+        "time": "night",
+        "head": [
+          0.012818188626230414,
+          3.0849546533992105,
+          -0.144582013343768
+        ],
+        "rewind": true
+      },
+      {
+        "preset": "desk",
+        "time": "golden",
+        "head": [
+          0.012818188626230414,
+          3.0849546533992105,
+          -0.144582013343768
+        ],
+        "rewind": true
+      }
+    ],
+    "importedWorld": "Khronos geometry used as import-path proxy only"
+  },
+  "video": {
+    "seconds": 2,
+    "width": 300,
+    "height": 500,
+    "fps": 12,
+    "videoCodec": "H264",
+    "audioCodec": "AAC",
+    "originalV6Audio": true,
+    "fullDecode": true
+  },
+  "limitations": [
+    "VRM geometry accepted when humanoid; VRM spring-bone and MToon not implemented",
+    "Not a final user film, not complete speech lip synchronization, not a 1080p production export"
+  ]
+}

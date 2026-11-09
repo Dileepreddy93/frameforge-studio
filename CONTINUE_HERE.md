@@ -3,13 +3,22 @@
 Updated 2026-11-09. Keep this file short and current; move superseded notes to `docs/history/`.
 
 ## Now
-- **One project on `main`.** The V6 studio (M1–M6) and the Hybrid Creator (P0–P14) were merged in PR #20, and the
-  repo was consolidated in the PR that follows it.
-- The landing page opens the Creator (`creator.html`); the V6 episodes (`studio.html`) are the examples.
-- **The plan:** [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md). The next step is **phase 0** (protect
-  `main`, release from tags, fix the flaky CI jobs).
-- **Live:** https://frameforge-v6.vercel.app still serves V6 (`2b78e60`). The Creator is only on the SSO-protected
-  staging project `frameforge-hybrid-beta`.
+- **One project on `main`.** Phases 0–9 of docs/IMPLEMENTATION_PLAN.md were worked through on 2026-11-09. The
+  progress table at the top of the plan says exactly what's done and what's left.
+- **What's left needs people, devices or decisions:**
+  - the owner's look approval and a blind A/B
+  - real GPU laptops and phones (docs/DEVICE_MATRIX.md)
+  - a lawyer, a support email and a domain
+  - recruiting creators (docs/USER_TESTING_PLAN.md)
+  - price points
+- **Live:** https://frameforge-v6.vercel.app still serves V6 (tag `v6.0.0`). Staging (`frameforge-hybrid-beta`) gets
+  tags first; see docs/RELEASES.md. **Production deploys only with the owner's yes.**
+- **Tools:**
+  - `tools/creator-stills.cjs` (stills for reviews)
+  - `tools/creator-film.cjs` (a voiced MP4 of any project)
+  - `tools/creator-bench.cjs` (frame costs)
+  - `tools/make-templates.cjs` (ready-made stories)
+  - `tools/deploy.sh` (tag deploys)
 
 ## Before you start
 1. Run `git fetch` and look at `main`'s latest CI runs (`gh run list --branch main`). Work also lands from other machines.

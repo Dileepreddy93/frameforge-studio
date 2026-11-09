@@ -72,17 +72,17 @@ const portraitHorizontalHalfWidth=Math.tan(fullTwo.fov*Math.PI/360)*
 assert.ok(portraitHorizontalHalfWidth>1.65,
   'A real portrait two-shot must not crop an actor when heads are about ±1 unit from center');
 
-// Real monitor geometry in hybrid-preview-engine.mjs is 3.8 units wide.
-// With a 9:16 output and a push toward its end, the complete monitor plus
-// 0.1-unit margin per side must stay in frame by default, not just its middle.
+// The on-set app is drawn in a centre column zoomed 1.3x (src/hybrid-screen.mjs): about 2.8 of the monitor's 3.8
+// units. Since 2026-11-09 a portrait screen shot fills the frame with that column (readable text) instead of showing
+// the whole, mostly empty monitor. Even at the end of a push-in the column plus a small margin must stay in frame.
 const screenProject=structuredClone(base);
 screenProject.shots[0].camera={kind:'screen'};
 screenProject.shots[0].direction.move='push';
 const fullScreen=direction.cameraAt(screenProject,2.3,anchors,stage);
 const screenDistance=Math.hypot(...fullScreen.position.map((v,i)=>v-stage.screen[i]));
 const screenPortraitHalfWidth=Math.tan(fullScreen.fov*Math.PI/360)*screenDistance*9/16;
-assert.ok(screenPortraitHalfWidth>=2.0,
-  'Portrait screen insert must show full 3.8-unit monitor and 0.1-unit horizontal margin');
+assert.ok(screenPortraitHalfWidth>=1.42&&screenPortraitHalfWidth<=2.0,
+  'Portrait screen insert must fill the frame with the app column (half-width 1.42–2.0 units), got '+screenPortraitHalfWidth);
 const authoredCloseScreen=structuredClone(screenProject);
 authoredCloseScreen.shots[0].framing={distance:4.8,fov:38};
 const close=direction.cameraAt(authoredCloseScreen,2.3,anchors,stage);

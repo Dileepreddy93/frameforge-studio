@@ -1,0 +1,76 @@
+{
+  "result": "P2_RENDER_PROOF_PASS",
+  "timestamp": "2026-11-09T05:16:14.746Z",
+  "evidence": "Real Ember procedural rigs loaded through FrameForge hybrid provider; legacy V6 untouched",
+  "limits": "2-second preview uses V6 pre-existing mastered audio; speech/visemes unaligned until P6",
+  "templates": [
+    {
+      "template": "creator",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "human",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "robot",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "creature",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "bot",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "mascot",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "dev",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "blue",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    },
+    {
+      "template": "orange",
+      "views": 4,
+      "emotions": 8,
+      "rewind": true
+    }
+  ],
+  "emotions": [
+    "neutral",
+    "happy",
+    "sad",
+    "angry",
+    "surprised",
+    "worried",
+    "curious",
+    "idea"
+  ],
+  "views": 4,
+  "lookCustomization": true,
+  "fullDecode": true,
+  "video": "ember-p2-creator-2s.mp4"
+}

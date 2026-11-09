@@ -141,9 +141,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 <main id="top">
  <section class="hero">
   <div class="wrap">
-   <h1>Scripts in.<span>Episodes out.</span></h1>
-   <p class="lede">FrameForge turns a short comedy script into a finished 9:16 animated reel: three original 3D characters, a voice for every line, music, sound effects and captions, rendered at 1080&nbsp;×&nbsp;1920.</p>
-   <div class="ctas"><a class="btn primary" href="creator.html">Make your own film</a><a class="btn" href="studio.html">Open the example episodes</a></div>
+   <h1>Stories in.<span>Films out.</span></h1>
+   <p class="lede">FrameForge is a 3D film studio in your browser. Write a story, pick your cast and set, direct every shot, and export a voiced 9:16 film with music, sound effects and captions, at up to 1080&nbsp;×&nbsp;1920.</p>
+   <div class="ctas"><a class="btn primary" href="creator.html">Make your own film</a><a class="btn" href="creator.html#start=zero-latency.frameforge.json">Remake an example episode</a></div>
 
    <div class="screening">
     <div class="phone">
@@ -159,7 +159,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
       <span class="sheet-meta mono" id="sheetMeta">Loading the shot sheet…</span>
      </div>
      <ol class="rows" id="rows" aria-label="Shot sheet"></ol>
-     <p class="sheet-note">Each row is one shot from the episode file: who speaks, the line, the shot's name, the camera move and the performance. Click a row to jump to that shot.</p>
+     <p class="sheet-note">Each row is one shot from the episode file: who speaks, the line, the shot's name, the camera move and the performance. Click a row to jump to that shot. Both films were made in the Creator; open one there (<em>Start from…</em>) to remake it.</p>
     </div>
    </div>
   </div>
@@ -167,13 +167,13 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 
  <section class="band" id="how">
   <div class="wrap">
-   <h2>How an episode is made</h2>
-   <p class="intro">You write the script. The studio directs it, voices it in your browser and draws every frame.</p>
+   <h2>How a film is made</h2>
+   <p class="intro">You write and direct. The Creator voices it in your browser and draws every frame.</p>
    <ol class="steps">
-    <li><h3>Write the script</h3><p>One line per shot, in plain text. The studio picks the cameras, the wide, the reaction cuts and the acting.</p><code>DEV (worried): Our app is slow.</code></li>
-    <li><h3>Fine-tune any shot</h3><p>Change a line, each character's action and emotion, the camera, its move and a dutch angle. The monitor shows the exact frame you'll export.</p><code>"framing": { "move": "push", "roll": 7 }</code></li>
-    <li><h3>Voice and score</h3><p>Every line is voiced separately, and its length sets the shot's length. Music ducks under speech, and the mix lands at the reel loudness standard.</p><code>−14 LUFS · voices · music · effects</code></li>
-    <li><h3>Render the reel</h3><p>Every frame is drawn at its exact time and encoded with the mixed audio, ready for Reels, Shorts and TikTok.</p><code>1080 × 1920 · 30 fps · H.264</code></li>
+    <li><h3>Start a story</h3><p>Start blank or from an episode. Pick your cast (nine characters, each with its own colours and voice) and a set: forest, meadow, snow or a studio desk, in the morning, at golden hour or at night.</p><code>Start from… → Zero Latency</code></li>
+    <li><h3>Direct every shot</h3><p>Who speaks and what they say, each character's emotion and action, the camera, lens and move, an on-set screen, a prop to pick up, a sound effect. The monitor shows the exact frame you'll export.</p><code>DEV · worried · think · close-up · push-in</code></li>
+    <li><h3>Voice and score</h3><p>Every line is voiced in your browser with one of 20 American and British voices. Music ducks under speech, and the mix lands at the reel loudness standard.</p><code>−14 LUFS · voices · music · effects</code></li>
+    <li><h3>Export the film</h3><p>Every frame is drawn at its exact time and encoded with the mixed audio, then the file is checked before you get it. Ready for Reels, Shorts and TikTok.</p><code>720p or 1080 × 1920 · 30 fps · H.264</code></li>
    </ol>
   </div>
  </section>
@@ -181,11 +181,11 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
  <section class="band" id="cast">
   <div class="wrap">
    <h2>The cast</h2>
-   <p class="intro">Three original characters with fixed looks and voices, so every episode feels like the same show.</p>
+   <p class="intro">Three original characters ready to cast, with six more you can recolour and name. Every character keeps its look and voice, so your films feel like one show.</p>
    <div class="cast">
-    <figure class="card" style="--c:var(--slate)"><img src="media/v5/cast-dev.jpg" alt="DEV, a low-poly developer in a slate hoodie, looking worried" loading="lazy" width="480" height="600"><figcaption><h3>DEV</h3><p>The developer. Only ever wants one tiny change.</p><span class="mono">voice · am_michael</span></figcaption></figure>
-    <figure class="card" style="--c:var(--cyan)"><img src="media/v5/cast-blue.jpg" alt="BLUE, a blue robot with a glowing cyan visor face, smiling" loading="lazy" width="480" height="600"><figcaption><h3>BLUE</h3><p>The eager assistant. Says yes to everything.</p><span class="mono">voice · af_heart</span></figcaption></figure>
-    <figure class="card" style="--c:var(--orange)"><img src="media/v5/cast-orange.jpg" alt="ORANGE, an orange robot with a glowing amber visor face, smiling proudly" loading="lazy" width="480" height="600"><figcaption><h3>ORANGE</h3><p>The deadpan assistant. Technically correct, every time.</p><span class="mono">voice · bm_george</span></figcaption></figure>
+    <figure class="card" style="--c:var(--slate)"><img src="media/creator/cast-dev.jpg" alt="DEV, a developer with round glasses and a teal hoodie, looking curious" loading="lazy" width="480" height="600"><figcaption><h3>DEV</h3><p>The developer. Only ever wants one tiny change.</p><span class="mono">voice · am_michael</span></figcaption></figure>
+    <figure class="card" style="--c:var(--cyan)"><img src="media/creator/cast-blue.jpg" alt="BLUE, a blue robot with a glowing light-blue screen face, smiling and waving" loading="lazy" width="480" height="600"><figcaption><h3>BLUE</h3><p>The eager assistant. Says yes to everything.</p><span class="mono">voice · af_heart</span></figcaption></figure>
+    <figure class="card" style="--c:var(--orange)"><img src="media/creator/cast-orange.jpg" alt="ORANGE, an orange box-headed robot with an amber screen face, arms crossed" loading="lazy" width="480" height="600"><figcaption><h3>ORANGE</h3><p>The deadpan assistant. Technically correct, every time.</p><span class="mono">voice · bm_george</span></figcaption></figure>
    </div>
   </div>
  </section>
@@ -194,32 +194,33 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
   <div class="wrap">
    <h2>Questions</h2>
    <div class="faq">
-    <details><summary>Do I need to write code?</summary><p>No. Type the script in the studio, one line per shot (<code>BLUE (happy): Done!</code>). The studio directs it, voices every line in your browser and exports the MP4. You can then fine-tune any shot.</p></details>
+    <details><summary>Do I need to write code?</summary><p>No. Write each shot's line in the Creator and choose the rest from menus, or paste a whole screenplay into its script box. The Creator voices every line in your browser and exports the MP4.</p></details>
     <details><summary>Is this made with AI?</summary><p>The voices come from Kokoro, an open-source voice model that runs in your browser on your own computer: it downloads once (326 MB, or 92 MB for the light version), then works offline. The animation, camera work, music and sound effects are generated by code. No cloud AI service is used.</p></details>
-    <details><summary>What do I get?</summary><p>An MP4 at 1080 × 1920 and 30 fps with voices, music, sound effects and burned-in captions, ready to post as a Reel, Short or TikTok. Make as many as you like: everything runs on your computer, so there is no cost per video. Every export is checked when it's done (size, frames, frame rate, length, audio), and the studio shows you the result.</p></details>
-    <details><summary>Can I lose my work?</summary><p>The studio saves every change in your browser as you go, and brings your episode back after a refresh, a crash or closing the tab. Undo and redo work across everything you change. To keep an episode elsewhere, download it as a file.</p></details>
-    <details><summary>Can I make my own episode?</summary><p>Yes. Write it in the studio's script box, or open an episode and change its lines. Download it as a file to keep it, and open it again later.</p></details>
-    <details><summary>Which languages are supported?</summary><p>English, with American and British voices. Other languages aren't available yet.</p></details>
-    <details><summary>Which browsers?</summary><p>Chrome or Edge on a laptop or desktop. On a phone the studio opens on the film; Safari and Firefox aren't supported yet.</p></details>
+    <details><summary>What do I get?</summary><p>An MP4 at 1080 × 1920 and 30 fps with voices, music, sound effects and burned-in captions, ready to post as a Reel, Short or TikTok. Make as many as you like: everything runs on your computer, so there is no cost per video. Exporting takes minutes, not seconds, because your computer draws every frame; 720p is faster than 1080p. Every export is checked when it's done (size, frames, frame rate, length, audio), and the studio shows you the result.</p></details>
+    <details><summary>Can I lose my work?</summary><p>The Creator saves every change in your browser as you go, and brings your film back after a refresh, a crash or closing the tab. Undo and redo work across everything you change. To keep a film elsewhere, download the project as a file.</p></details>
+    <details><summary>Can I remake the example episodes?</summary><p>Yes. In the Creator, choose <em>Start from…</em> and pick an episode: every line, shot and screen opens ready to change. Episode files from the earlier studio open the same way.</p></details>
+    <details><summary>Which languages are supported?</summary><p>English, with 20 American and British voices. Other languages aren't available yet.</p></details>
+    <details><summary>Which browsers?</summary><p>Chrome or Edge on a laptop or desktop work best. Firefox works too, though its films use Opus audio, which some Apple apps don't play. Safari's engine passes our automated checks, but Safari itself and exporting on phones haven't been tested by a person yet.</p></details>
    </div>
   </div>
  </section>
 
  <section class="closing">
   <div class="wrap">
-   <h2>Make episode 03</h2>
-   <p>The studio runs in Chrome or Edge on a laptop. No account needed.</p>
+   <h2>Make your first film</h2>
+   <p>The Creator runs in Chrome or Edge on a laptop. No account needed.</p>
    <a class="btn primary" href="creator.html">Make your own film</a>
   </div>
  </section>
 </main>
 
-<footer><div class="wrap"><span>FrameForge</span><span>Characters, music and sound effects are original to FrameForge. <a href="credits.html">Credits &amp; licences</a></span></div></footer>
+<footer><div class="wrap"><span>FrameForge</span><span>Characters, music and sound effects are original to FrameForge. <a href="credits.html">Credits &amp; licences</a> · <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a> · <a href="https://github.com/Dileepreddy93/frameforge-studio/issues">Support</a></span></div></footer>
 
 <script>
 const EPISODES={
- comedy:{file:'projects/zero-latency.frameforge.json',video:'media/v5/ep01-zero-latency',poster:'media/v5/ep01-poster.jpg'},
- darkmode:{file:'projects/dark-mode.frameforge.json',video:'media/v5/ep02-dark-mode',poster:'media/v5/ep02-poster.jpg'}
+ // Films made in the Creator (tools/creator-film.cjs); .timing.json holds each shot's voiced length in that film.
+ comedy:{file:'projects/zero-latency.frameforge.json',video:'media/creator/ep01-zero-latency',poster:'media/creator/ep01-zero-latency-poster.jpg',timing:'media/creator/ep01-zero-latency.timing.json'},
+ darkmode:{file:'projects/dark-mode.frameforge.json',video:'media/creator/ep02-dark-mode',poster:'media/creator/ep02-dark-mode-poster.jpg',timing:'media/creator/ep02-dark-mode.timing.json'}
 };
 // H.264 for Safari and iOS, VP9 WebM where H.264 is unavailable (e.g. open-source Chromium, some Linux Firefox).
 const VIDEO_EXT=document.createElement('video').canPlayType('video/mp4; codecs="avc1.4d401f, mp4a.40.2"')?'.mp4':'.webm';
@@ -237,6 +238,9 @@ async function loadEpisode(key){
   const response=await fetch(ep.file);
   if(!response.ok)throw new Error('HTTP '+response.status);
   const project=await response.json();
+  if(ep.timing){const t=await fetch(ep.timing).then(r=>r.ok?r.json():null).catch(()=>null);
+   const len=new Map((t?.shots||[]).map(s=>[s.id,s.duration]));
+   for(const s of project.shots)if(Number.isFinite(len.get(s.id)))s.duration=len.get(s.id);}
   let start=0;
   shots=project.shots.map(s=>{const shot={...s,start};start+=s.duration;return shot});
   $('sheetMeta').textContent=`${shots.length} shots · ${start.toFixed(1)} s · ${FPS} fps`;

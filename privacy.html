@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameForge privacy</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2317123A'/%3E%3Crect x='4' y='4' width='8' height='8' rx='1.5' fill='%23F49A5E'/%3E%3C/svg%3E">
+<style>
+ :root{--bg:#100C1B;--panel:#151029;--line:#2A2442;--text:#E8E4F6;--muted:#A7A1C7;--dim:#8C86AC;--link:#79C5FF;--accent:#F49A5E}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Ubuntu Sans",sans-serif}
+ main{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+ a{color:var(--link)}
+ header a{color:var(--muted);text-decoration:none;font-size:14px}
+ h1{font-size:30px;line-height:1.2;margin:18px 0 8px}
+ h2{font-size:19px;margin:36px 0 10px;color:var(--accent)}
+ p{margin:8px 0;color:var(--text)}
+ .lead{color:var(--muted)}
+ .table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+ table{border-collapse:collapse;width:100%;font-size:14px}
+ th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+ tr:last-child td{border-bottom:0}
+ th{color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap}
+ td:first-child{font-weight:600}
+ code{font:13px "Ubuntu Sans Mono","JetBrains Mono",ui-monospace,monospace;color:var(--muted)}
+ .note{color:var(--dim);font-size:14px}
+ .draft{border:1px solid #6b5420;background:#241c0c;color:#f1d79a;border-radius:10px;padding:10px 14px;font-size:14px}
+ li{margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+<header><a href="./">← FrameForge</a> · <a href="creator.html">Creator</a> · <a href="credits.html">Credits</a></header>
+<h1>Privacy</h1>
+<p class="draft">Draft, 9 November 2026. It hasn't been reviewed by a lawyer yet, and will be before FrameForge takes payments.</p>
+<p class="lead">FrameForge runs in your browser. There is no account, and your stories, voices and films stay on your own computer.</p>
+<h2>What stays on your computer</h2>
+<ul>
+<li>Your projects: saved in your browser's storage (IndexedDB, with a small copy in local storage so a refresh can't
+lose your last change), including up to five earlier versions. Clearing your browser's site data deletes them; use
+<em>Download project</em> to keep a copy.</li>
+<li>Voices: every line is voiced on your computer by the Kokoro voice model. Your text is never sent anywhere.</li>
+<li>Films: drawn and encoded on your computer. We never see them.</li>
+<li>Problem reports: the Creator's <em>Report a problem</em> button builds a report you can read, copy or download. Nothing
+is sent unless you choose to post it yourself.</li>
+</ul>
+<h2>What other services see</h2>
+<p>Like any website, these see your IP address and browser when your browser asks them for files:</p>
+<ul>
+<li><strong>Vercel</strong>, which hosts this site, keeps standard request logs.</li>
+<li><strong>Hugging Face</strong>, the first time the Creator downloads the voice model (about 92 MB or 326 MB). After
+that, it's stored in your browser.</li>
+<li><strong>Google Fonts</strong>, for the landing page's fonts.</li>
+<li><strong>jsDelivr</strong>, only if one of our own copies of a library fails to load.</li>
+</ul>
+<h2>What we don't do</h2>
+<p>No cookies, no advertising, no tracking pixels, and no sale of data. If we add simple, anonymous visit counts
+later, this page will say so first.</p>
+<h2>Children</h2>
+<p>FrameForge is not directed at children under 13.</p>
+
+<h2>Questions</h2>
+<p>Ask on our support page: <a href="https://github.com/Dileepreddy93/frameforge-studio/issues">github.com/Dileepreddy93/frameforge-studio/issues</a>.</p>
+</main>
+</body>
+</html>

@@ -9,4 +9,9 @@
 <script src="./src/hybrid-direction.js"></script>
 <script src="./src/speech-performance-core.js"></script>
 <script>window.HybridP56Error=null;addEventListener('error',e=>window.HybridP56Error=e.message);addEventListener('unhandledrejection',e=>window.HybridP56Error=String(e.reason?.stack||e.reason));</script>
-<script type="module" src="./src/hybrid-preview-engine.mjs"></script></body></html>
+<script>
+// Phase 4: check for WebGL before starting the 3D engine, so a browser without it gets a clear message, not a crash.
+(function(){let ok=false;try{const c=document.createElement('canvas');ok=Boolean(c.getContext('webgl2')||c.getContext('webgl'))}catch{}
+ if(!ok){window.HybridP56Error='WEBGL_UNAVAILABLE';document.getElementById('msg').textContent='3D graphics (WebGL) are unavailable in this browser.';return}
+ const s=document.createElement('script');s.type='module';s.src='./src/hybrid-preview-engine.mjs';document.body.append(s);})();
+</script></body></html>

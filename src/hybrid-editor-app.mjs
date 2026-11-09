@@ -1,5 +1,5 @@
 // FrameForge P7 Creator. Real model, no React state duplication, no telemetry.
-import {createProjectStore} from './hybrid-editor-storage.mjs';
+import {createProjectStore,holdEditorLock,storageReport} from './hybrid-editor-storage.mjs';
 import {exportHybridFilm} from './hybrid-browser-export.mjs';
 const $=id=>document.getElementById(id),M=window.FrameForgeHybridEditor,C=window.FrameForgeHybridProjectCore;
 let editor=null,store=null,engine=null,selected='shot-01',play=false,last=0,animation=0;
@@ -79,9 +79,10 @@ function renderUI({render3d=true}={}){
  if(!editor)return;
  const p=editor.project;
  $('title').value=p.title;$('logline').value=p.logline;
- $('world').value=p.hybrid.world.template;
+ $('world').value=p.hybrid.world.template+(p.hybrid.world.template==='desk'&&p.hybrid.world.view&&p.hybrid.world.view!=='city'?'/'+p.hybrid.world.view:'');
  $('timeofday').value=p.hybrid.world.time||'golden';
  $('soundtrack').value=p.audio.music?.cues?.[0]?.style||'off';
+ $('subtitles').checked=p.hybrid.director?.subtitles===true;
  const cast=$('cast');cast.replaceChildren();
  for(const character of p.characters){
    const area=document.createElement('section'),head=document.createElement('h3');
@@ -92,7 +93,7 @@ function renderUI({render3d=true}={}){
    fillSelect(type,M.TEMPLATES,p.hybrid.cast[character.id].template);
    type.setAttribute('aria-label','3D character model for '+character.name);
    const voice=document.createElement('select');voice.id='cast-voice-'+character.id;
-   fillSelect(voice,M.VOICES,character.voice.profile);
+   fillSelect(voice,M.VOICES.map(v=>[v,M.VOICE_LABELS[v]||v]),character.voice.profile);
    voice.setAttribute('aria-label','Voice for '+character.name);
    const grid=document.createElement('div');grid.className='cols';
    const column=(label,control)=>{const div=document.createElement('div'),l=document.createElement('label');
@@ -108,7 +109,10 @@ function renderUI({render3d=true}={}){
      robot:{top:'#8aa1ad',accent:'#3d4650'},
      creature:{top:'#3f6b58',accent:'#f2e2c9'},
      bot:{top:'#4f8fd6',accent:'#2e3440'},
-     mascot:{top:'#e8743c',accent:'#c9572e'}
+     mascot:{top:'#e8743c',accent:'#c9572e'},
+     dev:{top:'#3d5d66',accent:'#b098b1'},
+     blue:{top:'#4f7fae',accent:'#5c6fb8'},
+     orange:{top:'#d0703a',accent:'#5c6fb8'}
    };
    const descriptor=p.hybrid.cast[character.id],palette=presetColors[descriptor.template]||presetColors.creator;
    const appearance=document.createElement('div');appearance.className='cols';
@@ -124,11 +128,23 @@ function renderUI({render3d=true}={}){
      input.onchange=()=>change({look:{[key]:input.value}});
      appearance.append(control('cast-'+key+'-'+character.id,key==='top'?'Clothing color':'Accent color',input));
    }
+   // What each template starts with, so the pickers show the truth before anything is changed.
+   const base={dev:{hairStyle:'chunky',glasses:'round'},human:{hairStyle:'long'}}[descriptor.template]||{};
    const hairstyle=document.createElement('select');
    fillSelect(hairstyle,['shaggy','chunky','short','curly','long','bun','mohawk','bald'],
-     descriptor.look?.hairStyle||'shaggy');
+     descriptor.look?.hairStyle||base.hairStyle||'shaggy');
    hairstyle.onchange=()=>change({look:{hairStyle:hairstyle.value}});
    appearance.append(control('cast-hair-'+character.id,'Hairstyle',hairstyle));
+   // Phase 6: hand props, glasses and hats the character engine already draws.
+   for(const [key,label,items] of [
+     ['prop','Holding',[['none','Nothing'],['phone','A phone'],['tablet','A tablet'],['book','A book'],['mug','A mug'],['coffee','A coffee cup']]],
+     ['glasses','Glasses',[['none','None'],['round','Round'],['square','Square']]],
+     ['hat','Hat',[['none','None'],['cap','Cap'],['beanie','Beanie'],['headphones','Headphones']]]]){
+     const pick=document.createElement('select');
+     fillSelect(pick,items,descriptor.look?.[key]||base[key]||'none');
+     pick.onchange=()=>change({look:{[key]:pick.value}});
+     appearance.append(control('cast-'+key+'-'+character.id,label,pick));
+   }
    const artstyle=document.createElement('select');
    fillSelect(artstyle,[['smooth','Smooth stylized'],['lowpoly','Faceted low-poly']],
      descriptor.style||'smooth');
@@ -157,7 +173,10 @@ function renderUI({render3d=true}={}){
  const current=byId(p,selected);selected=current.id;
  fillSelect($('speaker'),p.characters.map(x=>[x.id,x.name]),current.speaker);
  $('dialogue').value=current.dialogue;$('emotion').value=current.cast?.[current.speaker]?.emotion||'neutral';
- $('action').value=current.cast?.[current.speaker]?.action||'explain';
+ {const a=current.cast?.[current.speaker]?.action||'explain';
+  // Actions from older episodes (e.g. "typing", "react") stay selectable as they are.
+  if(![...$('action').options].some(o=>o.value===a))$('action').append(new Option(a,a));
+  $('action').value=a;}
  $('camera').value=current.camera?.kind||'actor';$('move').value=current.direction?.move||'static';
  const cameraDefault=current.camera?.kind==='screen'?11.8:
    current.camera?.kind==='two'?9.4:current.camera?.kind==='wide'?11.2:
@@ -186,8 +205,51 @@ function renderUI({render3d=true}={}){
  if(!$('script-pane').hidden)$('script').value=editor.scriptText();
  if(render3d&&engine)rebuild();
 }
+// Phase 8: "Report a problem" builds a report the user can read, copy, download or post. Nothing is sent by itself,
+// and it never includes the story's lines.
+const recentErrors=[];
+addEventListener('error',e=>{recentErrors.push(String(e.message||e.error||'error').slice(0,300));recentErrors.splice(0,recentErrors.length-20)});
+addEventListener('unhandledrejection',e=>{recentErrors.push(String(e.reason?.message||e.reason||'rejection').slice(0,300));recentErrors.splice(0,recentErrors.length-20)});
+function problemReport(){
+ const p=editor?.project,msg=id=>($(id)?.textContent||'').trim();
+ return ['FrameForge Creator problem report','Date: '+new Date().toISOString(),'Page: '+location.pathname,
+  'Browser: '+navigator.userAgent,'Platform: '+(navigator.userAgentData?.platform||navigator.platform||'?'),
+  'Screen: '+screen.width+'×'+screen.height+' · window '+innerWidth+'×'+innerHeight+' · pixel ratio '+devicePixelRatio,
+  'Memory hint: '+(navigator.deviceMemory?navigator.deviceMemory+' GB':'?')+' · CPU threads: '+(navigator.hardwareConcurrency||'?'),
+  'Video encoder (WebCodecs): '+('VideoEncoder' in window?'yes':'no')+' · Web Locks: '+(navigator.locks?'yes':'no'),
+  'Storage: '+(store?.mode||'none')+(readOnly?' (read-only: open in another tab)':''),
+  'Project: '+(p?p.shots.length+' shots, '+p.shots.reduce((t,s)=>t+s.duration,0).toFixed(1)+' s, set '+p.hybrid.world.template+'/'+p.hybrid.world.time+
+    ', cast '+Object.values(p.hybrid.cast).map(c=>c.template).join('/'):'not open'),
+  'Status: '+msg('status'),'Saving: '+msg('storage-status'),'Voice: '+msg('voice-status'),'Export: '+msg('export-status'),
+  'Recent errors: '+(recentErrors.length?'\n  '+recentErrors.join('\n  '):'none'),
+  '','What were you doing when it happened? (add it here)'].join('\n');
+}
+$('report').onclick=()=>{
+ const text=problemReport();$('report-text').value=text;
+ const body=text.length>1800?text.slice(0,1800)+'\n…(download the full report)':text;
+ $('report-open').href='https://github.com/Dileepreddy93/frameforge-studio/issues/new?title='+encodeURIComponent('Problem report: ')+'&body='+encodeURIComponent(body);
+ $('report-dialog').showModal();
+};
+$('report-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('report-text').value);$('report-copy').textContent='Copied'}catch{ $('report-text').select()}};
+$('report-download').onclick=()=>download(new Blob([$('report-text').value],{type:'text/plain'}),'frameforge-problem-report.txt');
+$('report-close').onclick=()=>$('report-dialog').close();
+// Phase 5: one editing tab at a time, earlier versions, and a reminder to keep a downloaded copy.
+let readOnly=false,editsSinceDownload=0;
+const DOWNLOAD_KEY='frameforge-creator-last-download',REMIND_MS=20*60*1000;
+const lastDownload=()=>{try{return Number(localStorage.getItem(DOWNLOAD_KEY))||0}catch{return 0}};
+const remindToDownload=()=>editsSinceDownload>=5&&Date.now()-lastDownload()>REMIND_MS?
+ ' It has been a while since you downloaded a copy: use “Download project” to keep one outside this browser.':'';
+async function refreshVersions(){
+ if(!store?.history)return;
+ const list=await store.history().catch(()=>[]),select=$('versions');
+ select.replaceChildren(new Option(list.length>1?'Earlier versions…':'No earlier versions yet',''));
+ list.slice(1).forEach((v,i)=>select.append(new Option(new Date(v.savedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+
+   ' · '+Math.max(1,Math.round(v.bytes/1024))+' KB',String(i+1))));
+ select.disabled=list.length<2||readOnly;
+}
 function queueSave(){
- if(!store||initialRecoveryCorrupt)return;
+ if(!store||initialRecoveryCorrupt||readOnly)return;
+ editsSinceDownload++;
  const json=editor.serialize();
  // The immediate checkpoint prevents a refresh/force-close from losing the
  // latest visible edit while the async IndexedDB write is still queued.
@@ -197,7 +259,8 @@ function queueSave(){
    text('storage-status','Writing IndexedDB recovery… Download a project backup before closing this tab.');
  storageSequence=storageSequence.catch(()=>{}).then(async()=>{
    try{await store.save(json,savedAt);
-     text('storage-status','Autosaved on this device ('+store.mode+'). Download a copy before clearing browser storage.')}
+     text('storage-status','Autosaved on this device ('+store.mode+'). Download a copy before clearing browser storage.'+remindToDownload());
+     refreshVersions()}
    catch(e){text('storage-status','Storage error: '+e.message+' Download a backup now.')}
  });
 }
@@ -226,6 +289,7 @@ function changeProject(action){
 for(const id of ['title','logline'])$(id).onchange=()=>changeProject(()=>editor[id]($(id).value));
 for(const id of ['world','timeofday'])$(id).onchange=()=>changeProject(()=>editor.world($('world').value,$('timeofday').value));
 $('soundtrack').onchange=()=>changeProject(()=>editor.soundtrack($('soundtrack').value));
+$('subtitles').onchange=()=>changeProject(()=>editor.subtitles($('subtitles').checked));
 $('shot-sound').onchange=()=>changeProject(()=>editor.shotSound(selected,$('shot-sound').value));
 for(const id of ['speaker','dialogue','emotion','action','camera','camera-distance','camera-fov','move','caption','shot-duration','visual-prop','prop-mode','prop-actor','ambient-screen','screenKind','screenTitle','screenLines'])
  $(id).onchange=()=>{
@@ -282,6 +346,7 @@ $('still').onclick=()=>{
 };
 $('render').onclick=()=>rebuild();
 $('save-project').onclick=()=>{
+ try{localStorage.setItem(DOWNLOAD_KEY,String(Date.now()))}catch{}editsSinceDownload=0;
  if(!editor)return;download(new Blob([editor.serialize()],{type:'application/json'}),
    'frameforge-'+editor.project.id+'.json');
 };
@@ -291,6 +356,61 @@ $('recovery-backup').onclick=()=>{
    'frameforge-damaged-local-recovery.txt');
  recoveryExportRequested=true;
  text('storage-status','Recovery copy download requested. Your damaged browser record is still intact; saving a new edit or importing another project will replace it.');
+};
+// Templates: the V6 episodes, opened as Creator projects with DEV, BLUE and ORANGE.
+for(const t of M.EPISODE_TEMPLATES){const o=document.createElement('option');o.value=t.file;o.textContent=t.label;$('start-from').append(o)}
+// Ready-made stories (phase 6), built by tools/make-templates.cjs.
+fetch('./projects/templates/index.json').then(r=>r.ok?r.json():{templates:[]}).then(({templates})=>{
+ for(const t of templates||[]){if(!/^templates\/[a-z0-9-]+\.frameforge\.json$/.test(t.file))continue;
+   $('start-from').append(new Option(t.label,t.file))}}).catch(()=>{});
+$('start-from').onchange=async()=>{
+ const choice=$('start-from').value;$('start-from').value='';
+ if(!choice||!editor||busy)return;
+ if(initialRecoveryCorrupt&&!recoveryExportRequested){
+   text('status','Download the damaged recovery copy before replacing the saved project.');return;
+ }
+ if(!confirm('Replace the project you are editing? Download it first if you want to keep it.'))return;
+ try{
+   const response=await fetch('./projects/'+(choice==='blank'?'zero-latency.frameforge.json':choice));
+   if(!response.ok)throw Error('Template unavailable');
+   const p=choice.startsWith('templates/')?M.parseCreatorFile(await response.text()):
+     choice==='blank'?M.fromLegacy(await response.json()):M.fromEpisode(await response.json());
+   editor.replace(p);selected=p.shots[0].id;initialRecoveryCorrupt=false;recoveryRaw=null;
+   $('recovery-backup').hidden=true;renderUI();queueSave();
+   text('status','Opened "'+p.title+'". Generate voices before export.');
+ }catch(e){text('status','Template refused: '+e.message)}
+};
+$('versions').onchange=async()=>{
+ const i=Number($('versions').value);$('versions').value='';
+ if(!i||!store||readOnly||busy)return;
+ if(!confirm('Go back to this earlier version? Your current version stays in the list.'))return;
+ try{
+   const p=M.parseCreatorFile(await store.version(i));
+   editor.replace(p);selected=p.shots[0].id;renderUI();queueSave();
+   text('status','Earlier version restored. Generate voices before export.');
+ }catch(e){text('status','That version could not be opened: '+e.message)}
+};
+// Phase 3: before a long export, time real frames at the chosen size on THIS computer and predict the total.
+$('estimate').onclick=async()=>{
+ if(!engine||!editor||busy)return;
+ const size=Number($('resolution').value),w=size===1080?1080:size===720?720:360,h=w*16/9;
+ const total=$('seconds').value==='2'?2:editor.duration,frames=Math.round(total*30),samples=12;
+ $('estimate').disabled=true;text('export-status','Timing '+samples+' frames at '+w+'×'+h+' on this computer…');
+ try{
+   stop();engine.setOutputResolution(w,h);engine.frameAt(0,false);
+   const ms=[];
+   for(let i=0;i<samples;i++){
+     const t=total*(i+.5)/samples,a=performance.now();
+     engine.frameAt(t,false);engine.getSurface().getContext('2d').getImageData(0,0,1,1);
+     ms.push(performance.now()-a);await new Promise(r=>setTimeout(r,0));
+   }
+   ms.sort((a,b)=>a-b);
+   const per=ms[Math.floor(ms.length/2)],minutes=frames*per*1.08/60000;
+   const say=minutes<1?'under a minute':minutes<1.5?'about a minute':'about '+Math.round(minutes)+' minutes';
+   text('export-status','Estimated export at '+w+'×'+h+': '+say+' ('+Math.round(per)+' ms a frame × '+frames+' frames).'+
+     (minutes>5&&w>720?' 720×1280 would be faster.':''));
+ }catch(e){text('export-status','Could not time this computer: '+e.message)}
+ finally{try{engine.setOutputResolution(360,640)}catch{}frame(Number($('scrub').value)||0);$('estimate').disabled=false}
 };
 $('open-project').onclick=()=>{
  if(initialRecoveryCorrupt&&!recoveryExportRequested){
@@ -356,7 +476,8 @@ $('export').onclick=async()=>{
    download(result.file,'frameforge-'+editor.project.id+'-'+result.report.width+'x'+result.report.height+'.mp4');
    download(new Blob([JSON.stringify(result.report,null,2)],{type:'application/json'}),
      'frameforge-'+editor.project.id+'-export-report.json');
-   text('export-status','Verified H264/AAC '+result.report.frames+' frames · '+result.report.seconds.toFixed(2)+'s · file downloaded.');
+   text('export-status','Verified H264/'+(result.report.audio==='opus'?'Opus':'AAC')+' '+result.report.frames+' frames · '+result.report.seconds.toFixed(2)+'s · file downloaded.'+
+     (result.report.compatibility?' '+result.report.compatibility:''));
  }catch(e){text('export-status','MP4 export unavailable: '+e.message+' Project backup is still available.')}
  finally{exportAbort=null;setBusy(false);$('cancel').disabled=true;$('progress').hidden=true}
 };
@@ -375,6 +496,7 @@ async function bootEditor(){
    if(w.HybridP56Error)throw Error(String(w.HybridP56Error));
    if(!w.HybridP56Ready)throw Error('3D renderer could not start');
    engine=w.HybridP56QA;
+   readOnly=!(await holdEditorLock());
    store=await createProjectStore();
    let saved=null;
    try{saved=await store.load()}catch(e){text('storage-status','Recovery read failed: '+e.message)}
@@ -387,18 +509,35 @@ async function bootEditor(){
        text('storage-status','Damaged saved project preserved. Download the recovery copy before editing. '+e.message);
      }
    }
+   // creator.html#start=<episode file> opens that episode: straight away for a new visitor, or after asking when
+   // there is saved work to replace (the landing page's "example episodes" button uses this).
+   const start=new URLSearchParams(location.hash.slice(1)).get('start');
+   const startTemplate=M.EPISODE_TEMPLATES.find(t=>t.file===start)?.file||null;
+   if(startTemplate)history.replaceState(null,'',location.pathname+location.search);
    if(!p){
-     const fixture=await fetch('./projects/zero-latency.frameforge.json').then(r=>{
+     const fixture=await fetch('./projects/'+(startTemplate||'zero-latency.frameforge.json')).then(r=>{
        if(!r.ok)throw Error('Original FrameForge project fixture unavailable');return r.json()});
-     p=M.fromLegacy(fixture);
-   }
+     p=startTemplate?M.fromEpisode(fixture):M.fromLegacy(fixture);
+   }else if(startTemplate&&!initialRecoveryCorrupt)
+     queueMicrotask(()=>{$('start-from').value=startTemplate;$('start-from').dispatchEvent(new Event('change'))});
    editor=M.createEditor(p);selected=p.shots[0].id;renderUI();
    if(!initialRecoveryCorrupt)queueSave();
-   if(!initialRecoveryCorrupt)
+   if(readOnly){
+     text('storage-status','FrameForge Creator is already open in another tab. Changes in this tab are not saved: close the other tab, then reload this one.');
+     $('storage-status').dataset.readOnly='true';
+   }else if(!initialRecoveryCorrupt){
      text('storage-status',saved?'Recovered a locally saved project.':'Created new project with local autosave.');
+     storageReport().then(r=>{
+       const space=r.low?' Your browser is almost out of storage space: download your project now.':'';
+       const keep=r.persisted?'':' (the browser may clear it under storage pressure)';
+       if(space||keep)text('storage-status',$('storage-status').textContent+keep+space);
+     });
+     refreshVersions();
+   }
  }catch(e){
-   text('status','Cannot open the hybrid creator: '+e.message+
-    '. Your original V6 editor remains available.');
+   text('status',e.message==='WEBGL_UNAVAILABLE'?
+    'Cannot open the Creator: this browser has 3D graphics (WebGL) turned off or unavailable. Turn on hardware acceleration in its settings, or use Chrome or Edge on a laptop or desktop.':
+    'Cannot open the hybrid creator: '+e.message+'. Use “Report a problem” to tell us.');
    booting=false;
  }
 }

@@ -35,6 +35,23 @@ const screenTexture=new T.CanvasTexture(onSet.canvas);screenTexture.colorSpace=T
 const screenPlane=new T.Mesh(new T.PlaneGeometry(3.8,2.14),
   new T.MeshBasicMaterial({map:screenTexture,side:T.DoubleSide,roughness:1}));
 screenPlane.position.set(0,2.1,-2.9);screenPlane.visible=false;scene.add(screenPlane);
+// FrameForge fix (2026-11-09): put the on-set screen on the world's own screen surface. It was fixed at the desk
+// monitor's place, so in the outdoor sets it hung low in front of the sign and left the sign's top third empty.
+// Phase 3: compile every shader once when a project loads, so the first frame of each shot doesn't stall on a
+// shader compile (the p95 spikes in the export report). Hidden objects are included.
+function warmShaders(){
+ try{const hidden=[];scene.traverse(o=>{if(!o.visible){hidden.push(o);o.visible=true}});
+   screenPlane.visible=true;renderer.compile(scene,camera);hidden.forEach(o=>o.visible=false);screenPlane.visible=false}catch{}
+}
+function alignScreenToWorld(){
+ const at=session?.seek(0)?.worldAnchors?.screen;
+ const outdoor=project?.hybrid?.world?.provider==='procedural'&&project.hybrid.world.template!=='desk';
+ if(Array.isArray(at)&&at.every(Number.isFinite)&&outdoor){
+   screenPlane.position.set(at[0],at[1],at[2]+.03);screenPlane.scale.setScalar(4.15/3.8);
+ }else if(Array.isArray(at)&&at.every(Number.isFinite)&&project?.hybrid?.world?.template==='desk'){
+   screenPlane.position.set(at[0],at[1],at[2]+.1);screenPlane.scale.setScalar(1);
+ }else{screenPlane.position.set(0,2.1,-2.9);screenPlane.scale.setScalar(1)}
+}
 
 // Authored procedural story object, not a guessed object or an imported asset.
 // Keep one shared mesh/geometry instance and toggle visibility per V2 shot.
@@ -201,7 +218,7 @@ async function create(variant){
  registerEmberCharacters(registry,{scene,positions:{luna:[-1,0,0],atlas:[1,0,0]}});
  registerEmberWorlds(registry,{scene,renderer});
  registry.lock();
- session=P.createSession(project,{registry});
+ session=P.createSession(project,{registry});alignScreenToWorld();
  film=variant;
  document.getElementById('msg').textContent='P5/P6 original FrameForge one-clock film '+variant;
  return {variant,shots:project.shots.map(s=>({id:s.id,duration:s.duration,camera:s.camera,
@@ -240,7 +257,7 @@ async function loadFresh(modelPrefix='/artifacts/voice-model-samples/fresh-v2-ko
  registry=P.createRegistry();
  registerEmberCharacters(registry,{scene,positions:{luna:[-1,0,0],atlas:[1,0,0]}});
  registerEmberWorlds(registry,{scene,renderer});
- registry.lock();session=P.createSession(project,{registry});
+ registry.lock();session=P.createSession(project,{registry});alignScreenToWorld();warmShaders();
  film='fresh-kokoro';
  return {newText:project.shots.map(x=>x.dialogue),
    markers:mix.markers,duration:mix.duration,projectSchema:project.schema,
@@ -266,7 +283,7 @@ function loadEditable(source){
  const positions=Object.fromEntries(positionIds.map((id,i)=>[id,[(i-(positionIds.length-1)/2)*1.8,0,0]]));
  registerEmberCharacters(registry,{scene,positions});
  registerEmberWorlds(registry,{scene,renderer});
- registry.lock();session=P.createSession(project,{registry});
+ registry.lock();session=P.createSession(project,{registry});alignScreenToWorld();warmShaders();
  film='editable';editableVoiceReady=false;
  return {duration:session.duration,shots:project.shots.length,voicesGenerated:false};
 }
@@ -336,6 +353,26 @@ function frameAt(t,encode=true){
  camera.fov=pose.fov;camera.updateProjectionMatrix();
  renderer.render(scene,camera);
  overlayCtx.drawImage(renderer.domElement,0,0,overlay.width,overlay.height);
+ // Subtitles: the spoken line, white with a dark outline, while its voice plays (or, before voicing, between the
+ // shot's lead-in and pause). Up to two lines, above the caption box when the shot has one.
+ if(project.hybrid?.director?.subtitles&&shot.dialogue){
+   const lead=shot.timing?.lead??.15,pause=shot.timing?.pauseAfter??.35;
+   const speaking=speech.voiced||(state.localTime>=lead&&state.localTime<=shot.duration-pause);
+   if(speaking){
+     const scale=overlay.width/360;
+     overlayCtx.save();overlayCtx.scale(scale,scale);
+     overlayCtx.font='bold 17px Arial';overlayCtx.textAlign='center';overlayCtx.lineJoin='round';
+     const words=shot.dialogue.split(/\s+/),rows=[];let row='';
+     for(const w of words){const next=row?row+' '+w:w;if(overlayCtx.measureText(next).width>300&&row){rows.push(row);row=w}else row=next}
+     if(row)rows.push(row);
+     const shown=rows.length>2?[rows[0],rows.slice(1).join(' ')]:rows;
+     const base=(shot.caption?530:590)-(shown.length-1)*22;
+     shown.forEach((r,i)=>{const y=base+i*22;
+       overlayCtx.lineWidth=4;overlayCtx.strokeStyle='rgba(8,10,16,.92)';overlayCtx.strokeText(r,180,y,320);
+       overlayCtx.fillStyle='#ffffff';overlayCtx.fillText(r,180,y,320);});
+     overlayCtx.restore();
+   }
+ }
  if(shot.caption){
    const scale=overlay.width/360;
    overlayCtx.save();overlayCtx.scale(scale,scale);
@@ -368,7 +405,19 @@ function masterWav(){
  let result='';for(let i=0;i<u.length;i+=16384)result+=String.fromCharCode(...u.subarray(i,i+16384));
  return btoa(result);
 }
-window.HybridP56QA={create,loadFresh,loadEditable,generateEditableVoices,getEditableProject,getExportAudio,getSurface:()=>overlay,setOutputResolution,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
+// Performance probe (plan phase 3): switch one cost off at a time to measure what a frame spends its time on.
+function perfProbe({shadows=true,physical=true,sheen=true,hide=[]}={}){
+ renderer.shadowMap.enabled=shadows;renderer.shadowMap.needsUpdate=true;
+ // hide: 'instanced' (grass, rocks, trees), 'points' (snow, stars, motes), 'bigmesh' (meshes over 20k vertices)
+ scene.traverse(o=>{if(o.userData.ffHidden){o.visible=true;delete o.userData.ffHidden}
+   const kind=o.isInstancedMesh?'instanced':o.isPoints?'points':o.isMesh&&o.geometry?.attributes?.position?.count>20000?'bigmesh':null;
+   if(kind&&hide.includes(kind)&&o.visible){o.visible=false;o.userData.ffHidden=true}});
+ scene.traverse(o=>{for(const m of [].concat(o.material||[])){
+   if(m.isMeshPhysicalMaterial){m.userData.ff??={sheen:m.sheen,clearcoat:m.clearcoat};
+     m.sheen=physical&&sheen?m.userData.ff.sheen:0;m.clearcoat=physical?m.userData.ff.clearcoat:0;m.needsUpdate=true}}});
+ return {shadows,physical};
+}
+window.HybridP56QA={create,loadFresh,loadEditable,generateEditableVoices,getEditableProject,getExportAudio,getSurface:()=>overlay,setOutputResolution,frameAt,masterWav,perfProbe,summary:()=>({film,shots:project?.shots.length,
  cast:project?.characters.map(c=>c.id),world:project?.hybrid.world.template,
  generatedSpeech:false,modelSource:'existing V6 Kokoro speech segments, re-timed through P6'}),
  dispose:()=>{session?.dispose();screenTexture.dispose();screenPlane.geometry.dispose();screenPlane.material.dispose();

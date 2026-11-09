@@ -1,0 +1,309 @@
+{
+ "format": "frameforge.creator/1",
+ "project": {
+  "schema": "frameforge.project/2",
+  "id": "why-leaves-change",
+  "title": "Why Leaves Change Colour",
+  "logline": "A curious fox asks a friendly mascot why autumn leaves turn red and gold.",
+  "output": {
+   "width": 1080,
+   "height": 1920,
+   "fps": 30
+  },
+  "style": {
+   "styleLock": "Original cinematic stylized low-poly 3D. Unified characters, detailed moody studio, rich key/fill/rim lighting. No anime, no Pixar imitation, no photorealism. Stable proportions and identities."
+  },
+  "environment": {
+   "id": "developer-neon-lab",
+   "description": "Moody layered developer studio with desk, monitor, ambient fixtures and readable story-relevant interface props.",
+   "safeZone": {
+    "top": 220,
+    "bottom": 420
+   }
+  },
+  "characters": [
+   {
+    "id": "fox",
+    "name": "Pip",
+    "visualIdentity": "Original FrameForge character",
+    "voice": {
+     "profile": "af_nicole",
+     "voiceLock": "Consistent original local voice"
+    },
+    "sheetStatus": "draft",
+    "expressions": [
+     "neutral",
+     "happy",
+     "sad",
+     "angry",
+     "surprised",
+     "worried",
+     "curious",
+     "idea"
+    ]
+   },
+   {
+    "id": "sunny",
+    "name": "Sunny",
+    "visualIdentity": "Original FrameForge character",
+    "voice": {
+     "profile": "af_bella",
+     "voiceLock": "Consistent original local voice"
+    },
+    "sheetStatus": "draft",
+    "expressions": [
+     "neutral",
+     "happy",
+     "sad",
+     "angry",
+     "surprised",
+     "worried",
+     "curious",
+     "idea"
+    ]
+   }
+  ],
+  "hybrid": {
+   "version": 1,
+   "cast": {
+    "fox": {
+     "provider": "procedural",
+     "template": "creature"
+    },
+    "sunny": {
+     "provider": "procedural",
+     "template": "mascot"
+    }
+   },
+   "world": {
+    "provider": "procedural",
+    "template": "forest",
+    "time": "golden",
+    "foliage": 0.07,
+    "wind": 0.5,
+    "particles": []
+   },
+   "assets": [],
+   "director": {
+    "oneTake": false,
+    "subtitles": true
+   }
+  },
+  "shots": [
+   {
+    "id": "shot-01",
+    "speaker": "fox",
+    "dialogue": "Sunny, why are the leaves turning orange?",
+    "duration": 3.2,
+    "intent": "scene",
+    "camera": {
+     "kind": "actor",
+     "target": "fox"
+    },
+    "cast": {
+     "fox": {
+      "emotion": "curious",
+      "action": "point"
+     },
+     "sunny": {
+      "emotion": "curious",
+      "action": "listen"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false
+   },
+   {
+    "id": "shot-02",
+    "speaker": "sunny",
+    "dialogue": "Leaves are green because of chlorophyll. It makes food from sunlight.",
+    "duration": 4.2,
+    "intent": "scene",
+    "camera": {
+     "kind": "two",
+     "target": "sunny",
+     "secondary": "fox"
+    },
+    "cast": {
+     "fox": {
+      "emotion": "curious",
+      "action": "listen"
+     },
+     "sunny": {
+      "emotion": "happy",
+      "action": "explain"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false
+   },
+   {
+    "id": "shot-03",
+    "speaker": "sunny",
+    "dialogue": "In autumn the days get shorter, so trees stop making it.",
+    "duration": 3.6,
+    "intent": "scene",
+    "camera": {
+     "kind": "actor",
+     "target": "sunny"
+    },
+    "cast": {
+     "fox": {
+      "emotion": "curious",
+      "action": "listen"
+     },
+     "sunny": {
+      "emotion": "neutral",
+      "action": "think"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false
+   },
+   {
+    "id": "shot-04",
+    "speaker": "fox",
+    "dialogue": "And then the green fades away?",
+    "duration": 2.8,
+    "intent": "scene",
+    "camera": {
+     "kind": "actor",
+     "target": "fox"
+    },
+    "cast": {
+     "fox": {
+      "emotion": "surprised",
+      "action": "raise"
+     },
+     "sunny": {
+      "emotion": "curious",
+      "action": "listen"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false
+   },
+   {
+    "id": "shot-05",
+    "speaker": "sunny",
+    "dialogue": "Yes! The yellow and orange were hiding there all along.",
+    "duration": 3.6,
+    "intent": "scene",
+    "camera": {
+     "kind": "two",
+     "target": "sunny",
+     "secondary": "fox"
+    },
+    "cast": {
+     "fox": {
+      "emotion": "curious",
+      "action": "listen"
+     },
+     "sunny": {
+      "emotion": "idea",
+      "action": "cheer"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false
+   },
+   {
+    "id": "shot-06",
+    "speaker": "fox",
+    "dialogue": "Nature has secret colours!",
+    "duration": 2.6,
+    "intent": "scene",
+    "camera": {
+     "kind": "wide"
+    },
+    "cast": {
+     "fox": {
+      "emotion": "happy",
+      "action": "hop"
+     },
+     "sunny": {
+      "emotion": "curious",
+      "action": "listen"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "caption": "THE END",
+    "ambientScreen": false,
+    "sfx": [
+     {
+      "cue": "pop",
+      "at": 0.2,
+      "gain": -12
+     }
+    ]
+   }
+  ],
+  "audio": {
+   "state": "storyboard_only",
+   "masterUrl": null,
+   "music": {
+    "bpm": 104,
+    "cues": [
+     {
+      "shot": "shot-01",
+      "style": "groove"
+     }
+    ]
+   }
+  }
+ }
+}

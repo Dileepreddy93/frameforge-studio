@@ -39,11 +39,18 @@ footer{padding:16px 24px;color:#acbacc;font-size:12px;border-top:1px solid #3340
 main{display:flex;flex-direction:column;padding:11px}
 main>section.card{display:none}
 main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370px}.monitor img{max-height:420px}.inspector{display:block}header{padding:12px}.card{padding:14px}.cols{grid-template-columns:1fr 1fr}}
+label.check{display:flex;gap:8px;align-items:center;margin:10px 0}label.check input{width:auto;min-height:0}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important}}
 </style></head>
 <body>
 <header><div><div class="brand"><span>F</span> FrameForge Creator <small class="sub">Hybrid V2 beta</small></div><div class="sub">Real 3D · local-only edits · honest export</div></div>
-<div class="header-right"><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="save-project">Download project</button><button id="recovery-backup" hidden>Save damaged recovery copy</button><button id="open-project">Open project</button><input type="file" id="file" aria-label="Choose a FrameForge project JSON file" accept=".json,application/json"><a href="./beta.html" style="font-size:12px;align-self:center">Preview guide</a></div></header>
+<div class="header-right"><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="save-project">Download project</button><button id="recovery-backup" hidden>Save damaged recovery copy</button><select id="start-from" aria-label="Start from a template"><option value="">Start from…</option><option value="blank">A blank two-character story</option></select><select id="versions" aria-label="Earlier versions of this project" disabled><option value="">No earlier versions yet</option></select><button id="open-project">Open project</button><input type="file" id="file" aria-label="Choose a FrameForge project JSON file" accept=".json,application/json"><a href="./beta.html" style="font-size:12px;align-self:center">Guide</a><button id="report" type="button">Report a problem</button></div></header>
+<dialog id="report-dialog" aria-labelledby="report-heading" style="max-width:720px;width:calc(100% - 32px);background:#151b24;color:#eef;border:1px solid #3a4250;border-radius:14px">
+<h2 id="report-heading" style="margin-top:0">Report a problem</h2>
+<p class="muted">This report stays on your computer until you choose to share it. It has your browser, device and the Creator's messages, but not your story's lines.</p>
+<label for="report-text">Report</label><textarea id="report-text" rows="12" readonly style="width:100%;font:12px ui-monospace,monospace"></textarea>
+<div class="tools" style="margin-top:10px"><button id="report-copy" type="button">Copy</button><button id="report-download" type="button">Download</button><a id="report-open" target="_blank" rel="noopener">Open the support page with this report</a><button id="report-close" type="button">Close</button></div>
+</dialog>
 <nav id="mobile-workspace" class="mobile-workspace" aria-label="Creator workspace tabs">
 <button type="button" data-view="story" aria-pressed="true" aria-controls="pane-story">1 · Story</button>
 <button type="button" data-view="shot" aria-pressed="false" aria-controls="pane-shot">2 · Shot</button>
@@ -57,7 +64,7 @@ main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370
 <label for="logline">What happens?</label><textarea id="logline" maxlength="1024"></textarea>
 <hr><h2>Cast and voices</h2><div id="cast"></div>
 <hr><h2>Set and atmosphere</h2>
-<div class="cols"><div><label for="world">Environment</label><select id="world"><option value="forest">Forest</option><option value="meadow">Meadow</option><option value="snow">Snow</option><option value="desk">Studio desk</option></select></div>
+<div class="cols"><div><label for="world">Environment</label><select id="world"><option value="forest">Forest</option><option value="meadow">Meadow</option><option value="snow">Snow</option><option value="desk">Studio desk · city view</option><option value="desk/mountains">Studio desk · mountain view</option><option value="desk/ocean">Studio desk · ocean view</option><option value="desk/forest">Studio desk · forest view</option><option value="desk/space">Studio desk · space view</option></select></div>
 <div><label for="timeofday">Time of day</label><select id="timeofday"><option value="morning">Morning</option><option value="golden">Golden hour</option><option value="night">Night</option></select></div></div>
 <hr><h2>Shot timeline</h2><p class="muted">Select a shot to revise the acting and camera. Changes invalidate the voice track until revoiced.</p>
 <ol id="shot-list"></ol><div class="tools"><button id="add-shot">+ Add shot</button><button id="move-up">↑ Move</button><button id="move-down">↓ Move</button><button id="delete-shot">Delete</button></div>
@@ -72,6 +79,7 @@ main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370
 <div class="tools"><button id="play" class="primary" disabled>Play</button><button id="still" disabled>Save PNG still</button><button id="render" disabled>Refresh scene</button></div>
 <div id="status" role="status" aria-live="polite">Preparing your project…</div>
 <hr><h2>Sound direction</h2><p class="muted">Original procedurally synthesized music, not licensed tracks or cloud AI. Score automatically ducks beneath dialogue; shot sounds are edited in the inspector.</p>
+<label class="check"><input type="checkbox" id="subtitles"> Subtitles: show every spoken line</label>
 <label for="soundtrack">Musical score</label><select id="soundtrack"><option value="off">None / dialogue only</option><option value="groove">Warm groove</option><option value="tension">Dramatic tension</option><option value="sting">Reveal sting</option><option value="stop">Stop / silence beat</option></select>
 <hr><h2>Voice every line</h2><p class="muted">Uses the local English Kokoro model. Initial model download may be large. Never import someone's voice without consent. Script changes require new speech.</p>
 <div class="tools"><button id="voice" class="primary" disabled>Generate English speech</button></div>
@@ -79,7 +87,7 @@ main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370
 <hr><h2>Export a real MP4</h2><p class="muted">Browser H.264/AAC encoding with full-file verification; unsupported browsers are refused, not silently downgraded.</p>
 <div class="cols"><div><label for="resolution">Video size</label><select id="resolution"><option value="360">360×640 / preview</option><option value="720" selected>720×1280 / social</option><option value="1080">1080×1920 / master</option></select></div>
 <div><label for="seconds">Length</label><select id="seconds"><option value="full">Full story (up to 60 s)</option><option value="2">First 2 seconds / test</option></select></div></div>
-<div class="tools"><button id="export" class="primary" disabled>Export verified MP4</button><button id="cancel" disabled>Cancel export</button></div>
+<div class="tools"><button id="estimate" type="button">Estimate export time</button><button id="export" class="primary" disabled>Export verified MP4</button><button id="cancel" disabled>Cancel export</button></div>
 <progress id="progress" max="1" value="0" aria-label="Verified MP4 frame rendering progress" style="width:100%" hidden></progress>
 <div id="export-status" role="status" aria-live="polite">Voice the story first; then verify MP4 support.</div>
 <div class="caution">Creator beta: Built-in characters and worlds only. Native Telugu/Hindi voices, imported rigs in this editor, and reliable full-length export across all devices are not yet certified. Your project JSON can be saved and reopened even if your browser cannot encode a video.</div>
@@ -89,7 +97,7 @@ main>section.card[data-mobile-active=true]{display:block}.monitor{min-height:370
 <div><label for="speaker">Who's speaking?</label><select id="speaker"></select>
 <label for="dialogue">Dialogue</label><textarea id="dialogue" maxlength="500"></textarea>
 <label for="emotion">Emotion</label><select id="emotion"><option>neutral</option><option>happy</option><option>sad</option><option>angry</option><option>surprised</option><option>worried</option><option>curious</option><option>idea</option></select>
-<label for="action">Body action</label><select id="action"><option>explain</option><option>wave</option><option>think</option><option>point</option><option>nod</option><option>shrug</option><option>cheer</option><option>listen</option><option>press</option></select></div>
+<label for="action">Body action</label><select id="action"><option value="explain">Explain</option><option value="wave">Wave</option><option value="think">Think</option><option value="point">Point</option><option value="point-other">Point at the other person</option><option value="point-screen">Point at the screen</option><option value="nod">Nod</option><option value="headshake">Shake head</option><option value="shrug">Shrug</option><option value="cheer">Cheer</option><option value="clap">Clap</option><option value="thumbsup">Thumbs up</option><option value="handsup">Hands up</option><option value="facepalm">Facepalm</option><option value="crossarms">Cross arms</option><option value="lean">Lean in</option><option value="raise">Raise a hand</option><option value="type">Type on a keyboard</option><option value="press">Press a button</option><option value="hop">Hop</option><option value="jump">Jump</option><option value="listen">Listen</option></select></div>
 <div><div class="cols"><div><label for="camera">Camera framing</label><select id="camera"><option value="actor">Close-up</option><option value="two">Two-shot</option><option value="wide">Wide</option><option value="screen">Monitor</option><option value="prop">Story object close-up</option></select></div><div><label for="move">Camera move</label><select id="move"><option value="static">Static</option><option value="push">Push-in</option><option value="pull">Pull-out</option><option value="drift">Drift</option><option value="orbit">Orbit</option></select></div></div>
 <div class="cols"><div><label for="camera-distance">Camera distance (3–20)</label><input id="camera-distance" type="number" min="3" max="20" step=".1" value="4.8"></div>
 <div><label for="camera-fov">Lens field of view (25–60°)</label><input id="camera-fov" type="number" min="25" max="60" step="1" value="38"></div></div>

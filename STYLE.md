@@ -1,4 +1,36 @@
-# FrameForge look (V6): matte faceted low-poly
+# FrameForge style
+
+## The Creator look (current, decided 2026-11-09)
+The owner chose to **keep the Creator's glossy-toy 3D look** (the Ember engine) and fix its defects, instead of going
+back to the flat matte low-poly look below. Judge every change in the exported film, next to the previous film.
+
+- **Characters:**
+  - Rounded, soft-shaded toy figures with big heads, glossy eyes and readable faces.
+  - DEV, BLUE and ORANGE keep the V6 palette (see *Palette* below).
+  - Eyelids close flush on the eye: no bulging lids, no highlights through a closed eye.
+  - Hair never covers the face or chest.
+- **Sets:**
+  - Every set reads at a glance: snow is white-blue, not speckled; night has a deep-blue sky with stars; trees are trees.
+  - No stray props by the cast's feet.
+- **Screens:**
+  - The on-set screen sits on the set's own screen surface (the desk monitor hangs above the cast's heads; outdoors it
+    fills the sign).
+  - Its app is zoomed so text reads at 720 × 1280.
+  - Screen shots fill the frame with the app and look over the cast's heads.
+- **Camera:**
+  - Close-ups keep headroom (the whole head plus shoulders) and are shot from the listener's side (shot / reverse shot).
+  - Two-shots alternate sides.
+  - Wides look down a little.
+  - Authored framing always wins.
+- **Text:**
+  - With subtitles on, every spoken line shows as white bold text with a dark outline, up to two lines, above the
+    caption box.
+  - Captions (a shot's title) stay in their box.
+
+Everything below is the **V6 flat matte look (history)**. Its palette and character descriptions still define DEV, BLUE
+and ORANGE.
+
+## V6 look (history)
 
 The judge is the reference video, not the tests. Every colour below was sampled from its frames.
 The reference frames stay outside this public repo (`~/Desktop/Animate/proof/v6/style-board.jpg`) because they

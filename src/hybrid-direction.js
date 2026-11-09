@@ -228,6 +228,21 @@
        stage.prop.map((v,i)=>lerp(v,head(holder)[i],.36)):[...stage.prop];
    };
    let focus,azimuth=.15;
+   // Coverage (FrameForge 2026-11-09): a close-up is shot from the side of the nearest other actor (shot / reverse
+   // shot, so speakers face each other across cuts); two-shots alternate sides; wides look down a little. Only when
+   // the author hasn't set the framing themselves.
+   const authored=s.framing&&(s.framing.distance!==undefined||s.framing.fov!==undefined);
+   const rootX=id=>v3(anchors[id]?.root)?anchors[id].root[0]:null;
+   let lift=0;
+   if(!authored&&src.kind==='actor'&&rootX(src.target)!==null){
+     const me=rootX(src.target),others=Object.keys(anchors).filter(id=>id!==src.target&&rootX(id)!==null);
+     if(others.length){
+       const near=others.reduce((a,b)=>Math.abs(rootX(a)-me)<=Math.abs(rootX(b)-me)?a:b);
+       azimuth=.3*Math.sign(rootX(near)-me||1);
+     }
+   }else if(!authored&&src.kind==='two')azimuth=f.index%2?-.18:.18;
+   else if(!authored&&src.kind==='wide')lift=1.1;
+   else if(!authored&&src.kind==='screen')azimuth=0;   // straight on: the app fills the frame without cropping an edge
    if(src.kind==='actor')focus=head(src.target);
    else if(src.kind==='two'){const a=head(src.target),b=head(src.secondary);focus=a.map((v,i)=>(v+b[i])/2)}
    else if(src.kind==='screen'){if(!v3(stage.screen))throw Error('No screen anchor');focus=stage.screen}
@@ -242,14 +257,31 @@
    // actor-close-up distance (4.8): over half the authored text was cropped.
    // Preserve intentional user framing overrides, but fit the full screen by
    // default (including the .9-unit push move) with a little side breathing room.
-   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?11.8:src.kind==='prop'?4.6:4.8);
+   // Screen shots fill the portrait frame with the app's zoomed centre column (about 3.1 units wide), not the whole
+   // landscape monitor (FrameForge 2026-11-09).
+   const screenFit=1.6/(Math.tan(fov*Math.PI/360)*9/16);
+   const baseDist=s.framing?.distance??(src.kind==='wide'?11.2:src.kind==='two'?9.4:src.kind==='screen'?screenFit:src.kind==='prop'?4.6:5.6);
    const mod={push:-.9,pull:.9,drift:0,orbit:0,static:0}[d.move]||0;
    const distance=baseDist+mod*smooth(progress);
    if(d.move==='orbit')azimuth+=.5*progress;
    if(d.move==='drift')azimuth+=.12*(progress-.5);
-   const raw={position:[focus[0]+Math.sin(azimuth)*distance,
-     focus[1]+.48+Math.sin(progress*Math.PI)*.04,focus[2]+Math.cos(azimuth)*distance],
-     target:[...focus],fov};
+   let camY=focus[1]+.48+lift+Math.sin(progress*Math.PI)*.04;
+   if(src.kind==='screen'){
+     // Rise just enough that the line of sight to the screen's lower edge clears the tallest head standing between
+     // the camera and the screen (head anchors + 1.15: big heads, hair, hats and antennae).
+     const heads=Object.values(anchors).filter(a=>v3(a?.head)&&v3(a?.root));
+     if(heads.length){
+       const top=Math.max(...heads.map(a=>Number.isFinite(a.top)?a.top+.05:a.head[1]+1.15)),castZ=heads.reduce((z,a)=>z+a.root[2],0)/heads.length;
+       const camZ=focus[2]+Math.cos(azimuth)*distance,low=focus[1]-1.1,sa=(camZ-castZ)/Math.max(.01,camZ-focus[2]);
+       if(sa>0&&sa<.98)camY=Math.max(camY,(top-low*sa)/(1-sa));
+     }
+   }
+   // Close-ups aim a little below the head's centre so the whole head and some shoulders fit, with headroom
+   // (FrameForge 2026-11-09: the old aim cropped the top of big heads).
+   const aim=src.kind==='actor'?[focus[0],focus[1]-.32,focus[2]]:[...focus];
+   if(src.kind==='actor')camY-=.18;
+   const raw={position:[focus[0]+Math.sin(azimuth)*distance,camY,focus[2]+Math.cos(azimuth)*distance],
+     target:aim,fov};
    const transition=p.hybrid.director?.oneTake&&f.index>0?'blend':d.transition;
    const blendSeconds=p.hybrid.director?.oneTake&&f.index>0?Math.min(.7,s.duration/3):d.blendSeconds;
    if(transition==='blend'&&f.index>0&&f.localTime<blendSeconds&&blendSeconds>0){
