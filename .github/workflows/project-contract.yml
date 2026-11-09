@@ -1,7 +1,7 @@
 name: FrameForge code quality
 on:
   push:
-    branches: [main, "feature/**", "claude/**", "chore/**"]
+    branches: [main]
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
