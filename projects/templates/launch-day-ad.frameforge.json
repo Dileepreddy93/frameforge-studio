@@ -1,0 +1,289 @@
+{
+ "format": "frameforge.creator/1",
+ "project": {
+  "schema": "frameforge.project/2",
+  "id": "launch-day-ad",
+  "title": "Launch Day",
+  "logline": "ORANGE and BLUE announce a new app in thirty seconds.",
+  "output": {
+   "width": 1080,
+   "height": 1920,
+   "fps": 30
+  },
+  "style": {
+   "styleLock": "Original cinematic stylized low-poly 3D. Unified characters, detailed moody studio, rich key/fill/rim lighting. No anime, no Pixar imitation, no photorealism. Stable proportions and identities."
+  },
+  "environment": {
+   "id": "developer-neon-lab",
+   "description": "Moody layered developer studio with desk, monitor, ambient fixtures and readable story-relevant interface props.",
+   "safeZone": {
+    "top": 220,
+    "bottom": 420
+   }
+  },
+  "characters": [
+   {
+    "id": "orange",
+    "name": "ORANGE",
+    "visualIdentity": "Original FrameForge character",
+    "voice": {
+     "profile": "bm_george",
+     "voiceLock": "Consistent original local voice"
+    },
+    "sheetStatus": "draft",
+    "expressions": [
+     "neutral",
+     "happy",
+     "sad",
+     "angry",
+     "surprised",
+     "worried",
+     "curious",
+     "idea"
+    ]
+   },
+   {
+    "id": "blue",
+    "name": "BLUE",
+    "visualIdentity": "Original FrameForge character",
+    "voice": {
+     "profile": "af_heart",
+     "voiceLock": "Consistent original local voice"
+    },
+    "sheetStatus": "draft",
+    "expressions": [
+     "neutral",
+     "happy",
+     "sad",
+     "angry",
+     "surprised",
+     "worried",
+     "curious",
+     "idea"
+    ]
+   }
+  ],
+  "hybrid": {
+   "version": 1,
+   "cast": {
+    "orange": {
+     "provider": "procedural",
+     "template": "orange"
+    },
+    "blue": {
+     "provider": "procedural",
+     "template": "blue"
+    }
+   },
+   "world": {
+    "provider": "procedural",
+    "template": "desk",
+    "time": "night",
+    "foliage": 0.07,
+    "wind": 0.5,
+    "particles": [],
+    "view": "space"
+   },
+   "assets": [],
+   "director": {
+    "oneTake": false,
+    "subtitles": true
+   }
+  },
+  "shots": [
+   {
+    "id": "shot-01",
+    "speaker": "blue",
+    "dialogue": "Big news. Our app is live!",
+    "duration": 2.6,
+    "intent": "scene",
+    "camera": {
+     "kind": "actor",
+     "target": "blue"
+    },
+    "cast": {
+     "orange": {
+      "emotion": "curious",
+      "action": "listen"
+     },
+     "blue": {
+      "emotion": "happy",
+      "action": "cheer"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "sfx": [
+     {
+      "cue": "whoosh",
+      "at": 0.2,
+      "gain": -12
+     }
+    ]
+   },
+   {
+    "id": "shot-02",
+    "speaker": "orange",
+    "dialogue": "It plans your week in one tap.",
+    "duration": 2.8,
+    "intent": "scene",
+    "camera": {
+     "kind": "actor",
+     "target": "orange"
+    },
+    "cast": {
+     "orange": {
+      "emotion": "neutral",
+      "action": "explain"
+     },
+     "blue": {
+      "emotion": "curious",
+      "action": "listen"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft"
+   },
+   {
+    "id": "shot-03",
+    "speaker": "blue",
+    "dialogue": "Look at that.",
+    "duration": 3.4,
+    "intent": "scene",
+    "camera": {
+     "kind": "screen"
+    },
+    "cast": {
+     "orange": {
+      "emotion": "curious",
+      "action": "listen"
+     },
+     "blue": {
+      "emotion": "surprised",
+      "action": "point-screen"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "screen": {
+     "kind": "grid",
+     "tone": "success",
+     "title": "Your week, planned",
+     "lines": [
+      "[x] Gym · Mon 7:00",
+      "[x] Team call · Tue 10:00",
+      "[x] Groceries · Wed 18:30",
+      "(Done)"
+     ]
+    }
+   },
+   {
+    "id": "shot-04",
+    "speaker": "orange",
+    "dialogue": "It also remembers your coffee order. Technically, that is a feature.",
+    "duration": 4,
+    "intent": "scene",
+    "camera": {
+     "kind": "two",
+     "target": "orange",
+     "secondary": "blue"
+    },
+    "cast": {
+     "orange": {
+      "emotion": "neutral",
+      "action": "crossarms"
+     },
+     "blue": {
+      "emotion": "curious",
+      "action": "listen"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft"
+   },
+   {
+    "id": "shot-05",
+    "speaker": "blue",
+    "dialogue": "Download it today. Link in the description!",
+    "duration": 3,
+    "intent": "scene",
+    "camera": {
+     "kind": "wide"
+    },
+    "cast": {
+     "orange": {
+      "emotion": "curious",
+      "action": "listen"
+     },
+     "blue": {
+      "emotion": "happy",
+      "action": "wave"
+     }
+    },
+    "direction": {
+     "move": "static",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "caption": "AVAILABLE NOW",
+    "sfx": [
+     {
+      "cue": "chime",
+      "at": 0.2,
+      "gain": -12
+     }
+    ]
+   }
+  ],
+  "audio": {
+   "state": "storyboard_only",
+   "masterUrl": null,
+   "music": {
+    "bpm": 104,
+    "cues": [
+     {
+      "shot": "shot-01",
+      "style": "tension"
+     }
+    ]
+   }
+  }
+ }
+}

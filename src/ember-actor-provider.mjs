@@ -118,7 +118,7 @@ export function registerEmberCharacters(registry,{scene,positions={},cameraPosit
       throw TypeError('Invalid actor stage coordinates');
     rig.root.position.set(...origin);
     rig.baseY=origin[1];scene.add(rig.root);
-    const point=new T.Vector3();
+    const point=new T.Vector3(),topBox=new T.Box3();
     let disposed=false,pose=null,lastFrame=null;
     return {
       setPose(time,shot,performance){
@@ -163,7 +163,11 @@ export function registerEmberCharacters(registry,{scene,positions={},cameraPosit
       getAnchors(){
         if(disposed)throw Error('Actor already disposed');
         const head=rig.head.getWorldPosition(point);
-        return {root:rig.root.getWorldPosition(new T.Vector3()).toArray(),head:head.toArray()};
+        // top: the highest point of the head as drawn (hair, hat, antenna; not a raised arm), for cameras that must look
+        // over the cast at a screen behind it.
+        topBox.setFromObject(rig.head);
+        return {root:rig.root.getWorldPosition(new T.Vector3()).toArray(),head:head.toArray(),
+          top:Number.isFinite(topBox.max.y)?topBox.max.y:head.y+1.2};
       },
       getRig:()=>rig,
       getConfig:()=>copy(config),

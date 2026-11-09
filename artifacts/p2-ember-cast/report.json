@@ -1,6 +1,6 @@
 {
   "result": "P2_RENDER_PROOF_PASS",
-  "timestamp": "2026-11-09T03:28:07.242Z",
+  "timestamp": "2026-11-09T05:16:14.746Z",
   "evidence": "Real Ember procedural rigs loaded through FrameForge hybrid provider; legacy V6 untouched",
   "limits": "2-second preview uses V6 pre-existing mastered audio; speech/visemes unaligned until P6",
   "templates": [

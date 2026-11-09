@@ -111,9 +111,12 @@
    // Subtitles: every spoken line shown as text while it plays (FrameForge plan phase 2).
    subtitles:on=>commit(p=>{if(typeof on!=='boolean')throw Error('Subtitles must be on or off');
      p.hybrid.director={...(p.hybrid.director||{oneTake:false}),subtitles:on}}),
+   // The studio desk has five window views (phase 6): "desk/ocean" etc. Plain "desk" is the city view.
    world:(template,time='golden')=>commit(p=>{
-     p.hybrid.world={provider:'procedural',template:match(template,WORLDS,'world'),
-       time:match(time,['morning','golden','night'],'time'),foliage:.07,wind:.5,particles:[]}}),
+     const [base,view]=String(template).split('/');
+     p.hybrid.world={provider:'procedural',template:match(base,WORLDS,'world'),
+       time:match(time,['morning','golden','night'],'time'),foliage:.07,wind:.5,particles:[],
+       ...(base==='desk'&&view&&view!=='city'?{view:match(view,['mountains','forest','ocean','space'],'window view')}:{})}}),
    soundtrack:style=>commit(p=>{
      match(style,MUSIC,'soundtrack');
      if(style==='off')delete p.audio.music;

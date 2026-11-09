@@ -1,5 +1,6 @@
 name: Creator in every browser engine
-# Plan phase 4: the Creator in Chromium, Firefox and WebKit (Safari's engine) on Linux and macOS. Each run records the
+# Plan phase 4: the Creator in Firefox (Linux, Windows) and in WebKit (Safari's engine) and Chromium on macOS.
+# (WebKit on Linux crashes inside its own Linux build under CI, so macOS WebKit stands in for Safari.) Each run records the
 # engine's capabilities (WebGL 2, H.264/AAC/Opus encoders, Web Locks) and checks that the Creator either works or
 # says clearly what is missing. Real phones and real Safari still need a person: see docs/DEVICE_MATRIX.md.
 on:
@@ -20,9 +21,8 @@ jobs:
       matrix:
         include:
           - {os: ubuntu-24.04, browser: firefox}
-          - {os: ubuntu-24.04, browser: webkit}
-          - {os: macos-14, browser: webkit}
-          - {os: macos-14, browser: chromium}
+          - {os: macos-latest, browser: webkit}
+          - {os: macos-latest, browser: chromium}
           - {os: windows-2022, browser: firefox}
     name: ${{ matrix.os }} · ${{ matrix.browser }}
     runs-on: ${{ matrix.os }}

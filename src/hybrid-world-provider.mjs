@@ -24,6 +24,8 @@ function disposeGroup(group){
 export function validateWorldOptions(o={}){
  if(!WORLD_PRESETS.includes(o.template))throw Error('Unknown Ember world template');
  if(o.time!==undefined&&!WORLD_TIMES.includes(o.time))throw Error('Invalid time of day');
+ if(o.view!==undefined&&(o.template!=='desk'||!['city','mountains','forest','ocean','space'].includes(o.view)))
+   throw Error('Window views are city, mountains, forest, ocean or space, on the studio desk only');
  if(o.foliage!==undefined&&!within(o.foliage,0,1))throw RangeError('World foliage must be 0–1');
  if(o.wind!==undefined&&!within(o.wind,0,2))throw RangeError('World wind must be 0–2');
  if(o.particles!==undefined&&(!Array.isArray(o.particles)||o.particles.length>6||

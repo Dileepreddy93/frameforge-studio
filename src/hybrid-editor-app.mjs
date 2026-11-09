@@ -79,7 +79,7 @@ function renderUI({render3d=true}={}){
  if(!editor)return;
  const p=editor.project;
  $('title').value=p.title;$('logline').value=p.logline;
- $('world').value=p.hybrid.world.template;
+ $('world').value=p.hybrid.world.template+(p.hybrid.world.template==='desk'&&p.hybrid.world.view&&p.hybrid.world.view!=='city'?'/'+p.hybrid.world.view:'');
  $('timeofday').value=p.hybrid.world.time||'golden';
  $('soundtrack').value=p.audio.music?.cues?.[0]?.style||'off';
  $('subtitles').checked=p.hybrid.director?.subtitles===true;
@@ -128,11 +128,23 @@ function renderUI({render3d=true}={}){
      input.onchange=()=>change({look:{[key]:input.value}});
      appearance.append(control('cast-'+key+'-'+character.id,key==='top'?'Clothing color':'Accent color',input));
    }
+   // What each template starts with, so the pickers show the truth before anything is changed.
+   const base={dev:{hairStyle:'chunky',glasses:'round'},human:{hairStyle:'long'}}[descriptor.template]||{};
    const hairstyle=document.createElement('select');
    fillSelect(hairstyle,['shaggy','chunky','short','curly','long','bun','mohawk','bald'],
-     descriptor.look?.hairStyle||'shaggy');
+     descriptor.look?.hairStyle||base.hairStyle||'shaggy');
    hairstyle.onchange=()=>change({look:{hairStyle:hairstyle.value}});
    appearance.append(control('cast-hair-'+character.id,'Hairstyle',hairstyle));
+   // Phase 6: hand props, glasses and hats the character engine already draws.
+   for(const [key,label,items] of [
+     ['prop','Holding',[['none','Nothing'],['phone','A phone'],['tablet','A tablet'],['book','A book'],['mug','A mug'],['coffee','A coffee cup']]],
+     ['glasses','Glasses',[['none','None'],['round','Round'],['square','Square']]],
+     ['hat','Hat',[['none','None'],['cap','Cap'],['beanie','Beanie'],['headphones','Headphones']]]]){
+     const pick=document.createElement('select');
+     fillSelect(pick,items,descriptor.look?.[key]||base[key]||'none');
+     pick.onchange=()=>change({look:{[key]:pick.value}});
+     appearance.append(control('cast-'+key+'-'+character.id,label,pick));
+   }
    const artstyle=document.createElement('select');
    fillSelect(artstyle,[['smooth','Smooth stylized'],['lowpoly','Faceted low-poly']],
      descriptor.style||'smooth');
@@ -161,7 +173,10 @@ function renderUI({render3d=true}={}){
  const current=byId(p,selected);selected=current.id;
  fillSelect($('speaker'),p.characters.map(x=>[x.id,x.name]),current.speaker);
  $('dialogue').value=current.dialogue;$('emotion').value=current.cast?.[current.speaker]?.emotion||'neutral';
- $('action').value=current.cast?.[current.speaker]?.action||'explain';
+ {const a=current.cast?.[current.speaker]?.action||'explain';
+  // Actions from older episodes (e.g. "typing", "react") stay selectable as they are.
+  if(![...$('action').options].some(o=>o.value===a))$('action').append(new Option(a,a));
+  $('action').value=a;}
  $('camera').value=current.camera?.kind||'actor';$('move').value=current.direction?.move||'static';
  const cameraDefault=current.camera?.kind==='screen'?11.8:
    current.camera?.kind==='two'?9.4:current.camera?.kind==='wide'?11.2:
@@ -344,6 +359,10 @@ $('recovery-backup').onclick=()=>{
 };
 // Templates: the V6 episodes, opened as Creator projects with DEV, BLUE and ORANGE.
 for(const t of M.EPISODE_TEMPLATES){const o=document.createElement('option');o.value=t.file;o.textContent=t.label;$('start-from').append(o)}
+// Ready-made stories (phase 6), built by tools/make-templates.cjs.
+fetch('./projects/templates/index.json').then(r=>r.ok?r.json():{templates:[]}).then(({templates})=>{
+ for(const t of templates||[]){if(!/^templates\/[a-z0-9-]+\.frameforge\.json$/.test(t.file))continue;
+   $('start-from').append(new Option(t.label,t.file))}}).catch(()=>{});
 $('start-from').onchange=async()=>{
  const choice=$('start-from').value;$('start-from').value='';
  if(!choice||!editor||busy)return;
@@ -352,9 +371,10 @@ $('start-from').onchange=async()=>{
  }
  if(!confirm('Replace the project you are editing? Download it first if you want to keep it.'))return;
  try{
-   const fixture=await fetch('./projects/'+(choice==='blank'?'zero-latency.frameforge.json':choice)).then(r=>{
-     if(!r.ok)throw Error('Template unavailable');return r.json()});
-   const p=choice==='blank'?M.fromLegacy(fixture):M.fromEpisode(fixture);
+   const response=await fetch('./projects/'+(choice==='blank'?'zero-latency.frameforge.json':choice));
+   if(!response.ok)throw Error('Template unavailable');
+   const p=choice.startsWith('templates/')?M.parseCreatorFile(await response.text()):
+     choice==='blank'?M.fromLegacy(await response.json()):M.fromEpisode(await response.json());
    editor.replace(p);selected=p.shots[0].id;initialRecoveryCorrupt=false;recoveryRaw=null;
    $('recovery-backup').hidden=true;renderUI();queueSave();
    text('status','Opened "'+p.title+'". Generate voices before export.');

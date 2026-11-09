@@ -1,0 +1,20 @@
+{
+ "templates": [
+  {
+   "file": "templates/password-manager-explainer.frameforge.json",
+   "label": "How a Password Manager Works"
+  },
+  {
+   "file": "templates/launch-day-ad.frameforge.json",
+   "label": "Launch Day"
+  },
+  {
+   "file": "templates/why-leaves-change.frameforge.json",
+   "label": "Why Leaves Change Colour"
+  },
+  {
+   "file": "templates/the-lantern.frameforge.json",
+   "label": "The Lantern That Learned to Listen"
+  }
+ ]
+}

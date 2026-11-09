@@ -242,6 +242,7 @@
      }
    }else if(!authored&&src.kind==='two')azimuth=f.index%2?-.18:.18;
    else if(!authored&&src.kind==='wide')lift=1.1;
+   else if(!authored&&src.kind==='screen')azimuth=0;   // straight on: the app fills the frame without cropping an edge
    if(src.kind==='actor')focus=head(src.target);
    else if(src.kind==='two'){const a=head(src.target),b=head(src.secondary);focus=a.map((v,i)=>(v+b[i])/2)}
    else if(src.kind==='screen'){if(!v3(stage.screen))throw Error('No screen anchor');focus=stage.screen}
@@ -267,10 +268,10 @@
    let camY=focus[1]+.48+lift+Math.sin(progress*Math.PI)*.04;
    if(src.kind==='screen'){
      // Rise just enough that the line of sight to the screen's lower edge clears the tallest head standing between
-     // the camera and the screen (head anchors + 0.75 for hair, hats and antennae).
+     // the camera and the screen (head anchors + 1.15: big heads, hair, hats and antennae).
      const heads=Object.values(anchors).filter(a=>v3(a?.head)&&v3(a?.root));
      if(heads.length){
-       const top=Math.max(...heads.map(a=>a.head[1]))+.75,castZ=heads.reduce((z,a)=>z+a.root[2],0)/heads.length;
+       const top=Math.max(...heads.map(a=>Number.isFinite(a.top)?a.top+.05:a.head[1]+1.15)),castZ=heads.reduce((z,a)=>z+a.root[2],0)/heads.length;
        const camZ=focus[2]+Math.cos(azimuth)*distance,low=focus[1]-1.1,sa=(camZ-castZ)/Math.max(.01,camZ-focus[2]);
        if(sa>0&&sa<.98)camY=Math.max(camY,(top-low*sa)/(1-sa));
      }

@@ -23,7 +23,14 @@ const PORT=8997;
   await page.waitForFunction(()=>document.getElementById('play').disabled===false,null,{timeout:60000});
 
   const options=await page.locator('#start-from option').evaluateAll(os=>os.map(o=>[o.value,o.textContent]));
-  assert.deepEqual(options.map(o=>o[0]),['','blank','zero-latency.frameforge.json','dark-mode.frameforge.json']);
+  await page.waitForFunction(()=>document.querySelectorAll('#start-from option').length>=8,null,{timeout:15000});
+  const options2=await page.locator('#start-from option').evaluateAll(os=>os.map(o=>o.value));
+  assert.deepEqual(options2.slice(0,4),['','blank','zero-latency.frameforge.json','dark-mode.frameforge.json']);
+  assert.ok(options2.includes('templates/why-leaves-change.frameforge.json'),'ready-made stories are listed');
+  // A ready-made story opens with its own cast and set.
+  await page.locator('#start-from').selectOption('templates/why-leaves-change.frameforge.json');
+  await page.waitForFunction(()=>{try{return document.getElementById('engine').contentWindow.HybridP56QA.getEditableProject().title==='Why Leaves Change Colour'}catch{return false}},null,{timeout:60000});
+  assert.deepEqual(await page.evaluate(()=>Object.values(document.getElementById('engine').contentWindow.HybridP56QA.getEditableProject().hybrid.cast).map(c=>c.template)),['creature','mascot']);
 
   const results={};
   for(const [file,shots,first] of [['zero-latency.frameforge.json',14,'Our app takes twelve seconds to load.'],

@@ -1,0 +1,524 @@
+{
+ "format": "frameforge.creator/1",
+ "project": {
+  "schema": "frameforge.project/2",
+  "id": "the-lantern",
+  "title": "The Lantern That Learned to Listen",
+  "logline": "Two friends trace a fading light through a snowy valley and give it a story.",
+  "banner": "FRAMEFORGE STORIES  /  EPISODE 01",
+  "output": {
+   "width": 1080,
+   "height": 1920,
+   "fps": 30
+  },
+  "style": {
+   "styleLock": "Original cinematic stylized low-poly 3D. Unified characters, detailed moody studio, rich key/fill/rim lighting. No anime, no Pixar imitation, no photorealism. Stable proportions and identities."
+  },
+  "environment": {
+   "id": "developer-neon-lab",
+   "description": "Moody layered developer studio with desk, monitor, ambient fixtures and readable story-relevant interface props.",
+   "safeZone": {
+    "top": 220,
+    "bottom": 420
+   }
+  },
+  "characters": [
+   {
+    "id": "luna",
+    "name": "Luna",
+    "visualIdentity": "Original fictional human for independent stories",
+    "voice": {
+     "profile": "af_heart",
+     "voiceLock": "Consistent original local voice"
+    },
+    "sheetStatus": "draft",
+    "expressions": [
+     "neutral",
+     "happy",
+     "sad",
+     "angry",
+     "surprised",
+     "worried",
+     "curious",
+     "idea"
+    ]
+   },
+   {
+    "id": "atlas",
+    "name": "Atlas",
+    "visualIdentity": "Original fictional robot for independent stories",
+    "voice": {
+     "profile": "am_michael",
+     "voiceLock": "Consistent original local voice"
+    },
+    "sheetStatus": "draft",
+    "expressions": [
+     "neutral",
+     "happy",
+     "sad",
+     "angry",
+     "surprised",
+     "worried",
+     "curious",
+     "idea"
+    ]
+   }
+  ],
+  "shots": [
+   {
+    "id": "shot-01",
+    "speaker": "luna",
+    "dialogue": "The snow had swallowed every light around our little workshop.",
+    "duration": 4.5,
+    "intent": "A cheerful opening",
+    "camera": {
+     "kind": "actor",
+     "target": "luna"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "worried",
+      "action": "think"
+     },
+     "atlas": {
+      "emotion": "curious",
+      "action": "listen"
+     }
+    },
+    "direction": {
+     "move": "push",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "caption": "WHERE DID THE LIGHT GO?",
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "framing": {
+     "distance": 6.2,
+     "fov": 42
+    },
+    "ambientScreen": false
+   },
+   {
+    "id": "shot-02",
+    "speaker": "atlas",
+    "dialogue": "I could hear a tiny signal calling from beneath the ice.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "two",
+     "target": "atlas",
+     "secondary": "luna"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "happy",
+      "action": "nod"
+     },
+     "atlas": {
+      "emotion": "curious",
+      "action": "point"
+     }
+    },
+    "direction": {
+     "move": "drift",
+     "transition": "blend",
+     "blendSeconds": 0.3
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false,
+    "reactions": [
+     {
+      "actor": "luna",
+      "at": 0.9,
+      "emotion": "curious",
+      "action": "listen"
+     }
+    ]
+   },
+   {
+    "id": "shot-03",
+    "speaker": "luna",
+    "dialogue": "We followed it slowly, listening between each gust of wind.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "wide"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "worried",
+      "action": "listen"
+     },
+     "atlas": {
+      "emotion": "curious",
+      "action": "point"
+     }
+    },
+    "direction": {
+     "move": "push",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false
+   },
+   {
+    "id": "shot-04",
+    "speaker": "atlas",
+    "dialogue": "The old map showed a lantern, still blinking after midnight.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "screen"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "worried",
+      "action": "listen"
+     },
+     "atlas": {
+      "emotion": "surprised",
+      "action": "press"
+     }
+    },
+    "direction": {
+     "move": "pull",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "screen": {
+     "kind": "terminal",
+     "tone": "info",
+     "title": "BEACON SIGNAL",
+     "lines": [
+      "Signal: weak",
+      "Map: northern ridge"
+     ]
+    },
+    "sfx": [
+     {
+      "cue": "buzz",
+      "at": 0.2,
+      "gain": -12
+     }
+    ]
+   },
+   {
+    "id": "shot-05",
+    "speaker": "luna",
+    "dialogue": "I reached for the lantern, but its glow began to fade.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "prop"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "sad",
+      "action": "plead"
+     },
+     "atlas": {
+      "emotion": "surprised",
+      "action": "press"
+     }
+    },
+    "direction": {
+     "move": "push",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false,
+    "visualProp": "lantern",
+    "framing": {
+     "distance": 5.2,
+     "fov": 40
+    },
+    "propInteraction": {
+     "mode": "reach",
+     "actor": "luna"
+    },
+    "reactions": [
+     {
+      "actor": "atlas",
+      "at": 0.8,
+      "emotion": "worried",
+      "action": "think"
+     }
+    ]
+   },
+   {
+    "id": "shot-06",
+    "speaker": "atlas",
+    "dialogue": "Then I realized it needed a story, not another battery.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "prop"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "sad",
+      "action": "plead"
+     },
+     "atlas": {
+      "emotion": "idea",
+      "action": "raise"
+     }
+    },
+    "direction": {
+     "move": "drift",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false,
+    "visualProp": "lantern",
+    "framing": {
+     "distance": 4.9,
+     "fov": 38
+    },
+    "propInteraction": {
+     "mode": "lift",
+     "actor": "luna"
+    }
+   },
+   {
+    "id": "shot-07",
+    "speaker": "luna",
+    "dialogue": "We told it about the stars, the river, and the way home.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "two",
+     "target": "luna",
+     "secondary": "atlas"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "happy",
+      "action": "explain"
+     },
+     "atlas": {
+      "emotion": "idea",
+      "action": "raise"
+     }
+    },
+    "direction": {
+     "move": "push",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "ambientScreen": false,
+    "visualProp": "lantern",
+    "propInteraction": {
+     "mode": "carry",
+     "actor": "luna"
+    }
+   },
+   {
+    "id": "shot-08",
+    "speaker": "atlas",
+    "dialogue": "One by one, the missing lights returned across the valley.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "screen"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "happy",
+      "action": "explain"
+     },
+     "atlas": {
+      "emotion": "happy",
+      "action": "cheer"
+     }
+    },
+    "direction": {
+     "move": "pull",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "caption": "THE VALLEY WAKES",
+    "screen": {
+     "kind": "terminal",
+     "tone": "info",
+     "title": "VALLEY LIGHTS",
+     "lines": [
+      "Village lights: online",
+      "Signal stable",
+      "The valley wakes"
+     ]
+    },
+    "sfx": [
+     {
+      "cue": "chime",
+      "at": 0.2,
+      "gain": -12
+     }
+    ]
+   },
+   {
+    "id": "shot-09",
+    "speaker": "luna",
+    "dialogue": "The lantern was never lost. It had been waiting for us.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "actor",
+     "target": "luna"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "curious",
+      "action": "nod"
+     },
+     "atlas": {
+      "emotion": "happy",
+      "action": "cheer"
+     }
+    },
+    "direction": {
+     "move": "push",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "framing": {
+     "distance": 6.2,
+     "fov": 42
+    },
+    "ambientScreen": false,
+    "visualProp": "lantern",
+    "propInteraction": {
+     "mode": "carry",
+     "actor": "luna"
+    },
+    "reactions": [
+     {
+      "actor": "atlas",
+      "at": 0.9,
+      "emotion": "happy",
+      "action": "nod"
+     }
+    ]
+   },
+   {
+    "id": "shot-10",
+    "speaker": "atlas",
+    "dialogue": "And now the night could finally tell its own story.",
+    "duration": 4.5,
+    "intent": "A warm reply",
+    "camera": {
+     "kind": "wide"
+    },
+    "cast": {
+     "luna": {
+      "emotion": "curious",
+      "action": "nod"
+     },
+     "atlas": {
+      "emotion": "happy",
+      "action": "wave"
+     }
+    },
+    "direction": {
+     "move": "drift",
+     "transition": "cut",
+     "blendSeconds": 0
+    },
+    "timing": {
+     "lead": 0.15,
+     "pauseAfter": 0.35
+    },
+    "firstFrameStatus": "draft",
+    "caption": "THE NIGHT REMEMBERS",
+    "ambientScreen": false,
+    "visualProp": "lantern",
+    "propInteraction": {
+     "mode": "carry",
+     "actor": "luna"
+    }
+   }
+  ],
+  "audio": {
+   "state": "storyboard_only",
+   "masterUrl": null,
+   "music": {
+    "bpm": 104,
+    "cues": [
+     {
+      "shot": "shot-01",
+      "style": "tension"
+     }
+    ]
+   }
+  },
+  "hybrid": {
+   "version": 1,
+   "cast": {
+    "luna": {
+     "provider": "procedural",
+     "template": "human"
+    },
+    "atlas": {
+     "provider": "procedural",
+     "template": "robot"
+    }
+   },
+   "world": {
+    "provider": "procedural",
+    "template": "snow",
+    "time": "night",
+    "foliage": 0.07,
+    "wind": 0.5,
+    "particles": []
+   },
+   "assets": [],
+   "director": {
+    "oneTake": false,
+    "subtitles": true
+   }
+  }
+ }
+}
