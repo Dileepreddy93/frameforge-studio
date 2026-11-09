@@ -44,7 +44,9 @@ const episode=file=>JSON.parse(fs.readFileSync(path.join(ROOT,'projects',file),'
  assert.deepEqual(lines,ep1.shots.map(s=>'“'+s.dialogue+'”'));
 
  // Clicking a row seeks the reel to that shot and marks it current.
- const ninth=ep1.shots.slice(0,8).reduce((a,s)=>a+s.duration,0);
+ // The reel is the Creator film; the sheet seeks with that film's voiced shot lengths.
+ const timing=JSON.parse(fs.readFileSync(path.join(ROOT,'media/creator/ep01-zero-latency.timing.json'),'utf8'));
+ const ninth=timing.shots.slice(0,8).reduce((a,s)=>a+s.duration,0);
  await page.locator('#rows .row').nth(8).click();
  await page.waitForFunction(()=>document.querySelectorAll('#rows .row')[8]?.getAttribute('aria-current')==='true',null,{timeout:10000});
  const seek=await page.evaluate(()=>({t:document.getElementById('reel').currentTime,current:[...document.querySelectorAll('#rows .row')].findIndex(r=>r.getAttribute('aria-current')==='true')}));
@@ -55,7 +57,7 @@ const episode=file=>JSON.parse(fs.readFileSync(path.join(ROOT,'projects',file),'
  const ep2=episode('dark-mode.frameforge.json');
  await page.locator('#tab-darkmode').click();
  await page.waitForFunction(n=>document.querySelectorAll('#rows .row').length===n,ep2.shots.length,{timeout:20000});
- assert.match(await page.locator('#reel').getAttribute('src'),/ep02-dark-mode\.(mp4|webm)$/);
+ assert.match(await page.locator('#reel').getAttribute('src'),/media\/creator\/ep02-dark-mode\.(mp4|webm)$/);
  assert.equal(await page.locator('#tab-darkmode').getAttribute('aria-pressed'),'true');
 
  // One product: every primary call to action opens the Creator; the example episodes stay one click away.

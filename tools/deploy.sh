@@ -55,10 +55,10 @@ grep -q "$PROJECT" "$LINK" || { echo "refusing: $STAGE is linked elsewhere:"; ca
 cd "$STAGE"
 META=(--meta "githubCommitSha=$SHA" --meta "frameforgeTag=$TAG")
 if [ "$MODE" = --prod ]; then
-  URL=$(vercel deploy --prod --yes "${META[@]}")
+  URL=$(vercel deploy --prod --yes "${META[@]}" | tail -1)
   echo "Production: $URL  →  https://frameforge-v6.vercel.app"
 else
-  URL=$(vercel deploy --yes "${META[@]}")
+  URL=$(vercel deploy --yes "${META[@]}" | tail -1)
   echo "Staging (SSO-protected): $URL"
 fi
 echo "Check it: node tools/deployed-check.cjs $URL/ <out-dir>"

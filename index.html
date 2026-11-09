@@ -159,7 +159,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
       <span class="sheet-meta mono" id="sheetMeta">Loading the shot sheet…</span>
      </div>
      <ol class="rows" id="rows" aria-label="Shot sheet"></ol>
-     <p class="sheet-note">Each row is one shot from the episode file: who speaks, the line, the shot's name, the camera move and the performance. Click a row to jump to that shot. These two episodes were made with FrameForge's first studio; open them in the Creator (<em>Start from…</em>) to remake them.</p>
+     <p class="sheet-note">Each row is one shot from the episode file: who speaks, the line, the shot's name, the camera move and the performance. Click a row to jump to that shot. Both films were made in the Creator; open one there (<em>Start from…</em>) to remake it.</p>
     </div>
    </div>
   </div>
@@ -218,8 +218,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 
 <script>
 const EPISODES={
- comedy:{file:'projects/zero-latency.frameforge.json',video:'media/v5/ep01-zero-latency',poster:'media/v5/ep01-poster.jpg'},
- darkmode:{file:'projects/dark-mode.frameforge.json',video:'media/v5/ep02-dark-mode',poster:'media/v5/ep02-poster.jpg'}
+ // Films made in the Creator (tools/creator-film.cjs); .timing.json holds each shot's voiced length in that film.
+ comedy:{file:'projects/zero-latency.frameforge.json',video:'media/creator/ep01-zero-latency',poster:'media/creator/ep01-zero-latency-poster.jpg',timing:'media/creator/ep01-zero-latency.timing.json'},
+ darkmode:{file:'projects/dark-mode.frameforge.json',video:'media/creator/ep02-dark-mode',poster:'media/creator/ep02-dark-mode-poster.jpg',timing:'media/creator/ep02-dark-mode.timing.json'}
 };
 // H.264 for Safari and iOS, VP9 WebM where H.264 is unavailable (e.g. open-source Chromium, some Linux Firefox).
 const VIDEO_EXT=document.createElement('video').canPlayType('video/mp4; codecs="avc1.4d401f, mp4a.40.2"')?'.mp4':'.webm';
@@ -237,6 +238,9 @@ async function loadEpisode(key){
   const response=await fetch(ep.file);
   if(!response.ok)throw new Error('HTTP '+response.status);
   const project=await response.json();
+  if(ep.timing){const t=await fetch(ep.timing).then(r=>r.ok?r.json():null).catch(()=>null);
+   const len=new Map((t?.shots||[]).map(s=>[s.id,s.duration]));
+   for(const s of project.shots)if(Number.isFinite(len.get(s.id)))s.duration=len.get(s.id);}
   let start=0;
   shots=project.shots.map(s=>{const shot={...s,start};start+=s.duration;return shot});
   $('sheetMeta').textContent=`${shots.length} shots · ${start.toFixed(1)} s · ${FPS} fps`;

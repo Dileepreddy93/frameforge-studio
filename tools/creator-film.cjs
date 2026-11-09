@@ -4,7 +4,10 @@
 // draws every frame at its exact time, and ffmpeg encodes H.264 + AAC. Headless Chromium has no H.264 encoder on
 // Linux, so this tool (not the browser) does the encoding; customers' exports still use the browser's WebCodecs.
 //
-//   node tools/creator-film.cjs <project.json | episode file> <out.mp4> [--size 720x1280] [--seconds N]
+//   node tools/creator-film.cjs <project.json | episode file> <out.mp4> [--size 720x1280] [--seconds N] [--timing-only]
+//
+// Next to the film it writes <out>.timing.json: each shot's id and voiced length (the landing page's shot sheet
+// seeks with it). --timing-only voices the project and writes only that file.
 //
 // A V6 episode file (frameforge.project/1) is converted with fromEpisode() first.
 const fs=require('fs'),path=require('path'),http=require('http'),{spawn}=require('child_process');
@@ -41,6 +44,9 @@ const server=http.createServer((req,res)=>{
     window.HybridP56QA.loadEditable(p);window.HybridP56QA.setOutputResolution(w,h)},[project,W,H]);
   console.log('voicing',project.shots.length,'lines…');
   const voiced=await page.evaluate(async()=>{const r=await window.HybridP56QA.generateEditableVoices();return {duration:r.duration}});
+  const timing=await page.evaluate(()=>window.HybridP56QA.getEditableProject().shots.map(s=>({id:s.id,duration:s.duration})));
+  fs.writeFileSync(outPath.replace(/\.mp4$/,'')+'.timing.json',JSON.stringify({seconds:voiced.duration,shots:timing},null,1)+'\n');
+  if(args.includes('--timing-only')){console.log('timing written');await browser.close();server.close();return}
   const duration=Math.min(voiced.duration,limit),frames=Math.round(duration*30);
   const wav=path.join(path.dirname(path.resolve(outPath)),'.'+path.basename(outPath)+'.wav');
   fs.writeFileSync(wav,Buffer.from(await page.evaluate(()=>window.HybridP56QA.masterWav()),'base64'));

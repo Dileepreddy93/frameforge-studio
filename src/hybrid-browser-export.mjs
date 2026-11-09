@@ -18,8 +18,12 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
    throw RangeError('Current beta supports up to 60 seconds of a fully voiced project');
  if(typeof VideoEncoder!=='function'||!await canEncodeVideo('avc',{width,height}))
    throw Error('H264 is unavailable at this size. Try Chrome/Edge on a supported computer.');
- if(typeof AudioEncoder!=='function'||!await canEncodeAudio('aac'))
-   throw Error('AAC is unavailable. MP4 export is disabled rather than creating a misleading incompatible file.');
+ // Audio: AAC everywhere it exists. Where a browser has no AAC encoder (Firefox and Chrome on Linux), Opus in MP4
+ // instead (as the V6 studio did): it plays in Chrome, Firefox, Edge, VLC and Android, but some Apple apps won't play
+ // it, and the export result says so. No encoder at all still refuses the export.
+ const audioCodec=typeof AudioEncoder!=='function'?null:await canEncodeAudio('aac')?'aac':await canEncodeAudio('opus')?'opus':null;
+ if(!audioCodec)
+   throw Error('This browser cannot encode audio (AAC or Opus). MP4 export is disabled rather than creating a silent or broken file.');
  const audio=engine.getExportAudio(),frames=Math.floor(length*FPS);
  if(!frames||frames>1800)throw RangeError('Invalid number of frames');
  if(signal?.aborted)throw signal.reason||Error('Export cancelled');
@@ -59,7 +63,7 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
    video=new CanvasSource(encodeSurface,{codec:'avc',
      quality:new Quality({bitrate:width===1080?8000000:width===720?4200000:1200000}),
      keyFrameInterval:2,hardwareAcceleration:'no-preference'});
-   track=new AudioBufferSource({codec:'aac',quality:new Quality({bitrate:192000})});
+   track=new AudioBufferSource({codec:audioCodec,quality:new Quality({bitrate:audioCodec==='aac'?192000:160000})});
    output.addVideoTrack(video);output.addAudioTrack(track);
    const lengthSamples=Math.round(frames/FPS*48000);
    const audioBuffer=new AudioBuffer({numberOfChannels:2,sampleRate:48000,length:lengthSamples});
@@ -103,7 +107,7 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
      const [codec,w,h,stats,dur,aCodec,ch,rate]=await Promise.all([
        v.getCodec(),v.getDisplayWidth(),v.getDisplayHeight(),v.computePacketStats(),v.computeDuration(),
        a.getCodec(),a.getNumberOfChannels(),a.getSampleRate()]);
-     if(codec!=='avc'||aCodec!=='aac'||w!==width||h!==height||
+     if(codec!=='avc'||aCodec!==audioCodec||w!==width||h!==height||
        stats.packetCount!==frames||Math.abs(stats.averagePacketRate-FPS)>.05||
        Math.abs(dur-frames/FPS)>.04||ch!==2||rate!==48000)
        throw Error('The saved MP4 failed codec/frame/duration verification');
@@ -113,7 +117,8 @@ export async function exportHybridFilm(engine,{width=720,seconds=null,onProgress
      if(!first||!last)throw Error('First/last H264 frame could not be decoded');
      first.close();last.close();
      summary={ok:true,width,height,fps:FPS,frames,seconds:frames/FPS,
-       codec:'h264',audio:'aac',audioChannels:2,audioHz:48000,firstAndLastDecode:true,
+       codec:'h264',audio:audioCodec,audioChannels:2,audioHz:48000,firstAndLastDecode:true,
+       ...(audioCodec==='opus'?{compatibility:'Audio is Opus (this browser has no AAC encoder): some Apple apps may not play it.'}:{}),
        bytes:file.size,source:'frameforge.project/2 browser-native WebCodecs + Mediabunny',
        // Wall time also includes cooperative UI yields and container validation;
        // components are non-overlapping and measured on the same 30 fps source.

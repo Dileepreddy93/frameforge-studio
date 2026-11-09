@@ -60,7 +60,11 @@ const title=page=>page.evaluate(()=>document.getElementById('engine').contentWin
   assert.ok(lines.every(l=>!report.includes(l)),'the report leaves out the story lines');
   assert.match(await first.locator('#report-open').getAttribute('href'),/^https:\/\/github\.com\/Dileepreddy93\/frameforge-studio\/issues\/new\?/);
   await first.locator('#report-close').click();
+  // Phase 3: "Estimate export time" times real frames on this computer and predicts the export.
+  await first.locator('#resolution').selectOption('360');
+  await first.locator('#estimate').click();
+  await first.waitForFunction(()=>/^Estimated export at 360×640: /.test(document.getElementById('export-status').textContent),null,{timeout:60000});
   assert.deepEqual(errors,[],'no page errors');
-  console.log('CREATOR_SAFETY_BROWSER_PASS second tab read-only, no overwrite; earlier version restored; problem report');
+  console.log('CREATOR_SAFETY_BROWSER_PASS second tab read-only, no overwrite; earlier version restored; problem report; export estimate');
  }finally{await browser?.close();server.kill()}
 })().catch(e=>{console.error('CREATOR_SAFETY_BROWSER_FAIL '+(e.stack||e.message));process.exit(1)});

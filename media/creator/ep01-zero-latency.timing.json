@@ -1,0 +1,61 @@
+{
+ "seconds": 34.86666666666666,
+ "shots": [
+  {
+   "id": "shot-01",
+   "duration": 2.5
+  },
+  {
+   "id": "shot-02",
+   "duration": 1.8
+  },
+  {
+   "id": "shot-03",
+   "duration": 2.066666666666667
+  },
+  {
+   "id": "shot-04",
+   "duration": 1.6333333333333333
+  },
+  {
+   "id": "shot-05",
+   "duration": 2.6
+  },
+  {
+   "id": "shot-06",
+   "duration": 2.066666666666667
+  },
+  {
+   "id": "shot-07",
+   "duration": 2.2
+  },
+  {
+   "id": "shot-08",
+   "duration": 2.7
+  },
+  {
+   "id": "shot-09",
+   "duration": 2.966666666666667
+  },
+  {
+   "id": "shot-10",
+   "duration": 2.066666666666667
+  },
+  {
+   "id": "shot-11",
+   "duration": 2.3333333333333335
+  },
+  {
+   "id": "shot-12",
+   "duration": 2.2666666666666666
+  },
+  {
+   "id": "shot-13",
+   "duration": 3.1666666666666665
+  },
+  {
+   "id": "shot-14",
+   "duration": 4.5
+  }
+ ]
+}

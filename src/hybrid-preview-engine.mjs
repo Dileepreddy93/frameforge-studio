@@ -399,7 +399,15 @@ function masterWav(){
  let result='';for(let i=0;i<u.length;i+=16384)result+=String.fromCharCode(...u.subarray(i,i+16384));
  return btoa(result);
 }
-window.HybridP56QA={create,loadFresh,loadEditable,generateEditableVoices,getEditableProject,getExportAudio,getSurface:()=>overlay,setOutputResolution,frameAt,masterWav,summary:()=>({film,shots:project?.shots.length,
+// Performance probe (plan phase 3): switch one cost off at a time to measure what a frame spends its time on.
+function perfProbe({shadows=true,physical=true}={}){
+ renderer.shadowMap.enabled=shadows;renderer.shadowMap.needsUpdate=true;
+ scene.traverse(o=>{for(const m of [].concat(o.material||[])){
+   if(m.isMeshPhysicalMaterial){m.userData.ff??={sheen:m.sheen,clearcoat:m.clearcoat};
+     m.sheen=physical?m.userData.ff.sheen:0;m.clearcoat=physical?m.userData.ff.clearcoat:0;m.needsUpdate=true}}});
+ return {shadows,physical};
+}
+window.HybridP56QA={create,loadFresh,loadEditable,generateEditableVoices,getEditableProject,getExportAudio,getSurface:()=>overlay,setOutputResolution,frameAt,masterWav,perfProbe,summary:()=>({film,shots:project?.shots.length,
  cast:project?.characters.map(c=>c.id),world:project?.hybrid.world.template,
  generatedSpeech:false,modelSource:'existing V6 Kokoro speech segments, re-timed through P6'}),
  dispose:()=>{session?.dispose();screenTexture.dispose();screenPlane.geometry.dispose();screenPlane.material.dispose();

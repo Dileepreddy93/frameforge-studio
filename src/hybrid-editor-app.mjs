@@ -370,6 +370,28 @@ $('versions').onchange=async()=>{
    text('status','Earlier version restored. Generate voices before export.');
  }catch(e){text('status','That version could not be opened: '+e.message)}
 };
+// Phase 3: before a long export, time real frames at the chosen size on THIS computer and predict the total.
+$('estimate').onclick=async()=>{
+ if(!engine||!editor||busy)return;
+ const size=Number($('resolution').value),w=size===1080?1080:size===720?720:360,h=w*16/9;
+ const total=$('seconds').value==='2'?2:editor.duration,frames=Math.round(total*30),samples=12;
+ $('estimate').disabled=true;text('export-status','Timing '+samples+' frames at '+w+'×'+h+' on this computer…');
+ try{
+   stop();engine.setOutputResolution(w,h);engine.frameAt(0,false);
+   const ms=[];
+   for(let i=0;i<samples;i++){
+     const t=total*(i+.5)/samples,a=performance.now();
+     engine.frameAt(t,false);engine.getSurface().getContext('2d').getImageData(0,0,1,1);
+     ms.push(performance.now()-a);await new Promise(r=>setTimeout(r,0));
+   }
+   ms.sort((a,b)=>a-b);
+   const per=ms[Math.floor(ms.length/2)],minutes=frames*per*1.08/60000;
+   const say=minutes<1?'under a minute':minutes<1.5?'about a minute':'about '+Math.round(minutes)+' minutes';
+   text('export-status','Estimated export at '+w+'×'+h+': '+say+' ('+Math.round(per)+' ms a frame × '+frames+' frames).'+
+     (minutes>5&&w>720?' 720×1280 would be faster.':''));
+ }catch(e){text('export-status','Could not time this computer: '+e.message)}
+ finally{try{engine.setOutputResolution(360,640)}catch{}frame(Number($('scrub').value)||0);$('estimate').disabled=false}
+};
 $('open-project').onclick=()=>{
  if(initialRecoveryCorrupt&&!recoveryExportRequested){
    text('status','Download the damaged recovery copy before replacing the saved project.');return;
@@ -434,7 +456,8 @@ $('export').onclick=async()=>{
    download(result.file,'frameforge-'+editor.project.id+'-'+result.report.width+'x'+result.report.height+'.mp4');
    download(new Blob([JSON.stringify(result.report,null,2)],{type:'application/json'}),
      'frameforge-'+editor.project.id+'-export-report.json');
-   text('export-status','Verified H264/AAC '+result.report.frames+' frames · '+result.report.seconds.toFixed(2)+'s · file downloaded.');
+   text('export-status','Verified H264/'+(result.report.audio==='opus'?'Opus':'AAC')+' '+result.report.frames+' frames · '+result.report.seconds.toFixed(2)+'s · file downloaded.'+
+     (result.report.compatibility?' '+result.report.compatibility:''));
  }catch(e){text('export-status','MP4 export unavailable: '+e.message+' Project backup is still available.')}
  finally{exportAbort=null;setBusy(false);$('cancel').disabled=true;$('progress').hidden=true}
 };

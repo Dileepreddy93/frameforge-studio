@@ -1,0 +1,50 @@
+name: Creator in every browser engine
+# Plan phase 4: the Creator in Chromium, Firefox and WebKit (Safari's engine) on Linux and macOS. Each run records the
+# engine's capabilities (WebGL 2, H.264/AAC/Opus encoders, Web Locks) and checks that the Creator either works or
+# says clearly what is missing. Real phones and real Safari still need a person: see docs/DEVICE_MATRIX.md.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+concurrency:
+  group: creator-cross-browser-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  engines:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, browser: firefox}
+          - {os: ubuntu-24.04, browser: webkit}
+          - {os: macos-14, browser: webkit}
+          - {os: macos-14, browser: chromium}
+          - {os: windows-2022, browser: firefox}
+    name: ${{ matrix.os }} · ${{ matrix.browser }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and the engine
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Creator boots, renders and reports its capabilities
+        env:
+          BROWSER: ${{ matrix.browser }}
+          FRAMEFORGE_XB_OUT: artifacts/cross-browser/${{ matrix.os }}
+        run: node tests/creator-cross-browser.cjs
+      - name: Archive capabilities and stills
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: creator-cross-browser-${{ matrix.os }}-${{ matrix.browser }}
+          path: artifacts/cross-browser/
+          if-no-files-found: warn
