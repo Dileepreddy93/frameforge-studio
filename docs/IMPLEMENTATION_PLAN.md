@@ -8,10 +8,22 @@ voiced 9:16 film they are proud to post, on the computer or phone they already o
 
 **Out of scope here:** login and payments. They come after phase 8, once people have shown they want to pay.
 
-## Progress
+## Progress (2026-11-09)
 
-| Phase | Status | Notes |
+| Phase | Status | What's done, and what's left |
 |---|---|---|
+| 0 · Safe to ship from | **done** | `main` protected; `tools/deploy.sh <tag>`; LICENSE; CI on PRs and main; `v7.0.0-rc.1` deployed to staging and rolled back to `v6.0.0` (docs/RELEASES.md) |
+| 1 · One product | **done** | DEV, BLUE and ORANGE in the Creator; episodes as templates; landing about the Creator, with Creator-made reels (docs/releases/PHASE_1_ONE_PRODUCT.md) |
+| 2 · The look | **engineering done; human gate open** | Eyelids, hair, snow, sky, screens, camera coverage, subtitles fixed and checked on frames. **Left:** the owner's approval and a 5-person blind A/B |
+| 3 · Speed | **measured; targets unverified** | Estimate button, bench tool, ground halved (docs/releases/PHASE_3_SPEED.md). **Left:** numbers on real GPU laptops |
+| 4 · Devices | **engines automated; devices open** | Cross-browser CI; Opus fallback; clear no-WebGL message. **Left:** the real-device rows in docs/DEVICE_MATRIX.md |
+| 5 · Never lose work | **done** | One tab, 5 versions, atomic saves, storage report, download reminder, tests |
+| 6 · Breadth | **first part done** | 22 actions, 8 sets, props in hand, glasses, hats, 4 new stories. **Left:** new 3D props, outdoor sets, two-person actions |
+| 7 · Languages | **English done** | 20 named voices; Hindi and Telugu facts checked (docs/releases/PHASE_7_LANGUAGES.md) |
+| 8 · Trust | **drafts done** | Terms, Privacy, Report a problem. **Left:** lawyer review, support email, domain, visit counts |
+| 9 · Prove demand | **kit ready** | docs/USER_TESTING_PLAN.md. **Left:** recruiting 5–10 creators and choosing price points |
+
+---|---|---|
 | 0 · Safe to ship from | done (PR #22) | `main` protected; `tools/deploy.sh <tag>`; LICENSE; CI on PRs + main; 5-green-runs check is ongoing |
 | 1 · One product | done (this PR) | see `docs/releases/PHASE_1_ONE_PRODUCT.md` |
 | 2 · The look | next | owner kept the current glossy look: fix defects within it |
