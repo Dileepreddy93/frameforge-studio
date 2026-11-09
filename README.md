@@ -1,93 +1,85 @@
-> **Current state (2026-10-26, V6 after M4):** live at https://frameforge-v6.vercel.app (its own Vercel project).
-> DEV, BLUE and ORANGE are approved designs built in 3D. Voices, music and MP4 export run in the buyer's browser, offline
-> after one visit, with no GPL/LGPL code ([credits](credits.html)). Both episodes are re-voiced and rendered at 1080×1920.
-> **Not reference parity**: the ranked gaps are in [docs/releases/M4_3_REFERENCE_COMPARISON.md](docs/releases/M4_3_REFERENCE_COMPARISON.md).
-> Start at [CONTINUE_HERE.md](CONTINUE_HERE.md). Below: the original V3 backup notes (tag `v3.0-stable`), then how
-> the V6 voices, mixes and renders work.
+# FrameForge
 
----
+FrameForge is a browser studio that turns a short story into a finished, voiced 9:16 animated film (up to 60 s,
+1080 × 1920, H.264 + AAC). Everything runs in the buyer's browser: the 3D renderer, the voices (Kokoro-82M), the music
+and effects, and the MP4 encoder. No server, no API keys, no cost per video.
 
-# FrameForge Studio
+**One project, one branch.** Since 2026-11-09 everything lives on `main`: the V6 studio (M1–M6) and the Hybrid
+Creator (P0–P14) were merged in PR #20. What happens next is in [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
+New to the repo (person or agent)? Start at [CONTINUE_HERE.md](CONTINUE_HERE.md).
 
-Private backup of the verified FrameForge Studio V3 snapshot, stored before new experiments.
+## The product
 
-Production URL: https://frameforge-3d-director-preview.vercel.app/
-Verified V3 movie: https://agz0k9i7nymp3png.public.blob.vercel-storage.com/frameforge/zero-latency-acting-v3-with-foley.mp4
+| Page | What it is |
+|---|---|
+| `index.html` | Landing page. Its buttons open the Creator; the example episodes are one click away. |
+| `creator.html` | **The Creator**: write a story, pick a cast, set and time of day, direct each shot (speaker, line, emotion, action, camera, lens, prop, on-set screen, sound), voice it and export a checked MP4. Autosave, undo/redo, project files. |
+| `studio.html` | The V6 studio: the two finished example episodes (DEV, BLUE and ORANGE) with the script box, editor and export. |
+| `credits.html` | Open-source parts and their licences. |
+| `hybrid-preview.html` | The Creator's render engine (loaded by `creator.html` in a frame). |
+| `beta.html` | The beta preview guide. |
 
-This repository captures the actual deployed HTML/JS engine and its audio assets. It is not a new mock-up.
+Internal pages that never ship (see `.vercelignore`): `asset-lab.html`, `character-lab.html`, `review.html`.
 
-## Restore
-Clone the private repository, switch to tag v3.0-stable and serve this directory with Python:
-  python3 -m http.server 8080
+## How the code fits together
 
-The HTML needs the internet for its Three.js dependency and externally hosted V3 film and Foley soundtrack. Bundled copies are included under media/ for disaster recovery.
+One project format with two renderers:
 
-## Files
-- index.html: exact verified deployed HTML/JS source
-- dialogue42.ogg: 41.8-second voice timing and lipsync envelope source
-- master42.ogg: earlier stereo/dialogue master
-- dialogue.ogg: legacy 30-second experimental voice track
-- media/zero-latency-stereo-foley-v2.ogg: 41.8-second Foley/music soundtrack
-- media/zero-latency-acting-v3-with-foley.mp4: 41.8-second verified sample video
-- docs/PROJECT_STATE.md: product state and known limitations
-- docs/QUALITY_GATES.md: target quality validation
-- docs/RESTORE.md: recovery and deployment process
-- docs/SHA256SUMS.txt: per-file SHA-256 manifest
+- **`frameforge.project/2`** (the Creator): `src/hybrid-project-core.js` validates it; `src/hybrid-providers.js` builds
+  a session from actor and world providers; `src/ember-*.mjs` draw the cast and worlds in three.js;
+  `src/hybrid-direction.js` places cameras; `src/hybrid-voice.mjs` + `src/kokoro-worker.js` voice the lines;
+  `src/hybrid-browser-export.mjs` encodes the MP4 (WebCodecs + Mediabunny) and checks it;
+  `src/hybrid-editor-*.mjs` are the editor and its storage (IndexedDB + recovery).
+- **`frameforge.project/1`** (the V6 episodes): `src/project-core.js`, rendered by `studio.html`. A v1 file can be
+  upgraded to v2 (`upgradeLegacyProject`); a v2 file that uses only V6 parts routes back to the V6 renderer.
+- Shared: `src/sound-kit.mjs` (music and effects, synthesised), `src/episode-mix.mjs`, `src/kokoro-g2p.js`,
+  self-hosted libraries in `vendor/` (three.js, ONNX Runtime Web, Mediabunny) with a CDN fallback.
 
-The v3.0-stable tag is protected by our workflow, not by GitHub branch protection. Keep main stable and perform later experiments on dedicated branches.
+Formats: [docs/PROJECT_FORMAT.md](docs/PROJECT_FORMAT.md) (v1), [docs/HYBRID_V2_CONTRACT.md](docs/HYBRID_V2_CONTRACT.md) (v2).
 
-Do not commit .env, API credentials, private keys or GitHub/Vercel tokens.
+## Run it locally
 
-## V5 experimental foundation (feature branch only)
+```bash
+python3 -m http.server 8080      # then open http://localhost:8080/creator.html in Chrome or Edge
+```
 
-The new browser now loads JSON from the projects/ directory. Existing episodes are preserved in a validated schema with character, voice and style locks. You can import a JSON project with the current three rigs, edit dialogue/speaker/camera and download a complete revised project file. The source of truth is documented at docs/PROJECT_FORMAT.md.
+The full voice model (~326 MB) or the light one (~92 MB) downloads once from Hugging Face. Local copies go in
+`models/` (git-ignored).
 
-Tests (Node 22+):
-- node tests/engine-syntax.test.mjs
-- node tests/project-core.test.cjs
-- node tests/project-integration.test.mjs
+## Tests
 
-Browser tests need Playwright (`npm install --no-save playwright@1.56.1 && npx playwright install chromium`):
-- node tests/determinism-browser.cjs — same time gives the same frame (fresh, repeated, after a jump)
-- node tests/episode-data-browser.cjs — every shot decision comes from the episode JSON, not shot order
-- Others (`performance-browser`, `speech-performance-browser`, `project-browser`, ...) need a local HTTP server and FRAMEFORGE_URL.
+CI (`.github/workflows/`) runs on every push to `main`, `feature/**`, `claude/**` and `chore/**`, and on every pull
+request into `main`:
 
-CI runs these in .github/workflows/project-contract.yml.
+- `project-contract.yml`: the 7 quality jobs (source and project tests, real character renders, voice and mix, portable
+  video export, the Creator's native HD export, beta usability on desktop and a 390 px viewport, rigged import).
+- `hybrid-creator-extended.yml`: the full 35 s film made in the Creator on Windows Chrome and decoded frame by frame.
+- `hybrid-creator-windows.yml`: real Kokoro voice in the Creator and a 1080 × 1920 native export on Windows.
+- `release-e2e.yml`: the V6 release test on Windows Chrome/Edge and macOS (manual publishing from `main` only).
 
-## Voices in the browser (what buyers use)
-The studio voices every line in the browser with Kokoro-82M (Apache-2.0): `src/kokoro-worker.js` runs the model with
-ONNX Runtime Web (WebGPU, else WebAssembly), `src/kokoro-g2p.js` turns text into phonemes from misaki's dictionary
-(`assets/voice/`, see its NOTICE.md). The 326 MB model downloads once from Hugging Face (pinned revision) into the
-browser's cache; a `models/kokoro-82m-v1.0/` folder next to `studio.html` is used first. Voiced lines are cached, and
-`sw.js` keeps the studio working offline. No keys, no server.
+Run locally: Node 22+, Python 3, ffmpeg, and `npm install --no-save playwright@1.56.1 && npx playwright install chromium`.
+Source tests: `node tests/<name>.test.*`. Browser tests: `node tests/<name>-browser.cjs` (most start their own server;
+the rest need `python3 -m http.server 8959`, as in the workflow).
 
-Each line is spoken with its speaker's emotion in that shot (`cast.<speaker>.emotion`, set in the Shot inspector).
-Kokoro has no emotion input, so `src/voice-emotion.js` shapes the delivery around it: Kokoro's speed sets the pace,
-then TD-PSOLA moves the pitch level, range and the end of the line (and adds a slight tremor when worried) without
-changing the voice's timbre, a high shelf makes it brighter or darker and the line's loudness moves up or down.
-Neutral lines are untouched. The offline path (`tools/voice_lines.py`) runs the same file through
-`tools/voice-emotion.mjs`. Tests: `node tests/voice-emotion.test.cjs` (no model) and `tests/voice-emotion-browser.cjs`
-(real model; set `FRAMEFORGE_EMOTION_OUT` to keep every take as a WAV). Browser tests run without jsDelivr access when
-`FRAMEFORGE_CDN_MIRROR` points at a folder with the pinned npm packages (`tests/cdn-mirror.cjs`).
+## Deploying
 
-British voices (`b*_`, ORANGE) read British English from misaki's GB dictionaries. An episode can list its own
-`pronunciations` (`{word: "Kokoro", sayAs: "koh-KOR-oh"}`, edited under Voices). The offline renders read every line
-through the same pronouncer (`tools/phonemize.mjs`), so both paths say words the same way.
+No Vercel project is connected to GitHub, so a merge never deploys anything. Every deploy is a deliberate, manual step:
 
-Each shot's timing (pause before the line, pause after it, and the line's pace) is set in the Shot inspector and
-saved with the episode; both voice paths honour it.
+| Vercel project | URL | Serves | How |
+|---|---|---|---|
+| `frameforge-v6` | https://frameforge-v6.vercel.app | V6 (`2b78e60`) | `tools/deploy-v6.sh` (stages a copy outside the repo) |
+| `frameforge-hybrid-beta` | SSO-protected preview URLs | the Creator, for testing | staging deploys of tested commits |
+| `frameforge-3d-director-preview` | protected | V5 landing (legacy) | **never deploy**; the repo's `.vercel/` link points here, so never run `vercel` inside the repo |
 
-Browser-voiced episodes are mixed like our offline renders (`src/episode-mix.mjs`, in `src/mix-worker.js`): the
-episode's music cues and each shot's sound cues from `src/sound-kit.mjs`, music ducked under speech, mastered to
--14 LUFS in stereo. An edited finished episode keeps its score. Test: `node tests/episode-mix.test.mjs` and
-`tests/episode-mix-browser.cjs`.
+Rules for production are in [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) (phase 0).
 
-## Making an episode (our own renders)
-1. Write or edit `projects/<episode>.frameforge.json` (format: docs/PROJECT_FORMAT.md).
-2. Audio: `node tools/build-audio.mjs projects/<episode>.frameforge.json` generates voice lines with local Kokoro,
-   times every shot from its line, synthesises music and sound effects, and masters to -14 LUFS.
-   This needs the Kokoro venv: `python3.12 -m venv .venv && .venv/bin/pip install kokoro-onnx soundfile`.
-3. Video: `node tools/render-episode.mjs projects/<episode>.frameforge.json` renders every frame at 1080x1920, 30 fps
-   and writes `renders/<id>-1080x1920.mp4`. Use `--shots shot-01:shot-04` for a part.
-   Add `--gpu` to render on the GPU through the installed Chrome (several times faster; frames match the software
-   render to SSIM 0.995). The default software path is bit-exact and is what the tests use.
+## Docs
+
+- [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md): where the product is going, phase by phase.
+- [docs/COMMERCIAL_RELEASE_GATES_2026-11-03.md](docs/COMMERCIAL_RELEASE_GATES_2026-11-03.md): the release checklist.
+- [docs/releases/](docs/releases/): one note per finished V6 step (M2–M6).
+- [docs/HYBRID_35S_REAL_FILM_AUDIT.md](docs/HYBRID_35S_REAL_FILM_AUDIT.md), [docs/HYBRID_DELIVERY_VERIFICATION.md](docs/HYBRID_DELIVERY_VERIFICATION.md): film audits.
+- [STYLE.md](STYLE.md): the look. [AGENTS.md](AGENTS.md): engineering rules.
+- [docs/history/](docs/history/): earlier handoffs, plans and V3–V5 notes. Kept for the record; not current.
+
+Older snapshots: tag `v3.0-stable` (V3), and the `archive/*` tags for retired experiment branches.

@@ -17,7 +17,7 @@
 ## Latest verified CI and preserved follow-on audit
 - **Main pipeline:** all seven GitHub Actions jobs passed at source SHA `08831f0f4a1bf02a25a081aacad9b0675d817bad`: [run 41394212683](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41394212683). Current newer commits are documentation-only; check live HEAD on the next session.
 - **Windows long film:** all steps passed for the revised Creator movie at the same source SHA: [run 41394212648](https://github.com/Dileepreddy93/frameforge-studio/actions/runs/41394212648). The revised movie should be watched and heard independently to determine whether cinematography fixes achieved their intended perceptual benefit.
-- **Precise next-step handoff:** [HYBRID_NEXT_CHAT_HANDOFF_2026-11-02.md](HYBRID_NEXT_CHAT_HANDOFF_2026-11-02.md). Authentication and payments remain intentionally excluded.
+- **Precise next-step handoff:** [HYBRID_NEXT_CHAT_HANDOFF_2026-11-02.md](history/HYBRID_NEXT_CHAT_HANDOFF_2026-11-02.md). Authentication and payments remain intentionally excluded.
 
 ## Outstanding criteria before claiming 9+/10
 - **Real human eyes/ears:** evaluate speech intelligibility, natural lip/eye/head interaction, character timing, repetitive choreography and film cuts. CI is not a perceptual judge.
